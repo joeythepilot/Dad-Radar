@@ -1,1 +1,1 @@
-
+Dad Radar application structure. Overview. Dad Radar is organized into independent modules. Each module has a single responsibility. and communicates through the state engine. Then a simple folder outline like app, UI, services, models, assets, config. Each has one job. UI displays. Services fetch data. Models decide state. Assets store media.
