@@ -149,7 +149,40 @@ h1 {
   color: var(--muted);
   letter-spacing: 0.14rem;
 }
+.route-display {
+  min-height: 190px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 1.5rem;
+  border: 1px solid #5f5a4e;
+  background:
+    radial-gradient(circle at center, #263039 0%, #15191c 72%);
+}
 
+.route-airport {
+  color: var(--cream);
+  font-family: "Courier New", monospace;
+  font-size: 1.4rem;
+  letter-spacing: 0.16rem;
+}
+
+.route-line {
+  position: relative;
+  height: 4px;
+  background: #75694f;
+}
+
+.aircraft-marker {
+  position: absolute;
+  top: 50%;
+  left: 62%;
+  transform: translate(-50%, -50%);
+  color: var(--cream);
+  font-size: 1.8rem;
+}
 .instrument-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
