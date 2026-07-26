@@ -1,15 +1,23 @@
 const startupScreen = document.querySelector("#startup-screen");
 const dashboard = document.querySelector("#dashboard");
 const statusMessage = document.querySelector(".status-message");
+
 const statusValue = document.querySelector("#status-value");
 const flightBoardText = document.querySelector("#flight-board-text");
+
+const airspeedValue = document.querySelector("#airspeed-value");
+const headingValue = document.querySelector("#heading-value");
+const altitudeValue = document.querySelector("#altitude-value");
 
 const dadRadarState = {
   status: "EN ROUTE",
   flight: {
     number: "AA 1234",
     origin: "ORD",
-    destination: "AVL"
+    destination: "AVL",
+    airspeed: 438,
+    heading: 171,
+    altitude: 34000
   }
 };
 
@@ -19,8 +27,16 @@ function updateDashboard(state) {
   if (state.flight) {
     flightBoardText.textContent =
       `${state.flight.number}  ${state.flight.origin} → ${state.flight.destination}`;
+
+    airspeedValue.textContent = state.flight.airspeed;
+    headingValue.textContent = state.flight.heading;
+    altitudeValue.textContent = state.flight.altitude.toLocaleString();
   } else {
     flightBoardText.textContent = "NO ACTIVE FLIGHT";
+
+    airspeedValue.textContent = "---";
+    headingValue.textContent = "---";
+    altitudeValue.textContent = "-----";
   }
 }
 
