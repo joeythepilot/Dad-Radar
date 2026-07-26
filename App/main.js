@@ -5,8 +5,12 @@ const statusValue = document.querySelector("#status-value");
 const flightBoardText = document.querySelector("#flight-board-text");
 
 const dadRadarState = {
-  status: "HOME",
-  flight: null
+  status: "EN ROUTE",
+  flight: {
+    number: "AA 1234",
+    origin: "ORD",
+    destination: "AVL"
+  }
 };
 
 function updateDashboard(state) {
