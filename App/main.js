@@ -10,7 +10,7 @@ const headingValue = document.querySelector("#heading-value");
 const altitudeValue = document.querySelector("#altitude-value");
 const destinationCity = document.querySelector("#destination-city");
 const destinationAirport = document.querySelector("#destination-airport");
-
+const etaValue = document.querySelector("#eta-value");
 const dadRadarState = {
   status: "EN ROUTE",
   flight: {
@@ -18,6 +18,7 @@ const dadRadarState = {
     origin: "ORD",
     destination: "AVL",
     destinationCity: "ASHEVILLE",
+    eta: "7:42 PM",
     airspeed: 438,
     heading: 171,
     altitude: 34000
@@ -34,6 +35,7 @@ function updateDashboard(state) {
     airspeedValue.textContent = state.flight.airspeed;
     headingValue.textContent = state.flight.heading;
     altitudeValue.textContent = state.flight.altitude.toLocaleString();
+    etaValue.textContent = state.flight.eta;
 destinationCity.textContent = state.flight.destinationCity;
 destinationAirport.textContent = state.flight.destination;  
 } else {
@@ -42,6 +44,7 @@ destinationAirport.textContent = state.flight.destination;
     airspeedValue.textContent = "---";
     headingValue.textContent = "---";
     altitudeValue.textContent = "-----";
+    etaValue.textContent = "--:--";
   }
 }
 
