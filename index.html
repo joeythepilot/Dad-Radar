@@ -10,7 +10,7 @@
 </head>
 
 <body>
-  <main class="startup-screen">
+  <section class="startup-screen" id="startup-screen">
     <p class="unit-label">FLIGHT OPERATIONS UNIT NO. 001</p>
 
     <h1>DAD RADAR</h1>
@@ -18,6 +18,46 @@
     <p class="status-message">
       INITIALIZING FLIGHT SYSTEMS...
     </p>
+  </section>
+
+  <main class="dashboard" id="dashboard" hidden>
+    <header class="top-bar">
+      <div>
+        <p class="small-label">DAD RADAR</p>
+        <h2>FLIGHT OPERATIONS</h2>
+      </div>
+
+      <div class="current-status">
+        <p class="small-label">CURRENT STATUS</p>
+        <p class="status-value">HOME</p>
+      </div>
+    </header>
+
+    <section class="flight-board">
+      <span>NO ACTIVE FLIGHT</span>
+    </section>
+
+    <section class="display-grid">
+      <article class="panel map-panel">
+        <p class="panel-label">MOVING MAP</p>
+        <div class="placeholder">MAP DISPLAY</div>
+      </article>
+
+      <article class="panel instrument-panel">
+        <p class="panel-label">FLIGHT DATA</p>
+
+        <div class="instrument-row">
+          <div class="instrument">AIRSPEED</div>
+          <div class="instrument">HEADING</div>
+          <div class="instrument">VERTICAL SPEED</div>
+        </div>
+      </article>
+
+      <article class="panel destination-panel">
+        <p class="panel-label">DESTINATION</p>
+        <div class="placeholder">TRAVEL POSTER</div>
+      </article>
+    </section>
   </main>
 
   <script src="App/main.js"></script>
