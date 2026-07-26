@@ -1,0 +1,58 @@
+:root {
+  color-scheme: dark;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at center, #20242a 0%, #0d0f12 70%);
+  color: #f2eadc;
+}
+
+.startup-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.unit-label {
+  margin: 0 0 1.5rem;
+  color: #b89a67;
+  font-size: 0.85rem;
+  letter-spacing: 0.28rem;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(3rem, 10vw, 7rem);
+  letter-spacing: 0.35rem;
+}
+
+.status-message {
+  margin-top: 2rem;
+  color: #d8c7a6;
+  font-size: 1rem;
+  letter-spacing: 0.18rem;
+  animation: pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
