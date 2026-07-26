@@ -92,6 +92,13 @@ h1 {
   font-size: 1.4rem;
   letter-spacing: 0.12rem;
 }
+.eta-zone {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--brass);
+  font-size: 0.62rem;
+  letter-spacing: 0.14rem;
+}
 
 .status-value {
   margin: 0.4rem 0 0;
