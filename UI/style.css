@@ -158,8 +158,31 @@ h1 {
   text-align: center;
 }
 
-.destination-panel .placeholder {
+.destination-content {
   min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+  border: 1px solid #5f5a4e;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
+    radial-gradient(circle at top, #3a4146, #171a1d 72%);
+  text-align: center;
+}
+
+.destination-content strong {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  letter-spacing: 0.18rem;
+}
+
+.destination-content span {
+  margin-top: 0.65rem;
+  color: var(--brass);
+  font-family: "Courier New", monospace;
+  font-size: 1.25rem;
+  letter-spacing: 0.25rem;
 }
 
 [hidden] {
