@@ -17,9 +17,15 @@
 body {
   margin: 0;
   min-height: 100vh;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at center, #20242a 0%, var(--background) 70%);
   color: var(--cream);
+}
+
+.startup-screen[hidden],
+.dashboard[hidden] {
+  display: none !important;
 }
 
 .startup-screen {
@@ -81,7 +87,16 @@ h1 {
 }
 
 .current-status {
- .eta-block {
+  text-align: right;
+}
+
+.status-value {
+  margin: 0.4rem 0 0;
+  font-size: 1.4rem;
+  letter-spacing: 0.18rem;
+}
+
+.eta-block {
   text-align: right;
 }
 
@@ -92,18 +107,13 @@ h1 {
   font-size: 1.4rem;
   letter-spacing: 0.12rem;
 }
+
 .eta-zone {
   display: block;
   margin-top: 0.35rem;
   color: var(--brass);
   font-size: 0.62rem;
   letter-spacing: 0.14rem;
-}
-
-.status-value {
-  margin: 0.4rem 0 0;
-  font-size: 1.4rem;
-  letter-spacing: 0.18rem;
 }
 
 .flight-board {
@@ -132,7 +142,11 @@ h1 {
   padding: 1rem;
   border: 1px solid var(--panel-border);
   background:
-    linear-gradient(145deg, rgba(35, 38, 40, 0.95), rgba(18, 20, 22, 0.98));
+    linear-gradient(
+      145deg,
+      rgba(35, 38, 40, 0.95),
+      rgba(18, 20, 22, 0.98)
+    );
 }
 
 .map-panel {
@@ -149,6 +163,7 @@ h1 {
   color: var(--muted);
   letter-spacing: 0.14rem;
 }
+
 .route-display {
   min-height: 190px;
   display: grid;
@@ -183,6 +198,7 @@ h1 {
   color: var(--cream);
   font-size: 1.8rem;
 }
+
 .instrument-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -193,8 +209,10 @@ h1 {
 .instrument {
   aspect-ratio: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 0.35rem;
   padding: 0.75rem;
   border: 4px solid #292929;
   border-radius: 50%;
@@ -202,9 +220,24 @@ h1 {
   background:
     radial-gradient(circle, #26292b 0%, #101214 70%);
   color: #d9d2c4;
-  font-size: 0.7rem;
-  letter-spacing: 0.08rem;
   text-align: center;
+}
+
+.instrument-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.08rem;
+}
+
+.instrument-value {
+  color: var(--cream);
+  font-family: "Courier New", monospace;
+  font-size: clamp(1.2rem, 3vw, 2rem);
+}
+
+.instrument-unit {
+  color: var(--brass);
+  font-size: 0.6rem;
+  letter-spacing: 0.1rem;
 }
 
 .destination-content {
@@ -234,10 +267,6 @@ h1 {
   letter-spacing: 0.25rem;
 }
 
-[hidden] {
-  display: none !important;
-}
-
 @keyframes pulse {
   0%,
   100% {
@@ -250,6 +279,16 @@ h1 {
 }
 
 @media (max-width: 800px) {
+  .top-bar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .current-status,
+  .eta-block {
+    text-align: left;
+  }
+
   .display-grid {
     grid-template-columns: 1fr;
   }
@@ -263,36 +302,7 @@ h1 {
   }
 
   .instrument {
-  aspect-ratio: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-  padding: 0.75rem;
-  border: 4px solid #292929;
-  border-radius: 50%;
-  outline: 2px solid var(--brass);
-  background:
-    radial-gradient(circle, #26292b 0%, #101214 70%);
-  color: #d9d2c4;
-  text-align: center;
-}
-
-.instrument-label {
-  font-size: 0.65rem;
-  letter-spacing: 0.08rem;
-}
-
-.instrument-value {
-  font-family: "Courier New", monospace;
-  font-size: clamp(1.2rem, 3vw, 2rem);
-  color: var(--cream);
-}
-
-.instrument-unit {
-  color: var(--brass);
-  font-size: 0.6rem;
-  letter-spacing: 0.1rem;
-}
+    width: 180px;
+    margin: 0 auto;
+  }
 }

@@ -11,6 +11,9 @@ const altitudeValue = document.querySelector("#altitude-value");
 const destinationCity = document.querySelector("#destination-city");
 const destinationAirport = document.querySelector("#destination-airport");
 const etaValue = document.querySelector("#eta-value");
+const mapOrigin = document.querySelector("#map-origin");
+const mapDestination = document.querySelector("#map-destination");
+const aircraftMarker = document.querySelector(".aircraft-marker");
 const dadRadarState = {
   status: "EN ROUTE",
   flight: {
@@ -18,10 +21,11 @@ const dadRadarState = {
     origin: "ORD",
     destination: "AVL",
     destinationCity: "ASHEVILLE",
-    eta: "7:42 PM",
     airspeed: 438,
     heading: 171,
-    altitude: 34000
+    altitude: 34000,
+    progress: 62,
+    eta: "7:42 PM",
   }
 };
 
@@ -37,7 +41,10 @@ function updateDashboard(state) {
     altitudeValue.textContent = state.flight.altitude.toLocaleString();
     etaValue.textContent = state.flight.eta;
 destinationCity.textContent = state.flight.destinationCity;
-destinationAirport.textContent = state.flight.destination;  
+destinationAirport.textContent = state.flight.destination; 
+mapOrigin.textContent = state.flight.origin;
+mapDestination.textContent = state.flight.destination;
+aircraftMarker.style.left = `${state.flight.progress}%`; 
 } else {
     flightBoardText.textContent = "NO ACTIVE FLIGHT";
 
