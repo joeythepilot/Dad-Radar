@@ -14,7 +14,7 @@ const etaValue = document.querySelector("#eta-value");
 const mapOrigin = document.querySelector("#map-origin");
 const mapDestination = document.querySelector("#map-destination");
 const aircraftMarker = document.querySelector(".aircraft-marker");
-const activeMode = "OFFLINE";
+let activeMode = "OFFLINE";
 const flightBoard = document.querySelector(".flight-board");
 const mapPanel = document.querySelector(".map-panel");
 const instrumentPanel = document.querySelector(".instrument-panel");
@@ -161,7 +161,7 @@ COMMUTING_HOME: {
 },
 };
 
-const dadRadarState = dadRadarModes[activeMode];
+let dadRadarState = dadRadarModes[activeMode];
 
 function updateDashboard(state) {
   statusValue.textContent = state.status;
@@ -206,4 +206,34 @@ window.addEventListener("load", () => {
     startupScreen.hidden = true;
     dashboard.hidden = false;
   }, 3000);
+  
+});
+const modeShortcuts = {
+  "1": "HOME",
+  "2": "COMMUTING_TO_BASE",
+  "3": "PRE_FLIGHT",
+  "4": "BOARDING",
+  "5": "TAXI_OUT",
+  "6": "EN_ROUTE",
+  "7": "APPROACH",
+  "8": "DIVERTED",
+  "9": "ARRIVED",
+  "0": "LAYOVER",
+  "-": "COMMUTING_HOME",
+  "=": "OFFLINE"
+};
+
+window.addEventListener("keydown", (event) => {
+  const nextMode = modeShortcuts[event.key];
+
+  if (!nextMode) {
+    return;
+  }
+
+  activeMode = nextMode;
+  dadRadarState = dadRadarModes[activeMode];
+
+  updateDashboard(dadRadarState);
+
+  console.log(`Dad Radar mode: ${activeMode}`);
 });
