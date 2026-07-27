@@ -31,18 +31,73 @@ const mapPanel = document.querySelector(".map-panel");
 const instrumentPanel = document.querySelector(".instrument-panel");
 const destinationPanel = document.querySelector(".destination-panel");
 
+const boardFlight = document.querySelector("#board-flight");
+const boardFrom = document.querySelector("#board-from");
+const boardTo = document.querySelector("#board-to");
+const boardStatus = document.querySelector("#board-status");
+
 function renderFlapText(container, text) {
   container.replaceChildren();
 
-  for (const character of text) {
+  [...text].forEach((character, index) => {
     const flap = document.createElement("span");
+
     flap.className = "flap-character";
     flap.textContent = character === " " ? "\u00A0" : character;
+    flap.style.setProperty("--flap-index", index);
+
     container.appendChild(flap);
+  });
+}
+function makeFlapCell(character = " ") {
+  const cell = document.createElement("div");
+  cell.className = "flap-cell";
+
+  if (character === " ") {
+    cell.classList.add("space");
+  }
+
+  const span = document.createElement("span");
+  span.className = "flap-char";
+  span.textContent = character;
+
+  cell.appendChild(span);
+  return cell;
+}
+
+function renderFlapGroup(container, value, fixedLength) {
+  if (!container) return;
+
+  const padded = (value ?? "")
+    .toString()
+    .toUpperCase()
+    .padEnd(fixedLength, " ")
+    .slice(0, fixedLength);
+
+  container.innerHTML = "";
+
+  [...padded].forEach((char) => {
+    container.appendChild(makeFlapCell(char));
+  });
+}
+
+function renderFlightBoard(state) {
+  if (state.flight) {
+    const flightNumber = (state.flight.number || "").replace(/^AA\s*/i, "");
+    renderFlapGroup(boardFlight, flightNumber, 4);
+    renderFlapGroup(boardFrom, state.flight.origin || "", 3);
+    renderFlapGroup(boardTo, state.flight.destination || "", 3);
+    renderFlapGroup(boardStatus, state.status || "", 9);
+  } else {
+    renderFlapGroup(boardFlight, "", 4);
+    renderFlapGroup(boardFrom, "", 3);
+    renderFlapGroup(boardTo, "", 3);
+    renderFlapGroup(boardStatus, state.status || "HOME", 9);
   }
 }
 function updateDashboard(state) {
-  statusValue.textContent = state.status;
+  renderFlightBoard(state);
+    renderFlapText(statusValue, state.status);
 
   if (state.flight) {
     mapPanel.hidden = false;

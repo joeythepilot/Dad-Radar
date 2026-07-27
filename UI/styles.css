@@ -1,0 +1,919 @@
+@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&display=swap");
+:root {
+  color-scheme: dark;
+  font-family: Arial, Helvetica, sans-serif;
+
+  --background: #050607;
+  --module-background: #0d1012;
+  --module-edge: #3f4142;
+  --module-highlight: rgba(255, 255, 255, 0.06);
+
+  --brass: #b89a67;
+  --cream: #f1eadc;
+  --muted: #9d9a92;
+
+  --flap-width: clamp(1.05rem, 1.55vw, 1.9rem);
+  --flap-height: clamp(1.75rem, 2.7vw, 3.05rem);
+  --flap-gap: clamp(0.08rem, 0.18vw, 0.2rem);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+  overflow: hidden;
+  background: var(--background);
+  color: var(--cream);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* Startup screen */
+
+.startup-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background:
+    radial-gradient(circle at center, #1c2227 0%, #080a0c 62%, #020303 100%);
+  text-align: center;
+}
+
+.unit-label,
+.small-label,
+.panel-label {
+  margin: 0;
+  color: var(--brass);
+  font-size: clamp(0.55rem, 0.75vw, 0.75rem);
+  letter-spacing: 0.2rem;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0.9rem 0 0;
+  color: var(--cream);
+  font-size: clamp(3rem, 9vw, 7rem);
+  letter-spacing: 0.3rem;
+}
+
+.status-message {
+  margin-top: 2rem;
+  color: #d8c7a6;
+  font-family: "Courier New", monospace;
+  font-size: 1rem;
+  letter-spacing: 0.18rem;
+  animation: pulse 1.8s ease-in-out infinite;
+}
+
+/* Main display */
+
+.dashboard {
+  width: 100vw;
+  height: 100vh;
+  padding: clamp(0.45rem, 1.2vw, 1rem);
+  background:
+    radial-gradient(circle at 50% 30%, #161a1d 0%, #070809 64%, #020303 100%);
+}
+
+.panel-shell {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: minmax(100px, 0.9fr) minmax(250px, 2.55fr) minmax(150px, 1.35fr);
+  gap: clamp(0.45rem, 0.8vw, 0.8rem);
+}
+
+/* Display modules */
+
+.module {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--module-edge);
+  border-radius: 5px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(30, 33, 35, 0.98),
+      rgba(8, 10, 11, 0.99) 60%
+    );
+  box-shadow:
+    inset 0 1px 0 var(--module-highlight),
+    inset 0 0 22px rgba(0, 0, 0, 0.55),
+    0 5px 14px rgba(0, 0, 0, 0.45);
+}
+
+/* Split-flap board */
+
+.flight-strip-module {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  padding: clamp(0.45rem, 0.75vw, 0.75rem)
+    clamp(0.65rem, 1.1vw, 1.1rem)
+    clamp(0.6rem, 0.9vw, 0.9rem);
+}
+
+.flight-strip-labels {
+  display: grid;
+  grid-template-columns: 1.25fr 0.65fr 0.65fr 1.8fr;
+  gap: clamp(0.4rem, 0.8vw, 0.8rem);
+  padding: 0 0.5rem 0.4rem;
+  color: var(--brass);
+  font-size: clamp(0.48rem, 0.65vw, 0.68rem);
+  letter-spacing: 0.14rem;
+  text-align: center;
+}
+
+.flight-board {
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.45rem, 0.8vw, 0.8rem);
+  border: 1px solid #26282a;
+  border-radius: 4px;
+  background:
+    linear-gradient(180deg, #080909, #030404);
+  box-shadow:
+    inset 0 8px 20px rgba(255, 255, 255, 0.018),
+    inset 0 -10px 24px rgba(0, 0, 0, 0.75);
+  color: var(--cream);
+  font-family: "Courier New", monospace;
+}
+
+.flight-board-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1.25fr 0.65fr 0.65fr 1.8fr;
+  align-items: center;
+  gap: clamp(0.4rem, 0.8vw, 0.8rem);
+}
+
+.flap-cell {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--flap-gap);
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.flap-character {
+  position: relative;
+  width: var(--flap-width);
+  height: var(--flap-height);
+  flex: 0 0 var(--flap-width);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  border: 1px solid #4b4a46;
+  border-radius: 3px;
+
+  background:
+    linear-gradient(
+      to bottom,
+      #41413e 0%,
+      #333330 12%,
+      #242523 47%,
+      #0c0d0d 49%,
+      #090a0a 51%,
+      #262724 53%,
+      #343531 88%,
+      #242522 100%
+    );
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.85),
+    inset 5px 0 8px rgba(0, 0, 0, 0.16),
+    inset -5px 0 8px rgba(0, 0, 0, 0.16),
+    0 2px 3px rgba(0, 0, 0, 0.55);
+
+  color: #f3ecde;
+  font-family: "Courier New", monospace;
+  font-size: clamp(0.82rem, 1.45vw, 1.55rem);
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  text-shadow:
+    0 1px 0 #000,
+    0 0 4px rgba(255, 255, 255, 0.08);
+}
+
+.flap-character::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: #050606;
+  box-shadow:
+    0 -1px 0 rgba(255, 255, 255, 0.035),
+    0 1px 0 rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+}
+
+.flap-character::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      115deg,
+      rgba(255, 255, 255, 0.07),
+      transparent 25%,
+      transparent 72%,
+      rgba(0, 0, 0, 0.2)
+    );
+  pointer-events: none;
+}
+
+#flight-board-text {
+  color: #ded7c8;
+  font-size: clamp(0.9rem, 1.5vw, 1.35rem);
+  letter-spacing: 0.18rem;
+  text-align: center;
+}
+
+/* Middle row */
+
+.middle-row {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(220px, 0.8fr) minmax(0, 2.2fr);
+  gap: clamp(0.45rem, 0.8vw, 0.8rem);
+}
+
+/* Destination poster module */
+
+.destination-panel {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(0.7rem, 1vw, 1rem);
+}
+
+.destination-content {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 0.55rem;
+  padding: 1.2rem;
+  overflow: hidden;
+  border: 1px solid #4f5759;
+  background:
+    linear-gradient(
+      to top,
+      rgba(5, 8, 9, 0.92) 0%,
+      rgba(5, 8, 9, 0.22) 48%,
+      rgba(5, 8, 9, 0.05) 100%
+    ),
+    radial-gradient(
+      circle at 50% 22%,
+      #98b4bc 0%,
+      #52717a 32%,
+      #283f46 58%,
+      #10191c 100%
+    );
+  text-align: center;
+  box-shadow:
+    inset 0 0 18px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.destination-content::before {
+  content: "";
+  position: absolute;
+  right: -8%;
+  bottom: 25%;
+  left: -8%;
+  height: 38%;
+  background:
+    linear-gradient(
+      155deg,
+      transparent 0 24%,
+      rgba(15, 30, 33, 0.92) 25% 42%,
+      transparent 43%
+    ),
+    linear-gradient(
+      25deg,
+      transparent 0 35%,
+      rgba(26, 47, 48, 0.9) 36% 60%,
+      transparent 61%
+    );
+  opacity: 0.85;
+}
+
+.destination-content strong,
+.destination-content span {
+  position: relative;
+  z-index: 2;
+}
+
+.destination-content strong {
+  color: #f3ead7;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.2rem, 2.8vw, 2.8rem);
+  letter-spacing: 0.08rem;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
+}
+
+.destination-content span {
+  margin-top: 0.45rem;
+  color: var(--brass);
+  font-family: "Courier New", monospace;
+  font-size: clamp(0.8rem, 1.25vw, 1.2rem);
+  letter-spacing: 0.25rem;
+}
+
+/* Map module */
+
+.map-panel {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  padding: clamp(0.65rem, 1vw, 1rem);
+}
+
+.map-information {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 0.35rem 0.55rem;
+}
+
+.eta-block {
+  text-align: right;
+}
+
+.eta-value,
+.clock-value {
+  margin: 0.32rem 0 0;
+  color: var(--cream);
+  font-family: "Courier New", monospace;
+  font-size: clamp(0.95rem, 1.55vw, 1.35rem);
+  letter-spacing: 0.1rem;
+}
+
+.eta-zone {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--brass);
+  font-size: clamp(0.45rem, 0.58vw, 0.58rem);
+  letter-spacing: 0.12rem;
+}
+
+.route-display {
+  position: relative;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: clamp(0.75rem, 1.2vw, 1.2rem);
+  overflow: hidden;
+  padding: clamp(1rem, 1.8vw, 1.8rem);
+
+  border: 1px solid #3c4c50;
+  background:
+    linear-gradient(
+      18deg,
+      transparent 0 47%,
+      rgba(141, 158, 156, 0.08) 48% 49%,
+      transparent 50%
+    ),
+    linear-gradient(
+      112deg,
+      transparent 0 53%,
+      rgba(141, 158, 156, 0.065) 54% 55%,
+      transparent 56%
+    ),
+    repeating-radial-gradient(
+      ellipse at 35% 55%,
+      rgba(89, 113, 114, 0.09) 0 1px,
+      transparent 2px 20px
+    ),
+    radial-gradient(circle at 38% 42%, #284047 0%, #17282d 52%, #091012 100%);
+
+  box-shadow:
+    inset 0 0 35px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.route-display::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(182, 202, 199, 0.035),
+      transparent
+    );
+  pointer-events: none;
+}
+
+.route-airport {
+  position: relative;
+  z-index: 2;
+  color: var(--cream);
+  font-family: "Courier New", monospace;
+  font-size: clamp(0.95rem, 1.6vw, 1.4rem);
+  font-weight: 700;
+  letter-spacing: 0.14rem;
+  text-shadow: 0 2px 3px #000;
+}
+
+.route-line {
+  position: relative;
+  z-index: 2;
+  height: 3px;
+  background:
+    linear-gradient(
+      to right,
+      rgba(184, 154, 103, 0.25),
+      #c1ad78,
+      rgba(184, 154, 103, 0.3)
+    );
+  box-shadow:
+    0 0 6px rgba(184, 154, 103, 0.35);
+}
+
+.route-line::before,
+.route-line::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 0.55rem;
+  height: 0.55rem;
+  border: 2px solid #d1bd88;
+  border-radius: 50%;
+  background: #111719;
+  transform: translateY(-50%);
+}
+
+.route-line::before {
+  left: -0.25rem;
+}
+
+.route-line::after {
+  right: -0.25rem;
+}
+
+.aircraft-marker {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  left: 62%;
+  transform: translate(-50%, -50%);
+  color: #f0e8d9;
+  font-size: clamp(1.25rem, 2vw, 1.9rem);
+  text-shadow:
+    0 2px 3px #000,
+    0 0 8px rgba(255, 255, 255, 0.15);
+}
+
+/* Bottom row */
+
+.bottom-row {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(150px, 0.75fr) minmax(380px, 2.5fr) minmax(150px, 0.8fr);
+  gap: clamp(0.45rem, 0.8vw, 0.8rem);
+}
+
+/* Identity */
+
+.identity-panel,
+.control-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.6rem, 1vw, 1rem);
+  text-align: center;
+}
+
+.identity-name {
+  margin: 0;
+  color: var(--cream);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(0.72rem, 1.15vw, 1.05rem);
+  letter-spacing: 0.1rem;
+}
+
+.identity-unit {
+  margin: 0.45rem 0 0;
+  color: var(--brass);
+  font-size: clamp(0.48rem, 0.62vw, 0.62rem);
+  letter-spacing: 0.14rem;
+}
+
+/* Instruments */
+
+.instrument-panel {
+  display: grid;
+  place-items: center;
+  padding: clamp(0.4rem, 0.7vw, 0.75rem);
+}
+
+.instrument-row {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  gap: clamp(0.55rem, 1vw, 1rem);
+}
+
+.instrument {
+  position: relative;
+  width: min(100%, 150px);
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  justify-self: center;
+  gap: 0.22rem;
+  overflow: hidden;
+
+  border: clamp(4px, 0.5vw, 7px) solid #111314;
+  border-radius: 50%;
+  outline: 2px solid #827052;
+
+  background:
+    radial-gradient(
+      circle at 50% 50%,
+      transparent 0 58%,
+      rgba(255, 255, 255, 0.055) 59%,
+      transparent 61%
+    ),
+    repeating-conic-gradient(
+      from -2deg,
+      rgba(226, 222, 211, 0.7) 0deg 0.7deg,
+      transparent 0.7deg 10deg
+    ),
+    radial-gradient(circle at center, #202326 0%, #0c0e10 72%, #020303 100%);
+
+  box-shadow:
+    inset 0 0 18px rgba(0, 0, 0, 0.85),
+    inset 0 2px 3px rgba(255, 255, 255, 0.06),
+    0 4px 10px rgba(0, 0, 0, 0.72);
+
+  text-align: center;
+}
+
+.instrument::before {
+  content: "";
+  position: absolute;
+  inset: 7%;
+  border: 1px solid rgba(216, 210, 194, 0.1);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.instrument::after {
+  content: "";
+  position: absolute;
+  top: 5%;
+  right: 15%;
+  left: 15%;
+  height: 30%;
+  border-radius: 50%;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.09),
+      rgba(255, 255, 255, 0)
+    );
+  transform: rotate(-8deg);
+  pointer-events: none;
+}
+
+.instrument-label,
+.instrument-value,
+.instrument-unit {
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 2px 2px #000;
+}
+
+.instrument-label {
+  font-size: clamp(0.38rem, 0.58vw, 0.58rem);
+  letter-spacing: 0.07rem;
+}
+
+.instrument-value {
+  color: var(--cream);
+  font-family: "Courier New", monospace;
+  font-size: clamp(0.85rem, 1.55vw, 1.55rem);
+}
+
+.instrument-unit {
+  color: var(--brass);
+  font-size: clamp(0.38rem, 0.48vw, 0.5rem);
+  letter-spacing: 0.08rem;
+}
+
+/* Clock and status */
+
+.control-panel {
+  gap: 0.28rem;
+}
+
+.system-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.42rem;
+  margin-top: 0.5rem;
+  color: var(--brass);
+  font-size: clamp(0.42rem, 0.55vw, 0.55rem);
+  letter-spacing: 0.1rem;
+}
+
+.indicator-light {
+  width: 0.65rem;
+  height: 0.65rem;
+  border: 1px solid #632e14;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, #ffd29b, #e4732a 38%, #8e3110 78%);
+  box-shadow:
+    0 0 5px #d86925,
+    0 0 12px rgba(220, 111, 40, 0.65);
+}
+
+/* Animation */
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Smaller screens */
+
+@media (max-width: 1000px) {
+  body {
+    overflow: auto;
+  }
+
+  .dashboard {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .panel-shell {
+    height: auto;
+    grid-template-rows: auto;
+  }
+
+  .middle-row,
+  .bottom-row {
+    grid-template-columns: 1fr;
+  }
+
+  .destination-content,
+  .route-display {
+    min-height: 260px;
+  }
+
+  .flight-strip-labels,
+  .flight-board-row {
+    grid-template-columns: 1fr;
+  }
+
+  .flight-strip-labels {
+    display: none;
+  }
+
+  .flight-board-row {
+    gap: 0.75rem;
+  }
+
+  .instrument-row {
+    min-height: 220px;
+  }
+}
+
+@media (max-width: 650px) {
+  .instrument-row {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .instrument {
+    width: 150px;
+  }
+
+  .map-information {
+    flex-direction: column;
+  }
+
+  .eta-block {
+    text-align: left;
+  }
+}
+/* Larger, more realistic split-flap board */
+
+.panel-shell {
+  grid-template-rows:
+    minmax(145px, 1.25fr)
+    minmax(250px, 2.35fr)
+    minmax(145px, 1.25fr);
+}
+
+.flight-strip-module {
+  padding: 0.7rem 1.1rem 0.95rem;
+}
+
+.flight-strip-labels {
+  grid-template-columns: 1.35fr 0.75fr 0.75fr 1.75fr;
+  gap: 1rem;
+  padding: 0 0.75rem 0.55rem;
+  font-size: clamp(0.58rem, 0.75vw, 0.78rem);
+}
+
+.flight-board {
+  padding: 0.75rem 1.2rem;
+}
+
+.flight-board-row {
+  grid-template-columns: 1.35fr 0.75fr 0.75fr 1.75fr;
+  gap: 1rem;
+}
+
+.flap-cell {
+  gap: clamp(0.12rem, 0.24vw, 0.28rem);
+}
+
+.flap-character {
+  width: clamp(1.55rem, 2.35vw, 2.75rem);
+  height: clamp(2.65rem, 4vw, 4.6rem);
+  flex-basis: clamp(1.55rem, 2.35vw, 2.75rem);
+
+  border-radius: 4px;
+
+  font-size: clamp(1.25rem, 2.25vw, 2.45rem);
+
+  background:
+    linear-gradient(
+      to bottom,
+      #4a4945 0%,
+      #373733 14%,
+      #242522 47%,
+      #080909 49%,
+      #080909 51%,
+      #272824 53%,
+      #383934 87%,
+      #252622 100%
+    );
+
+  box-shadow:
+    inset 0 2px 1px rgba(255, 255, 255, 0.1),
+    inset 0 -2px 2px rgba(0, 0, 0, 0.9),
+    inset 6px 0 10px rgba(0, 0, 0, 0.2),
+    inset -6px 0 10px rgba(0, 0, 0, 0.2),
+    0 3px 5px rgba(0, 0, 0, 0.7);
+}
+
+.flap-character::before {
+  height: 2px;
+  background: #030404;
+  box-shadow:
+    0 -1px 0 rgba(255, 255, 255, 0.05),
+    0 1px 1px rgba(0, 0, 0, 1);
+}
+/* Split-flap proportions tuned to the physical reference */
+
+.panel-shell {
+  grid-template-rows:
+    minmax(165px, 1.45fr)
+    minmax(245px, 2.25fr)
+    minmax(145px, 1.2fr);
+}
+
+.flight-strip-module {
+  padding: 0.75rem 1.2rem 1rem;
+}
+
+.flight-strip-labels,
+.flight-board-row {
+  grid-template-columns:
+    minmax(330px, 1.35fr)
+    minmax(165px, 0.7fr)
+    minmax(165px, 0.7fr)
+    minmax(410px, 1.7fr);
+  gap: clamp(0.7rem, 1.1vw, 1.15rem);
+}
+
+.flight-strip-labels {
+  padding: 0 0.8rem 0.55rem;
+  font-size: clamp(0.62rem, 0.78vw, 0.82rem);
+}
+
+.flight-board {
+  padding: 0.8rem 1.25rem;
+}
+
+.flap-cell {
+  gap: clamp(0.16rem, 0.26vw, 0.3rem);
+}
+
+.flap-character {
+  width: clamp(2.35rem, 3.05vw, 3.45rem);
+  height: clamp(3.75rem, 4.8vw, 5.25rem);
+  flex: 0 0 clamp(2.35rem, 3.05vw, 3.45rem);
+
+  border: 1px solid #504e49;
+  border-radius: 4px;
+
+  background:
+    linear-gradient(
+      to bottom,
+      #494844 0%,
+      #393834 13%,
+      #252522 47%,
+      #070808 49%,
+      #050606 51%,
+      #292925 53%,
+      #3a3935 87%,
+      #242421 100%
+    );
+
+  box-shadow:
+    inset 0 2px 1px rgba(255, 255, 255, 0.1),
+    inset 0 -2px 2px rgba(0, 0, 0, 0.95),
+    inset 7px 0 11px rgba(0, 0, 0, 0.18),
+    inset -7px 0 11px rgba(0, 0, 0, 0.18),
+    0 3px 6px rgba(0, 0, 0, 0.75);
+
+  color: #f0eadf;
+  font-family:
+    "Barlow Condensed",
+    "Arial Narrow",
+    Arial,
+    sans-serif;
+  font-size: clamp(2rem, 3.35vw, 3.5rem);
+  font-weight: 600;
+  font-stretch: condensed;
+  line-height: 0.82;
+  letter-spacing: 0.01em;
+  text-shadow:
+    0 2px 1px rgba(0, 0, 0, 0.95),
+    0 0 3px rgba(255, 255, 255, 0.08);
+
+  transform: scaleY(1.08);
+  transform-origin: center;
+}
+
+.flap-character::before {
+  top: 50%;
+  height: 2px;
+  background: #020303;
+  box-shadow:
+    0 -1px 0 rgba(255, 255, 255, 0.045),
+    0 1px 1px rgba(0, 0, 0, 1);
+}
+
+.flap-character::after {
+  background:
+    linear-gradient(
+      108deg,
+      rgba(255, 255, 255, 0.075),
+      transparent 24%,
+      transparent 70%,
+      rgba(0, 0, 0, 0.24)
+    );
+}

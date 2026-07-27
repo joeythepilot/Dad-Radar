@@ -2,113 +2,275 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>Dad Radar</title>
 
-  <link rel="stylesheet" href="./UI/style.css">
+  <link rel="stylesheet" href="./UI/styles.css">
 </head>
 
 <body>
-  <section class="startup-screen" id="startup-screen">
-    <p class="unit-label" id="unit-label">
-  FLIGHT OPERATIONS UNIT NO. 001
-</p>
+  <!-- Startup screen -->
+  <section
+    class="startup-screen"
+    id="startup-screen"
+  >
+    <p
+      class="unit-label"
+      id="unit-label"
+    >
+      FLIGHT OPERATIONS UNIT NO. 001
+    </p>
 
-    <h1 id="startup-app-name">DAD RADAR</h1>
+    <h1 id="startup-app-name">
+      DAD RADAR
+    </h1>
 
     <p class="status-message">
       INITIALIZING FLIGHT SYSTEMS...
     </p>
   </section>
 
-  <main class="dashboard" id="dashboard" hidden>
-    <header class="top-bar">
-      <div>
-        <p class="small-label" id="dashboard-app-name">DAD RADAR</p>
-        <h2>FLIGHT OPERATIONS</h2>
-      </div>
+  <!-- Main Dad Radar display -->
+  <main
+    class="dashboard"
+    id="dashboard"
+    hidden
+  >
+    <section class="panel-shell">
 
-      <div class="current-status">
-        <p class="small-label">CURRENT STATUS</p>
-        <p class="status-value" id="status-value">HOME</p>
-      </div>
-      <div class="clock-block">
-  <p class="small-label">CURRENT TIME</p>
-  <p class="clock-value" id="clock-value">--:--</p>
-  <span class="eta-zone">EASTERN TIME</span>
-</div>
-      <div class="eta-block">
-  <p class="small-label">ESTIMATED ARRIVAL</p>
-  <p class="eta-value" id="eta-value">--:--</p>
-  <span class="eta-zone" id="eta-zone">EASTERN TIME</span>
-</div>
-    </header>
+      <!-- Split-flap flight board -->
+      <section class="module flight-strip-module">
+        <div class="flight-strip-labels">
+          <span>FLIGHT</span>
+          <span>FROM</span>
+          <span>TO</span>
+          <span>STATUS</span>
+        </div>
 
-    <section class="flight-board">
-  <div class="flight-board-row" id="flight-board-flight" hidden>
-    <span class="flap-cell" id="flight-number">AA 1234</span>
-    <span class="flap-cell" id="flight-origin">ORD</span>
-    <span class="flap-arrow">→</span>
-    <span class="flap-cell" id="flight-destination">AVL</span>
-  </div>
+        <section class="flight-board">
+          <div
+            class="flight-board-row"
+            id="flight-board-flight"
+            hidden
+          >
+            <span
+              class="flap-cell"
+              id="flight-number"
+            >
+              AA 1234
+            </span>
 
-  <span id="flight-board-text">NO ACTIVE FLIGHT</span>
-</section>
+            <span
+              class="flap-cell"
+              id="flight-origin"
+            >
+              ORD
+            </span>
 
-    <section class="display-grid">
-      <article class="panel map-panel">
-        <p class="panel-label">MOVING MAP</p>
-        <div class="route-display">
-  <span class="route-airport" id="map-origin">ORD</span>
+            <span
+              class="flap-cell"
+              id="flight-destination"
+            >
+              AVL
+            </span>
 
-  <div class="route-line">
-    <span class="aircraft-marker">✈</span>
-  </div>
+            <span
+              class="flap-cell"
+              id="status-value"
+            >
+              EN ROUTE
+            </span>
+          </div>
 
-  <span class="route-airport" id="map-destination">AVL</span>
-</div>
-      </article>
+          <span id="flight-board-text">
+            NO ACTIVE FLIGHT
+          </span>
+        </section>
+      </section>
 
-      <article class="panel instrument-panel">
-        <p class="panel-label">FLIGHT DATA</p>
+      <!-- Destination and moving map -->
+      <section class="middle-row">
 
-        <div class="instrument-row">
-  <div class="instrument">
-    <span class="instrument-label">AIRSPEED</span>
-    <strong class="instrument-value" id="airspeed-value">---</strong>
-    <span class="instrument-unit">KT</span>
-  </div>
+        <article class="module destination-panel">
+          <p class="panel-label">
+            DESTINATION
+          </p>
 
-  <div class="instrument">
-    <span class="instrument-label">HEADING</span>
-    <strong class="instrument-value" id="heading-value">---</strong>
-    <span class="instrument-unit">DEG</span>
-  </div>
+          <div class="destination-content">
+            <strong id="destination-city">
+              ASHEVILLE
+            </strong>
 
-  <div class="instrument">
-    <span class="instrument-label">ALTIMETER</span>
-    <strong class="instrument-value" id="altitude-value">-----</strong>
-    <span class="instrument-unit">FT</span>
-  </div>
-</div>
-      </article>
+            <span id="destination-airport">
+              AVL
+            </span>
+          </div>
+        </article>
 
-      <article class="panel destination-panel">
-  <p class="panel-label">DESTINATION</p>
+        <article class="module map-panel">
+          <div class="map-information">
+            <div>
+              <p class="small-label">
+                ROUTE PROGRESS
+              </p>
+            </div>
 
-  <div class="destination-content">
-    <strong id="destination-city">ASHEVILLE</strong>
-    <span id="destination-airport">AVL</span>
-  </div>
-</article>
+            <div class="eta-block">
+              <p class="small-label">
+                ESTIMATED ARRIVAL
+              </p>
+
+              <p
+                class="eta-value"
+                id="eta-value"
+              >
+                --:--
+              </p>
+
+              <span
+                class="eta-zone"
+                id="eta-zone"
+              >
+                EASTERN TIME
+              </span>
+            </div>
+          </div>
+
+          <div class="route-display">
+            <span
+              class="route-airport"
+              id="map-origin"
+            >
+              ORD
+            </span>
+
+            <div class="route-line">
+              <span class="aircraft-marker">
+                ✈
+              </span>
+            </div>
+
+            <span
+              class="route-airport"
+              id="map-destination"
+            >
+              AVL
+            </span>
+          </div>
+        </article>
+
+      </section>
+
+      <!-- Identity, instruments, and clock -->
+      <section class="bottom-row">
+
+        <article class="module identity-panel">
+          <p class="identity-name">
+            CAPTAIN JOEY
+          </p>
+
+          <p
+            class="identity-unit"
+            id="dashboard-app-name"
+          >
+            DAD RADAR
+          </p>
+        </article>
+
+        <article class="module instrument-panel">
+          <div class="instrument-row">
+
+            <div class="instrument">
+              <span class="instrument-label">
+                AIRSPEED
+              </span>
+
+              <strong
+                class="instrument-value"
+                id="airspeed-value"
+              >
+                ---
+              </strong>
+
+              <span class="instrument-unit">
+                KT
+              </span>
+            </div>
+
+            <div class="instrument">
+              <span class="instrument-label">
+                HEADING
+              </span>
+
+              <strong
+                class="instrument-value"
+                id="heading-value"
+              >
+                ---
+              </strong>
+
+              <span class="instrument-unit">
+                DEG
+              </span>
+            </div>
+
+            <div class="instrument">
+              <span class="instrument-label">
+                ALTIMETER
+              </span>
+
+              <strong
+                class="instrument-value"
+                id="altitude-value"
+              >
+                -----
+              </strong>
+
+              <span class="instrument-unit">
+                FT
+              </span>
+            </div>
+
+          </div>
+        </article>
+
+        <article class="module control-panel">
+          <p class="small-label">
+            CURRENT TIME
+          </p>
+
+          <p
+            class="clock-value"
+            id="clock-value"
+          >
+            --:--
+          </p>
+
+          <span class="eta-zone">
+            EASTERN TIME
+          </span>
+
+          <div class="system-indicator">
+            <span class="indicator-light"></span>
+            <span>ONLINE</span>
+          </div>
+        </article>
+
+      </section>
+
     </section>
   </main>
 
-  <script src="config/settings.js"></script>
-<script src="models/states.js"></script>
-<script src="App/state-engine.js"></script>
-<script src="services/mock-flight-service.js"></script>
-<script src="App/main.js"></script>
+  <!-- Dad Radar scripts -->
+  <script src="./config/settings.js"></script>
+  <script src="./models/states.js"></script>
+  <script src="./App/state-engine.js"></script>
+  <script src="./services/mock-flight-service.js"></script>
+  <script src="./App/main.js"></script>
 </body>
 </html>
