@@ -86,6 +86,11 @@ const headingCard =
 const altitudeNeedle =
   document.getElementById("altitude-needle");
 
+const altitudeThousandsNeedle =
+  document.getElementById(
+    "altitude-thousands-needle"
+  );
+
 const mapPanel =
   document.querySelector(".map-panel");
 
@@ -128,7 +133,8 @@ function createFlapHalf(
   character,
   extraClasses = ""
 ) {
-  const half = document.createElement("span");
+  const half =
+    document.createElement("span");
 
   half.className = [
     "flap-half",
@@ -176,9 +182,11 @@ function createFlapCharacter(
   const cell =
     document.createElement("span");
 
-  cell.className = "flap-character";
+  cell.className =
+    "flap-character";
 
-  cell.dataset.value = character;
+  cell.dataset.value =
+    character;
 
   cell.setAttribute(
     "aria-hidden",
@@ -333,10 +341,6 @@ function flipFlapOnce(
       currentCharacter
     );
 
-    /*
-      The new lower character waits
-      underneath the falling top flap.
-    */
     setFlapHalfCharacter(
       staticBottom,
       nextCharacter
@@ -361,10 +365,6 @@ function flipFlapOnce(
       movingBottom
     );
 
-    /*
-      Forces the browser to establish
-      the starting animation positions.
-    */
     void cell.offsetWidth;
 
     cell.classList.add(
@@ -409,10 +409,6 @@ function flipFlapOnce(
       { once: true }
     );
 
-    /*
-      Fallback in case the browser
-      interrupts animationend.
-    */
     window.setTimeout(
       finishAnimation,
       FLAP_ANIMATION_TIMEOUT
@@ -459,10 +455,6 @@ function queueFlapAnimation(
       for (
         const character of sequence
       ) {
-        /*
-          The target may change while
-          a previous sequence is running.
-        */
         if (
           targetCharacter !==
           cell._targetValue
@@ -479,10 +471,6 @@ function queueFlapAnimation(
 
     cell._animationRunning = false;
 
-    /*
-      Catch a target change that happened
-      at the exact end of the loop.
-    */
     if (
       (cell.dataset.value ?? " ") !==
       cell._targetValue
@@ -507,10 +495,6 @@ function prepareFlapContainer(
     return;
   }
 
-  /*
-    Upgrade the old plain-text container
-    into animated mechanical cells.
-  */
   if (
     container.dataset
       .animatedFlaps !== "true"
@@ -561,7 +545,8 @@ function renderFlapText(
 
   container.setAttribute(
     "aria-label",
-    normalizedText.trim() || "Blank"
+    normalizedText.trim() ||
+      "Blank"
   );
 
   Array
@@ -589,10 +574,6 @@ function formatFlightNumber(
       .toUpperCase()
       .trim();
 
-  /*
-    AA 1234 becomes 1234, matching
-    a traditional airport flight board.
-  */
   const numberMatch =
     flightText.match(/(\d{1,4})$/);
 
@@ -625,11 +606,12 @@ function formatBoardStatus(status) {
     OFFLINE: "OFFLINE"
   };
 
-  const normalizedStatus = String(status ?? "OFFLINE")
-    .toUpperCase()
-    .replace(/_/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+  const normalizedStatus =
+    String(status ?? "OFFLINE")
+      .toUpperCase()
+      .replace(/_/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
 
   const boardLabel =
     statusLabels[normalizedStatus] ??
@@ -684,24 +666,103 @@ function mapRange(
 }
 
 
+/* ---------------------------------------------------------
+   Mechanical heading indicator
+   --------------------------------------------------------- */
+
+let previousHeading = null;
+let accumulatedHeading = 0;
+
+
+function normalizeHeading(rawHeading) {
+  return (
+    (
+      Number(rawHeading) || 0
+    ) % 360 + 360
+  ) % 360;
+}
+
+
+function updateHeadingIndicator(
+  rawHeading
+) {
+  const heading =
+    normalizeHeading(rawHeading);
+
+  if (previousHeading === null) {
+    accumulatedHeading =
+      heading;
+  } else {
+    const headingChange =
+      (
+        heading -
+        previousHeading +
+        540
+      ) % 360 - 180;
+
+    accumulatedHeading +=
+      headingChange;
+  }
+
+  if (headingCard) {
+    headingCard.style.transform =
+      `rotate(${-accumulatedHeading}deg)`;
+  }
+
+  if (headingValue) {
+    headingValue.textContent =
+      String(
+        Math.round(heading) % 360
+      ).padStart(3, "0");
+  }
+
+  previousHeading =
+    heading;
+}
+
+
+function resetHeadingIndicator() {
+  previousHeading = null;
+  accumulatedHeading = 0;
+
+  if (headingCard) {
+    headingCard.style.transform =
+      "rotate(0deg)";
+  }
+
+  if (headingValue) {
+    headingValue.textContent =
+      "---";
+  }
+}
+
+
+/* ---------------------------------------------------------
+   Instrument needles
+   --------------------------------------------------------- */
+
 function updateInstrumentNeedles(
   flight
 ) {
   if (!flight) {
     if (airspeedNeedle) {
       airspeedNeedle.style.transform =
-        "translateX(-50%) rotate(0deg)";
-    }
-
-    if (headingCard) {
-      headingCard.style.transform =
         "rotate(0deg)";
     }
 
     if (altitudeNeedle) {
       altitudeNeedle.style.transform =
-        "translateX(-50%) rotate(0deg)";
+        "rotate(0deg)";
     }
+
+    if (altitudeThousandsNeedle) {
+      altitudeThousandsNeedle
+        .style
+        .transform =
+        "rotate(0deg)";
+    }
+
+    resetHeadingIndicator();
 
     return;
   }
@@ -713,22 +774,12 @@ function updateInstrumentNeedles(
       700
     );
 
-  const heading =
-    (
-      Number(flight.heading) || 0
-    ) % 360;
-
   const altitude =
     Math.max(
       Number(flight.altitude) || 0,
       0
     );
 
-  /*
-    Airspeed face:
-    0 to 700 knots maps around
-    approximately 315 degrees.
-  */
   const airspeedAngle =
     mapRange(
       airspeed,
@@ -739,28 +790,43 @@ function updateInstrumentNeedles(
     );
 
   /*
-    Altimeter long hand makes one
-    rotation per 10,000 feet.
+    Long hand:
+    one revolution every 1,000 feet.
   */
-  const altitudeAngle =
+  const altitudeHundredsAngle =
+    (
+      altitude % 1000
+    ) / 1000 * 360;
+
+  /*
+    Short hand:
+    one revolution every 10,000 feet.
+  */
+  const altitudeThousandsAngle =
     (
       altitude % 10000
     ) / 10000 * 360;
 
   if (airspeedNeedle) {
     airspeedNeedle.style.transform =
-      `translateX(-50%) rotate(${airspeedAngle}deg)`;
-  }
-
-  if (headingCard) {
-    headingCard.style.transform =
-      `rotate(${-heading}deg)`;
+      `rotate(${airspeedAngle}deg)`;
   }
 
   if (altitudeNeedle) {
     altitudeNeedle.style.transform =
-      `translateX(-50%) rotate(${altitudeAngle}deg)`;
+      `rotate(${altitudeHundredsAngle}deg)`;
   }
+
+  if (altitudeThousandsNeedle) {
+    altitudeThousandsNeedle
+      .style
+      .transform =
+      `rotate(${altitudeThousandsAngle}deg)`;
+  }
+
+  updateHeadingIndicator(
+    flight.heading
+  );
 }
 
 
@@ -777,8 +843,15 @@ function updateDashboard(state) {
     state.flight ?? null;
 
   if (flight) {
-    flightBoardFlight.hidden = false;
-    flightBoardText.hidden = true;
+    if (flightBoardFlight) {
+      flightBoardFlight.hidden =
+        false;
+    }
+
+    if (flightBoardText) {
+      flightBoardText.hidden =
+        true;
+    }
 
     renderFlapText(
       flightNumber,
@@ -801,48 +874,72 @@ function updateDashboard(state) {
     );
 
     renderFlapText(
-  statusValue,
-  formatBoardStatus(
-    state.status
-  ),
-  STATUS_FLAP_COUNT
-);
+      statusValue,
+      formatBoardStatus(
+        state.status
+      ),
+      STATUS_FLAP_COUNT
+    );
 
-    destinationCity.textContent =
-      flight.destinationCity ??
-      flight.destination ??
-      "---";
+    if (destinationCity) {
+      destinationCity.textContent =
+        flight.destinationCity ??
+        flight.destination ??
+        "---";
+    }
 
-    destinationAirport.textContent =
-      flight.destination ?? "---";
+    if (destinationAirport) {
+      destinationAirport.textContent =
+        flight.destination ?? "---";
+    }
 
-    mapOrigin.textContent =
-      flight.origin ?? "---";
+    if (mapOrigin) {
+      mapOrigin.textContent =
+        flight.origin ?? "---";
+    }
 
-    mapDestination.textContent =
-      flight.destination ?? "---";
+    if (mapDestination) {
+      mapDestination.textContent =
+        flight.destination ?? "---";
+    }
 
-    etaValue.textContent =
-      flight.eta ?? "--:--";
+    if (etaValue) {
+      etaValue.textContent =
+        flight.eta ?? "--:--";
+    }
 
-    airspeedValue.textContent =
-      String(
+    if (airspeedValue) {
+      airspeedValue.textContent =
+        String(
+          Math.round(
+            Number(
+              flight.airspeed
+            ) || 0
+          )
+        );
+    }
+
+    if (headingValue) {
+      headingValue.textContent =
+        String(
+          Math.round(
+            Number(
+              flight.heading
+            ) || 0
+          )
+        ).padStart(3, "0");
+    }
+
+    if (altitudeValue) {
+      altitudeValue.textContent =
         Math.round(
-          Number(flight.airspeed) || 0
-        )
-      );
-
-    headingValue.textContent =
-      String(
-        Math.round(
-          Number(flight.heading) || 0
-        )
-      ).padStart(3, "0");
-
-    altitudeValue.textContent =
-      Math.round(
-        Number(flight.altitude) || 0
-      ).toLocaleString("en-US");
+          Number(
+            flight.altitude
+          ) || 0
+        ).toLocaleString(
+          "en-US"
+        );
+    }
 
     const progress =
       clamp(
@@ -866,42 +963,72 @@ function updateDashboard(state) {
     }
 
     if (mapPanel) {
-      mapPanel.hidden = false;
+      mapPanel.hidden =
+        false;
     }
 
     if (destinationPanel) {
-      destinationPanel.hidden = false;
+      destinationPanel.hidden =
+        false;
     }
 
     if (instrumentPanel) {
-      instrumentPanel.hidden = false;
+      instrumentPanel.hidden =
+        false;
     }
 
-    updateInstrumentNeedles(flight);
+    updateInstrumentNeedles(
+      flight
+    );
   } else {
-    flightBoardFlight.hidden = true;
-    flightBoardText.hidden = false;
+    if (flightBoardFlight) {
+      flightBoardFlight.hidden =
+        true;
+    }
 
-    flightBoardText.textContent =
-      state.message ??
-      "NO ACTIVE FLIGHT";
+    if (flightBoardText) {
+      flightBoardText.hidden =
+        false;
+
+      flightBoardText.textContent =
+        state.message ??
+        "NO ACTIVE FLIGHT";
+    }
 
     if (mapPanel) {
-      mapPanel.hidden = true;
+      mapPanel.hidden =
+        true;
     }
 
     if (destinationPanel) {
-      destinationPanel.hidden = true;
+      destinationPanel.hidden =
+        true;
     }
 
     if (instrumentPanel) {
-      instrumentPanel.hidden = true;
+      instrumentPanel.hidden =
+        true;
     }
 
-    airspeedValue.textContent = "---";
-    headingValue.textContent = "---";
-    altitudeValue.textContent = "-----";
-    etaValue.textContent = "--:--";
+    if (airspeedValue) {
+      airspeedValue.textContent =
+        "---";
+    }
+
+    if (headingValue) {
+      headingValue.textContent =
+        "---";
+    }
+
+    if (altitudeValue) {
+      altitudeValue.textContent =
+        "-----";
+    }
+
+    if (etaValue) {
+      etaValue.textContent =
+        "--:--";
+    }
 
     updateInstrumentNeedles(null);
   }
@@ -966,10 +1093,6 @@ function handleKeyboardShortcut(event) {
     return;
   }
 
-  /*
-    Manual keyboard control should
-    stop the automatic mock sequence.
-  */
   if (
     typeof stopMockFlightService ===
     "function"
@@ -1007,7 +1130,9 @@ function startDashboardSequence() {
         .displayTimeZoneLabel;
   }
 
-  updateDashboard(dadRadarState);
+  updateDashboard(
+    dadRadarState
+  );
 
   updateClock();
 
@@ -1026,8 +1151,15 @@ function startDashboardSequence() {
     .systemsOnlineDelayMs);
 
   window.setTimeout(() => {
-    startupScreen.hidden = true;
-    dashboard.hidden = false;
+    if (startupScreen) {
+      startupScreen.hidden =
+        true;
+    }
+
+    if (dashboard) {
+      dashboard.hidden =
+        false;
+    }
   }, dadRadarSettings
     .startup
     .dashboardDelayMs);

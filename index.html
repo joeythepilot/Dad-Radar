@@ -186,66 +186,150 @@
   <div class="instrument-row">
 
     <div class="instrument airspeed-instrument">
-      <div class="gauge-face">
-        <span class="gauge-mark mark-0">0</span>
-        <span class="gauge-mark mark-45">100</span>
-        <span class="gauge-mark mark-90">200</span>
-        <span class="gauge-mark mark-135">300</span>
-        <span class="gauge-mark mark-180">400</span>
-        <span class="gauge-mark mark-225">500</span>
-        <span class="gauge-mark mark-270">600</span>
-        <span class="gauge-mark mark-315">700</span>
 
-        <div class="gauge-needle" id="airspeed-needle"></div>
-        <div class="gauge-hub"></div>
+  <!-- Stationary face, markings, bezel, and screws -->
+  <img
+    class="airspeed-layer airspeed-face-body"
+    src="./assets/instruments/airspeed/airspeed-face-body.png"
+    alt=""
+    aria-hidden="true"
+  >
 
-        <div class="gauge-readout">
-          <span class="instrument-label">AIRSPEED</span>
-          <strong class="instrument-value" id="airspeed-value">---</strong>
-          <span class="instrument-unit">KT</span>
-        </div>
-      </div>
-    </div>
+  <!-- Live rotating needle -->
+  <img
+    class="airspeed-layer airspeed-needle-layer"
+    id="airspeed-needle"
+    src="./assets/instruments/airspeed/airspeed-needle.png"
+    alt=""
+    aria-hidden="true"
+  >
+
+  <!-- Stationary glass reflection -->
+  <img
+    class="airspeed-layer airspeed-glass-overlay"
+    src="./assets/instruments/airspeed/airspeed-glass-overlay.png"
+    alt=""
+    aria-hidden="true"
+  >
+
+  <!-- Live numerical value -->
+  <div class="gauge-readout airspeed-readout">
+    <span class="instrument-label">
+      AIRSPEED
+    </span>
+
+    <strong
+      class="instrument-value"
+      id="airspeed-value"
+    >
+      000
+    </strong>
+
+    <span class="instrument-unit">
+      KT
+    </span>
+  </div>
+
+</div>
 
     <div class="instrument heading-instrument">
-      <div class="gauge-face">
-        <span class="compass-mark compass-n">N</span>
-        <span class="compass-mark compass-e">E</span>
-        <span class="compass-mark compass-s">S</span>
-        <span class="compass-mark compass-w">W</span>
 
-        <div class="heading-card" id="heading-card">
-          <div class="heading-arrow">▲</div>
-        </div>
+  <!-- Rotating layer -->
+  <img
+    class="heading-layer heading-compass-card"
+    id="heading-card"
+    src="./assets/instruments/heading/heading-compass-card.png"
+    alt=""
+    aria-hidden="true"
+  >
 
-        <div class="gauge-readout">
-          <span class="instrument-label">HEADING</span>
-          <strong class="instrument-value" id="heading-value">---</strong>
-          <span class="instrument-unit">DEG</span>
-        </div>
-      </div>
-    </div>
+  <!-- Stationary instrument case and bezel -->
+  <img
+    class="heading-layer heading-bezel-body"
+    src="./assets/instruments/heading/heading-bezel-body.png"
+    alt=""
+    aria-hidden="true"
+  >
+
+  <!-- Stationary airplane, lubber line, and glass -->
+  <img
+    class="heading-layer heading-glass-overlay"
+    src="./assets/instruments/heading/heading-airplane-glass-overlay.png"
+    alt=""
+    aria-hidden="true"
+  >
+
+  <!-- Live data readout -->
+  <div class="gauge-readout heading-readout">
+    <span class="instrument-label">
+      HEADING
+    </span>
+
+    <strong
+      class="instrument-value"
+      id="heading-value"
+    >
+      000
+    </strong>
+
+    <span class="instrument-unit">
+      DEG
+    </span>
+  </div>
+
+</div>
 
     <div class="instrument altimeter-instrument">
-      <div class="gauge-face">
-        <span class="gauge-mark mark-0">0</span>
-        <span class="gauge-mark mark-45">1</span>
-        <span class="gauge-mark mark-90">2</span>
-        <span class="gauge-mark mark-135">3</span>
-        <span class="gauge-mark mark-180">4</span>
-        <span class="gauge-mark mark-225">5</span>
-        <span class="gauge-mark mark-270">6</span>
-        <span class="gauge-mark mark-315">7</span>
 
-        <div class="gauge-needle altimeter-needle" id="altitude-needle"></div>
-        <div class="gauge-hub"></div>
+  <!-- Stationary altimeter face -->
+  <img
+    class="altimeter-layer altimeter-face-body"
+    src="./assets/instruments/altimeter/altimeter-face-body.png"
+    alt=""
+    aria-hidden="true"
+  >
 
-        <div class="gauge-readout">
-          <span class="instrument-label">ALTIMETER</span>
-          <strong class="instrument-value" id="altitude-value">-----</strong>
-          <span class="instrument-unit">FT</span>
-        </div>
-      </div>
+  <!-- Short hand: thousands of feet -->
+  <img
+    class="altimeter-layer altimeter-thousands-needle-layer"
+    id="altitude-thousands-needle"
+    src="./assets/instruments/altimeter/altimeter-thousands-needle.png"
+    alt=""
+    aria-hidden="true"
+  >
+
+  <!-- Long hand: hundreds of feet -->
+  <img
+    class="altimeter-layer altimeter-needle-layer"
+    id="altitude-needle"
+    src="./assets/instruments/altimeter/altimeter-needle.png"
+    alt=""
+    aria-hidden="true"
+  >
+
+  <!-- Digital altitude readout -->
+  <div class="gauge-readout altimeter-readout">
+
+    <span class="instrument-label">
+      ALTITUDE
+    </span>
+
+    <strong
+      class="instrument-value"
+      id="altitude-value"
+    >
+      -----
+    </strong>
+
+    <span class="instrument-unit">
+      FT
+    </span>
+
+  </div>
+
+</div>
+
+</div>
     </div>
 
   </div>

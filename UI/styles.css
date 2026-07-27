@@ -1,5 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&display=swap");
-:root {
+@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Roboto+Slab:wght@500;600&display=swap");:root {
   color-scheme: dark;
   font-family: Arial, Helvetica, sans-serif;
 
@@ -1689,4 +1688,416 @@ h1 {
     animation-duration: 1ms;
     animation-delay: 0ms;
   }
+}
+/* Vintage operations-board labels */
+
+.flight-strip-labels,
+.panel-label,
+.small-label {
+  font-family:
+    "Roboto Slab",
+    Georgia,
+    serif;
+
+  font-weight: 600;
+  font-size: clamp(0.58rem, 0.72vw, 0.76rem);
+
+  letter-spacing: 0.11rem;
+  text-transform: uppercase;
+
+  color: #bda578;
+
+  text-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.95),
+    0 0 3px rgba(189, 165, 120, 0.08);
+}
+
+.flight-strip-labels {
+  padding-bottom: 0.6rem;
+}
+/* =========================================================
+   Photoreal layered heading indicator
+   ========================================================= */
+
+.heading-instrument {
+  position: relative !important;
+  isolation: isolate;
+
+  width: min(100%, 175px) !important;
+  aspect-ratio: 1 !important;
+
+  display: block !important;
+  overflow: visible !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+}
+
+/*
+  Disable the CSS-generated gauge surfaces.
+  The PNG layers now provide the body, glass, and markings.
+*/
+
+.heading-instrument::before,
+.heading-instrument::after {
+  content: none !important;
+}
+
+/* Every PNG shares the same canvas and alignment */
+
+.heading-layer {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  display: block;
+  object-fit: contain;
+
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Rotates beneath all stationary components */
+
+.heading-compass-card {
+  z-index: 1;
+
+  transform: rotate(0deg);
+  transform-origin: 50% 50%;
+
+  transition:
+    transform
+    700ms
+    cubic-bezier(0.18, 0.72, 0.24, 1);
+
+  will-change: transform;
+}
+
+/* The case and bezel remain fixed */
+
+.heading-bezel-body {
+  z-index: 2;
+}
+
+/* Airplane, lubber line, and reflection remain fixed */
+
+.heading-glass-overlay {
+  z-index: 3;
+}
+
+/* Keep the digital heading value above the image layers */
+
+.heading-readout {
+  z-index: 5 !important;
+
+  right: 28% !important;
+  bottom: 5% !important;
+  left: 28% !important;
+
+  padding: 0.12rem 0.2rem !important;
+
+  background:
+    rgba(2, 3, 3, 0.88) !important;
+
+  border:
+    1px solid
+    rgba(190, 169, 126, 0.26) !important;
+
+  backdrop-filter: blur(1px);
+}
+
+.heading-readout .instrument-label {
+  font-size:
+    clamp(0.29rem, 0.36vw, 0.38rem) !important;
+}
+
+.heading-readout .instrument-value {
+  font-size:
+    clamp(0.72rem, 0.95vw, 1rem) !important;
+}
+
+.heading-readout .instrument-unit {
+  font-size:
+    clamp(0.26rem, 0.32vw, 0.34rem) !important;
+}
+
+/* Remove remnants of the previous CSS heading indicator */
+
+.heading-instrument .gauge-face,
+.heading-instrument .compass-mark,
+.heading-instrument .heading-arrow,
+.heading-instrument .heading-fixed-overlay,
+.heading-instrument .heading-card-window {
+  display: none !important;
+}
+
+/* =========================================================
+   Photoreal layered airspeed indicator
+   ========================================================= */
+
+.airspeed-instrument {
+  position: relative !important;
+  isolation: isolate;
+
+  width: min(100%, 175px) !important;
+  aspect-ratio: 1 !important;
+
+  display: block !important;
+  overflow: visible !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Remove the old CSS-generated instrument face */
+
+.airspeed-instrument::before,
+.airspeed-instrument::after {
+  content: none !important;
+}
+
+/* All three assets share the same canvas */
+
+.airspeed-layer {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  display: block;
+  object-fit: contain;
+
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Stationary face and bezel */
+
+.airspeed-face-body {
+  z-index: 1;
+}
+
+/* Needle rotates around the exact center of the image */
+
+.airspeed-needle-layer {
+  z-index: 2;
+
+  transform: rotate(0deg);
+  transform-origin: 50% 50%;
+
+  transition:
+    transform
+    650ms
+    cubic-bezier(0.18, 0.72, 0.24, 1);
+
+  will-change: transform;
+}
+
+/* Glass remains aligned with the stationary instrument */
+
+.airspeed-glass-overlay {
+  z-index: 3;
+
+  /*
+    Keep the reflection restrained.
+    This changes intensity without changing alignment.
+  */
+  opacity: 0.28;
+}
+
+/* Live numerical readout */
+
+.airspeed-readout {
+  z-index: 5 !important;
+
+  right: 29% !important;
+  bottom: 7% !important;
+  left: 29% !important;
+
+  padding: 0.1rem 0.18rem !important;
+
+  border:
+    1px solid
+    rgba(190, 169, 126, 0.24) !important;
+
+  background:
+    rgba(2, 3, 3, 0.88) !important;
+
+  backdrop-filter: blur(1px);
+}
+
+.airspeed-readout .instrument-label {
+  font-size:
+    clamp(0.28rem, 0.35vw, 0.37rem) !important;
+}
+
+.airspeed-readout .instrument-value {
+  font-size:
+    clamp(0.72rem, 0.95vw, 1rem) !important;
+}
+
+.airspeed-readout .instrument-unit {
+  font-size:
+    clamp(0.25rem, 0.31vw, 0.33rem) !important;
+}
+
+/* Hide remnants of the old CSS instrument */
+
+.airspeed-instrument .gauge-face,
+.airspeed-instrument .gauge-mark,
+.airspeed-instrument .gauge-hub {
+  display: none !important;
+}
+/* =========================================================
+   Photoreal layered altimeter
+   ========================================================= */
+
+.altimeter-instrument {
+  position: relative !important;
+  isolation: isolate;
+
+  width: min(100%, 175px) !important;
+  aspect-ratio: 1 !important;
+
+  display: block !important;
+  overflow: visible !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Remove the previous CSS-generated instrument surface */
+
+.altimeter-instrument::before,
+.altimeter-instrument::after {
+  content: none !important;
+}
+
+/* Shared image-layer sizing */
+
+.altimeter-layer {
+  position: absolute;
+  top: 0;
+
+  width: 100%;
+  height: 100%;
+
+  display: block;
+  object-fit: contain;
+
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Stationary face */
+
+.altimeter-face-body {
+  z-index: 1;
+  left: 0;
+}
+
+/*
+  The existing JavaScript includes translateX(-50%),
+  so the needle is anchored from left: 50%.
+*/
+
+/* =========================================================
+   Two-hand altimeter needle layers
+   ========================================================= */
+
+.altimeter-thousands-needle-layer,
+.altimeter-needle-layer {
+  position: absolute !important;
+  inset: 0 !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  display: block !important;
+  opacity: 1 !important;
+
+  object-fit: contain !important;
+
+  transform: rotate(0deg);
+  transform-origin: 50% 50% !important;
+
+  transition:
+    transform
+    650ms
+    cubic-bezier(0.18, 0.72, 0.24, 1);
+
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* Short thousands hand underneath */
+
+.altimeter-thousands-needle-layer {
+  z-index: 2 !important;
+}
+
+/* Long hundreds hand and center hub above */
+
+.altimeter-needle-layer {
+  z-index: 3 !important;
+}
+/* Live numerical altitude */
+
+.altimeter-readout {
+  z-index: 5 !important;
+
+  right: 27% !important;
+  bottom: 6% !important;
+  left: 27% !important;
+
+  padding: 0.1rem 0.18rem !important;
+
+  border:
+    1px solid
+    rgba(190, 169, 126, 0.24) !important;
+
+  background:
+    rgba(2, 3, 3, 0.88) !important;
+
+  backdrop-filter: blur(1px);
+}
+
+.altimeter-readout .instrument-label {
+  font-size:
+    clamp(0.28rem, 0.35vw, 0.37rem) !important;
+}
+
+.altimeter-readout .instrument-value {
+  font-size:
+    clamp(0.68rem, 0.9vw, 0.96rem) !important;
+}
+
+.altimeter-readout .instrument-unit {
+  font-size:
+    clamp(0.25rem, 0.31vw, 0.33rem) !important;
+}
+
+/* Hide remnants of the older CSS altimeter */
+
+.altimeter-instrument .gauge-face,
+.altimeter-instrument .gauge-mark,
+.altimeter-instrument .gauge-hub {
+  display: none !important;
 }
