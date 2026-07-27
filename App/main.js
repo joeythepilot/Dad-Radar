@@ -14,7 +14,7 @@ const etaValue = document.querySelector("#eta-value");
 const mapOrigin = document.querySelector("#map-origin");
 const mapDestination = document.querySelector("#map-destination");
 const aircraftMarker = document.querySelector(".aircraft-marker");
-const activeMode = "APPROACH";
+const activeMode = "ARRIVED";
 const flightBoard = document.querySelector(".flight-board");
 const mapPanel = document.querySelector(".map-panel");
 const instrumentPanel = document.querySelector(".instrument-panel");
@@ -93,6 +93,20 @@ TAXI_OUT: {
     altitude: 8500,
     progress: 92,
     eta: "7:42 PM"
+  }
+},
+ARRIVED: {
+  status: "ARRIVED",
+  flight: {
+    number: "AA 1234",
+    origin: "ORD",
+    destination: "AVL",
+    destinationCity: "ASHEVILLE",
+    airspeed: 0,
+    heading: 0,
+    altitude: 2165,
+    progress: 100,
+    eta: "ARRIVED"
   }
 },
 };
