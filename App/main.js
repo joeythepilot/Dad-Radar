@@ -14,7 +14,7 @@ const etaValue = document.querySelector("#eta-value");
 const mapOrigin = document.querySelector("#map-origin");
 const mapDestination = document.querySelector("#map-destination");
 const aircraftMarker = document.querySelector(".aircraft-marker");
-const activeMode = "ARRIVED";
+const activeMode = "LAYOVER";
 const flightBoard = document.querySelector(".flight-board");
 const mapPanel = document.querySelector(".map-panel");
 const instrumentPanel = document.querySelector(".instrument-panel");
@@ -108,6 +108,10 @@ ARRIVED: {
     progress: 100,
     eta: "ARRIVED"
   }
+},
+LAYOVER: {
+  status: "LAYOVER",
+  flight: null
 },
 };
 
