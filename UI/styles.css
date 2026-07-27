@@ -917,3 +917,776 @@ h1 {
       rgba(0, 0, 0, 0.24)
     );
 }
+/* Realistic aviation instrument faces */
+
+.instrument {
+  position: relative;
+  width: min(100%, 175px);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  overflow: visible;
+
+  border: 7px solid #111314;
+  border-radius: 50%;
+  outline: 2px solid #877457;
+
+  background:
+    radial-gradient(
+      circle at 50% 46%,
+      #24282b 0%,
+      #111416 58%,
+      #050607 82%,
+      #010202 100%
+    );
+
+  box-shadow:
+    inset 0 0 28px rgba(0, 0, 0, 0.92),
+    inset 0 2px 3px rgba(255, 255, 255, 0.08),
+    0 4px 12px rgba(0, 0, 0, 0.78);
+}
+
+.instrument::before {
+  content: "";
+  position: absolute;
+  inset: 5%;
+  z-index: 1;
+  border: 1px solid rgba(228, 221, 204, 0.14);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.instrument::after {
+  content: "";
+  position: absolute;
+  z-index: 10;
+  top: 5%;
+  right: 14%;
+  left: 14%;
+  height: 32%;
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.12),
+      rgba(255, 255, 255, 0.025) 48%,
+      transparent 100%
+    );
+
+  transform: rotate(-8deg);
+  pointer-events: none;
+}
+
+.gauge-face {
+  position: relative;
+  width: 88%;
+  height: 88%;
+  border-radius: 50%;
+
+  background:
+    repeating-conic-gradient(
+      from -1deg,
+      rgba(238, 233, 219, 0.78) 0deg 0.8deg,
+      transparent 0.8deg 9deg
+    ),
+    radial-gradient(
+      circle,
+      transparent 0%,
+      transparent 71%,
+      rgba(238, 233, 219, 0.12) 72%,
+      transparent 73%
+    ),
+    radial-gradient(circle at center, #191c1e 0%, #090b0c 76%, #020303 100%);
+
+  box-shadow:
+    inset 0 0 20px rgba(0, 0, 0, 0.88);
+}
+
+/* Number positions around the circular dial */
+
+.gauge-mark {
+  position: absolute;
+  z-index: 4;
+  color: #e6dfcf;
+  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+  font-size: clamp(0.58rem, 0.8vw, 0.82rem);
+  font-weight: 600;
+  line-height: 1;
+  text-shadow: 0 1px 2px #000;
+}
+
+.mark-0 {
+  top: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.mark-45 {
+  top: 20%;
+  right: 15%;
+}
+
+.mark-90 {
+  top: 50%;
+  right: 7%;
+  transform: translateY(-50%);
+}
+
+.mark-135 {
+  right: 15%;
+  bottom: 20%;
+}
+
+.mark-180 {
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.mark-225 {
+  bottom: 20%;
+  left: 15%;
+}
+
+.mark-270 {
+  top: 50%;
+  left: 7%;
+  transform: translateY(-50%);
+}
+
+.mark-315 {
+  top: 20%;
+  left: 15%;
+}
+
+/* Needles */
+
+.gauge-needle {
+  position: absolute;
+  z-index: 6;
+  top: 16%;
+  left: 50%;
+  width: 3px;
+  height: 38%;
+
+  border-radius: 3px 3px 1px 1px;
+  background:
+    linear-gradient(
+      to right,
+      #d5c8aa 0%,
+      #f4ead2 45%,
+      #8f8168 100%
+    );
+
+  box-shadow:
+    0 0 3px rgba(255, 244, 216, 0.32),
+    1px 2px 2px rgba(0, 0, 0, 0.9);
+
+  transform: translateX(-50%) rotate(45deg);
+  transform-origin: 50% 88%;
+  transition: transform 450ms ease-out;
+}
+
+.altimeter-needle {
+  height: 40%;
+  background:
+    linear-gradient(
+      to right,
+      #d8d1c2,
+      #ffffff 48%,
+      #8d877b
+    );
+
+  transform: translateX(-50%) rotate(120deg);
+}
+
+.gauge-hub {
+  position: absolute;
+  z-index: 8;
+  top: 50%;
+  left: 50%;
+  width: 13%;
+  aspect-ratio: 1;
+
+  border: 1px solid #171717;
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      #c6c0b3,
+      #575652 38%,
+      #181919 72%
+    );
+
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.9);
+
+  transform: translate(-50%, -50%);
+}
+
+/* Digital readouts inside each instrument */
+
+.gauge-readout {
+  position: absolute;
+  z-index: 9;
+  right: 19%;
+  bottom: 18%;
+  left: 19%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.08rem;
+
+  padding: 0.18rem 0.25rem;
+  border: 1px solid rgba(197, 181, 148, 0.26);
+  border-radius: 2px;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(5, 7, 8, 0.9),
+      rgba(0, 0, 0, 0.98)
+    );
+
+  box-shadow:
+    inset 0 0 5px rgba(0, 0, 0, 0.9),
+    0 1px 2px rgba(255, 255, 255, 0.03);
+}
+
+.gauge-readout .instrument-label {
+  color: #b9ae96;
+  font-size: clamp(0.34rem, 0.44vw, 0.46rem);
+  letter-spacing: 0.07rem;
+}
+
+.gauge-readout .instrument-value {
+  color: #f4ead7;
+  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+  font-size: clamp(0.78rem, 1.15vw, 1.18rem);
+  font-weight: 600;
+  line-height: 0.95;
+}
+
+.gauge-readout .instrument-unit {
+  color: var(--brass);
+  font-size: clamp(0.3rem, 0.38vw, 0.4rem);
+}
+
+/* Heading indicator */
+
+.heading-instrument .gauge-face {
+  background:
+    radial-gradient(
+      circle,
+      transparent 0 47%,
+      rgba(226, 220, 205, 0.13) 48%,
+      transparent 50%
+    ),
+    repeating-conic-gradient(
+      from 0deg,
+      rgba(238, 233, 219, 0.72) 0deg 0.75deg,
+      transparent 0.75deg 10deg
+    ),
+    radial-gradient(circle at center, #1d2123 0%, #090b0c 76%, #020303 100%);
+}
+
+.compass-mark {
+  position: absolute;
+  z-index: 4;
+  color: #f0e8d8;
+  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+  font-size: clamp(0.78rem, 1vw, 1.05rem);
+  font-weight: 700;
+  text-shadow: 0 1px 2px #000;
+}
+
+.compass-n {
+  top: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.compass-e {
+  top: 50%;
+  right: 8%;
+  transform: translateY(-50%);
+}
+
+.compass-s {
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.compass-w {
+  top: 50%;
+  left: 8%;
+  transform: translateY(-50%);
+}
+
+.heading-card {
+  position: absolute;
+  z-index: 5;
+  inset: 18%;
+  border: 1px solid rgba(223, 215, 197, 0.12);
+  border-radius: 50%;
+
+  background:
+    repeating-conic-gradient(
+      from 0deg,
+      rgba(233, 227, 213, 0.28) 0deg 1deg,
+      transparent 1deg 30deg
+    );
+
+  transition: transform 450ms ease-out;
+}
+
+.heading-arrow {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  color: #d9c28c;
+  font-size: clamp(0.75rem, 1.1vw, 1.1rem);
+  transform: translateX(-50%);
+  text-shadow: 0 0 4px rgba(217, 194, 140, 0.35);
+}
+/* =========================================================
+   Photoreal split-flap tiles
+   ========================================================= */
+
+.flap-cell {
+  gap: clamp(0.06rem, 0.14vw, 0.14rem);
+}
+
+.flap-character {
+  position: relative;
+
+  width: clamp(3rem, 3.45vw, 3.9rem);
+  height: clamp(3.75rem, 4.35vw, 4.9rem);
+  flex: 0 0 clamp(3rem, 3.45vw, 3.9rem);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 0 0.05em;
+  overflow: hidden;
+
+  border: 0;
+  border-radius: 7px;
+
+  background-color: #080909;
+  background-image:
+    url("../assets/split-flap/split-flap-tile.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+
+  box-shadow:
+    0 4px 7px rgba(0, 0, 0, 0.72),
+    0 1px 1px rgba(255, 255, 255, 0.05);
+
+  color: #eee6d5;
+
+  font-family:
+    "Barlow Condensed",
+    "Arial Narrow",
+    Arial,
+    sans-serif;
+
+  font-size: clamp(2.25rem, 3.15vw, 3.55rem);
+  font-weight: 600;
+  font-stretch: condensed;
+  line-height: 1;
+  letter-spacing: -0.035em;
+
+  text-shadow:
+    0 2px 1px rgba(0, 0, 0, 1),
+    0 0 2px rgba(255, 248, 225, 0.18);
+
+  transform: none;
+}
+
+/* Dark seam drawn over the character, so the letter appears split */
+
+.flap-character::before {
+  content: "";
+  position: absolute;
+  z-index: 4;
+
+  top: 49.6%;
+  right: 7%;
+  left: 7%;
+
+  height: 3px;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.35),
+      #020303 45%,
+      #000 55%,
+      rgba(255, 255, 255, 0.045)
+    );
+
+  box-shadow:
+    0 -1px 1px rgba(0, 0, 0, 0.85),
+    0 1px 1px rgba(255, 255, 255, 0.035);
+
+  pointer-events: none;
+}
+
+/* Very subtle glass and plastic highlight */
+
+.flap-character::after {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  inset: 6% 7%;
+
+  border-radius: 5px;
+
+  background:
+    linear-gradient(
+      118deg,
+      rgba(255, 255, 255, 0.07) 0%,
+      rgba(255, 255, 255, 0.018) 27%,
+      transparent 43%,
+      transparent 72%,
+      rgba(0, 0, 0, 0.13) 100%
+    );
+
+  pointer-events: none;
+}
+
+/* Give the flight board enough height for the larger physical tiles */
+
+.panel-shell {
+  grid-template-rows:
+    minmax(175px, 1.5fr)
+    minmax(245px, 2.2fr)
+    minmax(145px, 1.2fr);
+}
+
+.flight-board {
+  padding: 0.7rem 1rem;
+}
+/* FORCE THE GENERATED PHOTO AS THE FLAP TILE */
+
+.flap-character {
+  position: relative !important;
+
+  width: clamp(3rem, 3.45vw, 3.9rem) !important;
+  height: clamp(3.75rem, 4.35vw, 4.9rem) !important;
+  flex: 0 0 clamp(3rem, 3.45vw, 3.9rem) !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  overflow: hidden !important;
+  padding: 0 0 0.04em !important;
+
+  border: 0 !important;
+  border-radius: 7px !important;
+
+  background:
+    #050606
+    url("../assets/split-flap/split-flap-tile.png")
+    center / 100% 100%
+    no-repeat !important;
+
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.8) !important;
+
+  color: #eee6d5 !important;
+
+  font-family:
+    "Barlow Condensed",
+    "Arial Narrow",
+    Arial,
+    sans-serif !important;
+
+  font-size: clamp(2.15rem, 3vw, 3.4rem) !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  letter-spacing: -0.035em !important;
+
+  text-shadow:
+    0 2px 1px #000,
+    0 0 2px rgba(255, 248, 225, 0.18) !important;
+
+  transform: none !important;
+}
+
+/* Disable the old CSS-created surfaces */
+
+.flap-character::after {
+  content: none !important;
+}
+
+/* Keep only a thin seam across the live character */
+
+.flap-character::before {
+  content: "" !important;
+  position: absolute !important;
+  z-index: 5 !important;
+
+  top: 49.5% !important;
+  right: 8% !important;
+  left: 8% !important;
+
+  height: 2px !important;
+
+  background: rgba(0, 0, 0, 0.92) !important;
+  box-shadow:
+    0 -1px rgba(255, 255, 255, 0.035),
+    0 1px rgba(0, 0, 0, 0.9) !important;
+
+  pointer-events: none !important;
+}
+/* =========================================================
+   Animated photoreal split-flap mechanism
+   ========================================================= */
+
+.flap-character {
+  position: relative !important;
+
+  width: clamp(3rem, 3.45vw, 3.9rem) !important;
+  height: clamp(3.75rem, 4.35vw, 4.9rem) !important;
+  flex: 0 0 clamp(3rem, 3.45vw, 3.9rem) !important;
+
+  display: inline-block !important;
+  overflow: visible !important;
+
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 7px !important;
+
+  background: transparent !important;
+
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.82) !important;
+
+  perspective: 650px;
+  transform: none !important;
+}
+
+/*
+  Every half uses the generated photo.
+
+  Background-size is 100% 200% because each element
+  is only half the height of the complete tile.
+*/
+
+.flap-half {
+  position: absolute;
+  left: 0;
+
+  width: 100%;
+  height: 50%;
+
+  overflow: hidden;
+
+  background-color: #050606;
+  background-image:
+    url("../assets/split-flap/split-flap-tile.png");
+
+  background-repeat: no-repeat;
+  background-size: 100% 200%;
+
+  color: #eee6d5;
+
+  font-family:
+    "Barlow Condensed",
+    "Arial Narrow",
+    Arial,
+    sans-serif;
+
+  font-size: clamp(2.15rem, 3vw, 3.4rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.035em;
+
+  text-shadow:
+    0 2px 1px rgba(0, 0, 0, 1),
+    0 0 2px rgba(255, 248, 225, 0.18);
+
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+.flap-top {
+  top: 0;
+
+  border-radius: 7px 7px 0 0;
+
+  background-position:
+    center top;
+
+  transform-origin:
+    center bottom;
+}
+
+.flap-bottom {
+  bottom: 0;
+
+  border-radius: 0 0 7px 7px;
+
+  background-position:
+    center bottom;
+
+  transform-origin:
+    center top;
+}
+
+/*
+  The glyph is full-cell height but clipped by
+  its top or bottom container.
+*/
+
+.flap-glyph {
+  position: absolute;
+  left: 0;
+
+  width: 100%;
+  height: 200%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding-bottom: 0.04em;
+}
+
+.flap-top .flap-glyph {
+  top: 0;
+}
+
+.flap-bottom .flap-glyph {
+  bottom: 0;
+}
+
+/* Permanent layers */
+
+.flap-static-top,
+.flap-static-bottom {
+  z-index: 2;
+}
+
+/* Temporary moving layers */
+
+.flap-moving {
+  z-index: 8;
+  pointer-events: none;
+}
+
+.flap-flip-top {
+  transform: rotateX(0deg);
+}
+
+.flap-flip-bottom {
+  transform: rotateX(90deg);
+}
+
+/*
+  First the old upper half falls forward.
+  Then the new lower half unfolds into place.
+*/
+
+.flap-character.is-flipping
+.flap-flip-top {
+  animation:
+    split-flap-top
+    170ms
+    cubic-bezier(0.55, 0.05, 0.78, 0.5)
+    forwards;
+}
+
+.flap-character.is-flipping
+.flap-flip-bottom {
+  animation:
+    split-flap-bottom
+    170ms
+    170ms
+    cubic-bezier(0.22, 0.65, 0.32, 1)
+    forwards;
+}
+
+/* Mechanical center seam */
+
+.flap-character::before {
+  content: "" !important;
+
+  position: absolute !important;
+  z-index: 20 !important;
+
+  top: calc(50% - 1px) !important;
+  right: 7% !important;
+  left: 7% !important;
+
+  height: 2px !important;
+
+  background:
+    rgba(0, 0, 0, 0.92) !important;
+
+  box-shadow:
+    0 -1px rgba(255, 255, 255, 0.025),
+    0 1px rgba(0, 0, 0, 0.95) !important;
+
+  pointer-events: none !important;
+}
+
+.flap-character::after {
+  content: none !important;
+}
+
+@keyframes split-flap-top {
+  0% {
+    transform: rotateX(0deg);
+    filter: brightness(1);
+  }
+
+  55% {
+    filter: brightness(0.76);
+  }
+
+  100% {
+    transform: rotateX(-90deg);
+    filter: brightness(0.48);
+  }
+}
+
+@keyframes split-flap-bottom {
+  0% {
+    transform: rotateX(90deg);
+    filter: brightness(0.5);
+  }
+
+  55% {
+    filter: brightness(0.78);
+  }
+
+  100% {
+    transform: rotateX(0deg);
+    filter: brightness(1);
+  }
+}
+
+/*
+  Keep motion accessible when the operating system
+  requests reduced animation.
+*/
+
+@media (prefers-reduced-motion: reduce) {
+  .flap-character.is-flipping
+  .flap-flip-top,
+  .flap-character.is-flipping
+  .flap-flip-bottom {
+    animation-duration: 1ms;
+    animation-delay: 0ms;
+  }
+}

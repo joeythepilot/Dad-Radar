@@ -183,60 +183,73 @@
         </article>
 
         <article class="module instrument-panel">
-          <div class="instrument-row">
+  <div class="instrument-row">
 
-            <div class="instrument">
-              <span class="instrument-label">
-                AIRSPEED
-              </span>
+    <div class="instrument airspeed-instrument">
+      <div class="gauge-face">
+        <span class="gauge-mark mark-0">0</span>
+        <span class="gauge-mark mark-45">100</span>
+        <span class="gauge-mark mark-90">200</span>
+        <span class="gauge-mark mark-135">300</span>
+        <span class="gauge-mark mark-180">400</span>
+        <span class="gauge-mark mark-225">500</span>
+        <span class="gauge-mark mark-270">600</span>
+        <span class="gauge-mark mark-315">700</span>
 
-              <strong
-                class="instrument-value"
-                id="airspeed-value"
-              >
-                ---
-              </strong>
+        <div class="gauge-needle" id="airspeed-needle"></div>
+        <div class="gauge-hub"></div>
 
-              <span class="instrument-unit">
-                KT
-              </span>
-            </div>
+        <div class="gauge-readout">
+          <span class="instrument-label">AIRSPEED</span>
+          <strong class="instrument-value" id="airspeed-value">---</strong>
+          <span class="instrument-unit">KT</span>
+        </div>
+      </div>
+    </div>
 
-            <div class="instrument">
-              <span class="instrument-label">
-                HEADING
-              </span>
+    <div class="instrument heading-instrument">
+      <div class="gauge-face">
+        <span class="compass-mark compass-n">N</span>
+        <span class="compass-mark compass-e">E</span>
+        <span class="compass-mark compass-s">S</span>
+        <span class="compass-mark compass-w">W</span>
 
-              <strong
-                class="instrument-value"
-                id="heading-value"
-              >
-                ---
-              </strong>
+        <div class="heading-card" id="heading-card">
+          <div class="heading-arrow">▲</div>
+        </div>
 
-              <span class="instrument-unit">
-                DEG
-              </span>
-            </div>
+        <div class="gauge-readout">
+          <span class="instrument-label">HEADING</span>
+          <strong class="instrument-value" id="heading-value">---</strong>
+          <span class="instrument-unit">DEG</span>
+        </div>
+      </div>
+    </div>
 
-            <div class="instrument">
-              <span class="instrument-label">
-                ALTIMETER
-              </span>
+    <div class="instrument altimeter-instrument">
+      <div class="gauge-face">
+        <span class="gauge-mark mark-0">0</span>
+        <span class="gauge-mark mark-45">1</span>
+        <span class="gauge-mark mark-90">2</span>
+        <span class="gauge-mark mark-135">3</span>
+        <span class="gauge-mark mark-180">4</span>
+        <span class="gauge-mark mark-225">5</span>
+        <span class="gauge-mark mark-270">6</span>
+        <span class="gauge-mark mark-315">7</span>
 
-              <strong
-                class="instrument-value"
-                id="altitude-value"
-              >
-                -----
-              </strong>
+        <div class="gauge-needle altimeter-needle" id="altitude-needle"></div>
+        <div class="gauge-hub"></div>
 
-              <span class="instrument-unit">
-                FT
-              </span>
-            </div>
+        <div class="gauge-readout">
+          <span class="instrument-label">ALTIMETER</span>
+          <strong class="instrument-value" id="altitude-value">-----</strong>
+          <span class="instrument-unit">FT</span>
+        </div>
+      </div>
+    </div>
 
-          </div>
+  </div>
+</article>
         </article>
 
         <article class="module control-panel">
