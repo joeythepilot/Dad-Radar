@@ -14,7 +14,7 @@ const etaValue = document.querySelector("#eta-value");
 const mapOrigin = document.querySelector("#map-origin");
 const mapDestination = document.querySelector("#map-destination");
 const aircraftMarker = document.querySelector(".aircraft-marker");
-const activeMode = "DIVERTED";
+const activeMode = "OFFLINE";
 const flightBoard = document.querySelector(".flight-board");
 const mapPanel = document.querySelector(".map-panel");
 const instrumentPanel = document.querySelector(".instrument-panel");
@@ -139,6 +139,10 @@ ARRIVED: {
 },
 LAYOVER: {
   status: "LAYOVER",
+  flight: null
+},
+OFFLINE: {
+  status: "OFFLINE",
   flight: null
 },
 COMMUTING_HOME: {
