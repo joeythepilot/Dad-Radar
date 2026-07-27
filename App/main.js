@@ -14,7 +14,7 @@ const etaValue = document.querySelector("#eta-value");
 const mapOrigin = document.querySelector("#map-origin");
 const mapDestination = document.querySelector("#map-destination");
 const aircraftMarker = document.querySelector(".aircraft-marker");
-const activeMode = "PRE_FLIGHT";
+const activeMode = "BOARDING";
 const flightBoard = document.querySelector(".flight-board");
 const mapPanel = document.querySelector(".map-panel");
 const instrumentPanel = document.querySelector(".instrument-panel");
@@ -26,6 +26,20 @@ const dadRadarModes = {
   },
 PRE_FLIGHT: {
   status: "PRE-FLIGHT",
+  flight: {
+    number: "AA 1234",
+    origin: "ORD",
+    destination: "AVL",
+    destinationCity: "ASHEVILLE",
+    airspeed: 0,
+    heading: 0,
+    altitude: 0,
+    progress: 0,
+    eta: "7:42 PM"
+  }
+},
+BOARDING: {
+  status: "BOARDING",
   flight: {
     number: "AA 1234",
     origin: "ORD",
