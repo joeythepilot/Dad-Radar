@@ -14,7 +14,7 @@ const etaValue = document.querySelector("#eta-value");
 const mapOrigin = document.querySelector("#map-origin");
 const mapDestination = document.querySelector("#map-destination");
 const aircraftMarker = document.querySelector(".aircraft-marker");
-const activeMode = "LAYOVER";
+const activeMode = "COMMUTING_TO_BASE";
 const flightBoard = document.querySelector(".flight-board");
 const mapPanel = document.querySelector(".map-panel");
 const instrumentPanel = document.querySelector(".instrument-panel");
@@ -24,6 +24,20 @@ const dadRadarModes = {
     status: "HOME",
     flight: null
   },
+  COMMUTING_TO_BASE: {
+  status: "COMMUTING TO BASE",
+  flight: {
+    number: "AA 5421",
+    origin: "AVL",
+    destination: "ORD",
+    destinationCity: "CHICAGO",
+    airspeed: 430,
+    heading: 330,
+    altitude: 32000,
+    progress: 48,
+    eta: "10:18 AM"
+  }
+},
 PRE_FLIGHT: {
   status: "PRE-FLIGHT",
   flight: {
