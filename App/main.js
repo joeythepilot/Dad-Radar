@@ -14,7 +14,7 @@ const etaValue = document.querySelector("#eta-value");
 const mapOrigin = document.querySelector("#map-origin");
 const mapDestination = document.querySelector("#map-destination");
 const aircraftMarker = document.querySelector(".aircraft-marker");
-const activeMode = "COMMUTING_HOME";
+const activeMode = "DIVERTED";
 const flightBoard = document.querySelector(".flight-board");
 const mapPanel = document.querySelector(".map-panel");
 const instrumentPanel = document.querySelector(".instrument-panel");
@@ -107,6 +107,20 @@ TAXI_OUT: {
     altitude: 8500,
     progress: 92,
     eta: "7:42 PM"
+  }
+},
+DIVERTED: {
+  status: "DIVERTED",
+  flight: {
+    number: "AA 1234",
+    origin: "ORD",
+    destination: "TYS",
+    destinationCity: "KNOXVILLE",
+    airspeed: 280,
+    heading: 220,
+    altitude: 12000,
+    progress: 78,
+    eta: "8:18 PM"
   }
 },
 ARRIVED: {
