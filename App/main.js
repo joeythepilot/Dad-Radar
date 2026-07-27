@@ -14,7 +14,7 @@ const etaValue = document.querySelector("#eta-value");
 const mapOrigin = document.querySelector("#map-origin");
 const mapDestination = document.querySelector("#map-destination");
 const aircraftMarker = document.querySelector(".aircraft-marker");
-const activeMode = "COMMUTING_TO_BASE";
+const activeMode = "COMMUTING_HOME";
 const flightBoard = document.querySelector(".flight-board");
 const mapPanel = document.querySelector(".map-panel");
 const instrumentPanel = document.querySelector(".instrument-panel");
@@ -126,6 +126,20 @@ ARRIVED: {
 LAYOVER: {
   status: "LAYOVER",
   flight: null
+},
+COMMUTING_HOME: {
+  status: "COMMUTING HOME",
+  flight: {
+    number: "AA 1234",
+    origin: "ORD",
+    destination: "AVL",
+    destinationCity: "ASHEVILLE",
+    airspeed: 438,
+    heading: 171,
+    altitude: 34000,
+    progress: 62,
+    eta: "7:42 PM"
+  }
 },
 };
 
