@@ -21,9 +21,6 @@ const mapPanel = document.querySelector(".map-panel");
 const instrumentPanel = document.querySelector(".instrument-panel");
 const destinationPanel = document.querySelector(".destination-panel");
 
-let activeMode = initialMode;
-let dadRadarState = dadRadarModes[activeMode];
-
 function updateDashboard(state) {
   statusValue.textContent = state.status;
 
@@ -62,19 +59,6 @@ function updateDashboard(state) {
   }
 }
 
-window.addEventListener("load", () => {
-  updateDashboard(dadRadarState);
-
-  setTimeout(() => {
-    statusMessage.textContent = "FLIGHT SYSTEMS ONLINE";
-  }, 1800);
-
-  setTimeout(() => {
-    startupScreen.hidden = true;
-    dashboard.hidden = false;
-  }, 3000);
-});
-
 const modeShortcuts = {
   "1": "HOME",
   "2": "COMMUTING_TO_BASE",
@@ -90,6 +74,10 @@ const modeShortcuts = {
   "=": "OFFLINE"
 };
 
+window.addEventListener("dad-radar:state-change", (event) => {
+  updateDashboard(event.detail.state);
+});
+
 window.addEventListener("keydown", (event) => {
   const nextMode = modeShortcuts[event.key];
 
@@ -97,10 +85,18 @@ window.addEventListener("keydown", (event) => {
     return;
   }
 
-  activeMode = nextMode;
-  dadRadarState = dadRadarModes[activeMode];
+  setDadRadarMode(nextMode);
 
-  updateDashboard(dadRadarState);
-
-  console.log(`Dad Radar mode: ${activeMode}`);
+  console.log(`Dad Radar mode: ${nextMode}`);
 });
+
+updateDashboard(dadRadarState);
+
+setTimeout(() => {
+  statusMessage.textContent = "FLIGHT SYSTEMS ONLINE";
+}, 1800);
+
+setTimeout(() => {
+  startupScreen.hidden = true;
+  dashboard.hidden = false;
+}, 3000);
