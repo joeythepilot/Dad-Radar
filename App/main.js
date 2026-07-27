@@ -2,6 +2,11 @@ const startupScreen = document.querySelector("#startup-screen");
 const dashboard = document.querySelector("#dashboard");
 const statusMessage = document.querySelector(".status-message");
 
+const unitLabel = document.querySelector("#unit-label");
+const startupAppName = document.querySelector("#startup-app-name");
+const dashboardAppName = document.querySelector("#dashboard-app-name");
+const etaZone = document.querySelector("#eta-zone");
+
 const statusValue = document.querySelector("#status-value");
 const flightBoardText = document.querySelector("#flight-board-text");
 const etaValue = document.querySelector("#eta-value");
@@ -90,8 +95,12 @@ window.addEventListener("keydown", (event) => {
   console.log(`Dad Radar mode: ${nextMode}`);
 });
 
-updateDashboard(dadRadarState);
+unitLabel.textContent = dadRadarSettings.unitLabel;
+startupAppName.textContent = dadRadarSettings.appName;
+dashboardAppName.textContent = dadRadarSettings.appName;
+etaZone.textContent = dadRadarSettings.displayTimeZoneLabel;
 
+updateDashboard(dadRadarState);
 setTimeout(() => {
   statusMessage.textContent = "FLIGHT SYSTEMS ONLINE";
 }, dadRadarSettings.startup.systemsOnlineDelayMs);
