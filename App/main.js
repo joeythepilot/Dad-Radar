@@ -109,3 +109,7 @@ setTimeout(() => {
   startupScreen.hidden = true;
   dashboard.hidden = false;
 }, dadRadarSettings.startup.dashboardDelayMs);
+
+if (dadRadarSettings.developerMode) {
+  startMockFlightService();
+}
