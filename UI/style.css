@@ -131,6 +131,57 @@ h1 {
   text-align: center;
 }
 
+.flight-board-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.flap-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.18rem;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.flap-character {
+  width: 1.65rem;
+  height: 2.35rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #4b463d;
+  border-radius: 3px;
+  background:
+    linear-gradient(
+      to bottom,
+      #343331 0%,
+      #282725 48%,
+      #171716 50%,
+      #2b2a28 52%,
+      #343331 100%
+    );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.8);
+  color: #f3eadb;
+  font-family: "Courier New", monospace;
+  font-size: 1.45rem;
+  line-height: 1;
+  text-align: center;
+}
+
+.flap-arrow {
+  color: var(--brass);
+  font-size: 1.4rem;
+}
 .display-grid {
   display: grid;
   grid-template-columns: 1.4fr 1fr;

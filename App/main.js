@@ -9,6 +9,10 @@ const etaZone = document.querySelector("#eta-zone");
 
 const statusValue = document.querySelector("#status-value");
 const flightBoardText = document.querySelector("#flight-board-text");
+const flightBoardFlight = document.querySelector("#flight-board-flight");
+const flightNumber = document.querySelector("#flight-number");
+const flightOrigin = document.querySelector("#flight-origin");
+const flightDestination = document.querySelector("#flight-destination");
 const etaValue = document.querySelector("#eta-value");
 const clockValue = document.querySelector("#clock-value");
 
@@ -27,6 +31,16 @@ const mapPanel = document.querySelector(".map-panel");
 const instrumentPanel = document.querySelector(".instrument-panel");
 const destinationPanel = document.querySelector(".destination-panel");
 
+function renderFlapText(container, text) {
+  container.replaceChildren();
+
+  for (const character of text) {
+    const flap = document.createElement("span");
+    flap.className = "flap-character";
+    flap.textContent = character === " " ? "\u00A0" : character;
+    container.appendChild(flap);
+  }
+}
 function updateDashboard(state) {
   statusValue.textContent = state.status;
 
@@ -35,8 +49,12 @@ function updateDashboard(state) {
     instrumentPanel.hidden = false;
     destinationPanel.hidden = false;
 
-    flightBoardText.textContent =
-      `${state.flight.number}  ${state.flight.origin} → ${state.flight.destination}`;
+    flightBoardFlight.hidden = false;
+flightBoardText.hidden = true;
+
+renderFlapText(flightNumber, state.flight.number);
+renderFlapText(flightOrigin, state.flight.origin);
+renderFlapText(flightDestination, state.flight.destination);
 
     airspeedValue.textContent = state.flight.airspeed;
     headingValue.textContent = state.flight.heading;
@@ -54,6 +72,9 @@ function updateDashboard(state) {
     mapPanel.hidden = true;
     instrumentPanel.hidden = true;
     destinationPanel.hidden = true;
+
+    flightBoardFlight.hidden = true;
+    flightBoardText.hidden = false;
 
     flightBoardText.textContent =
       state.message ?? "NO ACTIVE FLIGHT";

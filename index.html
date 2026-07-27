@@ -46,8 +46,15 @@
     </header>
 
     <section class="flight-board">
-      <span id="flight-board-text">NO ACTIVE FLIGHT</span>
-    </section>
+  <div class="flight-board-row" id="flight-board-flight" hidden>
+    <span class="flap-cell" id="flight-number">AA 1234</span>
+    <span class="flap-cell" id="flight-origin">ORD</span>
+    <span class="flap-arrow">→</span>
+    <span class="flap-cell" id="flight-destination">AVL</span>
+  </div>
+
+  <span id="flight-board-text">NO ACTIVE FLIGHT</span>
+</section>
 
     <section class="display-grid">
       <article class="panel map-panel">
