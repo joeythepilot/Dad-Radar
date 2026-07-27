@@ -94,9 +94,9 @@ updateDashboard(dadRadarState);
 
 setTimeout(() => {
   statusMessage.textContent = "FLIGHT SYSTEMS ONLINE";
-}, 1800);
+}, dadRadarSettings.startup.systemsOnlineDelayMs);
 
 setTimeout(() => {
   startupScreen.hidden = true;
   dashboard.hidden = false;
-}, 3000);
+}, dadRadarSettings.startup.dashboardDelayMs);
