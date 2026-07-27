@@ -10,6 +10,7 @@ const etaZone = document.querySelector("#eta-zone");
 const statusValue = document.querySelector("#status-value");
 const flightBoardText = document.querySelector("#flight-board-text");
 const etaValue = document.querySelector("#eta-value");
+const clockValue = document.querySelector("#clock-value");
 
 const airspeedValue = document.querySelector("#airspeed-value");
 const headingValue = document.querySelector("#heading-value");
@@ -64,6 +65,17 @@ function updateDashboard(state) {
   }
 }
 
+function updateClock() {
+  const currentTime = new Intl.DateTimeFormat("en-US", {
+    timeZone: dadRadarSettings.displayTimeZone,
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true
+  }).format(new Date());
+
+  clockValue.textContent = currentTime;
+}
+
 const modeShortcuts = {
   "1": "HOME",
   "2": "COMMUTING_TO_BASE",
@@ -95,6 +107,8 @@ window.addEventListener("keydown", (event) => {
   console.log(`Dad Radar mode: ${nextMode}`);
 });
 
+updateClock();
+window.setInterval(updateClock, 1000);
 unitLabel.textContent = dadRadarSettings.unitLabel;
 startupAppName.textContent = dadRadarSettings.appName;
 dashboardAppName.textContent = dadRadarSettings.appName;

@@ -289,6 +289,18 @@ h1 {
     text-align: left;
   }
 
+  .clock-block {
+  text-align: right;
+}
+
+.clock-value {
+  margin: 0.4rem 0 0;
+  color: var(--cream);
+  font-family: "Courier New", monospace;
+  font-size: 1.4rem;
+  letter-spacing: 0.12rem;
+}
+
   .display-grid {
     grid-template-columns: 1fr;
   }
