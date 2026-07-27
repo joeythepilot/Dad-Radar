@@ -20,10 +20,11 @@ const mapPanel = document.querySelector(".map-panel");
 const instrumentPanel = document.querySelector(".instrument-panel");
 const destinationPanel = document.querySelector(".destination-panel");
 const dadRadarModes = {
-  HOME: {
-    status: "HOME",
-    flight: null
-  },
+ HOME: {
+  status: "HOME",
+  message: "DAD IS HOME",
+  flight: null
+},
   COMMUTING_TO_BASE: {
   status: "COMMUTING TO BASE",
   flight: {
@@ -139,10 +140,12 @@ ARRIVED: {
 },
 LAYOVER: {
   status: "LAYOVER",
+  message: "ON LAYOVER",
   flight: null
 },
 OFFLINE: {
   status: "OFFLINE",
+  message: "FLIGHT DATA UNAVAILABLE",
   flight: null
 },
 COMMUTING_HOME: {
@@ -186,7 +189,7 @@ aircraftMarker.style.left = `${state.flight.progress}%`;
     mapPanel.hidden = true;
 instrumentPanel.hidden = true;
 destinationPanel.hidden = true;
-    flightBoardText.textContent = "NO ACTIVE FLIGHT";
+    flightBoardText.textContent = state.message ?? "NO ACTIVE FLIGHT";
 
     airspeedValue.textContent = "---";
     headingValue.textContent = "---";
