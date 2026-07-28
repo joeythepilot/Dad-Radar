@@ -1,2103 +1,3281 @@
-@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Roboto+Slab:wght@500;600&display=swap");:root {
+/* =========================================================
+   DAD RADAR
+   HP 23es target display
+   Native resolution: 1920 × 1080
+   Aspect ratio: 16:9
+   ========================================================= */
+
+:root {
   color-scheme: dark;
-  font-family: Arial, Helvetica, sans-serif;
 
-  --background: #050607;
-  --module-background: #0d1012;
-  --module-edge: #3f4142;
-  --module-highlight: rgba(255, 255, 255, 0.06);
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
 
-  --brass: #b89a67;
-  --cream: #f1eadc;
-  --muted: #9d9a92;
+  --background:
+    #020303;
 
-  --flap-width: clamp(1.05rem, 1.55vw, 1.9rem);
-  --flap-height: clamp(1.75rem, 2.7vw, 3.05rem);
-  --flap-gap: clamp(0.08rem, 0.18vw, 0.2rem);
+  --module-background:
+    #0c0f10;
+
+  --module-edge:
+    #414344;
+
+  --module-highlight:
+    rgba(
+      255,
+      255,
+      255,
+      0.055
+    );
+
+  --brass:
+    #b89a67;
+
+  --cream:
+    #f1eadc;
+
+  --muted:
+    #9d9a92;
+
+  --outer-padding:
+    clamp(
+      7px,
+      0.65vw,
+      13px
+    );
+
+  --panel-gap:
+    clamp(
+      6px,
+      0.56vw,
+      11px
+    );
+
+  --flap-width:
+    clamp(
+      35px,
+      3.2vw,
+      62px
+    );
+
+  --flap-height:
+    clamp(
+      53px,
+      4.95vw,
+      95px
+    );
+
+  --flap-gap:
+    clamp(
+      3px,
+      0.22vw,
+      5px
+    );
 }
 
+
+/* =========================================================
+   Reset
+   ========================================================= */
+
 * {
-  box-sizing: border-box;
+  box-sizing:
+    border-box;
 }
 
 html,
 body {
-  width: 100%;
-  min-height: 100%;
-  margin: 0;
+  width:
+    100%;
+
+  height:
+    100%;
+
+  margin:
+    0;
+
+  padding:
+    0;
+
+  overflow:
+    hidden;
+
+  background:
+    #000;
 }
 
 body {
-  min-height: 100vh;
-  overflow: hidden;
-  background: var(--background);
-  color: var(--cream);
+  display:
+    grid;
+
+  place-items:
+    center;
+
+  color:
+    var(--cream);
+}
+
+img {
+  max-width:
+    100%;
 }
 
 [hidden] {
-  display: none !important;
+  display:
+    none
+    !important;
 }
 
-/* Startup screen */
+.visually-hidden {
+  position:
+    absolute
+    !important;
+
+  width:
+    1px
+    !important;
+
+  height:
+    1px
+    !important;
+
+  padding:
+    0
+    !important;
+
+  margin:
+    -1px
+    !important;
+
+  overflow:
+    hidden
+    !important;
+
+  clip:
+    rect(
+      0,
+      0,
+      0,
+      0
+    )
+    !important;
+
+  white-space:
+    nowrap
+    !important;
+
+  border:
+    0
+    !important;
+}
+
+
+/* =========================================================
+   Startup screen
+   ========================================================= */
 
 .startup-screen {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
+  position:
+    fixed;
+
+  inset:
+    0;
+
+  z-index:
+    1000;
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  padding:
+    2rem;
+
   background:
-    radial-gradient(circle at center, #1c2227 0%, #080a0c 62%, #020303 100%);
-  text-align: center;
+    radial-gradient(
+      circle at center,
+      #1c2227 0%,
+      #080a0c 62%,
+      #020303 100%
+    );
+
+  text-align:
+    center;
 }
 
 .unit-label,
-.small-label,
-.panel-label {
-  margin: 0;
-  color: var(--brass);
-  font-size: clamp(0.55rem, 0.75vw, 0.75rem);
-  letter-spacing: 0.2rem;
-  text-transform: uppercase;
+.small-label {
+  margin:
+    0;
+
+  color:
+    var(--brass);
+
+  font-size:
+    clamp(
+      0.46rem,
+      0.55vw,
+      0.66rem
+    );
+
+  letter-spacing:
+    clamp(
+      0.08rem,
+      0.11vw,
+      0.16rem
+    );
+
+  text-transform:
+    uppercase;
 }
 
 h1 {
-  margin: 0.9rem 0 0;
-  color: var(--cream);
-  font-size: clamp(3rem, 9vw, 7rem);
-  letter-spacing: 0.3rem;
+  margin:
+    0.9rem
+    0
+    0;
+
+  color:
+    var(--cream);
+
+  font-size:
+    clamp(
+      3rem,
+      8vw,
+      7rem
+    );
+
+  letter-spacing:
+    0.3rem;
 }
 
 .status-message {
-  margin-top: 2rem;
-  color: #d8c7a6;
-  font-family: "Courier New", monospace;
-  font-size: 1rem;
-  letter-spacing: 0.18rem;
-  animation: pulse 1.8s ease-in-out infinite;
+  margin-top:
+    2rem;
+
+  color:
+    #d8c7a6;
+
+  font-family:
+    "Courier New",
+    monospace;
+
+  font-size:
+    1rem;
+
+  letter-spacing:
+    0.18rem;
+
+  animation:
+    pulse
+    1.8s
+    ease-in-out
+    infinite;
 }
 
-/* Main display */
+
+/* =========================================================
+   Fixed 16:9 dashboard canvas
+
+   At 1920 × 1080 this fills the HP display.
+   In VS Code it scales down without scrolling.
+   ========================================================= */
 
 .dashboard {
-  width: 100vw;
-  height: 100vh;
-  padding: clamp(0.45rem, 1.2vw, 1rem);
+  width:
+    min(
+      100vw,
+      calc(
+        100vh *
+        1.7777778
+      )
+    );
+
+  height:
+    min(
+      100vh,
+      calc(
+        100vw *
+        0.5625
+      )
+    );
+
+  aspect-ratio:
+    16 / 9;
+
+  padding:
+    var(--outer-padding);
+
+  overflow:
+    hidden;
+
   background:
-    radial-gradient(circle at 50% 30%, #161a1d 0%, #070809 64%, #020303 100%);
+    radial-gradient(
+      circle at 50% 30%,
+      #15191c 0%,
+      #070809 64%,
+      #020303 100%
+    );
 }
+
+
+/* =========================================================
+   Primary layout
+
+   Top:
+   24% split-flap
+
+   Bottom:
+   76% independently proportioned left and right stacks
+   ========================================================= */
 
 .panel-shell {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  grid-template-rows: minmax(100px, 0.9fr) minmax(250px, 2.55fr) minmax(150px, 1.35fr);
-  gap: clamp(0.45rem, 0.8vw, 0.8rem);
+  width:
+    100%;
+
+  height:
+    100%;
+
+  display:
+    grid;
+
+  grid-template-rows:
+    minmax(
+      0,
+      24fr
+    )
+    minmax(
+      0,
+      76fr
+    );
+
+  gap:
+    var(--panel-gap);
 }
 
-/* Display modules */
+
+/* =========================================================
+   Shared module construction
+   ========================================================= */
 
 .module {
-  position: relative;
-  min-width: 0;
-  min-height: 0;
-  overflow: hidden;
-  border: 1px solid var(--module-edge);
-  border-radius: 5px;
+  position:
+    relative;
+
+  min-width:
+    0;
+
+  min-height:
+    0;
+
+  overflow:
+    hidden;
+
+  border:
+    1px
+    solid
+    var(--module-edge);
+
+  border-radius:
+    4px;
+
   background:
     linear-gradient(
       145deg,
-      rgba(30, 33, 35, 0.98),
-      rgba(8, 10, 11, 0.99) 60%
+      rgba(
+        29,
+        32,
+        34,
+        0.98
+      ),
+      rgba(
+        7,
+        9,
+        10,
+        0.99
+      )
+      62%
     );
+
   box-shadow:
-    inset 0 1px 0 var(--module-highlight),
-    inset 0 0 22px rgba(0, 0, 0, 0.55),
-    0 5px 14px rgba(0, 0, 0, 0.45);
+    inset
+    0
+    1px
+    0
+    var(--module-highlight),
+
+    inset
+    0
+    0
+    22px
+    rgba(
+      0,
+      0,
+      0,
+      0.55
+    ),
+
+    0
+    4px
+    12px
+    rgba(
+      0,
+      0,
+      0,
+      0.45
+    );
 }
 
-/* Split-flap board */
+
+/* =========================================================
+   Full-width split-flap board
+   ========================================================= */
 
 .flight-strip-module {
-  display: grid;
-  grid-template-rows: auto 1fr;
-  padding: clamp(0.45rem, 0.75vw, 0.75rem)
-    clamp(0.65rem, 1.1vw, 1.1rem)
-    clamp(0.6rem, 0.9vw, 0.9rem);
-}
+  display:
+    grid;
 
-.flight-strip-labels {
-  display: grid;
-  grid-template-columns: 1.25fr 0.65fr 0.65fr 1.8fr;
-  gap: clamp(0.4rem, 0.8vw, 0.8rem);
-  padding: 0 0.5rem 0.4rem;
-  color: var(--brass);
-  font-size: clamp(0.48rem, 0.65vw, 0.68rem);
-  letter-spacing: 0.14rem;
-  text-align: center;
-}
-
-.flight-board {
-  min-height: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: clamp(0.45rem, 0.8vw, 0.8rem);
-  border: 1px solid #26282a;
-  border-radius: 4px;
-  background:
-    linear-gradient(180deg, #080909, #030404);
-  box-shadow:
-    inset 0 8px 20px rgba(255, 255, 255, 0.018),
-    inset 0 -10px 24px rgba(0, 0, 0, 0.75);
-  color: var(--cream);
-  font-family: "Courier New", monospace;
-}
-
-.flight-board-row {
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1.25fr 0.65fr 0.65fr 1.8fr;
-  align-items: center;
-  gap: clamp(0.4rem, 0.8vw, 0.8rem);
-}
-
-.flap-cell {
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--flap-gap);
-  padding: 0;
-  border: 0;
-  background: transparent;
-}
-
-.flap-character {
-  position: relative;
-  width: var(--flap-width);
-  height: var(--flap-height);
-  flex: 0 0 var(--flap-width);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-
-  border: 1px solid #4b4a46;
-  border-radius: 3px;
-
-  background:
-    linear-gradient(
-      to bottom,
-      #41413e 0%,
-      #333330 12%,
-      #242523 47%,
-      #0c0d0d 49%,
-      #090a0a 51%,
-      #262724 53%,
-      #343531 88%,
-      #242522 100%
-    );
-
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.85),
-    inset 5px 0 8px rgba(0, 0, 0, 0.16),
-    inset -5px 0 8px rgba(0, 0, 0, 0.16),
-    0 2px 3px rgba(0, 0, 0, 0.55);
-
-  color: #f3ecde;
-  font-family: "Courier New", monospace;
-  font-size: clamp(0.82rem, 1.45vw, 1.55rem);
-  font-weight: 700;
-  line-height: 1;
-  text-align: center;
-  text-shadow:
-    0 1px 0 #000,
-    0 0 4px rgba(255, 255, 255, 0.08);
-}
-
-.flap-character::before {
-  content: "";
-  position: absolute;
-  z-index: 2;
-  top: 50%;
-  right: 0;
-  left: 0;
-  height: 1px;
-  background: #050606;
-  box-shadow:
-    0 -1px 0 rgba(255, 255, 255, 0.035),
-    0 1px 0 rgba(0, 0, 0, 0.9);
-  pointer-events: none;
-}
-
-.flap-character::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(
-      115deg,
-      rgba(255, 255, 255, 0.07),
-      transparent 25%,
-      transparent 72%,
-      rgba(0, 0, 0, 0.2)
-    );
-  pointer-events: none;
-}
-
-#flight-board-text {
-  color: #ded7c8;
-  font-size: clamp(0.9rem, 1.5vw, 1.35rem);
-  letter-spacing: 0.18rem;
-  text-align: center;
-}
-
-/* Middle row */
-
-.middle-row {
-  min-height: 0;
-  display: grid;
-  grid-template-columns: minmax(220px, 0.8fr) minmax(0, 2.2fr);
-  gap: clamp(0.45rem, 0.8vw, 0.8rem);
-}
-
-/* Destination poster module */
-
-.destination-panel {
-  display: flex;
-  flex-direction: column;
-  padding: clamp(0.7rem, 1vw, 1rem);
-}
-
-.destination-content {
-  position: relative;
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  margin-top: 0.55rem;
-  padding: 1.2rem;
-  overflow: hidden;
-  border: 1px solid #4f5759;
-  background:
-    linear-gradient(
-      to top,
-      rgba(5, 8, 9, 0.92) 0%,
-      rgba(5, 8, 9, 0.22) 48%,
-      rgba(5, 8, 9, 0.05) 100%
-    ),
-    radial-gradient(
-      circle at 50% 22%,
-      #98b4bc 0%,
-      #52717a 32%,
-      #283f46 58%,
-      #10191c 100%
-    );
-  text-align: center;
-  box-shadow:
-    inset 0 0 18px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.07);
-}
-
-.destination-content::before {
-  content: "";
-  position: absolute;
-  right: -8%;
-  bottom: 25%;
-  left: -8%;
-  height: 38%;
-  background:
-    linear-gradient(
-      155deg,
-      transparent 0 24%,
-      rgba(15, 30, 33, 0.92) 25% 42%,
-      transparent 43%
-    ),
-    linear-gradient(
-      25deg,
-      transparent 0 35%,
-      rgba(26, 47, 48, 0.9) 36% 60%,
-      transparent 61%
-    );
-  opacity: 0.85;
-}
-
-.destination-content strong,
-.destination-content span {
-  position: relative;
-  z-index: 2;
-}
-
-.destination-content strong {
-  color: #f3ead7;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.2rem, 2.8vw, 2.8rem);
-  letter-spacing: 0.08rem;
-  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
-}
-
-.destination-content span {
-  margin-top: 0.45rem;
-  color: var(--brass);
-  font-family: "Courier New", monospace;
-  font-size: clamp(0.8rem, 1.25vw, 1.2rem);
-  letter-spacing: 0.25rem;
-}
-
-/* Map module */
-
-.map-panel {
-  display: grid;
-  grid-template-rows: auto 1fr;
-  padding: clamp(0.65rem, 1vw, 1rem);
-}
-
-.map-information {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0 0.35rem 0.55rem;
-}
-
-.eta-block {
-  text-align: right;
-}
-
-.eta-value,
-.clock-value {
-  margin: 0.32rem 0 0;
-  color: var(--cream);
-  font-family: "Courier New", monospace;
-  font-size: clamp(0.95rem, 1.55vw, 1.35rem);
-  letter-spacing: 0.1rem;
-}
-
-.eta-zone {
-  display: block;
-  margin-top: 0.2rem;
-  color: var(--brass);
-  font-size: clamp(0.45rem, 0.58vw, 0.58rem);
-  letter-spacing: 0.12rem;
-}
-
-.route-display {
-  position: relative;
-  min-height: 0;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: clamp(0.75rem, 1.2vw, 1.2rem);
-  overflow: hidden;
-  padding: clamp(1rem, 1.8vw, 1.8rem);
-
-  border: 1px solid #3c4c50;
-  background:
-    linear-gradient(
-      18deg,
-      transparent 0 47%,
-      rgba(141, 158, 156, 0.08) 48% 49%,
-      transparent 50%
-    ),
-    linear-gradient(
-      112deg,
-      transparent 0 53%,
-      rgba(141, 158, 156, 0.065) 54% 55%,
-      transparent 56%
-    ),
-    repeating-radial-gradient(
-      ellipse at 35% 55%,
-      rgba(89, 113, 114, 0.09) 0 1px,
-      transparent 2px 20px
-    ),
-    radial-gradient(circle at 38% 42%, #284047 0%, #17282d 52%, #091012 100%);
-
-  box-shadow:
-    inset 0 0 35px rgba(0, 0, 0, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-}
-
-.route-display::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(
-      90deg,
-      transparent,
-      rgba(182, 202, 199, 0.035),
-      transparent
-    );
-  pointer-events: none;
-}
-
-.route-airport {
-  position: relative;
-  z-index: 2;
-  color: var(--cream);
-  font-family: "Courier New", monospace;
-  font-size: clamp(0.95rem, 1.6vw, 1.4rem);
-  font-weight: 700;
-  letter-spacing: 0.14rem;
-  text-shadow: 0 2px 3px #000;
-}
-
-.route-line {
-  position: relative;
-  z-index: 2;
-  height: 3px;
-  background:
-    linear-gradient(
-      to right,
-      rgba(184, 154, 103, 0.25),
-      #c1ad78,
-      rgba(184, 154, 103, 0.3)
-    );
-  box-shadow:
-    0 0 6px rgba(184, 154, 103, 0.35);
-}
-
-.route-line::before,
-.route-line::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  width: 0.55rem;
-  height: 0.55rem;
-  border: 2px solid #d1bd88;
-  border-radius: 50%;
-  background: #111719;
-  transform: translateY(-50%);
-}
-
-.route-line::before {
-  left: -0.25rem;
-}
-
-.route-line::after {
-  right: -0.25rem;
-}
-
-.aircraft-marker {
-  position: absolute;
-  z-index: 3;
-  top: 50%;
-  left: 62%;
-  transform: translate(-50%, -50%);
-  color: #f0e8d9;
-  font-size: clamp(1.25rem, 2vw, 1.9rem);
-  text-shadow:
-    0 2px 3px #000,
-    0 0 8px rgba(255, 255, 255, 0.15);
-}
-
-/* Bottom row */
-
-.bottom-row {
-  min-height: 0;
-  display: grid;
-  grid-template-columns: minmax(150px, 0.75fr) minmax(380px, 2.5fr) minmax(150px, 0.8fr);
-  gap: clamp(0.45rem, 0.8vw, 0.8rem);
-}
-
-/* Identity */
-
-.identity-panel,
-.control-panel {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: clamp(0.6rem, 1vw, 1rem);
-  text-align: center;
-}
-
-.identity-name {
-  margin: 0;
-  color: var(--cream);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(0.72rem, 1.15vw, 1.05rem);
-  letter-spacing: 0.1rem;
-}
-
-.identity-unit {
-  margin: 0.45rem 0 0;
-  color: var(--brass);
-  font-size: clamp(0.48rem, 0.62vw, 0.62rem);
-  letter-spacing: 0.14rem;
-}
-
-/* Instruments */
-
-.instrument-panel {
-  display: grid;
-  place-items: center;
-  padding: clamp(0.4rem, 0.7vw, 0.75rem);
-}
-
-.instrument-row {
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  align-items: center;
-  gap: clamp(0.55rem, 1vw, 1rem);
-}
-
-.instrument {
-  position: relative;
-  width: min(100%, 150px);
-  aspect-ratio: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  justify-self: center;
-  gap: 0.22rem;
-  overflow: hidden;
-
-  border: clamp(4px, 0.5vw, 7px) solid #111314;
-  border-radius: 50%;
-  outline: 2px solid #827052;
-
-  background:
-    radial-gradient(
-      circle at 50% 50%,
-      transparent 0 58%,
-      rgba(255, 255, 255, 0.055) 59%,
-      transparent 61%
-    ),
-    repeating-conic-gradient(
-      from -2deg,
-      rgba(226, 222, 211, 0.7) 0deg 0.7deg,
-      transparent 0.7deg 10deg
-    ),
-    radial-gradient(circle at center, #202326 0%, #0c0e10 72%, #020303 100%);
-
-  box-shadow:
-    inset 0 0 18px rgba(0, 0, 0, 0.85),
-    inset 0 2px 3px rgba(255, 255, 255, 0.06),
-    0 4px 10px rgba(0, 0, 0, 0.72);
-
-  text-align: center;
-}
-
-.instrument::before {
-  content: "";
-  position: absolute;
-  inset: 7%;
-  border: 1px solid rgba(216, 210, 194, 0.1);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.instrument::after {
-  content: "";
-  position: absolute;
-  top: 5%;
-  right: 15%;
-  left: 15%;
-  height: 30%;
-  border-radius: 50%;
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.09),
-      rgba(255, 255, 255, 0)
-    );
-  transform: rotate(-8deg);
-  pointer-events: none;
-}
-
-.instrument-label,
-.instrument-value,
-.instrument-unit {
-  position: relative;
-  z-index: 2;
-  text-shadow: 0 2px 2px #000;
-}
-
-.instrument-label {
-  font-size: clamp(0.38rem, 0.58vw, 0.58rem);
-  letter-spacing: 0.07rem;
-}
-
-.instrument-value {
-  color: var(--cream);
-  font-family: "Courier New", monospace;
-  font-size: clamp(0.85rem, 1.55vw, 1.55rem);
-}
-
-.instrument-unit {
-  color: var(--brass);
-  font-size: clamp(0.38rem, 0.48vw, 0.5rem);
-  letter-spacing: 0.08rem;
-}
-
-/* Clock and status */
-
-.control-panel {
-  gap: 0.28rem;
-}
-
-.system-indicator {
-  display: flex;
-  align-items: center;
-  gap: 0.42rem;
-  margin-top: 0.5rem;
-  color: var(--brass);
-  font-size: clamp(0.42rem, 0.55vw, 0.55rem);
-  letter-spacing: 0.1rem;
-}
-
-.indicator-light {
-  width: 0.65rem;
-  height: 0.65rem;
-  border: 1px solid #632e14;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 35% 30%, #ffd29b, #e4732a 38%, #8e3110 78%);
-  box-shadow:
-    0 0 5px #d86925,
-    0 0 12px rgba(220, 111, 40, 0.65);
-}
-
-/* Animation */
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 0.45;
-  }
-
-  50% {
-    opacity: 1;
-  }
-}
-
-/* Smaller screens */
-
-@media (max-width: 1000px) {
-  body {
-    overflow: auto;
-  }
-
-  .dashboard {
-    height: auto;
-    min-height: 100vh;
-  }
-
-  .panel-shell {
-    height: auto;
-    grid-template-rows: auto;
-  }
-
-  .middle-row,
-  .bottom-row {
-    grid-template-columns: 1fr;
-  }
-
-  .destination-content,
-  .route-display {
-    min-height: 260px;
-  }
-
-  .flight-strip-labels,
-  .flight-board-row {
-    grid-template-columns: 1fr;
-  }
-
-  .flight-strip-labels {
-    display: none;
-  }
-
-  .flight-board-row {
-    gap: 0.75rem;
-  }
-
-  .instrument-row {
-    min-height: 220px;
-  }
-}
-
-@media (max-width: 650px) {
-  .instrument-row {
-    grid-template-columns: 1fr;
-    min-height: auto;
-  }
-
-  .instrument {
-    width: 150px;
-  }
-
-  .map-information {
-    flex-direction: column;
-  }
-
-  .eta-block {
-    text-align: left;
-  }
-}
-/* Larger, more realistic split-flap board */
-
-.panel-shell {
   grid-template-rows:
-    minmax(145px, 1.25fr)
-    minmax(250px, 2.35fr)
-    minmax(145px, 1.25fr);
-}
-
-.flight-strip-module {
-  padding: 0.7rem 1.1rem 0.95rem;
-}
-
-.flight-strip-labels {
-  grid-template-columns: 1.35fr 0.75fr 0.75fr 1.75fr;
-  gap: 1rem;
-  padding: 0 0.75rem 0.55rem;
-  font-size: clamp(0.58rem, 0.75vw, 0.78rem);
-}
-
-.flight-board {
-  padding: 0.75rem 1.2rem;
-}
-
-.flight-board-row {
-  grid-template-columns: 1.35fr 0.75fr 0.75fr 1.75fr;
-  gap: 1rem;
-}
-
-.flap-cell {
-  gap: clamp(0.12rem, 0.24vw, 0.28rem);
-}
-
-.flap-character {
-  width: clamp(1.55rem, 2.35vw, 2.75rem);
-  height: clamp(2.65rem, 4vw, 4.6rem);
-  flex-basis: clamp(1.55rem, 2.35vw, 2.75rem);
-
-  border-radius: 4px;
-
-  font-size: clamp(1.25rem, 2.25vw, 2.45rem);
-
-  background:
-    linear-gradient(
-      to bottom,
-      #4a4945 0%,
-      #373733 14%,
-      #242522 47%,
-      #080909 49%,
-      #080909 51%,
-      #272824 53%,
-      #383934 87%,
-      #252622 100%
+    auto
+    minmax(
+      0,
+      1fr
     );
 
-  box-shadow:
-    inset 0 2px 1px rgba(255, 255, 255, 0.1),
-    inset 0 -2px 2px rgba(0, 0, 0, 0.9),
-    inset 6px 0 10px rgba(0, 0, 0, 0.2),
-    inset -6px 0 10px rgba(0, 0, 0, 0.2),
-    0 3px 5px rgba(0, 0, 0, 0.7);
-}
-
-.flap-character::before {
-  height: 2px;
-  background: #030404;
-  box-shadow:
-    0 -1px 0 rgba(255, 255, 255, 0.05),
-    0 1px 1px rgba(0, 0, 0, 1);
-}
-/* Split-flap proportions tuned to the physical reference */
-
-.panel-shell {
-  grid-template-rows:
-    minmax(165px, 1.45fr)
-    minmax(245px, 2.25fr)
-    minmax(145px, 1.2fr);
-}
-
-.flight-strip-module {
-  padding: 0.75rem 1.2rem 1rem;
+  padding:
+    clamp(
+      5px,
+      0.42vw,
+      8px
+    )
+    clamp(
+      8px,
+      0.7vw,
+      14px
+    )
+    clamp(
+      7px,
+      0.58vw,
+      11px
+    );
 }
 
 .flight-strip-labels,
 .flight-board-row {
+  display:
+    grid;
+
   grid-template-columns:
-    minmax(330px, 1.35fr)
-    minmax(165px, 0.7fr)
-    minmax(165px, 0.7fr)
-    minmax(410px, 1.7fr);
-  gap: clamp(0.7rem, 1.1vw, 1.15rem);
+    minmax(
+      0,
+      1.12fr
+    )
+    minmax(
+      0,
+      0.72fr
+    )
+    minmax(
+      0,
+      0.72fr
+    )
+    minmax(
+      0,
+      1.74fr
+    );
+
+  align-items:
+    center;
+
+  gap:
+    clamp(
+      7px,
+      0.72vw,
+      14px
+    );
 }
 
 .flight-strip-labels {
-  padding: 0 0.8rem 0.55rem;
-  font-size: clamp(0.62rem, 0.78vw, 0.82rem);
+  padding:
+    0
+    clamp(
+      4px,
+      0.3vw,
+      6px
+    )
+    clamp(
+      4px,
+      0.34vw,
+      7px
+    );
+
+  color:
+    var(--brass);
+
+  font-size:
+    clamp(
+      0.5rem,
+      0.62vw,
+      0.75rem
+    );
+
+  letter-spacing:
+    clamp(
+      0.08rem,
+      0.12vw,
+      0.17rem
+    );
+
+  text-align:
+    center;
 }
 
 .flight-board {
-  padding: 0.8rem 1.25rem;
+  min-height:
+    0;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  padding:
+    clamp(
+      6px,
+      0.52vw,
+      10px
+    )
+    clamp(
+      9px,
+      0.78vw,
+      15px
+    );
+
+  border:
+    1px
+    solid
+    #26282a;
+
+  border-radius:
+    3px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #080909,
+      #030404
+    );
+
+  box-shadow:
+    inset
+    0
+    6px
+    17px
+    rgba(
+      255,
+      255,
+      255,
+      0.018
+    ),
+
+    inset
+    0
+    -9px
+    20px
+    rgba(
+      0,
+      0,
+      0,
+      0.75
+    );
+
+  color:
+    var(--cream);
+
+  font-family:
+    "Courier New",
+    monospace;
+}
+
+.flight-board-row {
+  width:
+    100%;
 }
 
 .flap-cell {
-  gap: clamp(0.16rem, 0.26vw, 0.3rem);
-}
+  min-width:
+    0;
 
-.flap-character {
-  width: clamp(2.35rem, 3.05vw, 3.45rem);
-  height: clamp(3.75rem, 4.8vw, 5.25rem);
-  flex: 0 0 clamp(2.35rem, 3.05vw, 3.45rem);
+  display:
+    flex;
 
-  border: 1px solid #504e49;
-  border-radius: 4px;
+  align-items:
+    center;
 
-  background:
-    linear-gradient(
-      to bottom,
-      #494844 0%,
-      #393834 13%,
-      #252522 47%,
-      #070808 49%,
-      #050606 51%,
-      #292925 53%,
-      #3a3935 87%,
-      #242421 100%
-    );
+  justify-content:
+    center;
 
-  box-shadow:
-    inset 0 2px 1px rgba(255, 255, 255, 0.1),
-    inset 0 -2px 2px rgba(0, 0, 0, 0.95),
-    inset 7px 0 11px rgba(0, 0, 0, 0.18),
-    inset -7px 0 11px rgba(0, 0, 0, 0.18),
-    0 3px 6px rgba(0, 0, 0, 0.75);
+  gap:
+    var(--flap-gap);
 
-  color: #f0eadf;
-  font-family:
-    "Barlow Condensed",
-    "Arial Narrow",
-    Arial,
-    sans-serif;
-  font-size: clamp(2rem, 3.35vw, 3.5rem);
-  font-weight: 600;
-  font-stretch: condensed;
-  line-height: 0.82;
-  letter-spacing: 0.01em;
-  text-shadow:
-    0 2px 1px rgba(0, 0, 0, 0.95),
-    0 0 3px rgba(255, 255, 255, 0.08);
+  padding:
+    0;
 
-  transform: scaleY(1.08);
-  transform-origin: center;
-}
-
-.flap-character::before {
-  top: 50%;
-  height: 2px;
-  background: #020303;
-  box-shadow:
-    0 -1px 0 rgba(255, 255, 255, 0.045),
-    0 1px 1px rgba(0, 0, 0, 1);
-}
-
-.flap-character::after {
-  background:
-    linear-gradient(
-      108deg,
-      rgba(255, 255, 255, 0.075),
-      transparent 24%,
-      transparent 70%,
-      rgba(0, 0, 0, 0.24)
-    );
-}
-/* Realistic aviation instrument faces */
-
-.instrument {
-  position: relative;
-  width: min(100%, 175px);
-  aspect-ratio: 1;
-  display: grid;
-  place-items: center;
-  overflow: visible;
-
-  border: 7px solid #111314;
-  border-radius: 50%;
-  outline: 2px solid #877457;
+  border:
+    0;
 
   background:
-    radial-gradient(
-      circle at 50% 46%,
-      #24282b 0%,
-      #111416 58%,
-      #050607 82%,
-      #010202 100%
-    );
-
-  box-shadow:
-    inset 0 0 28px rgba(0, 0, 0, 0.92),
-    inset 0 2px 3px rgba(255, 255, 255, 0.08),
-    0 4px 12px rgba(0, 0, 0, 0.78);
+    transparent;
 }
 
-.instrument::before {
-  content: "";
-  position: absolute;
-  inset: 5%;
-  z-index: 1;
-  border: 1px solid rgba(228, 221, 204, 0.14);
-  border-radius: 50%;
-  pointer-events: none;
-}
 
-.instrument::after {
-  content: "";
-  position: absolute;
-  z-index: 10;
-  top: 5%;
-  right: 14%;
-  left: 14%;
-  height: 32%;
-  border-radius: 50%;
-
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.12),
-      rgba(255, 255, 255, 0.025) 48%,
-      transparent 100%
-    );
-
-  transform: rotate(-8deg);
-  pointer-events: none;
-}
-
-.gauge-face {
-  position: relative;
-  width: 88%;
-  height: 88%;
-  border-radius: 50%;
-
-  background:
-    repeating-conic-gradient(
-      from -1deg,
-      rgba(238, 233, 219, 0.78) 0deg 0.8deg,
-      transparent 0.8deg 9deg
-    ),
-    radial-gradient(
-      circle,
-      transparent 0%,
-      transparent 71%,
-      rgba(238, 233, 219, 0.12) 72%,
-      transparent 73%
-    ),
-    radial-gradient(circle at center, #191c1e 0%, #090b0c 76%, #020303 100%);
-
-  box-shadow:
-    inset 0 0 20px rgba(0, 0, 0, 0.88);
-}
-
-/* Number positions around the circular dial */
-
-.gauge-mark {
-  position: absolute;
-  z-index: 4;
-  color: #e6dfcf;
-  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
-  font-size: clamp(0.58rem, 0.8vw, 0.82rem);
-  font-weight: 600;
-  line-height: 1;
-  text-shadow: 0 1px 2px #000;
-}
-
-.mark-0 {
-  top: 8%;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.mark-45 {
-  top: 20%;
-  right: 15%;
-}
-
-.mark-90 {
-  top: 50%;
-  right: 7%;
-  transform: translateY(-50%);
-}
-
-.mark-135 {
-  right: 15%;
-  bottom: 20%;
-}
-
-.mark-180 {
-  bottom: 8%;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.mark-225 {
-  bottom: 20%;
-  left: 15%;
-}
-
-.mark-270 {
-  top: 50%;
-  left: 7%;
-  transform: translateY(-50%);
-}
-
-.mark-315 {
-  top: 20%;
-  left: 15%;
-}
-
-/* Needles */
-
-.gauge-needle {
-  position: absolute;
-  z-index: 6;
-  top: 16%;
-  left: 50%;
-  width: 3px;
-  height: 38%;
-
-  border-radius: 3px 3px 1px 1px;
-  background:
-    linear-gradient(
-      to right,
-      #d5c8aa 0%,
-      #f4ead2 45%,
-      #8f8168 100%
-    );
-
-  box-shadow:
-    0 0 3px rgba(255, 244, 216, 0.32),
-    1px 2px 2px rgba(0, 0, 0, 0.9);
-
-  transform: translateX(-50%) rotate(45deg);
-  transform-origin: 50% 88%;
-  transition: transform 450ms ease-out;
-}
-
-.altimeter-needle {
-  height: 40%;
-  background:
-    linear-gradient(
-      to right,
-      #d8d1c2,
-      #ffffff 48%,
-      #8d877b
-    );
-
-  transform: translateX(-50%) rotate(120deg);
-}
-
-.gauge-hub {
-  position: absolute;
-  z-index: 8;
-  top: 50%;
-  left: 50%;
-  width: 13%;
-  aspect-ratio: 1;
-
-  border: 1px solid #171717;
-  border-radius: 50%;
-
-  background:
-    radial-gradient(
-      circle at 35% 30%,
-      #c6c0b3,
-      #575652 38%,
-      #181919 72%
-    );
-
-  box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.9);
-
-  transform: translate(-50%, -50%);
-}
-
-/* Digital readouts inside each instrument */
-
-.gauge-readout {
-  position: absolute;
-  z-index: 9;
-  right: 19%;
-  bottom: 18%;
-  left: 19%;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.08rem;
-
-  padding: 0.18rem 0.25rem;
-  border: 1px solid rgba(197, 181, 148, 0.26);
-  border-radius: 2px;
-
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(5, 7, 8, 0.9),
-      rgba(0, 0, 0, 0.98)
-    );
-
-  box-shadow:
-    inset 0 0 5px rgba(0, 0, 0, 0.9),
-    0 1px 2px rgba(255, 255, 255, 0.03);
-}
-
-.gauge-readout .instrument-label {
-  color: #b9ae96;
-  font-size: clamp(0.34rem, 0.44vw, 0.46rem);
-  letter-spacing: 0.07rem;
-}
-
-.gauge-readout .instrument-value {
-  color: #f4ead7;
-  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
-  font-size: clamp(0.78rem, 1.15vw, 1.18rem);
-  font-weight: 600;
-  line-height: 0.95;
-}
-
-.gauge-readout .instrument-unit {
-  color: var(--brass);
-  font-size: clamp(0.3rem, 0.38vw, 0.4rem);
-}
-
-/* Heading indicator */
-
-.heading-instrument .gauge-face {
-  background:
-    radial-gradient(
-      circle,
-      transparent 0 47%,
-      rgba(226, 220, 205, 0.13) 48%,
-      transparent 50%
-    ),
-    repeating-conic-gradient(
-      from 0deg,
-      rgba(238, 233, 219, 0.72) 0deg 0.75deg,
-      transparent 0.75deg 10deg
-    ),
-    radial-gradient(circle at center, #1d2123 0%, #090b0c 76%, #020303 100%);
-}
-
-.compass-mark {
-  position: absolute;
-  z-index: 4;
-  color: #f0e8d8;
-  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
-  font-size: clamp(0.78rem, 1vw, 1.05rem);
-  font-weight: 700;
-  text-shadow: 0 1px 2px #000;
-}
-
-.compass-n {
-  top: 8%;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.compass-e {
-  top: 50%;
-  right: 8%;
-  transform: translateY(-50%);
-}
-
-.compass-s {
-  bottom: 8%;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.compass-w {
-  top: 50%;
-  left: 8%;
-  transform: translateY(-50%);
-}
-
-.heading-card {
-  position: absolute;
-  z-index: 5;
-  inset: 18%;
-  border: 1px solid rgba(223, 215, 197, 0.12);
-  border-radius: 50%;
-
-  background:
-    repeating-conic-gradient(
-      from 0deg,
-      rgba(233, 227, 213, 0.28) 0deg 1deg,
-      transparent 1deg 30deg
-    );
-
-  transition: transform 450ms ease-out;
-}
-
-.heading-arrow {
-  position: absolute;
-  top: 10%;
-  left: 50%;
-  color: #d9c28c;
-  font-size: clamp(0.75rem, 1.1vw, 1.1rem);
-  transform: translateX(-50%);
-  text-shadow: 0 0 4px rgba(217, 194, 140, 0.35);
-}
 /* =========================================================
-   Photoreal split-flap tiles
+   Photoreal animated split-flap tiles
+
+   main.js generates each cell and its moving halves.
+   The stylesheet is inside UI, so the asset path begins ../
    ========================================================= */
 
-.flap-cell {
-  gap: clamp(0.06rem, 0.14vw, 0.14rem);
-}
-
 .flap-character {
-  position: relative;
+  position:
+    relative;
 
-  width: clamp(3rem, 3.45vw, 3.9rem);
-  height: clamp(3.75rem, 4.35vw, 4.9rem);
-  flex: 0 0 clamp(3rem, 3.45vw, 3.9rem);
+  width:
+    var(--flap-width);
 
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  height:
+    var(--flap-height);
 
-  padding: 0 0 0.05em;
-  overflow: hidden;
+  flex:
+    0
+    0
+    var(--flap-width);
 
-  border: 0;
-  border-radius: 7px;
+  display:
+    block;
 
-  background-color: #080909;
-  background-image:
-    url("../assets/split-flap/split-flap-tile.png");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 100% 100%;
+  overflow:
+    hidden;
+
+  perspective:
+    650px;
+
+  border:
+    0;
+
+  border-radius:
+    clamp(
+      3px,
+      0.3vw,
+      6px
+    );
+
+  background:
+    #050606
+    url(
+      "../assets/split-flap/split-flap-tile.png"
+    )
+    center /
+    100%
+    100%
+    no-repeat;
 
   box-shadow:
-    0 4px 7px rgba(0, 0, 0, 0.72),
-    0 1px 1px rgba(255, 255, 255, 0.05);
+    0
+    4px
+    8px
+    rgba(
+      0,
+      0,
+      0,
+      0.8
+    ),
 
-  color: #eee6d5;
+    0
+    1px
+    1px
+    rgba(
+      255,
+      255,
+      255,
+      0.045
+    );
+
+  color:
+    #eee6d5;
 
   font-family:
-    "Barlow Condensed",
     "Arial Narrow",
+    "Barlow Condensed",
     Arial,
     sans-serif;
 
-  font-size: clamp(2.25rem, 3.15vw, 3.55rem);
-  font-weight: 600;
-  font-stretch: condensed;
-  line-height: 1;
-  letter-spacing: -0.035em;
+  font-size:
+    clamp(
+      1.45rem,
+      2.65vw,
+      3.1rem
+    );
+
+  font-weight:
+    600;
+
+  line-height:
+    1;
+
+  text-align:
+    center;
 
   text-shadow:
-    0 2px 1px rgba(0, 0, 0, 1),
-    0 0 2px rgba(255, 248, 225, 0.18);
+    0
+    2px
+    1px
+    rgba(
+      0,
+      0,
+      0,
+      0.98
+    ),
 
-  transform: none;
+    0
+    0
+    2px
+    rgba(
+      255,
+      248,
+      225,
+      0.18
+    );
 }
 
-/* Dark seam drawn over the character, so the letter appears split */
-
 .flap-character::before {
-  content: "";
-  position: absolute;
-  z-index: 4;
+  content:
+    "";
 
-  top: 49.6%;
-  right: 7%;
-  left: 7%;
+  position:
+    absolute;
 
-  height: 3px;
+  z-index:
+    30;
+
+  top:
+    50%;
+
+  right:
+    6%;
+
+  left:
+    6%;
+
+  height:
+    clamp(
+      2px,
+      0.17vw,
+      3px
+    );
 
   background:
     linear-gradient(
       to bottom,
-      rgba(0, 0, 0, 0.35),
-      #020303 45%,
-      #000 55%,
-      rgba(255, 255, 255, 0.045)
+      rgba(
+        0,
+        0,
+        0,
+        0.3
+      ),
+      #020303
+      42%,
+      #000
+      58%,
+      rgba(
+        255,
+        255,
+        255,
+        0.04
+      )
     );
 
-  box-shadow:
-    0 -1px 1px rgba(0, 0, 0, 0.85),
-    0 1px 1px rgba(255, 255, 255, 0.035);
+  transform:
+    translateY(
+      -50%
+    );
 
-  pointer-events: none;
+  pointer-events:
+    none;
 }
 
-/* Very subtle glass and plastic highlight */
-
 .flap-character::after {
-  content: "";
-  position: absolute;
-  z-index: 3;
-  inset: 6% 7%;
+  content:
+    "";
 
-  border-radius: 5px;
+  position:
+    absolute;
+
+  z-index:
+    31;
+
+  inset:
+    5%
+    6%;
+
+  border-radius:
+    4px;
 
   background:
     linear-gradient(
       118deg,
-      rgba(255, 255, 255, 0.07) 0%,
-      rgba(255, 255, 255, 0.018) 27%,
-      transparent 43%,
-      transparent 72%,
-      rgba(0, 0, 0, 0.13) 100%
+      rgba(
+        255,
+        255,
+        255,
+        0.075
+      ),
+      rgba(
+        255,
+        255,
+        255,
+        0.018
+      )
+      28%,
+      transparent
+      45%,
+      transparent
+      72%,
+      rgba(
+        0,
+        0,
+        0,
+        0.15
+      )
     );
 
-  pointer-events: none;
+  pointer-events:
+    none;
 }
 
-/* Give the flight board enough height for the larger physical tiles */
 
-.panel-shell {
-  grid-template-rows:
-    minmax(175px, 1.5fr)
-    minmax(245px, 2.2fr)
-    minmax(145px, 1.2fr);
-}
-
-.flight-board {
-  padding: 0.7rem 1rem;
-}
-/* FORCE THE GENERATED PHOTO AS THE FLAP TILE */
-
-.flap-character {
-  position: relative !important;
-
-  width: clamp(3rem, 3.45vw, 3.9rem) !important;
-  height: clamp(3.75rem, 4.35vw, 4.9rem) !important;
-  flex: 0 0 clamp(3rem, 3.45vw, 3.9rem) !important;
-
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-
-  overflow: hidden !important;
-  padding: 0 0 0.04em !important;
-
-  border: 0 !important;
-  border-radius: 7px !important;
-
-  background:
-    #050606
-    url("../assets/split-flap/split-flap-tile.png")
-    center / 100% 100%
-    no-repeat !important;
-
-  box-shadow:
-    0 4px 8px rgba(0, 0, 0, 0.8) !important;
-
-  color: #eee6d5 !important;
-
-  font-family:
-    "Barlow Condensed",
-    "Arial Narrow",
-    Arial,
-    sans-serif !important;
-
-  font-size: clamp(2.15rem, 3vw, 3.4rem) !important;
-  font-weight: 600 !important;
-  line-height: 1 !important;
-  letter-spacing: -0.035em !important;
-
-  text-shadow:
-    0 2px 1px #000,
-    0 0 2px rgba(255, 248, 225, 0.18) !important;
-
-  transform: none !important;
-}
-
-/* Disable the old CSS-created surfaces */
-
-.flap-character::after {
-  content: none !important;
-}
-
-/* Keep only a thin seam across the live character */
-
-.flap-character::before {
-  content: "" !important;
-  position: absolute !important;
-  z-index: 5 !important;
-
-  top: 49.5% !important;
-  right: 8% !important;
-  left: 8% !important;
-
-  height: 2px !important;
-
-  background: rgba(0, 0, 0, 0.92) !important;
-  box-shadow:
-    0 -1px rgba(255, 255, 255, 0.035),
-    0 1px rgba(0, 0, 0, 0.9) !important;
-
-  pointer-events: none !important;
-}
-/* =========================================================
-   Animated photoreal split-flap mechanism
-   ========================================================= */
-
-.flap-character {
-  position: relative !important;
-
-  width: clamp(3rem, 3.45vw, 3.9rem) !important;
-  height: clamp(3.75rem, 4.35vw, 4.9rem) !important;
-  flex: 0 0 clamp(3rem, 3.45vw, 3.9rem) !important;
-
-  display: inline-block !important;
-  overflow: visible !important;
-
-  padding: 0 !important;
-  border: 0 !important;
-  border-radius: 7px !important;
-
-  background: transparent !important;
-
-  box-shadow:
-    0 4px 8px rgba(0, 0, 0, 0.82) !important;
-
-  perspective: 650px;
-  transform: none !important;
-}
-
-/*
-  Every half uses the generated photo.
-
-  Background-size is 100% 200% because each element
-  is only half the height of the complete tile.
-*/
+/* Split-flap top and bottom halves */
 
 .flap-half {
-  position: absolute;
-  left: 0;
+  position:
+    absolute;
 
-  width: 100%;
-  height: 50%;
+  right:
+    0;
 
-  overflow: hidden;
+  left:
+    0;
 
-  background-color: #050606;
+  height:
+    50%;
+
+  overflow:
+    hidden;
+
+  background-color:
+    #050606;
+
   background-image:
-    url("../assets/split-flap/split-flap-tile.png");
+    url(
+      "../assets/split-flap/split-flap-tile.png"
+    );
 
-  background-repeat: no-repeat;
-  background-size: 100% 200%;
+  background-repeat:
+    no-repeat;
 
-  color: #eee6d5;
+  background-size:
+    100%
+    200%;
+
+  backface-visibility:
+    hidden;
+
+  transform-style:
+    preserve-3d;
+}
+
+.flap-top {
+  top:
+    0;
+
+  background-position:
+    center
+    top;
+}
+
+.flap-bottom {
+  bottom:
+    0;
+
+  background-position:
+    center
+    bottom;
+}
+
+.flap-glyph {
+  position:
+    absolute;
+
+  right:
+    0;
+
+  left:
+    0;
+
+  height:
+    200%;
+
+  display:
+    grid;
+
+  place-items:
+    center;
+
+  transform:
+    scaleY(
+      1.04
+    );
+
+  transform-origin:
+    center;
+}
+
+.flap-top
+.flap-glyph {
+  top:
+    0;
+}
+
+.flap-bottom
+.flap-glyph {
+  bottom:
+    0;
+}
+
+.flap-static-top,
+.flap-static-bottom {
+  z-index:
+    1;
+}
+
+.flap-moving {
+  z-index:
+    10;
+}
+
+.flap-flip-top {
+  transform-origin:
+    center
+    bottom;
+}
+
+.flap-flip-bottom {
+  transform:
+    rotateX(
+      90deg
+    );
+
+  transform-origin:
+    center
+    top;
+}
+
+.flap-character.is-flipping
+.flap-flip-top {
+  animation:
+    flap-top-fall
+    190ms
+    ease-in
+    forwards;
+}
+
+.flap-character.is-flipping
+.flap-flip-bottom {
+  animation:
+    flap-bottom-rise
+    190ms
+    185ms
+    ease-out
+    forwards;
+}
+
+#flight-board-text {
+  color:
+    #ded7c8;
+
+  font-size:
+    clamp(
+      0.9rem,
+      1.2vw,
+      1.4rem
+    );
+
+  letter-spacing:
+    clamp(
+      0.08rem,
+      0.13vw,
+      0.17rem
+    );
+
+  text-align:
+    center;
+}
+
+
+/* =========================================================
+   Nested lower display
+
+   Left column:  27%
+   Right column: 73%
+
+   Left stack:
+   Poster 78%
+   Controls 22%
+
+   Right stack:
+   Map 62%
+   Instruments 38%
+   ========================================================= */
+
+.lower-display-grid {
+  min-width:
+    0;
+
+  min-height:
+    0;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    minmax(
+      0,
+      27fr
+    )
+    minmax(
+      0,
+      73fr
+    );
+
+  gap:
+    var(--panel-gap);
+}
+
+.left-module-stack,
+.right-module-stack {
+  min-width:
+    0;
+
+  min-height:
+    0;
+
+  display:
+    grid;
+
+  gap:
+    var(--panel-gap);
+}
+
+.left-module-stack {
+  grid-template-rows:
+    minmax(
+      0,
+      78fr
+    )
+    minmax(
+      0,
+      22fr
+    );
+}
+
+.right-module-stack {
+  grid-template-rows:
+    minmax(
+      0,
+      62fr
+    )
+    minmax(
+      0,
+      38fr
+    );
+}
+
+
+/* =========================================================
+   Destination poster
+   ========================================================= */
+
+.destination-panel {
+  display:
+    grid;
+
+  place-items:
+    center;
+
+  padding:
+    clamp(
+      5px,
+      0.42vw,
+      8px
+    );
+}
+
+.destination-stage {
+  position:
+    relative;
+
+  width:
+    100%;
+
+  height:
+    100%;
+
+  min-width:
+    0;
+
+  min-height:
+    0;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  overflow:
+    hidden;
+}
+
+.destination-poster-image {
+  width:
+    auto;
+
+  height:
+    100%;
+
+  max-width:
+    100%;
+
+  max-height:
+    100%;
+
+  display:
+    block;
+
+  object-fit:
+    contain;
+
+  object-position:
+    center;
+
+  border:
+    1px
+    solid
+    #6c6048;
+
+  box-shadow:
+    0
+    4px
+    11px
+    rgba(
+      0,
+      0,
+      0,
+      0.62
+    );
+
+  user-select:
+    none;
+
+  pointer-events:
+    none;
+}
+
+
+/* =========================================================
+   Physical control bay placeholder
+
+   Real controls will be mounted in the wooden faceplate.
+   ========================================================= */
+
+.physical-control-bay {
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      rgba(
+        28,
+        30,
+        29,
+        0.7
+      ),
+      rgba(
+        3,
+        4,
+        4,
+        0.99
+      )
+      76%
+    );
+}
+
+.physical-control-bay::after {
+  content:
+    "";
+
+  position:
+    absolute;
+
+  inset:
+    clamp(
+      10px,
+      0.8vw,
+      15px
+    );
+
+  border:
+    1px
+    dashed
+    rgba(
+      184,
+      154,
+      103,
+      0.07
+    );
+
+  border-radius:
+    3px;
+
+  pointer-events:
+    none;
+}
+
+
+/* =========================================================
+   Moving map
+   ========================================================= */
+
+.map-panel {
+  display:
+    grid;
+
+  grid-template-rows:
+    auto
+    minmax(
+      0,
+      1fr
+    );
+
+  padding:
+    clamp(
+      7px,
+      0.58vw,
+      11px
+    );
+}
+
+.map-information {
+  display:
+    grid;
+
+  grid-template-columns:
+    minmax(
+      0,
+      1fr
+    )
+    auto
+    auto;
+
+  align-items:
+    start;
+
+  gap:
+    clamp(
+      14px,
+      1.3vw,
+      25px
+    );
+
+  padding:
+    0
+    clamp(
+      3px,
+      0.26vw,
+      5px
+    )
+    clamp(
+      5px,
+      0.42vw,
+      8px
+    );
+}
+
+.map-status-copy {
+  display:
+    block;
+
+  margin-top:
+    clamp(
+      2px,
+      0.2vw,
+      4px
+    );
+
+  color:
+    #cbc3b2;
 
   font-family:
-    "Barlow Condensed",
+    "Courier New",
+    monospace;
+
+  font-size:
+    clamp(
+      0.42rem,
+      0.5vw,
+      0.6rem
+    );
+
+  letter-spacing:
+    clamp(
+      0.04rem,
+      0.065vw,
+      0.085rem
+    );
+}
+
+.clock-block,
+.eta-block {
+  min-width:
+    clamp(
+      82px,
+      7vw,
+      135px
+    );
+
+  text-align:
+    right;
+
+  white-space:
+    nowrap;
+}
+
+.eta-value,
+.clock-value {
+  margin:
+    clamp(
+      2px,
+      0.22vw,
+      4px
+    )
+    0
+    0;
+
+  color:
+    var(--cream);
+
+  font-family:
+    "Courier New",
+    monospace;
+
+  font-size:
+    clamp(
+      0.76rem,
+      0.98vw,
+      1.18rem
+    );
+
+  letter-spacing:
+    0.09rem;
+}
+
+.eta-zone {
+  display:
+    block;
+
+  margin-top:
+    clamp(
+      2px,
+      0.16vw,
+      3px
+    );
+
+  color:
+    var(--brass);
+
+  font-size:
+    clamp(
+      0.39rem,
+      0.46vw,
+      0.55rem
+    );
+
+  letter-spacing:
+    clamp(
+      0.055rem,
+      0.08vw,
+      0.1rem
+    );
+}
+
+.route-display {
+  position:
+    relative;
+
+  min-height:
+    0;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    auto
+    minmax(
+      0,
+      1fr
+    )
+    auto;
+
+  align-items:
+    center;
+
+  gap:
+    clamp(
+      11px,
+      1vw,
+      19px
+    );
+
+  overflow:
+    hidden;
+
+  padding:
+    clamp(
+      16px,
+      1.4vw,
+      27px
+    );
+
+  border:
+    1px
+    solid
+    #4a5450;
+
+  background:
+    radial-gradient(
+      circle at 30% 42%,
+      rgba(
+        67,
+        84,
+        57,
+        0.42
+      ),
+      transparent
+      18%
+    ),
+
+    radial-gradient(
+      circle at 68% 56%,
+      rgba(
+        82,
+        93,
+        56,
+        0.24
+      ),
+      transparent
+      22%
+    ),
+
+    linear-gradient(
+      135deg,
+      transparent
+      0
+      48%,
+      rgba(
+        135,
+        126,
+        91,
+        0.08
+      )
+      49%
+      50%,
+      transparent
+      51%
+    ),
+
+    linear-gradient(
+      18deg,
+      transparent
+      0
+      47%,
+      rgba(
+        135,
+        126,
+        91,
+        0.07
+      )
+      48%
+      49%,
+      transparent
+      50%
+    ),
+
+    radial-gradient(
+      circle at 45% 45%,
+      #27352f 0%,
+      #17241f 48%,
+      #08100e 100%
+    );
+
+  box-shadow:
+    inset
+    0
+    0
+    45px
+    rgba(
+      0,
+      0,
+      0,
+      0.7
+    ),
+
+    inset
+    0
+    1px
+    0
+    rgba(
+      255,
+      255,
+      255,
+      0.06
+    );
+}
+
+.route-display::before {
+  content:
+    "";
+
+  position:
+    absolute;
+
+  z-index:
+    8;
+
+  inset:
+    0;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(
+        221,
+        207,
+        165,
+        0.025
+      ),
+      transparent
+    );
+
+  pointer-events:
+    none;
+}
+
+.map-grid {
+  position:
+    absolute;
+
+  inset:
+    0;
+
+  opacity:
+    0.22;
+
+  background-image:
+    linear-gradient(
+      rgba(
+        181,
+        170,
+        133,
+        0.18
+      )
+      1px,
+      transparent
+      1px
+    ),
+
+    linear-gradient(
+      90deg,
+      rgba(
+        181,
+        170,
+        133,
+        0.18
+      )
+      1px,
+      transparent
+      1px
+    );
+
+  background-size:
+    clamp(
+      35px,
+      3.5vw,
+      67px
+    )
+    clamp(
+      35px,
+      3.5vw,
+      67px
+    );
+
+  transform:
+    rotate(
+      -6deg
+    )
+    scale(
+      1.1
+    );
+}
+
+.weather-band {
+  position:
+    absolute;
+
+  width:
+    48%;
+
+  height:
+    22%;
+
+  border-radius:
+    50%;
+
+  filter:
+    blur(
+      clamp(
+        6px,
+        0.6vw,
+        12px
+      )
+    );
+
+  opacity:
+    0.26;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(
+        202,
+        147,
+        42,
+        0.75
+      ),
+      rgba(
+        93,
+        122,
+        48,
+        0.65
+      )
+      38%,
+      transparent
+      70%
+    );
+}
+
+.weather-band-one {
+  top:
+    25%;
+
+  left:
+    17%;
+
+  transform:
+    rotate(
+      16deg
+    );
+}
+
+.weather-band-two {
+  right:
+    9%;
+
+  bottom:
+    20%;
+
+  transform:
+    rotate(
+      -13deg
+    );
+}
+
+.route-airport {
+  position:
+    relative;
+
+  z-index:
+    10;
+
+  color:
+    var(--cream);
+
+  font-family:
+    "Courier New",
+    monospace;
+
+  font-size:
+    clamp(
+      0.8rem,
+      1.12vw,
+      1.35rem
+    );
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    0.14rem;
+
+  text-shadow:
+    0
+    2px
+    3px
+    #000;
+}
+
+.route-line {
+  position:
+    relative;
+
+  z-index:
+    10;
+
+  height:
+    clamp(
+      2px,
+      0.16vw,
+      3px
+    );
+
+  background:
+    linear-gradient(
+      to right,
+      rgba(
+        184,
+        154,
+        103,
+        0.25
+      ),
+      #c1ad78,
+      rgba(
+        184,
+        154,
+        103,
+        0.3
+      )
+    );
+
+  box-shadow:
+    0
+    0
+    7px
+    rgba(
+      184,
+      154,
+      103,
+      0.4
+    );
+}
+
+.route-line::before,
+.route-line::after {
+  content:
+    "";
+
+  position:
+    absolute;
+
+  top:
+    50%;
+
+  width:
+    clamp(
+      7px,
+      0.52vw,
+      10px
+    );
+
+  height:
+    clamp(
+      7px,
+      0.52vw,
+      10px
+    );
+
+  border:
+    2px
+    solid
+    #d1bd88;
+
+  border-radius:
+    50%;
+
+  background:
+    #111719;
+
+  transform:
+    translateY(
+      -50%
+    );
+}
+
+.route-line::before {
+  left:
+    -4px;
+}
+
+.route-line::after {
+  right:
+    -4px;
+}
+
+.route-trail {
+  position:
+    absolute;
+
+  top:
+    50%;
+
+  left:
+    0;
+
+  width:
+    62%;
+
+  height:
+    1px;
+
+  border-top:
+    1px
+    dashed
+    rgba(
+      243,
+      234,
+      215,
+      0.42
+    );
+
+  transform:
+    translateY(
+      -50%
+    );
+}
+
+.aircraft-marker {
+  position:
+    absolute;
+
+  z-index:
+    12;
+
+  top:
+    50%;
+
+  left:
+    62%;
+
+  color:
+    #f0e8d9;
+
+  font-size:
+    clamp(
+      1.05rem,
+      1.5vw,
+      1.8rem
+    );
+
+  text-shadow:
+    0
+    2px
+    3px
+    #000,
+
+    0
+    0
+    8px
+    rgba(
+      255,
+      255,
+      255,
+      0.15
+    );
+
+  transform:
+    translate(
+      -50%,
+      -50%
+    );
+}
+
+
+/* =========================================================
+   Instrument cluster
+   Centered directly beneath the map
+   ========================================================= */
+
+.instrument-panel {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  padding:
+    clamp(
+      5px,
+      0.45vw,
+      9px
+    )
+    clamp(
+      12px,
+      1.1vw,
+      21px
+    );
+
+  overflow:
+    hidden;
+}
+
+.instrument-row {
+  width:
+    max-content;
+
+  max-width:
+    100%;
+
+  height:
+    100%;
+
+  min-width:
+    0;
+
+  min-height:
+    0;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  gap:
+    clamp(
+      10px,
+      1.15vw,
+      22px
+    );
+
+  margin:
+    0
+    auto;
+}
+
+.instrument {
+  position:
+    relative;
+
+  width:
+    min(
+      clamp(
+        170px,
+        13.1vw,
+        252px
+      ),
+      calc(
+        100vh *
+        0.245
+      )
+    );
+
+  aspect-ratio:
+    1;
+
+  flex:
+    0
+    0
+    auto;
+
+  display:
+    block;
+
+  overflow:
+    visible;
+
+  border:
+    0;
+
+  border-radius:
+    0;
+
+  outline:
+    0;
+
+  background:
+    transparent;
+
+  box-shadow:
+    none;
+}
+
+.instrument::before,
+.instrument::after {
+  content:
+    none;
+}
+
+
+/* =========================================================
+   Shared instrument image layers
+   ========================================================= */
+
+.airspeed-layer,
+.heading-layer,
+.altimeter-layer {
+  position:
+    absolute;
+
+  inset:
+    0;
+
+  width:
+    100%;
+
+  height:
+    100%;
+
+  display:
+    block;
+
+  object-fit:
+    contain;
+
+  user-select:
+    none;
+
+  pointer-events:
+    none;
+}
+
+
+/* =========================================================
+   Airspeed
+   ========================================================= */
+
+.airspeed-face-body {
+  z-index:
+    1;
+}
+
+.airspeed-needle-layer {
+  z-index:
+    2;
+
+  transform:
+    rotate(
+      0deg
+    );
+
+  transform-origin:
+    50%
+    50%;
+
+  transition:
+    transform
+    650ms
+    cubic-bezier(
+      0.18,
+      0.72,
+      0.24,
+      1
+    );
+
+  will-change:
+    transform;
+}
+
+.airspeed-glass-overlay {
+  display:
+    none
+    !important;
+}
+
+
+/* =========================================================
+   Heading
+   ========================================================= */
+
+.heading-compass-card {
+  z-index:
+    1;
+
+  transform:
+    rotate(
+      0deg
+    );
+
+  transform-origin:
+    50%
+    50%;
+
+  transition:
+    transform
+    650ms
+    cubic-bezier(
+      0.18,
+      0.72,
+      0.24,
+      1
+    );
+
+  will-change:
+    transform;
+}
+
+.heading-bezel-body {
+  z-index:
+    2;
+}
+
+.heading-glass-overlay {
+  z-index:
+    3;
+}
+
+
+/* =========================================================
+   Altimeter
+   ========================================================= */
+
+.altimeter-face-body {
+  z-index:
+    1;
+}
+
+.altimeter-thousands-needle-layer,
+.altimeter-needle-layer {
+  transform:
+    rotate(
+      0deg
+    );
+
+  transform-origin:
+    50%
+    50%;
+
+  transition:
+    transform
+    650ms
+    cubic-bezier(
+      0.18,
+      0.72,
+      0.24,
+      1
+    );
+
+  will-change:
+    transform;
+}
+
+.altimeter-thousands-needle-layer {
+  z-index:
+    2;
+}
+
+.altimeter-needle-layer {
+  z-index:
+    3;
+}
+
+
+/* =========================================================
+   Instrument readouts
+   ========================================================= */
+
+.gauge-readout {
+  position:
+    absolute;
+
+  z-index:
+    10;
+
+  right:
+    27%;
+
+  bottom:
+    6%;
+
+  left:
+    27%;
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  align-items:
+    center;
+
+  gap:
+    clamp(
+      1px,
+      0.08vw,
+      2px
+    );
+
+  padding:
+    clamp(
+      2px,
+      0.15vw,
+      3px
+    )
+    clamp(
+      3px,
+      0.2vw,
+      4px
+    );
+
+  border:
+    1px
+    solid
+    rgba(
+      190,
+      169,
+      126,
+      0.24
+    );
+
+  border-radius:
+    2px;
+
+  background:
+    rgba(
+      2,
+      3,
+      3,
+      0.88
+    );
+
+  box-shadow:
+    inset
+    0
+    0
+    5px
+    rgba(
+      0,
+      0,
+      0,
+      0.9
+    );
+
+  text-align:
+    center;
+}
+
+.heading-readout {
+  right:
+    29%;
+
+  left:
+    29%;
+}
+
+.instrument-label {
+  color:
+    #b9ae96;
+
+  font-size:
+    clamp(
+      0.25rem,
+      0.29vw,
+      0.35rem
+    );
+
+  letter-spacing:
+    clamp(
+      0.025rem,
+      0.042vw,
+      0.055rem
+    );
+
+  line-height:
+    1;
+}
+
+.instrument-value {
+  color:
+    #f4ead7;
+
+  font-family:
     "Arial Narrow",
     Arial,
     sans-serif;
 
-  font-size: clamp(2.15rem, 3vw, 3.4rem);
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: -0.035em;
+  font-size:
+    clamp(
+      0.62rem,
+      0.75vw,
+      0.9rem
+    );
 
-  text-shadow:
-    0 2px 1px rgba(0, 0, 0, 1),
-    0 0 2px rgba(255, 248, 225, 0.18);
+  font-weight:
+    600;
 
-  backface-visibility: hidden;
-  transform-style: preserve-3d;
+  line-height:
+    0.92;
 }
 
-.flap-top {
-  top: 0;
+.instrument-unit {
+  color:
+    var(--brass);
 
-  border-radius: 7px 7px 0 0;
+  font-size:
+    clamp(
+      0.22rem,
+      0.26vw,
+      0.31rem
+    );
 
-  background-position:
-    center top;
+  letter-spacing:
+    clamp(
+      0.02rem,
+      0.033vw,
+      0.04rem
+    );
 
-  transform-origin:
-    center bottom;
+  line-height:
+    1;
 }
 
-.flap-bottom {
-  bottom: 0;
 
-  border-radius: 0 0 7px 7px;
+/* =========================================================
+   Animations
+   ========================================================= */
 
-  background-position:
-    center bottom;
+@keyframes pulse {
+  0%,
+  100% {
+    opacity:
+      0.45;
+  }
 
-  transform-origin:
-    center top;
+  50% {
+    opacity:
+      1;
+  }
 }
+
+@keyframes flap-top-fall {
+  from {
+    transform:
+      rotateX(
+        0deg
+      );
+  }
+
+  to {
+    transform:
+      rotateX(
+        -90deg
+      );
+  }
+}
+
+@keyframes flap-bottom-rise {
+  from {
+    transform:
+      rotateX(
+        90deg
+      );
+  }
+
+  to {
+    transform:
+      rotateX(
+        0deg
+      );
+  }
+}
+
+
+/* =========================================================
+   Reduced-motion accessibility
+   ========================================================= */
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+  .flap-character.is-flipping
+  .flap-flip-top,
+
+  .flap-character.is-flipping
+  .flap-flip-bottom {
+    animation-duration:
+      1ms;
+  }
+
+  .airspeed-needle-layer,
+  .heading-compass-card,
+  .altimeter-thousands-needle-layer,
+  .altimeter-needle-layer {
+    transition-duration:
+      1ms;
+  }
+}
+/* =========================================================
+   Full-height destination poster layout
+   ========================================================= */
 
 /*
-  The glyph is full-cell height but clipped by
-  its top or bottom container.
+  Slightly widen the poster column.
+
+  A 30/70 split better matches the poster's 2:3 ratio
+  and pulls the map back from its overly wide shape.
 */
 
-.flap-glyph {
-  position: absolute;
-  left: 0;
+.lower-display-grid {
+  grid-template-columns:
+    minmax(0, 30fr)
+    minmax(0, 70fr);
+}
 
+
+/* Poster now occupies the complete left column */
+
+.left-module-stack {
+  display: grid;
+
+  grid-template-rows:
+    minmax(0, 1fr);
+
+  min-width: 0;
+  min-height: 0;
+}
+
+
+/* Remove any leftover control-bay styling */
+
+.physical-control-bay {
+  display: none !important;
+}
+
+
+/* Let the poster use the full available opening */
+
+.destination-panel {
   width: 100%;
-  height: 200%;
+  height: 100%;
+
+  display: grid;
+  place-items: center;
+
+  padding:
+    clamp(
+      5px,
+      0.42vw,
+      8px
+    );
+}
+
+.destination-stage {
+  width: 100%;
+  height: 100%;
+
+  min-width: 0;
+  min-height: 0;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  padding-bottom: 0.04em;
+  padding: 0;
+
+  overflow: hidden;
 }
 
-.flap-top .flap-glyph {
-  top: 0;
+.destination-poster-image {
+  width: 100%;
+  height: 100%;
+
+  max-width: 100%;
+  max-height: 100%;
+
+  display: block;
+
+  object-fit: contain;
+  object-position: center;
+
+  transform: none;
 }
 
-.flap-bottom .flap-glyph {
-  bottom: 0;
-}
-
-/* Permanent layers */
-
-.flap-static-top,
-.flap-static-bottom {
-  z-index: 2;
-}
-
-/* Temporary moving layers */
-
-.flap-moving {
-  z-index: 8;
-  pointer-events: none;
-}
-
-.flap-flip-top {
-  transform: rotateX(0deg);
-}
-
-.flap-flip-bottom {
-  transform: rotateX(90deg);
-}
 
 /*
-  First the old upper half falls forward.
-  Then the new lower half unfolds into place.
+  Give the map slightly more height relative to
+  the instrument bay now that it is narrower.
 */
 
-.flap-character.is-flipping
-.flap-flip-top {
-  animation:
-    split-flap-top
-    170ms
-    cubic-bezier(0.55, 0.05, 0.78, 0.5)
-    forwards;
+.right-module-stack {
+  grid-template-rows:
+    minmax(0, 60fr)
+    minmax(0, 40fr);
 }
-
-.flap-character.is-flipping
-.flap-flip-bottom {
-  animation:
-    split-flap-bottom
-    170ms
-    170ms
-    cubic-bezier(0.22, 0.65, 0.32, 1)
-    forwards;
-}
-
-/* Mechanical center seam */
-
-.flap-character::before {
-  content: "" !important;
-
-  position: absolute !important;
-  z-index: 20 !important;
-
-  top: calc(50% - 1px) !important;
-  right: 7% !important;
-  left: 7% !important;
-
-  height: 2px !important;
-
-  background:
-    rgba(0, 0, 0, 0.92) !important;
-
-  box-shadow:
-    0 -1px rgba(255, 255, 255, 0.025),
-    0 1px rgba(0, 0, 0, 0.95) !important;
-
-  pointer-events: none !important;
-}
-
-.flap-character::after {
-  content: none !important;
-}
-
-@keyframes split-flap-top {
-  0% {
-    transform: rotateX(0deg);
-    filter: brightness(1);
-  }
-
-  55% {
-    filter: brightness(0.76);
-  }
-
-  100% {
-    transform: rotateX(-90deg);
-    filter: brightness(0.48);
-  }
-}
-
-@keyframes split-flap-bottom {
-  0% {
-    transform: rotateX(90deg);
-    filter: brightness(0.5);
-  }
-
-  55% {
-    filter: brightness(0.78);
-  }
-
-  100% {
-    transform: rotateX(0deg);
-    filter: brightness(1);
-  }
-}
+/* =========================================================
+   Split-flap scale and padding correction
+   ========================================================= */
 
 /*
-  Keep motion accessible when the operating system
-  requests reduced animation.
+  Give the split-flap slightly more screen height.
 */
 
-@media (prefers-reduced-motion: reduce) {
-  .flap-character.is-flipping
-  .flap-flip-top,
-  .flap-character.is-flipping
-  .flap-flip-bottom {
-    animation-duration: 1ms;
-    animation-delay: 0ms;
-  }
+.panel-shell {
+  grid-template-rows:
+    minmax(0, 27fr)
+    minmax(0, 73fr)
+    !important;
 }
-/* Vintage operations-board labels */
 
-.flight-strip-labels,
-.panel-label,
-.small-label {
-  font-family:
-    "Roboto Slab",
-    Georgia,
-    serif;
 
-  font-weight: 600;
-  font-size: clamp(0.58rem, 0.72vw, 0.76rem);
+/*
+  Remove the oversized frame padding around the board.
+*/
 
-  letter-spacing: 0.11rem;
-  text-transform: uppercase;
+.flight-strip-module {
+  padding:
+    2px
+    4px
+    4px
+    !important;
 
-  color: #bda578;
-
-  text-shadow:
-    0 1px 1px rgba(0, 0, 0, 0.95),
-    0 0 3px rgba(189, 165, 120, 0.08);
+  grid-template-rows:
+    auto
+    minmax(0, 1fr)
+    !important;
 }
+
+
+/*
+  Tighten the labels against the flap mechanism.
+*/
 
 .flight-strip-labels {
-  padding-bottom: 0.6rem;
+  padding:
+    1px
+    3px
+    2px
+    !important;
+
+  font-size:
+    clamp(
+      0.46rem,
+      0.56vw,
+      0.68rem
+    )
+    !important;
+
+  line-height:
+    1
+    !important;
 }
-/* =========================================================
-   Photoreal layered heading indicator
-   ========================================================= */
 
-.heading-instrument {
-  position: relative !important;
-  isolation: isolate;
-
-  width: min(100%, 175px) !important;
-  aspect-ratio: 1 !important;
-
-  display: block !important;
-  overflow: visible !important;
-
-  border: 0 !important;
-  border-radius: 0 !important;
-  outline: 0 !important;
-
-  background: transparent !important;
-
-  box-shadow: none !important;
-}
 
 /*
-  Disable the CSS-generated gauge surfaces.
-  The PNG layers now provide the body, glass, and markings.
+  Reduce the black empty area surrounding the tiles.
 */
 
-.heading-instrument::before,
-.heading-instrument::after {
-  content: none !important;
+.flight-board {
+  padding:
+    3px
+    5px
+    !important;
 }
 
-/* Every PNG shares the same canvas and alignment */
-
-.heading-layer {
-  position: absolute;
-
-  inset: 0;
-
-  width: 100%;
-  height: 100%;
-
-  display: block;
-  object-fit: contain;
-
-  user-select: none;
-  pointer-events: none;
-}
-
-/* Rotates beneath all stationary components */
-
-.heading-compass-card {
-  z-index: 1;
-
-  transform: rotate(0deg);
-  transform-origin: 50% 50%;
-
-  transition:
-    transform
-    700ms
-    cubic-bezier(0.18, 0.72, 0.24, 1);
-
-  will-change: transform;
-}
-
-/* The case and bezel remain fixed */
-
-.heading-bezel-body {
-  z-index: 2;
-}
-
-/* Airplane, lubber line, and reflection remain fixed */
-
-.heading-glass-overlay {
-  z-index: 3;
-}
-
-/* Keep the digital heading value above the image layers */
-
-.heading-readout {
-  z-index: 5 !important;
-
-  right: 28% !important;
-  bottom: 5% !important;
-  left: 28% !important;
-
-  padding: 0.12rem 0.2rem !important;
-
-  background:
-    rgba(2, 3, 3, 0.88) !important;
-
-  border:
-    1px solid
-    rgba(190, 169, 126, 0.26) !important;
-
-  backdrop-filter: blur(1px);
-}
-
-.heading-readout .instrument-label {
-  font-size:
-    clamp(0.29rem, 0.36vw, 0.38rem) !important;
-}
-
-.heading-readout .instrument-value {
-  font-size:
-    clamp(0.72rem, 0.95vw, 1rem) !important;
-}
-
-.heading-readout .instrument-unit {
-  font-size:
-    clamp(0.26rem, 0.32vw, 0.34rem) !important;
-}
-
-/* Remove remnants of the previous CSS heading indicator */
-
-.heading-instrument .gauge-face,
-.heading-instrument .compass-mark,
-.heading-instrument .heading-arrow,
-.heading-instrument .heading-fixed-overlay,
-.heading-instrument .heading-card-window {
-  display: none !important;
-}
-
-/* =========================================================
-   Photoreal layered airspeed indicator
-   ========================================================= */
-
-.airspeed-instrument {
-  position: relative !important;
-  isolation: isolate;
-
-  width: min(100%, 175px) !important;
-  aspect-ratio: 1 !important;
-
-  display: block !important;
-  overflow: visible !important;
-
-  border: 0 !important;
-  border-radius: 0 !important;
-  outline: 0 !important;
-
-  background: transparent !important;
-  box-shadow: none !important;
-}
-
-/* Remove the old CSS-generated instrument face */
-
-.airspeed-instrument::before,
-.airspeed-instrument::after {
-  content: none !important;
-}
-
-/* All three assets share the same canvas */
-
-.airspeed-layer {
-  position: absolute;
-  inset: 0;
-
-  width: 100%;
-  height: 100%;
-
-  display: block;
-  object-fit: contain;
-
-  user-select: none;
-  pointer-events: none;
-}
-
-/* Stationary face and bezel */
-
-.airspeed-face-body {
-  z-index: 1;
-}
-
-/* Needle rotates around the exact center of the image */
-
-.airspeed-needle-layer {
-  z-index: 2;
-
-  transform: rotate(0deg);
-  transform-origin: 50% 50%;
-
-  transition:
-    transform
-    650ms
-    cubic-bezier(0.18, 0.72, 0.24, 1);
-
-  will-change: transform;
-}
-
-/* Glass remains aligned with the stationary instrument */
-
-.airspeed-glass-overlay {
-  z-index: 3;
-
-  /*
-    Keep the reflection restrained.
-    This changes intensity without changing alignment.
-  */
-  opacity: 0.28;
-}
-
-/* Live numerical readout */
-
-.airspeed-readout {
-  z-index: 5 !important;
-
-  right: 29% !important;
-  bottom: 7% !important;
-  left: 29% !important;
-
-  padding: 0.1rem 0.18rem !important;
-
-  border:
-    1px solid
-    rgba(190, 169, 126, 0.24) !important;
-
-  background:
-    rgba(2, 3, 3, 0.88) !important;
-
-  backdrop-filter: blur(1px);
-}
-
-.airspeed-readout .instrument-label {
-  font-size:
-    clamp(0.28rem, 0.35vw, 0.37rem) !important;
-}
-
-.airspeed-readout .instrument-value {
-  font-size:
-    clamp(0.72rem, 0.95vw, 1rem) !important;
-}
-
-.airspeed-readout .instrument-unit {
-  font-size:
-    clamp(0.25rem, 0.31vw, 0.33rem) !important;
-}
-
-/* Hide remnants of the old CSS instrument */
-
-.airspeed-instrument .gauge-face,
-.airspeed-instrument .gauge-mark,
-.airspeed-instrument .gauge-hub {
-  display: none !important;
-}
-/* =========================================================
-   Photoreal layered altimeter
-   ========================================================= */
-
-.altimeter-instrument {
-  position: relative !important;
-  isolation: isolate;
-
-  width: min(100%, 175px) !important;
-  aspect-ratio: 1 !important;
-
-  display: block !important;
-  overflow: visible !important;
-
-  border: 0 !important;
-  border-radius: 0 !important;
-  outline: 0 !important;
-
-  background: transparent !important;
-  box-shadow: none !important;
-}
-
-/* Remove the previous CSS-generated instrument surface */
-
-.altimeter-instrument::before,
-.altimeter-instrument::after {
-  content: none !important;
-}
-
-/* Shared image-layer sizing */
-
-.altimeter-layer {
-  position: absolute;
-  top: 0;
-
-  width: 100%;
-  height: 100%;
-
-  display: block;
-  object-fit: contain;
-
-  user-select: none;
-  pointer-events: none;
-}
-
-/* Stationary face */
-
-.altimeter-face-body {
-  z-index: 1;
-  left: 0;
-}
 
 /*
-  The existing JavaScript includes translateX(-50%),
-  so the needle is anchored from left: 50%.
+  Make the photographed flap tiles substantially larger.
+
+  At 1920 × 1080 these top out around:
+  86px wide × 134px tall.
 */
 
-/* =========================================================
-   Two-hand altimeter needle layers
-   ========================================================= */
+:root {
+  --flap-width:
+    clamp(
+      45px,
+      4.5vw,
+      86px
+    );
 
-.altimeter-thousands-needle-layer,
-.altimeter-needle-layer {
-  position: absolute !important;
-  inset: 0 !important;
+  --flap-height:
+    clamp(
+      70px,
+      7vw,
+      134px
+    );
 
-  width: 100% !important;
-  height: 100% !important;
-
-  display: block !important;
-  opacity: 1 !important;
-
-  object-fit: contain !important;
-
-  transform: rotate(0deg);
-  transform-origin: 50% 50% !important;
-
-  transition:
-    transform
-    650ms
-    cubic-bezier(0.18, 0.72, 0.24, 1);
-
-  pointer-events: none;
-  will-change: transform;
+  --flap-gap:
+    clamp(
+      2px,
+      0.18vw,
+      4px
+    );
 }
 
-/* Short thousands hand underneath */
 
-.altimeter-thousands-needle-layer {
-  z-index: 2 !important;
+/*
+  Let each group use the available board height.
+*/
+
+.flight-board-row {
+  height:
+    100%
+    !important;
+
+  align-items:
+    center
+    !important;
 }
 
-/* Long hundreds hand and center hub above */
+.flap-cell {
+  height:
+    100%
+    !important;
 
-.altimeter-needle-layer {
-  z-index: 3 !important;
-}
-/* Live numerical altitude */
-
-.altimeter-readout {
-  z-index: 5 !important;
-
-  right: 27% !important;
-  bottom: 6% !important;
-  left: 27% !important;
-
-  padding: 0.1rem 0.18rem !important;
-
-  border:
-    1px solid
-    rgba(190, 169, 126, 0.24) !important;
-
-  background:
-    rgba(2, 3, 3, 0.88) !important;
-
-  backdrop-filter: blur(1px);
+  align-items:
+    center
+    !important;
 }
 
-.altimeter-readout .instrument-label {
+
+/*
+  Scale the lettering with the larger mechanical tiles.
+*/
+
+.flap-character {
   font-size:
-    clamp(0.28rem, 0.35vw, 0.37rem) !important;
+    clamp(
+      1.8rem,
+      3.5vw,
+      4rem
+    )
+    !important;
+
+  border-radius:
+    clamp(
+      4px,
+      0.38vw,
+      7px
+    )
+    !important;
 }
 
-.altimeter-readout .instrument-value {
-  font-size:
-    clamp(0.68rem, 0.9vw, 0.96rem) !important;
-}
 
-.altimeter-readout .instrument-unit {
-  font-size:
-    clamp(0.25rem, 0.31vw, 0.33rem) !important;
-}
+/*
+  Slightly reduce the gaps between the four information
+  groups so the larger flap tiles still fit comfortably.
+*/
 
-/* Hide remnants of the older CSS altimeter */
-
-.altimeter-instrument .gauge-face,
-.altimeter-instrument .gauge-mark,
-.altimeter-instrument .gauge-hub {
-  display: none !important;
+.flight-strip-labels,
+.flight-board-row {
+  gap:
+    clamp(
+      4px,
+      0.42vw,
+      8px
+    )
+    !important;
 }
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Dad Radar</title>
+
+  <link
+    rel="stylesheet"
+    href="./UI/styles.css"
+  >
+</head>
+
+
+<body>
+
+  <!-- =====================================================
+       Startup screen
+       ===================================================== -->
+
+  <section
+    class="startup-screen"
+    id="startup-screen"
+  >
+
+    <p
+      class="unit-label"
+      id="unit-label"
+    >
+      FLIGHT OPERATIONS UNIT NO. 001
+    </p>
+
+    <h1 id="startup-app-name">
+      DAD RADAR
+    </h1>
+
+    <p class="status-message">
+      INITIALIZING FLIGHT SYSTEMS...
+    </p>
+
+  </section>
+
+
+  <!-- =====================================================
+       Fixed 1920 × 1080 viewer
+
+       The dashboard always renders at its real design size.
+       JavaScript uniformly scales the whole display to fit
+       smaller preview windows.
+       ===================================================== -->
+
+  <div class="display-viewer">
+
+    <main
+      class="dashboard"
+      id="dashboard"
+      aria-labelledby="dashboard-app-name"
+      hidden
+    >
+
+      <span
+        class="visually-hidden"
+        id="dashboard-app-name"
+      >
+        DAD RADAR
+      </span>
+
+
+      <section class="panel-shell">
+
+        <!-- ===============================================
+             Full-width split-flap board
+             =============================================== -->
+
+        <section class="module flight-strip-module">
+
+          <div class="flight-strip-labels">
+
+            <span>FLIGHT</span>
+
+            <span>FROM</span>
+
+            <span>TO</span>
+
+            <span>STATUS</span>
+
+          </div>
+
+
+          <section class="flight-board">
+
+            <div
+              class="flight-board-row"
+              id="flight-board-flight"
+              hidden
+            >
+
+              <span
+                class="flap-cell"
+                id="flight-number"
+              >
+                1234
+              </span>
+
+              <span
+                class="flap-cell"
+                id="flight-origin"
+              >
+                ORD
+              </span>
+
+              <span
+                class="flap-cell"
+                id="flight-destination"
+              >
+                AVL
+              </span>
+
+              <span
+                class="flap-cell"
+                id="status-value"
+              >
+                EN ROUTE
+              </span>
+
+            </div>
+
+
+            <span id="flight-board-text">
+              NO ACTIVE FLIGHT
+            </span>
+
+          </section>
+
+        </section>
+
+
+        <!-- ===============================================
+             Lower dashboard
+
+             Left:
+             Full-height destination poster
+
+             Right:
+             Map above instrument cluster
+             =============================================== -->
+
+        <section class="lower-display-grid">
+
+          <!-- =============================================
+               Left column
+               ============================================= -->
+
+          <section class="left-module-stack">
+
+            <article class="module destination-panel">
+
+              <div class="destination-stage">
+
+                <img
+                  class="destination-poster-image"
+                  id="destination-poster"
+                  src="./assets/destinations/asheville-poster.jpeg"
+                  alt="Vintage Asheville, North Carolina travel poster"
+                  draggable="false"
+                >
+
+
+                <span
+                  class="visually-hidden"
+                  id="destination-city"
+                >
+                  ASHEVILLE
+                </span>
+
+                <span
+                  class="visually-hidden"
+                  id="destination-airport"
+                >
+                  AVL
+                </span>
+
+              </div>
+
+            </article>
+
+          </section>
+
+
+          <!-- =============================================
+               Right column
+               ============================================= -->
+
+          <section class="right-module-stack">
+
+            <!-- Route map -->
+
+            <article class="module map-panel">
+
+              <div class="map-information">
+
+                <div class="map-status-block">
+
+                  <p class="small-label">
+                    ROUTE PROGRESS
+                  </p>
+
+                  <span class="map-status-copy">
+                    ACTIVE FLIGHT TRACK
+                  </span>
+
+                </div>
+
+
+                <div class="clock-block">
+
+                  <p class="small-label">
+                    CURRENT TIME
+                  </p>
+
+                  <p
+                    class="clock-value"
+                    id="clock-value"
+                  >
+                    --:--
+                  </p>
+
+                  <span class="eta-zone">
+                    EASTERN TIME
+                  </span>
+
+                </div>
+
+
+                <div class="eta-block">
+
+                  <p class="small-label">
+                    ESTIMATED ARRIVAL
+                  </p>
+
+                  <p
+                    class="eta-value"
+                    id="eta-value"
+                  >
+                    --:--
+                  </p>
+
+                  <span
+                    class="eta-zone"
+                    id="eta-zone"
+                  >
+                    EASTERN TIME
+                  </span>
+
+                </div>
+
+              </div>
+
+
+              <div class="route-display">
+
+                <div
+                  class="map-grid"
+                  aria-hidden="true"
+                ></div>
+
+
+                <div
+                  class="weather-band weather-band-one"
+                  aria-hidden="true"
+                ></div>
+
+                <div
+                  class="weather-band weather-band-two"
+                  aria-hidden="true"
+                ></div>
+
+
+                <span
+                  class="route-airport route-origin"
+                  id="map-origin"
+                >
+                  ORD
+                </span>
+
+
+                <div class="route-line">
+
+                  <span
+                    class="route-trail"
+                    aria-hidden="true"
+                  ></span>
+
+                  <span
+                    class="aircraft-marker"
+                    aria-hidden="true"
+                  >
+                    ✈
+                  </span>
+
+                </div>
+
+
+                <span
+                  class="route-airport route-destination"
+                  id="map-destination"
+                >
+                  AVL
+                </span>
+
+              </div>
+
+            </article>
+
+
+            <!-- ===========================================
+                 Instrument cluster
+                 =========================================== -->
+
+            <article class="module instrument-panel">
+
+              <div class="instrument-row">
+
+                <!-- Airspeed -->
+
+                <div class="instrument airspeed-instrument">
+
+                  <img
+                    class="airspeed-layer airspeed-face-body"
+                    src="./assets/instruments/airspeed/airspeed-face-body.png"
+                    alt=""
+                    aria-hidden="true"
+                    draggable="false"
+                  >
+
+                  <img
+                    class="airspeed-layer airspeed-needle-layer"
+                    id="airspeed-needle"
+                    src="./assets/instruments/airspeed/airspeed-needle.png"
+                    alt=""
+                    aria-hidden="true"
+                    draggable="false"
+                  >
+
+
+                  <div class="gauge-readout airspeed-readout">
+
+                    <span class="instrument-label">
+                      AIRSPEED
+                    </span>
+
+                    <strong
+                      class="instrument-value"
+                      id="airspeed-value"
+                    >
+                      000
+                    </strong>
+
+                    <span class="instrument-unit">
+                      KT
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+                <!-- Heading -->
+
+                <div class="instrument heading-instrument">
+
+                  <img
+                    class="heading-layer heading-compass-card"
+                    id="heading-card"
+                    src="./assets/instruments/heading/heading-compass-card.png"
+                    alt=""
+                    aria-hidden="true"
+                    draggable="false"
+                  >
+
+                  <img
+                    class="heading-layer heading-bezel-body"
+                    src="./assets/instruments/heading/heading-bezel-body.png"
+                    alt=""
+                    aria-hidden="true"
+                    draggable="false"
+                  >
+
+                  <img
+                    class="heading-layer heading-glass-overlay"
+                    src="./assets/instruments/heading/heading-airplane-glass-overlay.png"
+                    alt=""
+                    aria-hidden="true"
+                    draggable="false"
+                  >
+
+
+                  <div class="gauge-readout heading-readout">
+
+                    <span class="instrument-label">
+                      HEADING
+                    </span>
+
+                    <strong
+                      class="instrument-value"
+                      id="heading-value"
+                    >
+                      000
+                    </strong>
+
+                    <span class="instrument-unit">
+                      DEG
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+                <!-- Altimeter -->
+
+                <div class="instrument altimeter-instrument">
+
+                  <img
+                    class="altimeter-layer altimeter-face-body"
+                    src="./assets/instruments/altimeter/altimeter-face-body.png"
+                    alt=""
+                    aria-hidden="true"
+                    draggable="false"
+                  >
+
+                  <img
+                    class="altimeter-layer altimeter-thousands-needle-layer"
+                    id="altitude-thousands-needle"
+                    src="./assets/instruments/altimeter/altimeter-thousands-needle.png"
+                    alt=""
+                    aria-hidden="true"
+                    draggable="false"
+                  >
+
+                  <img
+                    class="altimeter-layer altimeter-needle-layer"
+                    id="altitude-needle"
+                    src="./assets/instruments/altimeter/altimeter-needle.png"
+                    alt=""
+                    aria-hidden="true"
+                    draggable="false"
+                  >
+
+
+                  <div class="gauge-readout altimeter-readout">
+
+                    <span class="instrument-label">
+                      ALTITUDE
+                    </span>
+
+                    <strong
+                      class="instrument-value"
+                      id="altitude-value"
+                    >
+                      -----
+                    </strong>
+
+                    <span class="instrument-unit">
+                      FT
+                    </span>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </article>
+
+          </section>
+
+        </section>
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <!-- =====================================================
+       Application scripts
+       Keep this order
+       ===================================================== -->
+
+  <script src="./config/settings.js"></script>
+
+  <script src="./models/states.js"></script>
+
+  <script src="./App/state-engine.js"></script>
+
+  <script src="./services/mock-flight-service.js"></script>
+
+  <script src="./App/main.js"></script>
+
+
+  <!-- =====================================================
+       Fixed-size viewer scaling
+       ===================================================== -->
+
+  <script>
+    (() => {
+      "use strict";
+
+      const DESIGN_WIDTH = 1920;
+      const DESIGN_HEIGHT = 1080;
+
+      function scaleDadRadarViewer() {
+        const viewportWidth =
+          window.visualViewport?.width ??
+          window.innerWidth;
+
+        const viewportHeight =
+          window.visualViewport?.height ??
+          window.innerHeight;
+
+        const widthScale =
+          viewportWidth / DESIGN_WIDTH;
+
+        const heightScale =
+          viewportHeight / DESIGN_HEIGHT;
+
+        const viewerScale =
+          Math.min(
+            widthScale,
+            heightScale
+          );
+
+        document.documentElement.style.setProperty(
+          "--viewer-scale",
+          String(viewerScale)
+        );
+      }
+
+      window.addEventListener(
+        "resize",
+        scaleDadRadarViewer
+      );
+
+      window.visualViewport?.addEventListener(
+        "resize",
+        scaleDadRadarViewer
+      );
+
+      scaleDadRadarViewer();
+    })();
+  </script>
+
+</body>
+
+</html>

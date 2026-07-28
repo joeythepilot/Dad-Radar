@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
 
@@ -10,15 +11,35 @@
 
   <title>Dad Radar</title>
 
-  <link rel="stylesheet" href="./UI/styles.css">
+  <link
+    rel="stylesheet"
+    href="./UI/styles.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="./UI/map.css"
+  >
+
+  <!-- Loads last and owns the new three-column layout. -->
+  <link
+    rel="stylesheet"
+    href="./UI/layout-side-rail.css"
+  >
 </head>
 
+
 <body>
-  <!-- Startup screen -->
+
+  <!-- =====================================================
+       Startup screen
+       ===================================================== -->
+
   <section
     class="startup-screen"
     id="startup-screen"
   >
+
     <p
       class="unit-label"
       id="unit-label"
@@ -33,341 +54,890 @@
     <p class="status-message">
       INITIALIZING FLIGHT SYSTEMS...
     </p>
+
   </section>
 
-  <!-- Main Dad Radar display -->
-  <main
-    class="dashboard"
-    id="dashboard"
-    hidden
-  >
-    <section class="panel-shell">
 
-      <!-- Split-flap flight board -->
-      <section class="module flight-strip-module">
-        <div class="flight-strip-labels">
-          <span>FLIGHT</span>
-          <span>FROM</span>
-          <span>TO</span>
-          <span>STATUS</span>
-        </div>
+  <!-- =====================================================
+       Fixed 1920 × 1080 viewer
+       ===================================================== -->
 
-        <section class="flight-board">
-          <div
-            class="flight-board-row"
-            id="flight-board-flight"
-            hidden
-          >
-            <span
-              class="flap-cell"
-              id="flight-number"
-            >
-              AA 1234
-            </span>
+  <div class="display-viewer">
 
-            <span
-              class="flap-cell"
-              id="flight-origin"
-            >
-              ORD
-            </span>
+    <main
+      class="dashboard"
+      id="dashboard"
+      aria-labelledby="dashboard-app-name"
+      hidden
+    >
 
-            <span
-              class="flap-cell"
-              id="flight-destination"
-            >
-              AVL
-            </span>
+      <span
+        class="visually-hidden"
+        id="dashboard-app-name"
+      >
+        DAD RADAR
+      </span>
 
-            <span
-              class="flap-cell"
-              id="status-value"
-            >
-              EN ROUTE
-            </span>
+
+      <section class="panel-shell">
+
+        <!-- ===============================================
+             Full-width split-flap board
+             =============================================== -->
+
+        <section class="module flight-strip-module">
+
+          <div class="flight-strip-labels">
+            <span>FLIGHT</span>
+            <span>FROM</span>
+            <span>TO</span>
+            <span>STATUS</span>
           </div>
 
-          <span id="flight-board-text">
-            NO ACTIVE FLIGHT
-          </span>
-        </section>
-      </section>
 
-      <!-- Destination and moving map -->
-      <section class="middle-row">
+          <section class="flight-board">
 
-        <article class="module destination-panel">
-          <p class="panel-label">
-            DESTINATION
-          </p>
-
-          <div class="destination-content">
-            <strong id="destination-city">
-              ASHEVILLE
-            </strong>
-
-            <span id="destination-airport">
-              AVL
-            </span>
-          </div>
-        </article>
-
-        <article class="module map-panel">
-          <div class="map-information">
-            <div>
-              <p class="small-label">
-                ROUTE PROGRESS
-              </p>
-            </div>
-
-            <div class="eta-block">
-              <p class="small-label">
-                ESTIMATED ARRIVAL
-              </p>
-
-              <p
-                class="eta-value"
-                id="eta-value"
-              >
-                --:--
-              </p>
+            <div
+              class="flight-board-row"
+              id="flight-board-flight"
+              hidden
+            >
 
               <span
-                class="eta-zone"
-                id="eta-zone"
+                class="flap-cell"
+                id="flight-number"
               >
-                EASTERN TIME
+                1234
               </span>
-            </div>
-          </div>
 
-          <div class="route-display">
-            <span
-              class="route-airport"
-              id="map-origin"
-            >
-              ORD
+              <span
+                class="flap-cell"
+                id="flight-origin"
+              >
+                ORD
+              </span>
+
+              <span
+                class="flap-cell"
+                id="flight-destination"
+              >
+                AVL
+              </span>
+
+              <span
+                class="flap-cell"
+                id="status-value"
+              >
+                EN ROUTE
+              </span>
+
+            </div>
+
+
+            <span id="flight-board-text">
+              NO ACTIVE FLIGHT
             </span>
 
-            <div class="route-line">
-              <span class="aircraft-marker">
-                ✈
-              </span>
-            </div>
+          </section>
 
-            <span
-              class="route-airport"
-              id="map-destination"
-            >
-              AVL
-            </span>
-          </div>
-        </article>
+        </section>
+
+
+        <!-- ===============================================
+             Lower dashboard
+
+             28% poster
+             52% full-height map
+             20% vertical instrument rail
+             =============================================== -->
+
+        <section class="lower-display-grid">
+
+          <!-- =============================================
+               Left: full-height destination poster
+               ============================================= -->
+
+          <section class="left-module-stack">
+
+            <article class="module destination-panel">
+
+              <div class="destination-stage">
+
+                <img
+                  class="destination-poster-image"
+                  id="destination-poster"
+                  src="./assets/destinations/asheville-poster.jpeg"
+                  alt="Vintage Asheville, North Carolina travel poster"
+                  draggable="false"
+                >
+
+                <span
+                  class="visually-hidden"
+                  id="destination-city"
+                >
+                  ASHEVILLE
+                </span>
+
+                <span
+                  class="visually-hidden"
+                  id="destination-airport"
+                >
+                  AVL
+                </span>
+
+              </div>
+
+            </article>
+
+          </section>
+
+
+          <!-- =============================================
+               Center: full-height map
+               ============================================= -->
+
+          <section class="center-map-stack">
+
+            <article class="module map-panel vintage-map-panel">
+
+              <div
+                class="route-display route-map-shell"
+                id="route-map-shell"
+              >
+
+                <!-- Transparent text overlays -->
+
+                <div class="map-information">
+
+                  <div class="map-status-block">
+
+                    <p class="small-label">
+                      ROUTE PROGRESS
+                    </p>
+
+                    <span class="map-status-copy">
+                      ACTIVE FLIGHT TRACK
+                    </span>
+
+                  </div>
+
+
+                  <div class="clock-block">
+
+                    <p class="small-label">
+                      CURRENT TIME
+                    </p>
+
+                    <p
+                      class="clock-value"
+                      id="clock-value"
+                    >
+                      --:--
+                    </p>
+
+                    <span class="eta-zone">
+                      EASTERN TIME
+                    </span>
+
+                  </div>
+
+
+                  <div class="eta-block">
+
+                    <p class="small-label">
+                      ESTIMATED ARRIVAL
+                    </p>
+
+                    <p
+                      class="eta-value"
+                      id="eta-value"
+                    >
+                      --:--
+                    </p>
+
+                    <span
+                      class="eta-zone"
+                      id="eta-zone"
+                    >
+                      EASTERN TIME
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+                <!-- Geographic map -->
+
+                <svg
+                  class="route-map-svg"
+                  id="route-map-svg"
+                  viewBox="0 0 1200 650"
+                  role="img"
+                  aria-labelledby="route-map-title route-map-description"
+                  preserveAspectRatio="xMidYMid slice"
+                >
+
+                  <title id="route-map-title">
+                    Dad Radar regional flight map
+                  </title>
+
+                  <desc id="route-map-description">
+                    A vintage parchment map automatically fitted to the current flight route.
+                  </desc>
+
+
+                  <defs>
+
+                    <clipPath id="route-map-clip">
+                      <rect
+                        x="0"
+                        y="0"
+                        width="1200"
+                        height="650"
+                        rx="5"
+                      ></rect>
+                    </clipPath>
+
+
+                    <filter
+                      id="route-map-paper-texture"
+                      x="-10%"
+                      y="-10%"
+                      width="120%"
+                      height="120%"
+                    >
+                      <feTurbulence
+                        type="fractalNoise"
+                        baseFrequency="0.62"
+                        numOctaves="3"
+                        seed="17"
+                        result="noise"
+                      ></feTurbulence>
+
+                      <feColorMatrix
+                        in="noise"
+                        type="saturate"
+                        values="0"
+                        result="gray-noise"
+                      ></feColorMatrix>
+
+                      <feComponentTransfer
+                        in="gray-noise"
+                        result="faded-noise"
+                      >
+                        <feFuncA
+                          type="linear"
+                          slope="0.18"
+                        ></feFuncA>
+                      </feComponentTransfer>
+                    </filter>
+
+
+                    <filter
+                      id="route-map-ink-soften"
+                      x="-20%"
+                      y="-20%"
+                      width="140%"
+                      height="140%"
+                    >
+                      <feGaussianBlur
+                        stdDeviation="0.45"
+                        result="blurred"
+                      ></feGaussianBlur>
+
+                      <feBlend
+                        in="SourceGraphic"
+                        in2="blurred"
+                        mode="multiply"
+                      ></feBlend>
+                    </filter>
+
+
+                    <filter
+                      id="route-map-aircraft-shadow"
+                      x="-60%"
+                      y="-60%"
+                      width="220%"
+                      height="220%"
+                    >
+                      <feDropShadow
+                        dx="1.5"
+                        dy="2.5"
+                        stdDeviation="2"
+                        flood-color="#2a170e"
+                        flood-opacity="0.55"
+                      ></feDropShadow>
+                    </filter>
+
+                  </defs>
+
+
+                  <g clip-path="url(#route-map-clip)">
+
+                    <rect
+                      class="map-water-fill"
+                      x="0"
+                      y="0"
+                      width="1200"
+                      height="650"
+                    ></rect>
+
+
+                    <g
+                      class="map-land-layer"
+                      id="map-land-layer"
+                    ></g>
+
+                    <path
+                      class="map-country-borders"
+                      id="map-country-borders"
+                    ></path>
+
+                    <path
+                      class="map-state-borders"
+                      id="map-state-borders"
+                    ></path>
+
+
+                    <g
+                      class="map-country-label-layer"
+                      id="map-country-label-layer"
+                    ></g>
+
+
+                    <g
+                      class="map-weather-layer"
+                      id="map-weather-layer"
+                    ></g>
+
+
+                    <path
+                      class="map-route-shadow"
+                      id="map-route-shadow"
+                    ></path>
+
+                    <path
+                      class="map-route-line"
+                      id="map-route-line"
+                    ></path>
+
+                    <path
+                      class="map-route-progress"
+                      id="map-route-progress"
+                    ></path>
+
+
+                    <!-- Origin airport -->
+
+                    <g
+                      class="airport-marker-group"
+                      id="map-origin-marker"
+                    >
+
+                      <circle
+                        class="airport-beacon-ring"
+                        r="10"
+                      ></circle>
+
+                      <circle
+                        class="airport-beacon-core"
+                        r="4.5"
+                      ></circle>
+
+                      <line
+                        class="airport-leader"
+                        x1="0"
+                        y1="0"
+                        x2="18"
+                        y2="0"
+                      ></line>
+
+                      <g class="airport-placard">
+
+                        <rect
+                          class="airport-placard-body"
+                          width="132"
+                          height="62"
+                          rx="2"
+                        ></rect>
+
+                        <text
+                          class="airport-code"
+                          id="map-origin"
+                          x="66"
+                          y="29"
+                          text-anchor="middle"
+                        >
+                          ORD
+                        </text>
+
+                        <text
+                          class="airport-city"
+                          id="map-origin-city"
+                          x="66"
+                          y="49"
+                          text-anchor="middle"
+                        >
+                          CHICAGO
+                        </text>
+
+                      </g>
+
+                    </g>
+
+
+                    <!-- Destination airport -->
+
+                    <g
+                      class="airport-marker-group"
+                      id="map-destination-marker"
+                    >
+
+                      <circle
+                        class="airport-beacon-ring"
+                        r="10"
+                      ></circle>
+
+                      <circle
+                        class="airport-beacon-core"
+                        r="4.5"
+                      ></circle>
+
+                      <line
+                        class="airport-leader"
+                        x1="0"
+                        y1="0"
+                        x2="18"
+                        y2="0"
+                      ></line>
+
+                      <g class="airport-placard">
+
+                        <rect
+                          class="airport-placard-body"
+                          width="132"
+                          height="62"
+                          rx="2"
+                        ></rect>
+
+                        <text
+                          class="airport-code"
+                          id="map-destination"
+                          x="66"
+                          y="29"
+                          text-anchor="middle"
+                        >
+                          AVL
+                        </text>
+
+                        <text
+                          class="airport-city"
+                          id="map-destination-city"
+                          x="66"
+                          y="49"
+                          text-anchor="middle"
+                        >
+                          ASHEVILLE
+                        </text>
+
+                      </g>
+
+                    </g>
+
+
+                    <!-- Moving aircraft -->
+
+                    <g
+                      class="map-aircraft-marker"
+                      id="map-aircraft-marker"
+                      filter="url(#route-map-aircraft-shadow)"
+                    >
+                      <path
+                        d="
+                          M -25 -4
+                          L -8 -5
+                          L -1 -22
+                          L 5 -22
+                          L 2 -5
+                          L 25 -3
+                          L 29 0
+                          L 25 3
+                          L 2 5
+                          L 5 22
+                          L -1 22
+                          L -8 5
+                          L -25 4
+                          L -30 0
+                          Z
+                        "
+                      ></path>
+                    </g>
+
+
+                    <!-- Paper grain -->
+
+                    <rect
+                      class="map-paper-grain"
+                      x="0"
+                      y="0"
+                      width="1200"
+                      height="650"
+                      filter="url(#route-map-paper-texture)"
+                    ></rect>
+
+                    <ellipse
+                      class="map-age-stain map-age-stain-one"
+                      cx="250"
+                      cy="145"
+                      rx="190"
+                      ry="115"
+                    ></ellipse>
+
+                    <ellipse
+                      class="map-age-stain map-age-stain-two"
+                      cx="870"
+                      cy="510"
+                      rx="260"
+                      ry="145"
+                    ></ellipse>
+
+                  </g>
+
+
+                  <!-- Fixed compass rose -->
+
+                  <g
+  class="map-compass-rose"
+  transform="translate(965 92)"
+  aria-hidden="true"
+>
+
+                    <circle r="47"></circle>
+                    <circle r="35"></circle>
+
+                    <path
+                      class="compass-major"
+                      d="
+                        M 0 -54
+                        L 9 -12
+                        L 0 -19
+                        L -9 -12
+                        Z
+
+                        M 54 0
+                        L 12 9
+                        L 19 0
+                        L 12 -9
+                        Z
+
+                        M 0 54
+                        L -9 12
+                        L 0 19
+                        L 9 12
+                        Z
+
+                        M -54 0
+                        L -12 -9
+                        L -19 0
+                        L -12 9
+                        Z
+                      "
+                    ></path>
+
+                    <path
+                      class="compass-minor"
+                      d="
+                        M 33 -33
+                        L 7 -10
+                        L 10 -7
+                        Z
+
+                        M 33 33
+                        L 10 7
+                        L 7 10
+                        Z
+
+                        M -33 33
+                        L -7 10
+                        L -10 7
+                        Z
+
+                        M -33 -33
+                        L -10 -7
+                        L -7 -10
+                        Z
+                      "
+                    ></path>
+
+                    <text
+                      x="0"
+                      y="-62"
+                      text-anchor="middle"
+                    >
+                      N
+                    </text>
+
+                  </g>
+
+                </svg>
+
+
+                <div
+                  class="map-loading-message"
+                  id="map-loading-message"
+                  role="status"
+                  aria-live="polite"
+                >
+                  CHARTING ROUTE...
+                </div>
+
+              </div>
+
+            </article>
+
+          </section>
+
+
+          <!-- =============================================
+               Right: three stacked instruments
+               ============================================= -->
+
+          <aside class="instrument-rail">
+
+            <!-- Airspeed -->
+
+            <article class="module instrument-slot">
+
+              <div class="instrument airspeed-instrument">
+
+                <img
+                  class="airspeed-layer airspeed-face-body"
+                  src="./assets/instruments/airspeed/airspeed-face-body.png"
+                  alt=""
+                  aria-hidden="true"
+                  draggable="false"
+                >
+
+                <img
+                  class="airspeed-layer airspeed-needle-layer"
+                  id="airspeed-needle"
+                  src="./assets/instruments/airspeed/airspeed-needle.png"
+                  alt=""
+                  aria-hidden="true"
+                  draggable="false"
+                >
+
+
+                <div class="gauge-readout airspeed-readout">
+
+                  <span class="instrument-label">
+                    AIRSPEED
+                  </span>
+
+                  <strong
+                    class="instrument-value"
+                    id="airspeed-value"
+                  >
+                    000
+                  </strong>
+
+                  <span class="instrument-unit">
+                    KT
+                  </span>
+
+                </div>
+
+              </div>
+
+            </article>
+
+
+            <!-- Heading -->
+
+            <article class="module instrument-slot">
+
+              <div class="instrument heading-instrument">
+
+                <img
+                  class="heading-layer heading-compass-card"
+                  id="heading-card"
+                  src="./assets/instruments/heading/heading-compass-card.png"
+                  alt=""
+                  aria-hidden="true"
+                  draggable="false"
+                >
+
+                <img
+                  class="heading-layer heading-bezel-body"
+                  src="./assets/instruments/heading/heading-bezel-body.png"
+                  alt=""
+                  aria-hidden="true"
+                  draggable="false"
+                >
+
+                <img
+                  class="heading-layer heading-glass-overlay"
+                  src="./assets/instruments/heading/heading-airplane-glass-overlay.png"
+                  alt=""
+                  aria-hidden="true"
+                  draggable="false"
+                >
+
+
+                <div class="gauge-readout heading-readout">
+
+                  <span class="instrument-label">
+                    HEADING
+                  </span>
+
+                  <strong
+                    class="instrument-value"
+                    id="heading-value"
+                  >
+                    000
+                  </strong>
+
+                  <span class="instrument-unit">
+                    DEG
+                  </span>
+
+                </div>
+
+              </div>
+
+            </article>
+
+
+            <!-- Altimeter -->
+
+            <article class="module instrument-slot">
+
+              <div class="instrument altimeter-instrument">
+
+                <img
+                  class="altimeter-layer altimeter-face-body"
+                  src="./assets/instruments/altimeter/altimeter-face-body.png"
+                  alt=""
+                  aria-hidden="true"
+                  draggable="false"
+                >
+
+                <img
+                  class="altimeter-layer altimeter-thousands-needle-layer"
+                  id="altitude-thousands-needle"
+                  src="./assets/instruments/altimeter/altimeter-thousands-needle.png"
+                  alt=""
+                  aria-hidden="true"
+                  draggable="false"
+                >
+
+                <img
+                  class="altimeter-layer altimeter-needle-layer"
+                  id="altitude-needle"
+                  src="./assets/instruments/altimeter/altimeter-needle.png"
+                  alt=""
+                  aria-hidden="true"
+                  draggable="false"
+                >
+
+
+                <div class="gauge-readout altimeter-readout">
+
+                  <span class="instrument-label">
+                    ALTITUDE
+                  </span>
+
+                  <strong
+                    class="instrument-value"
+                    id="altitude-value"
+                  >
+                    -----
+                  </strong>
+
+                  <span class="instrument-unit">
+                    FT
+                  </span>
+
+                </div>
+
+              </div>
+
+            </article>
+
+          </aside>
+
+        </section>
 
       </section>
 
-      <!-- Identity, instruments, and clock -->
-      <section class="bottom-row">
-
-        <article class="module identity-panel">
-          <p class="identity-name">
-            CAPTAIN JOEY
-          </p>
-
-          <p
-            class="identity-unit"
-            id="dashboard-app-name"
-          >
-            DAD RADAR
-          </p>
-        </article>
-
-        <article class="module instrument-panel">
-  <div class="instrument-row">
-
-    <div class="instrument airspeed-instrument">
-
-  <!-- Stationary face, markings, bezel, and screws -->
-  <img
-    class="airspeed-layer airspeed-face-body"
-    src="./assets/instruments/airspeed/airspeed-face-body.png"
-    alt=""
-    aria-hidden="true"
-  >
-
-  <!-- Live rotating needle -->
-  <img
-    class="airspeed-layer airspeed-needle-layer"
-    id="airspeed-needle"
-    src="./assets/instruments/airspeed/airspeed-needle.png"
-    alt=""
-    aria-hidden="true"
-  >
-
-  <!-- Stationary glass reflection -->
-  <img
-    class="airspeed-layer airspeed-glass-overlay"
-    src="./assets/instruments/airspeed/airspeed-glass-overlay.png"
-    alt=""
-    aria-hidden="true"
-  >
-
-  <!-- Live numerical value -->
-  <div class="gauge-readout airspeed-readout">
-    <span class="instrument-label">
-      AIRSPEED
-    </span>
-
-    <strong
-      class="instrument-value"
-      id="airspeed-value"
-    >
-      000
-    </strong>
-
-    <span class="instrument-unit">
-      KT
-    </span>
-  </div>
-
-</div>
-
-    <div class="instrument heading-instrument">
-
-  <!-- Rotating layer -->
-  <img
-    class="heading-layer heading-compass-card"
-    id="heading-card"
-    src="./assets/instruments/heading/heading-compass-card.png"
-    alt=""
-    aria-hidden="true"
-  >
-
-  <!-- Stationary instrument case and bezel -->
-  <img
-    class="heading-layer heading-bezel-body"
-    src="./assets/instruments/heading/heading-bezel-body.png"
-    alt=""
-    aria-hidden="true"
-  >
-
-  <!-- Stationary airplane, lubber line, and glass -->
-  <img
-    class="heading-layer heading-glass-overlay"
-    src="./assets/instruments/heading/heading-airplane-glass-overlay.png"
-    alt=""
-    aria-hidden="true"
-  >
-
-  <!-- Live data readout -->
-  <div class="gauge-readout heading-readout">
-    <span class="instrument-label">
-      HEADING
-    </span>
-
-    <strong
-      class="instrument-value"
-      id="heading-value"
-    >
-      000
-    </strong>
-
-    <span class="instrument-unit">
-      DEG
-    </span>
-  </div>
-
-</div>
-
-    <div class="instrument altimeter-instrument">
-
-  <!-- Stationary altimeter face -->
-  <img
-    class="altimeter-layer altimeter-face-body"
-    src="./assets/instruments/altimeter/altimeter-face-body.png"
-    alt=""
-    aria-hidden="true"
-  >
-
-  <!-- Short hand: thousands of feet -->
-  <img
-    class="altimeter-layer altimeter-thousands-needle-layer"
-    id="altitude-thousands-needle"
-    src="./assets/instruments/altimeter/altimeter-thousands-needle.png"
-    alt=""
-    aria-hidden="true"
-  >
-
-  <!-- Long hand: hundreds of feet -->
-  <img
-    class="altimeter-layer altimeter-needle-layer"
-    id="altitude-needle"
-    src="./assets/instruments/altimeter/altimeter-needle.png"
-    alt=""
-    aria-hidden="true"
-  >
-
-  <!-- Digital altitude readout -->
-  <div class="gauge-readout altimeter-readout">
-
-    <span class="instrument-label">
-      ALTITUDE
-    </span>
-
-    <strong
-      class="instrument-value"
-      id="altitude-value"
-    >
-      -----
-    </strong>
-
-    <span class="instrument-unit">
-      FT
-    </span>
+    </main>
 
   </div>
 
-</div>
 
-</div>
-    </div>
+  <!-- =====================================================
+       Existing application scripts
+       ===================================================== -->
 
-  </div>
-</article>
-        </article>
-
-        <article class="module control-panel">
-          <p class="small-label">
-            CURRENT TIME
-          </p>
-
-          <p
-            class="clock-value"
-            id="clock-value"
-          >
-            --:--
-          </p>
-
-          <span class="eta-zone">
-            EASTERN TIME
-          </span>
-
-          <div class="system-indicator">
-            <span class="indicator-light"></span>
-            <span>ONLINE</span>
-          </div>
-        </article>
-
-      </section>
-
-    </section>
-  </main>
-
-  <!-- Dad Radar scripts -->
   <script src="./config/settings.js"></script>
   <script src="./models/states.js"></script>
   <script src="./App/state-engine.js"></script>
   <script src="./services/mock-flight-service.js"></script>
   <script src="./App/main.js"></script>
+
+  <script
+    type="module"
+    src="./App/route-map.js"
+  ></script>
+
+
+  <!-- =====================================================
+       Fixed-size viewer scaling
+       ===================================================== -->
+
+  <script>
+    (() => {
+      "use strict";
+
+      const DESIGN_WIDTH = 1920;
+      const DESIGN_HEIGHT = 1080;
+
+      function scaleDadRadarViewer() {
+        const viewportWidth =
+          window.visualViewport?.width ??
+          window.innerWidth;
+
+        const viewportHeight =
+          window.visualViewport?.height ??
+          window.innerHeight;
+
+        const viewerScale =
+          Math.min(
+            viewportWidth / DESIGN_WIDTH,
+            viewportHeight / DESIGN_HEIGHT
+          );
+
+        document.documentElement.style.setProperty(
+          "--viewer-scale",
+          String(viewerScale)
+        );
+      }
+
+      window.addEventListener(
+        "resize",
+        scaleDadRadarViewer
+      );
+
+      window.visualViewport?.addEventListener(
+        "resize",
+        scaleDadRadarViewer
+      );
+
+      scaleDadRadarViewer();
+    })();
+  </script>
+
 </body>
+
 </html>

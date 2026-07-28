@@ -1,0 +1,428 @@
+/* =========================================================
+   DAD RADAR — CLEAN SIDE-RAIL LAYOUT, POSTER-SAFE EDITION
+
+   Replace the entire contents of:
+   UI/layout-side-rail.css
+
+   This preserves the last stable layout and shows the full
+   poster without changing the dashboard proportions.
+   ========================================================= */
+
+
+/* =========================================================
+   Main vertical balance
+   ========================================================= */
+
+.panel-shell {
+  grid-template-rows:
+    minmax(0, 26fr)
+    minmax(0, 74fr)
+    !important;
+}
+
+
+/* =========================================================
+   Lower dashboard geometry
+
+   Poster:      24%
+   Map:         58%
+   Instruments: 18%
+   ========================================================= */
+
+.lower-display-grid {
+  min-width: 0;
+  min-height: 0;
+
+  display: grid !important;
+
+  grid-template-columns:
+    minmax(0, 24fr)
+    minmax(0, 58fr)
+    minmax(0, 18fr)
+    !important;
+
+  grid-template-areas:
+    "poster map instruments"
+    !important;
+
+  column-gap: 0 !important;
+  row-gap: 0 !important;
+}
+
+
+/* Keep one deliberate divider between poster and map. */
+
+.left-module-stack {
+  grid-area: poster;
+
+  min-width: 0;
+  min-height: 0;
+
+  display: grid !important;
+  grid-template-rows: minmax(0, 1fr) !important;
+
+  margin-right:
+    var(--panel-gap)
+    !important;
+}
+
+
+.center-map-stack {
+  grid-area: map;
+
+  min-width: 0;
+  min-height: 0;
+
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+}
+
+
+.instrument-rail {
+  grid-area: instruments;
+
+  min-width: 0;
+  min-height: 0;
+
+  display: grid;
+
+  grid-template-rows:
+    repeat(3, minmax(0, 1fr));
+
+  gap:
+    var(--panel-gap);
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   Poster
+
+   The foreground image uses contain so no artwork is lost.
+   A subdued copy of the same poster fills any side margins,
+   avoiding large black bars.
+   ========================================================= */
+
+.destination-panel,
+.destination-stage {
+  width: 100% !important;
+  height: 100% !important;
+
+  min-width: 0 !important;
+  min-height: 0 !important;
+}
+
+
+.destination-panel {
+  position: relative;
+
+  display: grid !important;
+  place-items: center !important;
+
+  padding: 2px !important;
+
+  overflow: hidden !important;
+
+  isolation: isolate;
+}
+
+
+.destination-panel::before {
+  content: "";
+
+  position: absolute;
+  z-index: 0;
+
+  inset: 2px;
+
+  background-image:
+    linear-gradient(
+      rgba(20, 17, 13, 0.28),
+      rgba(20, 17, 13, 0.28)
+    ),
+    url("../assets/destinations/asheville-poster.jpeg");
+
+  background-size: cover;
+  background-position: center;
+
+  filter:
+    blur(8px)
+    saturate(0.72)
+    brightness(0.58);
+
+  transform: scale(1.08);
+
+  opacity: 0.78;
+
+  pointer-events: none;
+}
+
+
+.destination-stage {
+  position: relative;
+  z-index: 1;
+
+  display: grid !important;
+    place-items: start center !important;
+
+  padding: 0 !important;
+
+  overflow: hidden !important;
+}
+
+
+.destination-poster-image {
+  width: 100% !important;
+  height: 100% !important;
+
+  max-width: 100% !important;
+  max-height: 100% !important;
+
+  display: block !important;
+
+  object-fit: contain !important;
+  object-position: center top !important;
+
+  transform: none !important;
+}
+
+
+/* =========================================================
+   Full-height map
+   ========================================================= */
+
+.vintage-map-panel {
+  position: relative;
+
+  display: block !important;
+
+  width: 100%;
+  height: 100%;
+
+  padding:
+    8px
+    6px
+    8px
+    8px
+    !important;
+
+  overflow: hidden;
+}
+
+
+.vintage-map-panel .route-map-shell {
+  position: absolute !important;
+
+  inset:
+    8px
+    6px
+    8px
+    8px
+    !important;
+
+  width: auto !important;
+  height: auto !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+
+/* =========================================================
+   Transparent time overlays
+   ========================================================= */
+
+.vintage-map-panel .map-status-block {
+  display: none !important;
+}
+
+
+.vintage-map-panel .map-information {
+  position: absolute;
+  z-index: 40;
+
+  top: auto !important;
+  right: 22px !important;
+  bottom: 20px !important;
+  left: 22px !important;
+
+  min-height: 0;
+
+  display: grid !important;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1fr)
+    !important;
+
+  align-items: end !important;
+
+  gap: 24px !important;
+
+  padding: 0 !important;
+
+  border: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+
+  pointer-events: none;
+}
+
+
+.vintage-map-panel .clock-block {
+  grid-column: 1;
+
+  min-width: 0 !important;
+
+  text-align: left !important;
+}
+
+
+.vintage-map-panel .eta-block {
+  grid-column: 2;
+
+  min-width: 0 !important;
+
+  text-align: right !important;
+}
+
+
+.vintage-map-panel .small-label {
+  color: #6a372c !important;
+
+  font-size: 11px !important;
+
+  letter-spacing: 1.5px !important;
+}
+
+
+.vintage-map-panel .clock-value,
+.vintage-map-panel .eta-value {
+  color: #4c3024 !important;
+
+  font-size: 20px !important;
+}
+
+
+.vintage-map-panel .eta-zone {
+  color: #71462c !important;
+}
+
+
+.vintage-map-panel .small-label,
+.vintage-map-panel .clock-value,
+.vintage-map-panel .eta-value,
+.vintage-map-panel .eta-zone {
+  paint-order: stroke fill;
+
+  text-shadow:
+    0 1px 0 rgba(239, 218, 174, 0.95),
+    0 0 5px rgba(225, 199, 148, 0.88),
+    0 1px 2px rgba(66, 42, 25, 0.3);
+}
+
+
+/* =========================================================
+   Map startup visibility
+   ========================================================= */
+
+.route-map-shell .airport-marker-group,
+.route-map-shell .map-aircraft-marker,
+.route-map-shell .map-route-shadow,
+.route-map-shell .map-route-line,
+.route-map-shell .map-route-progress {
+  visibility: hidden;
+}
+
+
+.route-map-shell.is-ready .airport-marker-group,
+.route-map-shell.is-ready .map-aircraft-marker,
+.route-map-shell.is-ready .map-route-shadow,
+.route-map-shell.is-ready .map-route-line,
+.route-map-shell.is-ready .map-route-progress {
+  visibility: visible;
+}
+
+
+.route-map-shell .map-compass-rose,
+.route-map-shell.is-ready .map-compass-rose {
+  visibility: visible !important;
+}
+
+
+/* =========================================================
+   Instrument rail
+   ========================================================= */
+
+.instrument-slot {
+  min-width: 0 !important;
+  min-height: 0 !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  padding:
+    2px
+    0
+    !important;
+
+  overflow: hidden !important;
+
+  border-left: 0 !important;
+
+  border-radius:
+    0
+    4px
+    4px
+    0
+    !important;
+}
+
+
+.instrument-slot .instrument {
+  width: auto !important;
+  height: 96% !important;
+
+  max-width: 96% !important;
+  max-height: 96% !important;
+
+  aspect-ratio:
+    1 / 1
+    !important;
+
+  place-self: center !important;
+
+  margin: 0 !important;
+
+  flex: none !important;
+}
+
+
+.instrument-slot .airspeed-layer,
+.instrument-slot .heading-layer,
+.instrument-slot .altimeter-layer {
+  width: 100% !important;
+  height: 100% !important;
+
+  object-fit: contain !important;
+}
+
+
+.instrument-slot .gauge-readout {
+  right: 26%;
+  bottom: 5%;
+  left: 26%;
+}
+
+
+.instrument-slot .heading-readout {
+  right: 28%;
+  left: 28%;
+}
+
+
+.instrument-panel {
+  display: none !important;
+}
