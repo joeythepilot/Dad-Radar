@@ -1,0 +1,450 @@
+                    >
+                      EASTERN TIME
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+                <!-- Geographic map -->
+
+                <svg
+                  class="route-map-svg"
+                  id="route-map-svg"
+                  viewBox="0 0 1200 650"
+                  role="img"
+                  aria-labelledby="route-map-title route-map-description"
+                  preserveAspectRatio="xMidYMid slice"
+                >
+
+                  <title id="route-map-title">
+                    Dad Radar regional flight map
+                  </title>
+
+                  <desc id="route-map-description">
+                    A vintage parchment map automatically fitted to the current flight route.
+                  </desc>
+
+
+                  <defs>
+
+                    <clipPath id="route-map-clip">
+                      <rect
+                        x="0"
+                        y="0"
+                        width="1200"
+                        height="650"
+                        rx="5"
+                      ></rect>
+                    </clipPath>
+
+
+                    <filter
+                      id="route-map-paper-texture"
+                      x="-10%"
+                      y="-10%"
+                      width="120%"
+                      height="120%"
+                    >
+                      <feTurbulence
+                        type="fractalNoise"
+                        baseFrequency="0.62"
+                        numOctaves="3"
+                        seed="17"
+                        result="noise"
+                      ></feTurbulence>
+
+                      <feColorMatrix
+                        in="noise"
+                        type="saturate"
+                        values="0"
+                        result="gray-noise"
+                      ></feColorMatrix>
+
+                      <feComponentTransfer
+                        in="gray-noise"
+                        result="faded-noise"
+                      >
+                        <feFuncA
+                          type="linear"
+                          slope="0.18"
+                        ></feFuncA>
+                      </feComponentTransfer>
+                    </filter>
+
+
+                    <filter
+                      id="route-map-ink-soften"
+                      x="-20%"
+                      y="-20%"
+                      width="140%"
+                      height="140%"
+                    >
+                      <feGaussianBlur
+                        stdDeviation="0.45"
+                        result="blurred"
+                      ></feGaussianBlur>
+
+                      <feBlend
+                        in="SourceGraphic"
+                        in2="blurred"
+                        mode="multiply"
+                      ></feBlend>
+                    </filter>
+
+
+                    <filter
+                      id="route-map-aircraft-shadow"
+                      x="-60%"
+                      y="-60%"
+                      width="220%"
+                      height="220%"
+                    >
+                      <feDropShadow
+                        dx="1.5"
+                        dy="2.5"
+                        stdDeviation="2"
+                        flood-color="#2a170e"
+                        flood-opacity="0.55"
+                      ></feDropShadow>
+                    </filter>
+
+                  </defs>
+
+
+                  <g clip-path="url(#route-map-clip)">
+
+                    <rect
+                      class="map-water-fill"
+                      x="0"
+                      y="0"
+                      width="1200"
+                      height="650"
+                    ></rect>
+
+
+                    <g
+                      class="map-land-layer"
+                      id="map-land-layer"
+                    ></g>
+
+                    <path
+                      class="map-country-borders"
+                      id="map-country-borders"
+                    ></path>
+
+                    <path
+                      class="map-state-borders"
+                      id="map-state-borders"
+                    ></path>
+
+
+                    <g
+                      class="map-country-label-layer"
+                      id="map-country-label-layer"
+                    ></g>
+
+
+                    <g
+                      class="map-weather-layer"
+                      id="map-weather-layer"
+                    ></g>
+
+
+                    <path
+                      class="map-route-shadow"
+                      id="map-route-shadow"
+                    ></path>
+
+                    <path
+                      class="map-route-line"
+                      id="map-route-line"
+                    ></path>
+
+                    <path
+                      class="map-route-progress"
+                      id="map-route-progress"
+                    ></path>
+
+
+                    <!-- Origin airport -->
+
+                    <g
+                      class="airport-marker-group"
+                      id="map-origin-marker"
+                    >
+
+                      <circle
+                        class="airport-beacon-ring"
+                        r="10"
+                      ></circle>
+
+                      <circle
+                        class="airport-beacon-core"
+                        r="4.5"
+                      ></circle>
+
+                      <line
+                        class="airport-leader"
+                        x1="0"
+                        y1="0"
+                        x2="18"
+                        y2="0"
+                      ></line>
+
+                      <g class="airport-placard">
+
+                        <rect
+                          class="airport-placard-body"
+                          width="132"
+                          height="62"
+                          rx="2"
+                        ></rect>
+
+                        <text
+                          class="airport-code"
+                          id="map-origin"
+                          x="66"
+                          y="29"
+                          text-anchor="middle"
+                        >
+                          ORD
+                        </text>
+
+                        <text
+                          class="airport-city"
+                          id="map-origin-city"
+                          x="66"
+                          y="49"
+                          text-anchor="middle"
+                        >
+                          CHICAGO
+                        </text>
+
+                      </g>
+
+                    </g>
+
+
+                    <!-- Destination airport -->
+
+                    <g
+                      class="airport-marker-group"
+                      id="map-destination-marker"
+                    >
+
+                      <circle
+                        class="airport-beacon-ring"
+                        r="10"
+                      ></circle>
+
+                      <circle
+                        class="airport-beacon-core"
+                        r="4.5"
+                      ></circle>
+
+                      <line
+                        class="airport-leader"
+                        x1="0"
+                        y1="0"
+                        x2="18"
+                        y2="0"
+                      ></line>
+
+                      <g class="airport-placard">
+
+                        <rect
+                          class="airport-placard-body"
+                          width="132"
+                          height="62"
+                          rx="2"
+                        ></rect>
+
+                        <text
+                          class="airport-code"
+                          id="map-destination"
+                          x="66"
+                          y="29"
+                          text-anchor="middle"
+                        >
+                          AVL
+                        </text>
+
+                        <text
+                          class="airport-city"
+                          id="map-destination-city"
+                          x="66"
+                          y="49"
+                          text-anchor="middle"
+                        >
+                          ASHEVILLE
+                        </text>
+
+                      </g>
+
+                    </g>
+
+
+                    <!-- Moving aircraft -->
+
+                    <g
+                      class="map-aircraft-marker"
+                      id="map-aircraft-marker"
+                      filter="url(#route-map-aircraft-shadow)"
+                    >
+                      <path
+                        d="
+                          M -25 -4
+                          L -8 -5
+                          L -1 -22
+                          L 5 -22
+                          L 2 -5
+                          L 25 -3
+                          L 29 0
+                          L 25 3
+                          L 2 5
+                          L 5 22
+                          L -1 22
+                          L -8 5
+                          L -25 4
+                          L -30 0
+                          Z
+                        "
+                      ></path>
+                    </g>
+
+
+                    <!-- Paper grain -->
+
+                    <rect
+                      class="map-paper-grain"
+                      x="0"
+                      y="0"
+                      width="1200"
+                      height="650"
+                      filter="url(#route-map-paper-texture)"
+                    ></rect>
+
+                    <ellipse
+                      class="map-age-stain map-age-stain-one"
+                      cx="250"
+                      cy="145"
+                      rx="190"
+                      ry="115"
+                    ></ellipse>
+
+                    <ellipse
+                      class="map-age-stain map-age-stain-two"
+                      cx="870"
+                      cy="510"
+                      rx="260"
+                      ry="145"
+                    ></ellipse>
+
+                  </g>
+
+
+                  <!-- Fixed compass rose -->
+
+                  <g
+  class="map-compass-rose"
+  transform="translate(965 92)"
+  aria-hidden="true"
+>
+
+                    <circle r="47"></circle>
+                    <circle r="35"></circle>
+
+                    <path
+                      class="compass-major"
+                      d="
+                        M 0 -54
+                        L 9 -12
+                        L 0 -19
+                        L -9 -12
+                        Z
+
+                        M 54 0
+                        L 12 9
+                        L 19 0
+                        L 12 -9
+                        Z
+
+                        M 0 54
+                        L -9 12
+                        L 0 19
+                        L 9 12
+                        Z
+
+                        M -54 0
+                        L -12 -9
+                        L -19 0
+                        L -12 9
+                        Z
+                      "
+                    ></path>
+
+                    <path
+                      class="compass-minor"
+                      d="
+                        M 33 -33
+                        L 7 -10
+                        L 10 -7
+                        Z
+
+                        M 33 33
+                        L 10 7
+                        L 7 10
+                        Z
+
+                        M -33 33
+                        L -7 10
+                        L -10 7
+                        Z
+
+                        M -33 -33
+                        L -10 -7
+                        L -7 -10
+                        Z
+                      "
+                    ></path>
+
+                    <text
+                      x="0"
+                      y="-62"
+                      text-anchor="middle"
+                    >
+                      N
+                    </text>
+
+                  </g>
+
+                </svg>
+
+
+                <div
+                  class="map-loading-message"
+                  id="map-loading-message"
+                  role="status"
+                  aria-live="polite"
+                >
+                  CHARTING ROUTE...
+                </div>
+
+              </div>
+
+            </article>
+
+          </section>
+
+
+          <!-- =============================================
+               Right: three stacked instruments
+               ============================================= -->
+
+          <aside class="instrument-rail">
+
+            <!-- Airspeed -->
+
+            <article class="module instrument-slot">

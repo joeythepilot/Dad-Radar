@@ -1,4 +1,4 @@
-/* DAD RADAR — VINTAGE ROUTE MAP
+﻿/* DAD RADAR â€” VINTAGE ROUTE MAP
    Loads after UI/styles.css and replaces only the map styling. */
 
 .vintage-map-panel {
@@ -233,7 +233,6 @@
   fill: #9a3025;
   stroke: #6f211b;
   stroke-width: 1.3;
-  transform-origin: center;
   pointer-events: none;
 }
 
@@ -437,3 +436,4 @@
   width: 100%;
   height: 100%;
 }
+
