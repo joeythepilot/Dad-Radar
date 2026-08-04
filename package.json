@@ -5,10 +5,11 @@
   "main": "index.js",
   "scripts": {
     "start": "node server/index.js",
-    "test": "node server/pilot-schedule-parser-test.js && node models/schedule-state-test.js && node services/calendar-state-controller-test.js",
+    "test": "node server/pilot-schedule-parser-test.js && node models/schedule-state-test.js && node services/calendar-state-controller-test.js && node server/flightaware-service-test.js",
     "test:parser": "node server/pilot-schedule-parser-test.js",
     "test:schedule-state": "node models/schedule-state-test.js",
-    "test:calendar-controller": "node services/calendar-state-controller-test.js"
+    "test:calendar-controller": "node services/calendar-state-controller-test.js",
+    "test:flightaware": "node server/flightaware-service-test.js"
   },
   "repository": {
     "type": "git",

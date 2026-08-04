@@ -7,13 +7,30 @@ const {
   getUpcomingEvents
 } = require("./calendar-service");
 
+const {
+  FlightAwareConfigurationError,
+  FlightAwareRequestError,
+  getLiveFlightSnapshot
+} = require("./flightaware-service");
+
 const app = express();
 const port = Number(process.env.PORT) || 4173;
+
+app.use(
+  express.json({ limit: "16kb" })
+);
 
 app.get("/api/health", (request, response) => {
   response.json({
     ok: true,
-    service: "Dad Radar"
+    service: "Dad Radar",
+    flightData: {
+      provider: "flightaware",
+      configured: Boolean(
+        process.env
+          .FLIGHTAWARE_AEROAPI_KEY
+      )
+    }
   });
 });
 
@@ -48,6 +65,75 @@ app.get(
         ok: false,
         error:
           "Unable to load the Pilot Schedule calendar."
+      });
+    }
+  }
+);
+
+app.post(
+  "/api/flights/lookup",
+  async (request, response) => {
+    try {
+      const liveFlight =
+        await getLiveFlightSnapshot(
+          request.body
+        );
+
+      response.json({
+        ok: true,
+        provider: "flightaware",
+        retrievedAt:
+          liveFlight?.retrievedAt ??
+          new Date().toISOString(),
+        liveFlight
+      });
+    } catch (error) {
+      if (
+        error instanceof
+        FlightAwareConfigurationError
+      ) {
+        response.status(503).json({
+          ok: false,
+          error:
+            "FlightAware is not configured."
+        });
+        return;
+      }
+
+      if (error instanceof TypeError) {
+        response.status(400).json({
+          ok: false,
+          error: error.message
+        });
+        return;
+      }
+
+      if (
+        error instanceof
+        FlightAwareRequestError
+      ) {
+        console.error(
+          "FlightAware request failed:",
+          error.message
+        );
+
+        response.status(502).json({
+          ok: false,
+          error:
+            "Unable to load live flight data."
+        });
+        return;
+      }
+
+      console.error(
+        "Live flight lookup failed:",
+        error
+      );
+
+      response.status(500).json({
+        ok: false,
+        error:
+          "Unable to resolve live flight data."
       });
     }
   }
