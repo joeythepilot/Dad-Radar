@@ -188,6 +188,29 @@ function curveAngle({ start, control, end }, progress) {
   return Math.atan2(dy, dx) * 180 / Math.PI;
 }
 
+function liveAircraftPosition(flight) {
+  const latitude = Number(
+    flight?.latitude
+  );
+
+  const longitude = Number(
+    flight?.longitude
+  );
+
+  if (
+    !Number.isFinite(latitude) ||
+    !Number.isFinite(longitude) ||
+    latitude < MAP_BOUNDS.south ||
+    latitude > MAP_BOUNDS.north ||
+    longitude < MAP_BOUNDS.west ||
+    longitude > MAP_BOUNDS.east
+  ) {
+    return null;
+  }
+
+  return project(longitude, latitude);
+}
+
 function positionAirportMarker(marker, point, placeLeft) {
   if (!marker) return;
 
@@ -248,8 +271,28 @@ function renderRouteMap(state) {
 
   const curve = buildCurve(origin, destination);
   const progress = Math.max(0, Math.min(100, Number(flight.progress) || 0)) / 100;
-  const aircraftPoint = curvePoint(curve, progress);
-  const aircraftAngle = curveAngle(curve, progress);
+  const livePosition =
+    liveAircraftPosition(flight);
+
+  const liveHeading = Number(
+    flight.heading
+  );
+
+  const hasLiveHeading =
+    flight.heading !== null &&
+    flight.heading !== undefined &&
+    flight.heading !== "" &&
+    Number.isFinite(liveHeading);
+
+  const aircraftPoint =
+    livePosition ??
+    curvePoint(curve, progress);
+
+  const aircraftAngle =
+    livePosition &&
+    hasLiveHeading
+      ? liveHeading - 90
+      : curveAngle(curve, progress);
 
   [elements.routeShadow, elements.routeLine].forEach((path) => {
     if (path) path.setAttribute("d", curve.path);

@@ -23,5 +23,11 @@ const dadRadarSettings = {
     arrivedHoldMinutes: 45
   },
 
+  flightData: {
+    enabled: true,
+    refreshIntervalMs: 60 * 1000,
+    staleAfterMs: 3 * 60 * 1000
+  },
+
   developerMode: true
 };

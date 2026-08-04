@@ -56,6 +56,7 @@ function createBrowserContext() {
     "config/settings.js",
     "models/states.js",
     "models/schedule-state.js",
+    "models/live-flight-state.js",
     "App/state-engine.js",
     "services/calendar-state-controller.js"
   ]) {
@@ -69,6 +70,32 @@ function createBrowserContext() {
   return {
     context,
     dispatchedEvents
+  };
+}
+
+function activeFlightEvent() {
+  return {
+    id: "active-flight",
+    kind: "flight",
+    status: "confirmed",
+    carrierCode: "MQ",
+    flightNumber: "4140",
+    origin: "ORD",
+    destination: "AVL",
+    liveLookupCandidates: [
+      "ENY4140",
+      "MQ4140"
+    ],
+    times: {
+      startUtc:
+        new Date(
+          Date.now() - 30 * 60000
+        ).toISOString(),
+      endUtc:
+        new Date(
+          Date.now() + 60 * 60000
+        ).toISOString()
+    }
   };
 }
 
@@ -140,8 +167,149 @@ async function testCalendarPublishesState() {
   assert.equal(syncEvent.detail.ok, true);
 }
 
+async function testLiveFlightRefinesCalendarState() {
+  const {
+    context,
+    dispatchedEvents
+  } = createBrowserContext();
+
+  context.dadRadarCalendarApi = {
+    async getUpcomingEvents() {
+      return {
+        retrievedAt:
+          new Date().toISOString(),
+        events: [activeFlightEvent()]
+      };
+    }
+  };
+
+  context.dadRadarLiveFlightApi = {
+    async getFlightSnapshot() {
+      return {
+        provider: "flightaware",
+        retrievedAt:
+          new Date().toISOString(),
+        displayIdent: "MQ4140",
+        phase: "APPROACH",
+        status: "En Route",
+        origin: "ORD",
+        destination: "AVL",
+        progressPercent: 82,
+        arrival: {
+          best:
+            new Date(
+              Date.now() + 25 * 60000
+            ).toISOString()
+        },
+        position: {
+          latitude: 36.4,
+          longitude: -83.1,
+          altitudeFeet: 9000,
+          groundSpeedKnots: 285,
+          headingDegrees: 145,
+          recordedAt:
+            new Date().toISOString()
+        }
+      };
+    }
+  };
+
+  await context.refreshCalendarState();
+  const result =
+    await context
+      .refreshLiveFlightState();
+
+  assert.equal(result.mode, "APPROACH");
+  assert.equal(
+    result.state.source,
+    "flightaware"
+  );
+  assert.equal(
+    result.state.flight.progress,
+    82
+  );
+  assert.equal(
+    result.state.flight.airspeed,
+    null
+  );
+  assert.equal(
+    result.state.flight.groundSpeed,
+    285
+  );
+
+  const syncEvent =
+    dispatchedEvents.find(
+      (event) =>
+        event.type ===
+        "dad-radar:live-flight-sync"
+    );
+
+  assert.ok(syncEvent);
+  assert.equal(syncEvent.detail.ok, true);
+}
+
+async function testLiveFailureRetainsCalendarState() {
+  const {
+    context,
+    dispatchedEvents
+  } = createBrowserContext();
+
+  context.dadRadarCalendarApi = {
+    async getUpcomingEvents() {
+      return {
+        retrievedAt:
+          new Date().toISOString(),
+        events: [activeFlightEvent()]
+      };
+    }
+  };
+
+  context.console = {
+    ...console,
+    warn() {}
+  };
+
+  context.dadRadarLiveFlightApi = {
+    async getFlightSnapshot() {
+      throw new Error(
+        "FlightAware unavailable"
+      );
+    }
+  };
+
+  const calendarResult =
+    await context
+      .refreshCalendarState();
+
+  const result =
+    await context
+      .refreshLiveFlightState();
+
+  assert.equal(
+    calendarResult.mode,
+    "EN_ROUTE"
+  );
+  assert.equal(result.mode, "EN_ROUTE");
+  assert.equal(
+    result.state.source,
+    "calendar"
+  );
+
+  const failedSync =
+    dispatchedEvents.find(
+      (event) =>
+        event.type ===
+          "dad-radar:live-flight-sync" &&
+        event.detail.ok === false
+    );
+
+  assert.ok(failedSync);
+}
+
 async function runTests() {
   await testCalendarPublishesState();
+  await testLiveFlightRefinesCalendarState();
+  await testLiveFailureRetainsCalendarState();
 
   console.log(
     "Calendar state controller tests passed."
