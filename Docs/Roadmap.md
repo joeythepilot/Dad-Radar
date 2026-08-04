@@ -51,6 +51,7 @@ Dad Radar is an heirloom-quality flight operations display that helps Delaney st
 - [x] Delay detection
 - [x] Diversion detection
 - [x] Live ETA reconciliation
+- [x] Production-path live-flight diagnostic
 - [ ] Validate a complete live flight with production AeroAPI data
 
 ---
@@ -65,9 +66,9 @@ The browser now requests normalized FlightAware snapshots for the Calendar-selec
 
 Calendar remains authoritative when FlightAware is unavailable, returns no confident match, or becomes stale. Live failures do not erase the planned schedule or force an Offline state. Groundspeed remains distinct from airspeed in the state model, but it drives the speed gauge and a Ground Speed readout because no indicated-airspeed source is available.
 
-The browser API client, pure reconciliation model, controlled polling controller, live moving-map position, and deterministic regression tests are implemented.
+The browser API client, pure reconciliation model, controlled polling controller, live moving-map position, and deterministic regression tests are implemented. A one-command diagnostic now exercises the production Calendar selection, FlightAware lookup, and reconciliation path while keeping credentials out of its report.
 
-Next milestone: validate the complete path against a real scheduled flight with `FLIGHTAWARE_AEROAPI_KEY` configured, then address any provider-data edge cases found during that field run.
+Next milestone: run `npm.cmd run diagnose:live` against a real scheduled flight with `FLIGHTAWARE_AEROAPI_KEY` configured, repeat it during each major flight phase, and address any provider-data edge cases found during that field run.
 
 ---
 

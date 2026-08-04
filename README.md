@@ -12,4 +12,14 @@ Maxwell Family Flight Tracker — a handcrafted flight operations display for ai
 
 Run all deterministic tests with `npm test`.
 
+## Live-flight validation
+
+Run a sanitized end-to-end diagnostic against the active or next Pilot Schedule flight:
+
+```powershell
+npm.cmd run diagnose:live
+```
+
+Use `npm.cmd run diagnose:live -- --json` for structured output. See `Docs/Live-flight-validation.md` for prerequisites, result meanings, and the complete field-test checklist.
+
 Credentials, Google tokens, and `.env` are intentionally excluded from Git.
