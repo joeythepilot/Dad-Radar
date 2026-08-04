@@ -89,7 +89,7 @@ It exists so future work always builds on previous decisions instead of repeatin
 
 ✓ Flight lookup prefers ICAO identifiers, then validates route and scheduled departure time before accepting a match.
 
-✓ FlightAware altitude is converted from hundreds of feet to feet. Groundspeed remains labeled as groundspeed and is not presented as airspeed.
+✓ FlightAware altitude is converted from hundreds of feet to feet. Groundspeed remains a distinct data field. Because no indicated-airspeed source is available, groundspeed may drive the existing speed gauge only when its digital readout is labeled Ground Speed.
 
 ✓ Calendar data remains the fallback plan when FlightAware is unavailable or cannot find a confident match.
 

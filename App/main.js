@@ -71,6 +71,9 @@ const clockValue =
 const airspeedValue =
   document.getElementById("airspeed-value");
 
+const speedLabel =
+  document.getElementById("speed-label");
+
 const headingValue =
   document.getElementById("heading-value");
 
@@ -744,7 +747,8 @@ function resetHeadingIndicator() {
    --------------------------------------------------------- */
 
 function updateInstrumentNeedles(
-  flight
+  flight,
+  displayedSpeed = null
 ) {
   if (!flight) {
     if (airspeedNeedle) {
@@ -769,9 +773,9 @@ function updateInstrumentNeedles(
     return;
   }
 
-  const airspeed =
+  const speed =
     clamp(
-      Number(flight.airspeed) || 0,
+      Number(displayedSpeed) || 0,
       0,
       700
     );
@@ -782,9 +786,9 @@ function updateInstrumentNeedles(
       0
     );
 
-  const airspeedAngle =
+  const speedAngle =
     mapRange(
-      airspeed,
+      speed,
       0,
       700,
       0,
@@ -811,7 +815,7 @@ function updateInstrumentNeedles(
 
   if (airspeedNeedle) {
     airspeedNeedle.style.transform =
-      `rotate(${airspeedAngle}deg)`;
+      `rotate(${speedAngle}deg)`;
   }
 
   if (altitudeNeedle) {
@@ -850,6 +854,23 @@ function updateDashboard(state) {
     Number.isFinite(
       Number(flight.airspeed)
     );
+
+  const hasGroundSpeed =
+    flight?.groundSpeed !== null &&
+    flight?.groundSpeed !== undefined &&
+    Number.isFinite(
+      Number(flight.groundSpeed)
+    );
+
+  const displayedSpeed =
+    hasAirspeed
+      ? Number(flight.airspeed)
+      : hasGroundSpeed
+        ? Number(flight.groundSpeed)
+        : null;
+
+  const hasDisplayedSpeed =
+    displayedSpeed !== null;
 
   const hasHeading =
     flight?.heading !== null &&
@@ -933,15 +954,20 @@ function updateDashboard(state) {
 
     if (airspeedValue) {
       airspeedValue.textContent =
-        hasAirspeed
+        hasDisplayedSpeed
           ? String(
               Math.round(
-                Number(
-                  flight.airspeed
-                )
+                displayedSpeed
               )
             )
           : "---";
+    }
+
+    if (speedLabel) {
+      speedLabel.textContent =
+        hasAirspeed
+          ? "AIRSPEED"
+          : "GROUND SPEED";
     }
 
     if (headingValue) {
@@ -1007,11 +1033,12 @@ function updateDashboard(state) {
     }
 
     updateInstrumentNeedles(
-      hasAirspeed ||
+      hasDisplayedSpeed ||
       hasHeading ||
       hasAltitude
         ? flight
-        : null
+        : null,
+      displayedSpeed
     );
   } else {
     if (flightBoardFlight) {
@@ -1046,6 +1073,11 @@ function updateDashboard(state) {
     if (airspeedValue) {
       airspeedValue.textContent =
         "---";
+    }
+
+    if (speedLabel) {
+      speedLabel.textContent =
+        "GROUND SPEED";
     }
 
     if (headingValue) {

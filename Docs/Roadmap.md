@@ -63,7 +63,7 @@ Dad Radar can authenticate with the Pilot Schedule Google Calendar, retrieve upc
 
 The browser now requests normalized FlightAware snapshots for the Calendar-selected flight, reconciles fresh route-matched data into the display state, and polls once per minute while the flight remains trackable. Operational phase, ETA, delays, gates, progress, heading, altitude, and map coordinates can refine the Calendar plan.
 
-Calendar remains authoritative when FlightAware is unavailable, returns no confident match, or becomes stale. Live failures do not erase the planned schedule or force an Offline state. Groundspeed remains distinct from airspeed, so the airspeed instrument stays blank unless a future source supplies actual airspeed.
+Calendar remains authoritative when FlightAware is unavailable, returns no confident match, or becomes stale. Live failures do not erase the planned schedule or force an Offline state. Groundspeed remains distinct from airspeed in the state model, but it drives the speed gauge and a Ground Speed readout because no indicated-airspeed source is available.
 
 The browser API client, pure reconciliation model, controlled polling controller, live moving-map position, and deterministic regression tests are implemented.
 
