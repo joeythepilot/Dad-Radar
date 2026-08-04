@@ -4,6 +4,7 @@ const dadRadarSettings = {
 
   homeAirport: "AVL",
   homeCity: "ASHEVILLE",
+  baseAirport: "ORD",
 
   displayTimeZone: "America/New_York",
   displayTimeZoneLabel: "EASTERN TIME",
@@ -11,6 +12,15 @@ const dadRadarSettings = {
   startup: {
     systemsOnlineDelayMs: 1800,
     dashboardDelayMs: 3000
+  },
+
+  schedule: {
+    dataSource: "calendar",
+    lookAheadDays: 14,
+    refreshIntervalMs: 5 * 60 * 1000,
+    stateCheckIntervalMs: 30 * 1000,
+    preFlightLeadMinutes: 45,
+    arrivedHoldMinutes: 45
   },
 
   developerMode: true

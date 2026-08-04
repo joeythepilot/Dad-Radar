@@ -57,3 +57,23 @@ It exists so future work always builds on previous decisions instead of repeatin
 ✓ Architecture decisions recorded before implementation.
 
 ✓ Design Canon established as the project's primary design reference.
+
+---
+
+## 2026-08-04
+
+### Calendar Schedule Integration
+
+✓ Google Calendar is the source of truth for the planned pilot schedule.
+
+✓ Google authentication remains on the local backend. OAuth credentials and tokens are never committed to GitHub.
+
+✓ Calendar events are normalized into flights, commutes, layovers, duty-free periods, and other events before they reach the interface.
+
+✓ Airport-local roster times are converted to UTC for comparison and Eastern Time for the family display.
+
+✓ A dedicated schedule-state model translates normalized events into Dad Radar display modes.
+
+✓ Calendar-only operation may estimate route progress from scheduled time, but it must not invent airspeed, altitude, heading, or other live telemetry.
+
+✓ The mock flight service remains available only as an explicit development data source.

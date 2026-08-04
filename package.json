@@ -4,7 +4,11 @@
   "description": "Maxwell Family Flight Tracker\r A handcrafted flight operations display for airline families.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server/index.js",
+    "test": "node server/pilot-schedule-parser-test.js && node models/schedule-state-test.js && node services/calendar-state-controller-test.js",
+    "test:parser": "node server/pilot-schedule-parser-test.js",
+    "test:schedule-state": "node models/schedule-state-test.js",
+    "test:calendar-controller": "node services/calendar-state-controller-test.js"
   },
   "repository": {
     "type": "git",
