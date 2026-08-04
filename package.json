@@ -1,0 +1,28 @@
+{
+  "name": "dad-radar",
+  "version": "1.0.0",
+  "description": "Maxwell Family Flight Tracker\r A handcrafted flight operations display for airline families.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joeythepilot/Dad-Radar.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/joeythepilot/Dad-Radar/issues"
+  },
+  "homepage": "https://github.com/joeythepilot/Dad-Radar#readme",
+  "dependencies": {
+    "@google-cloud/local-auth": "^2.1.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "googleapis": "^105.0.0",
+    "luxon": "^3.7.2"
+  }
+}
