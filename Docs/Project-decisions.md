@@ -109,3 +109,12 @@ It exists so future work always builds on previous decisions instead of repeatin
 ✓ Cancellation is represented as a live status on the Calendar-selected flight until a dedicated cancellation mode is designed.
 
 ✓ Real coordinates and heading drive the moving-map aircraft marker when available and within map bounds. Calendar progress remains the route-marker fallback.
+
+
+### Live Flight Field Validation
+
+✓ A one-command diagnostic exercises the production Calendar selection, FlightAware lookup, and reconciliation model without printing credentials.
+
+✓ The diagnostic checks the active flight first and otherwise checks the next scheduled flight within the Calendar look-ahead window.
+
+✓ A provider response is reported as Matched only when the reconciliation model accepts it as fresh and route-correct. Rejected or missing live data leaves the Calendar fallback visible in the report.
