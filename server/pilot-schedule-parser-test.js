@@ -156,6 +156,74 @@ function testMissingAirportTimeZone() {
   );
 }
 
+function testGsoTimeZoneIsKnown() {
+  const result = parsePilotEvent(
+    createEvent({
+      summary:
+        "Flight 3744 ORD->GSO",
+      description:
+        "Flight: 3744 Stations: ORD->GSO Time: 2026-08-04T10:00:00 - 2026-08-04T13:00:00"
+    })
+  );
+
+  assert.equal(
+    result.times.needsTimeZoneVerification,
+    false
+  );
+  assert.equal(
+    result.times.missingAirportTimeZones,
+    undefined
+  );
+}
+
+function testBilTimeZoneIsKnown() {
+  const result = parsePilotEvent(
+    createEvent({
+      summary:
+        "Flight 3429 DFW->BIL",
+      description:
+        "Flight: 3429 Stations: DFW->BIL Time: 2026-08-04T11:11:00 - 2026-08-04T12:31:00"
+    })
+  );
+
+  assert.equal(
+    result.times.departureZone,
+    "America/Chicago"
+  );
+  assert.equal(
+    result.times.arrivalZone,
+    "America/Denver"
+  );
+  assert.equal(
+    result.times.needsTimeZoneVerification,
+    false
+  );
+}
+
+function testGlobalCatalogTimeZoneIsKnown() {
+  const result = parsePilotEvent(
+    createEvent({
+      summary:
+        "Flight 5555 SEA->MCI",
+      description:
+        "Flight: 5555 Stations: SEA->MCI Time: 2026-08-04T09:00:00 - 2026-08-04T14:30:00"
+    })
+  );
+
+  assert.equal(
+    result.times.departureZone,
+    "America/Los_Angeles"
+  );
+  assert.equal(
+    result.times.arrivalZone,
+    "America/Chicago"
+  );
+  assert.equal(
+    result.times.needsTimeZoneVerification,
+    false
+  );
+}
+
 function testFullSchedule() {
   const calendarData = {
     calendarId: "pilot-schedule",
@@ -204,6 +272,9 @@ function runTests() {
   testManualCommute();
   testLayover();
   testMissingAirportTimeZone();
+  testGsoTimeZoneIsKnown();
+  testBilTimeZoneIsKnown();
+  testGlobalCatalogTimeZoneIsKnown();
   testFullSchedule();
 
   console.log(
@@ -212,4 +283,3 @@ function runTests() {
 }
 
 runTests();
-

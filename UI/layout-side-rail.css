@@ -24,8 +24,8 @@
 /* =========================================================
    Lower dashboard geometry
 
-   Poster:      24%
-   Map:         58%
+   Poster:      27%
+   Map:         55%
    Instruments: 18%
    ========================================================= */
 
@@ -36,8 +36,8 @@
   display: grid !important;
 
   grid-template-columns:
-    minmax(0, 24fr)
-    minmax(0, 58fr)
+    minmax(0, 27fr)
+    minmax(0, 55fr)
     minmax(0, 18fr)
     !important;
 
@@ -59,7 +59,14 @@
   min-height: 0;
 
   display: grid !important;
-  grid-template-rows: minmax(0, 1fr) !important;
+  grid-template-rows:
+    minmax(0, 75fr)
+    minmax(0, 25fr)
+    !important;
+
+  row-gap:
+    var(--panel-gap)
+    !important;
 
   margin-right:
     var(--panel-gap)
@@ -164,7 +171,7 @@
   z-index: 1;
 
   display: grid !important;
-    place-items: start center !important;
+  place-items: center !important;
 
   padding: 0 !important;
 
@@ -173,8 +180,8 @@
 
 
 .destination-poster-image {
-  width: 100% !important;
-  height: 100% !important;
+  width: auto !important;
+  height: auto !important;
 
   max-width: 100% !important;
   max-height: 100% !important;
@@ -182,9 +189,310 @@
   display: block !important;
 
   object-fit: contain !important;
-  object-position: center top !important;
+  object-position: center !important;
+
+  place-self: center !important;
 
   transform: none !important;
+}
+
+
+/* =========================================================
+   Today's duty
+
+   A compact family-facing timeline: what Daddy has already
+   flown, what he is doing now, and what comes next.
+   ========================================================= */
+
+.daily-schedule-panel {
+  display: grid !important;
+
+  grid-template-rows:
+    auto
+    auto
+    minmax(0, 1fr)
+    !important;
+
+  gap: 6px;
+
+  padding:
+    10px
+    13px
+    9px
+    !important;
+
+  background:
+    radial-gradient(
+      circle at 20% 0%,
+      rgba(184, 154, 103, 0.11),
+      transparent 52%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(24, 25, 24, 0.99),
+      rgba(6, 8, 9, 0.99) 68%
+    )
+    !important;
+}
+
+
+.daily-schedule-heading {
+  min-width: 0;
+
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+
+  gap: 8px;
+
+  padding-bottom: 6px;
+
+  border-bottom:
+    1px solid
+    rgba(184, 154, 103, 0.28);
+}
+
+
+.daily-schedule-heading h2,
+.daily-schedule-heading span {
+  margin: 0;
+
+  color: var(--brass);
+
+  font-family:
+    "Courier New",
+    monospace;
+
+  font-size: 16px;
+  line-height: 1;
+  letter-spacing: 1.5px;
+  white-space: nowrap;
+}
+
+
+.daily-schedule-heading h2 {
+  font-weight: 700;
+}
+
+
+.daily-schedule-heading span {
+  color: #b7b0a3;
+  font-size: 12px;
+  letter-spacing: 1.15px;
+}
+
+
+.daily-schedule-context {
+  min-width: 0;
+
+  display: flex;
+  align-items: flex-start;
+
+  gap: 9px;
+
+  margin: 0;
+
+  overflow: hidden;
+}
+
+
+.daily-schedule-now {
+  flex: none;
+
+  padding:
+    3px
+    5px;
+
+  border:
+    1px solid
+    rgba(184, 154, 103, 0.58);
+
+  border-radius: 2px;
+
+  color: #d9bd87;
+
+  font-family:
+    "Courier New",
+    monospace;
+
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 1px;
+}
+
+
+.daily-schedule-context strong {
+  min-width: 0;
+
+  display: -webkit-box;
+
+  overflow: hidden;
+
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+
+  color: #eee5d3;
+
+  font-family:
+    "Courier New",
+    monospace;
+
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.55px;
+  text-overflow: ellipsis;
+  white-space: normal;
+}
+
+
+.daily-schedule-list {
+  min-width: 0;
+  min-height: 0;
+
+  display: grid;
+  grid-auto-rows: minmax(0, 1fr);
+
+  gap: 2px;
+
+  margin: 0;
+  padding: 0;
+
+  overflow: hidden;
+
+  list-style: none;
+}
+
+
+.daily-schedule-entry {
+  position: relative;
+
+  min-width: 0;
+  min-height: 0;
+
+  display: grid;
+
+  grid-template-columns:
+    88px
+    minmax(0, 1fr)
+    auto;
+
+  align-items: center;
+
+  gap: 9px;
+
+  padding-left: 10px;
+
+  overflow: hidden;
+
+  color: #d2ccc0;
+
+  font-family:
+    "Courier New",
+    monospace;
+
+  font-size: 15px;
+  line-height: 1.15;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+
+
+.daily-schedule-entry::before {
+  content: "";
+
+  position: absolute;
+
+  top: 50%;
+  left: 1px;
+
+  width: 4px;
+  height: 4px;
+
+  border-radius: 50%;
+
+  background: #77736c;
+
+  transform: translateY(-50%);
+}
+
+
+.daily-schedule-time {
+  color: #c5b696;
+}
+
+
+.daily-schedule-label {
+  min-width: 0;
+
+  overflow: hidden;
+
+  color: inherit;
+
+  font-weight: 700;
+  text-overflow: ellipsis;
+}
+
+
+.daily-schedule-tag {
+  color: #c7b58c;
+
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+}
+
+
+.daily-schedule-entry.is-completed {
+  opacity: 0.64;
+}
+
+
+.daily-schedule-entry.is-current {
+  color: #f2e8d5;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(184, 154, 103, 0.16),
+      transparent 82%
+    );
+}
+
+
+.daily-schedule-entry.is-current::before {
+  width: 6px;
+  height: 6px;
+
+  background: #d2af70;
+
+  box-shadow:
+    0 0 6px
+    rgba(210, 175, 112, 0.56);
+}
+
+
+.daily-schedule-entry.is-current
+  .daily-schedule-time,
+.daily-schedule-entry.is-current
+  .daily-schedule-tag {
+  color: #d2af70;
+}
+
+
+.daily-schedule-empty {
+  display: grid;
+  place-items: center start;
+
+  color: #aaa397;
+
+  font-family:
+    "Courier New",
+    monospace;
+
+  font-size: 14px;
+  letter-spacing: 0.9px;
 }
 
 
@@ -230,7 +538,7 @@
 
 
 /* =========================================================
-   Transparent time overlays
+   Legible time overlays
    ========================================================= */
 
 .vintage-map-panel .map-status-block {
@@ -277,6 +585,8 @@
   min-width: 0 !important;
 
   text-align: left !important;
+
+  justify-self: start;
 }
 
 
@@ -286,13 +596,54 @@
   min-width: 0 !important;
 
   text-align: right !important;
+
+  justify-self: end;
+}
+
+
+.vintage-map-panel .clock-block,
+.vintage-map-panel .eta-block {
+  width: max-content;
+
+  padding:
+    7px
+    10px
+    6px;
+
+  border:
+    1px
+    solid
+    rgba(190, 149, 84, 0.72);
+
+  border-radius: 2px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(31, 28, 22, 0.82),
+      rgba(13, 14, 12, 0.92)
+    );
+
+  box-shadow:
+    0
+    2px
+    5px
+    rgba(35, 21, 12, 0.48),
+
+    inset
+    0
+    1px
+    0
+    rgba(239, 211, 155, 0.16);
 }
 
 
 .vintage-map-panel .small-label {
-  color: #6a372c !important;
+  color: #e9c889 !important;
 
   font-size: 11px !important;
+
+  font-weight: 700 !important;
 
   letter-spacing: 1.5px !important;
 }
@@ -300,14 +651,21 @@
 
 .vintage-map-panel .clock-value,
 .vintage-map-panel .eta-value {
-  color: #4c3024 !important;
+  color: #fff1cf !important;
 
-  font-size: 20px !important;
+  font-size: 22px !important;
+
+  line-height: 1 !important;
+
+  font-variant-numeric:
+    tabular-nums;
 }
 
 
 .vintage-map-panel .eta-zone {
-  color: #71462c !important;
+  color: #d4b278 !important;
+
+  font-size: 10px !important;
 }
 
 
@@ -318,9 +676,102 @@
   paint-order: stroke fill;
 
   text-shadow:
-    0 1px 0 rgba(239, 218, 174, 0.95),
-    0 0 5px rgba(225, 199, 148, 0.88),
-    0 1px 2px rgba(66, 42, 25, 0.3);
+    0 1px 1px rgba(0, 0, 0, 0.95),
+    0 0 4px rgba(0, 0, 0, 0.72);
+}
+
+
+/* Keep the split-flap tile envelope and its headings
+   centered as one measured unit at every viewer scale. */
+
+.flight-strip-module {
+  --flight-flap-group-width:
+    calc(
+      var(--flap-width) +
+      var(--flap-width) +
+      var(--flap-width) +
+      var(--flap-width) +
+      var(--flap-gap) +
+      var(--flap-gap) +
+      var(--flap-gap)
+    );
+
+  --airport-flap-group-width:
+    calc(
+      var(--flap-width) +
+      var(--flap-width) +
+      var(--flap-width) +
+      var(--flap-gap) +
+      var(--flap-gap)
+    );
+
+  --status-flap-group-width:
+    calc(
+      var(--flap-width) +
+      var(--flap-width) +
+      var(--flap-width) +
+      var(--flap-width) +
+      var(--flap-width) +
+      var(--flap-width) +
+      var(--flap-width) +
+      var(--flap-width) +
+      var(--flap-gap) +
+      var(--flap-gap) +
+      var(--flap-gap) +
+      var(--flap-gap) +
+      var(--flap-gap) +
+      var(--flap-gap) +
+      var(--flap-gap)
+    );
+
+  --route-section-gap:
+    clamp(
+      26px,
+      1.7vw,
+      32px
+    );
+}
+
+.flight-strip-labels,
+.flight-board-row {
+  grid-template-columns:
+    var(--flight-flap-group-width)
+    minmax(0, 1fr)
+    var(--status-flap-group-width)
+    !important;
+
+  column-gap: 0 !important;
+
+  transform:
+    translateX(
+      var(
+        --flap-balance-offset,
+        0px
+      )
+    );
+}
+
+
+.flight-strip-route-labels,
+.flap-route-section {
+  min-width: 0;
+
+  display: grid;
+
+  grid-template-columns:
+    var(--airport-flap-group-width)
+    var(--airport-flap-group-width);
+
+  align-items: center;
+  justify-content: center;
+
+  gap:
+    var(--route-section-gap);
+}
+
+
+.flap-route-section {
+  height: 100%;
 }
 
 

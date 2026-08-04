@@ -1,7 +1,10 @@
 # Dad Radar State Definitions
 
 ## Home
-Dad is home with the family.
+Daddy is home with the family in Asheville (AVL). This state requires location evidence: the most recently completed flight arrived at AVL or, when no completed flight is available, the next known flight originates at AVL. A blank Calendar never implies Home.
+
+## Location Unknown
+The schedule does not provide enough recent flight or airport context to confirm Daddy's location. Display this state instead of assuming Home.
 
 ## Commuting to Base
 Traveling from Asheville (AVL) to Chicago (ORD) to begin a work trip.
@@ -26,7 +29,7 @@ Play the cabin chime and transition to Approach mode.
 Aircraft has arrived at the destination gate.
 
 ## Layover
-Dad is on an overnight or extended layover between flight assignments.
+Daddy is on an overnight or extended layover between flight assignments. After a flight arrives away from AVL, the last destination remains Daddy's ground location even when no next flight is currently listed.
 
 ## Commuting Home
 Traveling from Chicago (ORD) back to Asheville (AVL) after completing a work trip.

@@ -478,19 +478,19 @@ h1 {
   grid-template-columns:
     minmax(
       0,
-      1.12fr
+      4fr
     )
     minmax(
       0,
-      0.72fr
+      3fr
     )
     minmax(
       0,
-      0.72fr
+      3fr
     )
     minmax(
       0,
-      1.74fr
+      8.5fr
     );
 
   align-items:
@@ -2182,6 +2182,7 @@ h1 {
     1;
 }
 
+.altimeter-ten-thousands-needle-layer,
 .altimeter-thousands-needle-layer,
 .altimeter-needle-layer {
   transform:
@@ -2207,14 +2208,41 @@ h1 {
     transform;
 }
 
-.altimeter-thousands-needle-layer {
+.altimeter-ten-thousands-needle-layer {
   z-index:
     2;
 }
 
-.altimeter-needle-layer {
+.altimeter-ten-thousands-pointer {
+  fill:
+    #e8deca;
+
+  stroke:
+    #3b332a;
+
+  stroke-width:
+    5;
+
+  stroke-linejoin:
+    round;
+
+  filter:
+    drop-shadow(
+      0
+      3px
+      3px
+      rgba(0, 0, 0, 0.7)
+    );
+}
+
+.altimeter-thousands-needle-layer {
   z-index:
     3;
+}
+
+.altimeter-needle-layer {
+  z-index:
+    4;
 }
 
 
@@ -2448,6 +2476,7 @@ h1 {
 
   .airspeed-needle-layer,
   .heading-compass-card,
+  .altimeter-ten-thousands-needle-layer,
   .altimeter-thousands-needle-layer,
   .altimeter-needle-layer {
     transition-duration:

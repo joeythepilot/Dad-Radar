@@ -50,7 +50,7 @@ async function testPostsProviderNeutralLookup() {
           return {
             ok: true,
             liveFlight: {
-              provider: "flightaware",
+              provider: "flightradar24",
               phase: "EN_ROUTE"
             }
           };
@@ -72,6 +72,9 @@ async function testPostsProviderNeutralLookup() {
         startUtc:
           "2026-08-04T17:00:00.000Z"
       }
+    }, {
+      providerFlightId:
+        "ENY4140-1754290000-airline-0001"
     });
 
   assert.equal(
@@ -93,6 +96,10 @@ async function testPostsProviderNeutralLookup() {
   );
   assert.equal(body.origin, "ORD");
   assert.equal(body.destination, "AVL");
+  assert.equal(
+    body.providerFlightId,
+    "ENY4140-1754290000-airline-0001"
+  );
   assert.equal(
     result.phase,
     "EN_ROUTE"
@@ -137,7 +144,7 @@ async function testConfigurationErrorIsTagged() {
         return {
           ok: false,
           error:
-            "FlightAware is not configured."
+            "Flightradar24 is not configured."
         };
       }
     })

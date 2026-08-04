@@ -32,6 +32,16 @@ const flightBoardFlight =
 const flightBoardText =
   document.getElementById("flight-board-text");
 
+const flightStripModule =
+  document.querySelector(
+    ".flight-strip-module"
+  );
+
+const flightBoard =
+  document.querySelector(
+    ".flight-board"
+  );
+
 const flightNumber =
   document.getElementById("flight-number");
 
@@ -89,6 +99,11 @@ const headingCard =
 const altitudeNeedle =
   document.getElementById("altitude-needle");
 
+const altitudeTenThousandsNeedle =
+  document.getElementById(
+    "altitude-ten-thousands-needle"
+  );
+
 const altitudeThousandsNeedle =
   document.getElementById(
     "altitude-thousands-needle"
@@ -99,6 +114,21 @@ const mapPanel =
 
 const destinationPanel =
   document.querySelector(".destination-panel");
+
+const dailyScheduleDate =
+  document.getElementById(
+    "daily-schedule-date"
+  );
+
+const dailyScheduleContext =
+  document.getElementById(
+    "daily-schedule-context"
+  );
+
+const dailyScheduleList =
+  document.getElementById(
+    "daily-schedule-list"
+  );
 
 const instrumentPanel =
   document.querySelector(".instrument-panel");
@@ -119,6 +149,37 @@ const STATUS_FLAP_COUNT = 8;
 
 const FLAP_ANIMATION_TIMEOUT = 500;
 
+let flightBoardBalanceFrame = null;
+
+const splitFlapAudioSettings =
+  dadRadarSettings.audio
+    ?.splitFlap ?? {};
+
+const splitFlapAudioController =
+  splitFlapAudioSettings.enabled !==
+    false &&
+  globalThis.dadRadarSplitFlapAudio
+    ? globalThis
+        .dadRadarSplitFlapAudio
+        .createSplitFlapAudioController({
+          source:
+            splitFlapAudioSettings
+              .source,
+          cueSeconds:
+            splitFlapAudioSettings
+              .cueSeconds,
+          fadeOutMs:
+            splitFlapAudioSettings
+              .fadeOutMs,
+          volume:
+            splitFlapAudioSettings
+              .volume
+        })
+    : null;
+
+const activeSplitFlapCells =
+  new Set();
+
 
 /* ---------------------------------------------------------
    Split-flap display helpers
@@ -128,6 +189,100 @@ function displayFlapCharacter(character) {
   return character === " "
     ? "\u00A0"
     : character;
+}
+
+
+function balanceFlightBoard() {
+  flightBoardBalanceFrame = null;
+
+  if (
+    !flightStripModule ||
+    !flightBoard ||
+    !flightBoardFlight ||
+    flightBoardFlight.hidden
+  ) {
+    return;
+  }
+
+  flightStripModule.style.setProperty(
+    "--flap-balance-offset",
+    "0px"
+  );
+
+  const flapCharacters =
+    flightBoardFlight.querySelectorAll(
+      ".flap-character"
+    );
+
+  if (!flapCharacters.length) {
+    return;
+  }
+
+  const boardRectangle =
+    flightBoard.getBoundingClientRect();
+
+  const rowRectangle =
+    flightBoardFlight
+      .getBoundingClientRect();
+
+  const firstRectangle =
+    flapCharacters[0]
+      .getBoundingClientRect();
+
+  const lastRectangle =
+    flapCharacters[
+      flapCharacters.length - 1
+    ].getBoundingClientRect();
+
+  if (
+    boardRectangle.width <= 0 ||
+    rowRectangle.width <= 0 ||
+    firstRectangle.width <= 0 ||
+    lastRectangle.width <= 0
+  ) {
+    return;
+  }
+
+  const leftGap =
+    firstRectangle.left -
+    boardRectangle.left;
+
+  const rightGap =
+    boardRectangle.right -
+    lastRectangle.right;
+
+  const renderedScale =
+    flightBoardFlight.offsetWidth > 0
+      ? rowRectangle.width /
+        flightBoardFlight.offsetWidth
+      : 1;
+
+  const balanceOffset =
+    (rightGap - leftGap) /
+    (2 * renderedScale);
+
+  if (!Number.isFinite(balanceOffset)) {
+    return;
+  }
+
+  flightStripModule.style.setProperty(
+    "--flap-balance-offset",
+    `${balanceOffset.toFixed(2)}px`
+  );
+}
+
+
+function scheduleFlightBoardBalance() {
+  if (flightBoardBalanceFrame !== null) {
+    window.cancelAnimationFrame(
+      flightBoardBalanceFrame
+    );
+  }
+
+  flightBoardBalanceFrame =
+    window.requestAnimationFrame(
+      balanceFlightBoard
+    );
 }
 
 
@@ -226,6 +381,31 @@ function wait(milliseconds) {
       milliseconds
     );
   });
+}
+
+
+function beginSplitFlapAudio(cell) {
+  const shouldStartAudio =
+    activeSplitFlapCells.size === 0;
+
+  activeSplitFlapCells.add(cell);
+
+  if (shouldStartAudio) {
+    splitFlapAudioController
+      ?.start();
+  }
+}
+
+
+function finishSplitFlapAudio(cell) {
+  activeSplitFlapCells.delete(cell);
+
+  if (
+    activeSplitFlapCells.size === 0
+  ) {
+    splitFlapAudioController
+      ?.stop();
+  }
 }
 
 
@@ -428,11 +608,20 @@ function queueFlapAnimation(
   cell._targetValue =
     nextCharacter;
 
+  if (
+    !cell._animationRunning &&
+    (cell.dataset.value ?? " ") ===
+      nextCharacter
+  ) {
+    return;
+  }
+
   if (cell._animationRunning) {
     return;
   }
 
   cell._animationRunning = true;
+  beginSplitFlapAudio(cell);
 
   async function runAnimationQueue() {
     if (delay > 0) {
@@ -483,6 +672,8 @@ function queueFlapAnimation(
         cell._targetValue,
         0
       );
+    } else {
+      finishSplitFlapAudio(cell);
     }
   }
 
@@ -562,6 +753,8 @@ function renderFlapText(
           FLAP_STAGGER_DELAY
       );
     });
+
+  scheduleFlightBoardBalance();
 }
 
 
@@ -595,6 +788,7 @@ function formatFlightNumber(
 function formatBoardStatus(status) {
   const statusLabels = {
     HOME: "HOME",
+    "LOCATION UNKNOWN": "LOC UNKN",
     "COMMUTING TO BASE": "TO BASE",
     "PRE-FLIGHT": "PRE FLT",
     "PRE FLIGHT": "PRE FLT",
@@ -761,6 +955,13 @@ function updateInstrumentNeedles(
         "rotate(0deg)";
     }
 
+    if (altitudeTenThousandsNeedle) {
+      altitudeTenThousandsNeedle
+        .style
+        .transform =
+        "rotate(0deg)";
+    }
+
     if (altitudeThousandsNeedle) {
       altitudeThousandsNeedle
         .style
@@ -799,19 +1000,18 @@ function updateInstrumentNeedles(
     Long hand:
     one revolution every 1,000 feet.
   */
-  const altitudeHundredsAngle =
-    (
-      altitude % 1000
-    ) / 1000 * 360;
-
-  /*
-    Short hand:
-    one revolution every 10,000 feet.
-  */
-  const altitudeThousandsAngle =
-    (
-      altitude % 10000
-    ) / 10000 * 360;
+  const {
+    hundredsAngle:
+      altitudeHundredsAngle,
+    thousandsAngle:
+      altitudeThousandsAngle,
+    tenThousandsAngle:
+      altitudeTenThousandsAngle
+  } = globalThis
+    .dadRadarInstrumentMath
+    .altimeterNeedleAngles(
+      altitude
+    );
 
   if (airspeedNeedle) {
     airspeedNeedle.style.transform =
@@ -821,6 +1021,13 @@ function updateInstrumentNeedles(
   if (altitudeNeedle) {
     altitudeNeedle.style.transform =
       `rotate(${altitudeHundredsAngle}deg)`;
+  }
+
+  if (altitudeTenThousandsNeedle) {
+    altitudeTenThousandsNeedle
+      .style
+      .transform =
+      `rotate(${altitudeTenThousandsAngle}deg)`;
   }
 
   if (altitudeThousandsNeedle) {
@@ -840,10 +1047,217 @@ function updateInstrumentNeedles(
    Main dashboard rendering
    --------------------------------------------------------- */
 
+function updateDashboardTelemetry(state) {
+  const flight =
+    state?.flight ?? null;
+
+  const hasAirspeed =
+    flight?.airspeed !== null &&
+    flight?.airspeed !== undefined &&
+    Number.isFinite(
+      Number(flight.airspeed)
+    );
+
+  const hasGroundSpeed =
+    flight?.groundSpeed !== null &&
+    flight?.groundSpeed !== undefined &&
+    Number.isFinite(
+      Number(flight.groundSpeed)
+    );
+
+  const displayedSpeed =
+    hasAirspeed
+      ? Number(flight.airspeed)
+      : hasGroundSpeed
+        ? Number(flight.groundSpeed)
+        : null;
+
+  const hasHeading =
+    flight?.heading !== null &&
+    flight?.heading !== undefined &&
+    Number.isFinite(
+      Number(flight.heading)
+    );
+
+  const hasAltitude =
+    flight?.altitude !== null &&
+    flight?.altitude !== undefined &&
+    Number.isFinite(
+      Number(flight.altitude)
+    );
+
+  if (airspeedValue) {
+    airspeedValue.textContent =
+      displayedSpeed !== null
+        ? String(
+            Math.round(displayedSpeed)
+          )
+        : "---";
+  }
+
+  if (speedLabel) {
+    speedLabel.textContent =
+      hasAirspeed
+        ? "AIRSPEED"
+        : "GROUND SPEED";
+  }
+
+  if (headingValue) {
+    headingValue.textContent =
+      hasHeading
+        ? String(
+            Math.round(
+              Number(flight.heading)
+            ) % 360
+          ).padStart(3, "0")
+        : "---";
+  }
+
+  if (altitudeValue) {
+    altitudeValue.textContent =
+      hasAltitude
+        ? Math.round(
+            Number(flight.altitude)
+          ).toLocaleString("en-US")
+        : "-----";
+  }
+
+  updateInstrumentNeedles(
+    flight &&
+    (
+      displayedSpeed !== null ||
+      hasHeading ||
+      hasAltitude
+    )
+      ? flight
+      : null,
+    displayedSpeed
+  );
+}
+
+function renderDailySchedule(
+  dailySchedule
+) {
+  if (
+    !dailyScheduleDate ||
+    !dailyScheduleContext ||
+    !dailyScheduleList
+  ) {
+    return;
+  }
+
+  dailyScheduleDate.textContent =
+    dailySchedule?.dateLabel ??
+    "TODAY";
+
+  dailyScheduleDate.title =
+    dailySchedule?.timeZoneLabel ??
+    dadRadarSettings
+      .displayTimeZoneLabel;
+
+  dailyScheduleContext.textContent =
+    dailySchedule?.context ??
+    "UPDATING TODAY'S SCHEDULE";
+
+  dailyScheduleList.replaceChildren();
+
+  const entries =
+    Array.isArray(
+      dailySchedule?.entries
+    )
+      ? dailySchedule.entries
+      : [];
+
+  if (entries.length === 0) {
+    const emptyEntry =
+      document.createElement("li");
+
+    emptyEntry.className =
+      "daily-schedule-empty";
+
+    emptyEntry.textContent =
+      dailySchedule
+        ? "NO DUTY ITEMS TODAY"
+        : "AWAITING CALENDAR";
+
+    dailyScheduleList.appendChild(
+      emptyEntry
+    );
+
+    return;
+  }
+
+  entries.forEach((entry) => {
+    const listItem =
+      document.createElement("li");
+
+    const status =
+      [
+        "completed",
+        "current",
+        "upcoming"
+      ].includes(entry.status)
+        ? entry.status
+        : "upcoming";
+
+    listItem.className =
+      `daily-schedule-entry is-${status}`;
+
+    if (status === "current") {
+      listItem.setAttribute(
+        "aria-current",
+        "true"
+      );
+    }
+
+    const time =
+      document.createElement("time");
+
+    time.className =
+      "daily-schedule-time";
+
+    time.textContent =
+      entry.time ?? "--:--";
+
+    const label =
+      document.createElement("span");
+
+    label.className =
+      "daily-schedule-label";
+
+    label.textContent =
+      entry.label ??
+      "SCHEDULED ACTIVITY";
+
+    const tag =
+      document.createElement("span");
+
+    tag.className =
+      "daily-schedule-tag";
+
+    tag.textContent =
+      entry.tag ?? "";
+
+    listItem.append(
+      time,
+      label,
+      tag
+    );
+
+    dailyScheduleList.appendChild(
+      listItem
+    );
+  });
+}
+
 function updateDashboard(state) {
   if (!state) {
     return;
   }
+
+  renderDailySchedule(
+    state.dailySchedule
+  );
 
   const flight =
     state.flight ?? null;
@@ -1203,7 +1617,10 @@ function startDashboardSequence() {
   }
 
   updateDashboard(
-    dadRadarState
+    typeof dadRadarVisualState !==
+      "undefined"
+      ? dadRadarVisualState
+      : dadRadarState
   );
 
   updateClock();
@@ -1232,6 +1649,8 @@ function startDashboardSequence() {
       dashboard.hidden =
         false;
     }
+
+    scheduleFlightBoardBalance();
   }, dadRadarSettings
     .startup
     .dashboardDelayMs);
@@ -1262,17 +1681,37 @@ function startDashboardSequence() {
    --------------------------------------------------------- */
 
 window.addEventListener(
-  "dad-radar:state-change",
+  "dad-radar:visual-state-change",
   (event) => {
-    updateDashboard(
-      event.detail.state
-    );
+    if (event.detail.telemetryOnly) {
+      updateDashboardTelemetry(
+        event.detail.state
+      );
+    } else {
+      updateDashboard(
+        event.detail.state
+      );
+    }
   }
 );
 
 window.addEventListener(
   "keydown",
   handleKeyboardShortcut
+);
+
+window.addEventListener(
+  "pointerdown",
+  () => {
+    splitFlapAudioController
+      ?.unlock();
+  },
+  { once: true }
+);
+
+window.addEventListener(
+  "resize",
+  scheduleFlightBoardBalance
 );
 
 

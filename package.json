@@ -5,15 +5,21 @@
   "main": "index.js",
   "scripts": {
     "start": "node server/index.js",
-    "test": "node server/pilot-schedule-parser-test.js && node models/schedule-state-test.js && node models/live-flight-state-test.js && node services/live-flight-api-service-test.js && node services/calendar-state-controller-test.js && node server/flightaware-service-test.js && node server/live-flight-diagnostic-test.js",
+    "test": "node data/airport-catalog-test.js && node server/pilot-schedule-parser-test.js && node server/calendar-service-test.js && node models/schedule-state-test.js && node models/live-flight-state-test.js && node services/live-flight-api-service-test.js && node services/calendar-state-controller-test.js && node server/flightradar24-service-test.js && node server/live-flight-diagnostic-test.js && node App/instrument-math-test.js && node App/split-flap-audio-test.js && node App/visual-state-controller-test.js && node App/route-map-test.js",
+    "update:airports": "node scripts/generate-airport-catalog.js",
     "diagnose:live": "node server/live-flight-diagnostic.js",
     "test:parser": "node server/pilot-schedule-parser-test.js",
+    "test:calendar-service": "node server/calendar-service-test.js",
     "test:schedule-state": "node models/schedule-state-test.js",
     "test:live-state": "node models/live-flight-state-test.js",
     "test:live-api": "node services/live-flight-api-service-test.js",
     "test:calendar-controller": "node services/calendar-state-controller-test.js",
-    "test:flightaware": "node server/flightaware-service-test.js",
-    "test:live-diagnostic": "node server/live-flight-diagnostic-test.js"
+    "test:flightradar24": "node server/flightradar24-service-test.js",
+    "test:live-diagnostic": "node server/live-flight-diagnostic-test.js",
+    "test:instrument-math": "node App/instrument-math-test.js",
+    "test:split-flap-audio": "node App/split-flap-audio-test.js",
+    "test:visual-state": "node App/visual-state-controller-test.js",
+    "test:route-map": "node App/route-map-test.js"
   },
   "repository": {
     "type": "git",
