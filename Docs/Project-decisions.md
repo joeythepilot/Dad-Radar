@@ -92,3 +92,20 @@ It exists so future work always builds on previous decisions instead of repeatin
 ✓ FlightAware altitude is converted from hundreds of feet to feet. Groundspeed remains labeled as groundspeed and is not presented as airspeed.
 
 ✓ Calendar data remains the fallback plan when FlightAware is unavailable or cannot find a confident match.
+
+
+### Live Flight State Reconciliation
+
+✓ The browser requests live data only for a Calendar-selected flight in a trackable mode. Home, Layover, and Offline modes do not generate FlightAware polling.
+
+✓ The default live polling interval is 60 seconds. A live snapshot older than three minutes is stale and cannot override Calendar state.
+
+✓ A live snapshot must still match the Calendar origin and destination before it can refine the display, even though the backend already performs route validation.
+
+✓ Calendar owns the planned event identity. FlightAware may refine operational phase, status, ETA, delays, gates, progress, and position, but a live failure never erases the plan.
+
+✓ Live En Route and Approach phases preserve the family meaning of Commute to Base or Commute Home for commute events.
+
+✓ Cancellation is represented as a live status on the Calendar-selected flight until a dedicated cancellation mode is designed.
+
+✓ Real coordinates and heading drive the moving-map aircraft marker when available and within map bounds. Calendar progress remains the route-marker fallback.

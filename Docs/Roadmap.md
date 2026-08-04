@@ -46,11 +46,12 @@ Dad Radar is an heirloom-quality flight operations display that helps Delaney st
 - [x] Google Calendar integration
 - [x] Pilot schedule parser
 - [x] Calendar-to-display state resolution
-- [ ] Live flight tracking
-- [ ] Flight status detection
-- [ ] Delay detection
-- [ ] Diversion detection
-- [ ] ETA calculations
+- [x] Live flight tracking pipeline
+- [x] Flight status detection
+- [x] Delay detection
+- [x] Diversion detection
+- [x] Live ETA reconciliation
+- [ ] Validate a complete live flight with production AeroAPI data
 
 ---
 
@@ -60,11 +61,13 @@ Last verified: August 4, 2026
 
 Dad Radar can authenticate with the Pilot Schedule Google Calendar, retrieve upcoming events, parse roster flights and manually entered commutes, resolve the current high-level display state, and publish that state to the existing interface.
 
-The browser still displays the Calendar-derived plan only. Live aircraft position, telemetry, delay detection, diversion detection, and operational phase detection will remain out of the interface until the new provider snapshot is reconciled with that plan.
+The browser now requests normalized FlightAware snapshots for the Calendar-selected flight, reconciles fresh route-matched data into the display state, and polls once per minute while the flight remains trackable. Operational phase, ETA, delays, gates, progress, heading, altitude, and map coordinates can refine the Calendar plan.
 
-The FlightAware AeroAPI backend foundation now performs secure provider lookups, selects a flight by route and scheduled time, and normalizes status, delay, gate, progress, and position data.
+Calendar remains authoritative when FlightAware is unavailable, returns no confident match, or becomes stale. Live failures do not erase the planned schedule or force an Offline state. Groundspeed remains distinct from airspeed, so the airspeed instrument stays blank unless a future source supplies actual airspeed.
 
-Next milestone: connect the normalized live-flight snapshot to the browser controller and reconcile it with the Calendar-derived display state.
+The browser API client, pure reconciliation model, controlled polling controller, live moving-map position, and deterministic regression tests are implemented.
+
+Next milestone: validate the complete path against a real scheduled flight with `FLIGHTAWARE_AEROAPI_KEY` configured, then address any provider-data edge cases found during that field run.
 
 ---
 

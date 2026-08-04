@@ -600,6 +600,8 @@ function formatBoardStatus(status) {
     "EN ROUTE": "EN ROUTE",
     APPROACH: "APPROACH",
     DIVERTED: "DIVERTED",
+    LANDED: "LANDED",
+    CANCELLED: "CANCELED",
     ARRIVED: "ARRIVED",
     LAYOVER: "LAYOVER",
     "COMMUTING HOME": "TO HOME",
