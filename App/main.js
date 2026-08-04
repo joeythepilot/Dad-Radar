@@ -842,6 +842,27 @@ function updateDashboard(state) {
   const flight =
     state.flight ?? null;
 
+  const hasAirspeed =
+    flight?.airspeed !== null &&
+    flight?.airspeed !== undefined &&
+    Number.isFinite(
+      Number(flight.airspeed)
+    );
+
+  const hasHeading =
+    flight?.heading !== null &&
+    flight?.heading !== undefined &&
+    Number.isFinite(
+      Number(flight.heading)
+    );
+
+  const hasAltitude =
+    flight?.altitude !== null &&
+    flight?.altitude !== undefined &&
+    Number.isFinite(
+      Number(flight.altitude)
+    );
+
   if (flight) {
     if (flightBoardFlight) {
       flightBoardFlight.hidden =
@@ -910,35 +931,41 @@ function updateDashboard(state) {
 
     if (airspeedValue) {
       airspeedValue.textContent =
-        String(
-          Math.round(
-            Number(
-              flight.airspeed
-            ) || 0
-          )
-        );
+        hasAirspeed
+          ? String(
+              Math.round(
+                Number(
+                  flight.airspeed
+                )
+              )
+            )
+          : "---";
     }
 
     if (headingValue) {
       headingValue.textContent =
-        String(
-          Math.round(
-            Number(
-              flight.heading
-            ) || 0
-          )
-        ).padStart(3, "0");
+        hasHeading
+          ? String(
+              Math.round(
+                Number(
+                  flight.heading
+                )
+              )
+            ).padStart(3, "0")
+          : "---";
     }
 
     if (altitudeValue) {
       altitudeValue.textContent =
-        Math.round(
-          Number(
-            flight.altitude
-          ) || 0
-        ).toLocaleString(
-          "en-US"
-        );
+        hasAltitude
+          ? Math.round(
+              Number(
+                flight.altitude
+              )
+            ).toLocaleString(
+              "en-US"
+            )
+          : "-----";
     }
 
     const progress =
@@ -978,7 +1005,11 @@ function updateDashboard(state) {
     }
 
     updateInstrumentNeedles(
-      flight
+      hasAirspeed ||
+      hasHeading ||
+      hasAltitude
+        ? flight
+        : null
     );
   } else {
     if (flightBoardFlight) {
@@ -1100,6 +1131,13 @@ function handleKeyboardShortcut(event) {
     stopMockFlightService();
   }
 
+  if (
+    typeof stopCalendarStateController ===
+    "function"
+  ) {
+    stopCalendarStateController();
+  }
+
   setDadRadarMode(modeName);
 }
 
@@ -1165,11 +1203,22 @@ function startDashboardSequence() {
     .dashboardDelayMs);
 
   if (
+    dadRadarSettings.schedule
+      .dataSource === "calendar" &&
+    typeof startCalendarStateController ===
+      "function"
+  ) {
+    startCalendarStateController();
+  } else if (
+    dadRadarSettings.schedule
+      .dataSource === "mock" &&
     dadRadarSettings.developerMode &&
     typeof startMockFlightService ===
       "function"
   ) {
     startMockFlightService();
+  } else {
+    setDadRadarMode("OFFLINE");
   }
 }
 

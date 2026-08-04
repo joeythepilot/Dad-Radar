@@ -9,6 +9,7 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 const AIRPORTS = {
   ORD: { code: "ORD", city: "CHICAGO", latitude: 41.9742, longitude: -87.9073 },
   AVL: { code: "AVL", city: "ASHEVILLE", latitude: 35.4362, longitude: -82.5418 },
+  AVP: { code: "AVP", city: "SCRANTON", latitude: 41.3385, longitude: -75.7234 },
   TYS: { code: "TYS", city: "KNOXVILLE", latitude: 35.8110, longitude: -83.9940 }
 };
 
@@ -215,7 +216,7 @@ function setMessage(message, visible) {
 }
 
 function clearRoute() {
-  routeMapElements.shell?.classList.remove("is-ready");
+  elements.shell?.classList.remove("is-ready");
   [elements.routeShadow, elements.routeLine, elements.routeProgress].forEach((path) => {
     if (path) path.setAttribute("d", "");
   });
