@@ -2,6 +2,10 @@ const fs = require("fs/promises");
 const path = require("path");
 const { google } = require("googleapis");
 
+const {
+  parsePilotSchedule
+} = require("./pilot-schedule-parser");
+
 const CALENDAR_ID =
   process.env.GOOGLE_CALENDAR_ID ||
   "family04491195316374346619@group.calendar.google.com";
@@ -31,7 +35,8 @@ async function createCalendarClient() {
 
 async function getCalendarClient() {
   if (!calendarClientPromise) {
-    calendarClientPromise = createCalendarClient();
+    calendarClientPromise =
+      createCalendarClient();
   }
 
   return calendarClientPromise;
@@ -73,7 +78,7 @@ async function getUpcomingEvents(options = {}) {
 
   const events = response.data.items ?? [];
 
-  return {
+  const rawCalendarData = {
     calendarId: CALENDAR_ID,
     calendarTimeZone:
       response.data.timeZone ?? null,
@@ -89,6 +94,10 @@ async function getUpcomingEvents(options = {}) {
       updated: event.updated ?? null
     }))
   };
+
+  return parsePilotSchedule(
+    rawCalendarData
+  );
 }
 
 module.exports = {
