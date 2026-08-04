@@ -77,3 +77,18 @@ It exists so future work always builds on previous decisions instead of repeatin
 ✓ Calendar-only operation may estimate route progress from scheduled time, but it must not invent airspeed, altitude, heading, or other live telemetry.
 
 ✓ The mock flight service remains available only as an explicit development data source.
+
+
+### Live Flight Data Foundation
+
+✓ FlightAware AeroAPI v4 selected as the first live-flight provider for Prototype 001.
+
+✓ The FlightAware API key remains on the local backend and is loaded only from `FLIGHTAWARE_AEROAPI_KEY`.
+
+✓ Provider responses are normalized before reaching the rest of Dad Radar so another provider can be substituted later.
+
+✓ Flight lookup prefers ICAO identifiers, then validates route and scheduled departure time before accepting a match.
+
+✓ FlightAware altitude is converted from hundreds of feet to feet. Groundspeed remains labeled as groundspeed and is not presented as airspeed.
+
+✓ Calendar data remains the fallback plan when FlightAware is unavailable or cannot find a confident match.

@@ -60,9 +60,11 @@ Last verified: August 4, 2026
 
 Dad Radar can authenticate with the Pilot Schedule Google Calendar, retrieve upcoming events, parse roster flights and manually entered commutes, resolve the current high-level display state, and publish that state to the existing interface.
 
-The Calendar supplies planned schedule information only. Live aircraft position, telemetry, delay detection, diversion detection, and operational phase detection remain future Flight Intelligence work.
+The browser still displays the Calendar-derived plan only. Live aircraft position, telemetry, delay detection, diversion detection, and operational phase detection will remain out of the interface until the new provider snapshot is reconciled with that plan.
 
-Next milestone: add a live flight-data provider and reconcile its results with the Calendar-derived plan.
+The FlightAware AeroAPI backend foundation now performs secure provider lookups, selects a flight by route and scheduled time, and normalizes status, delay, gate, progress, and position data.
+
+Next milestone: connect the normalized live-flight snapshot to the browser controller and reconcile it with the Calendar-derived display state.
 
 ---
 
