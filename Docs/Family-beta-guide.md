@@ -35,7 +35,7 @@ cd Dad-Radar
 npm.cmd install
 ```
 
-Because the repository is private, Git may open a browser and ask Joey to sign in to GitHub during the clone. This is a one-time authorization on that desktop.
+The repository is currently public, so cloning it does not require a GitHub login. Private runtime files such as `.env`, `credentials.json`, and `token.json` are excluded from the repository and must be configured separately on this desktop.
 
 For later Dad Radar updates, open PowerShell in the `Dad-Radar` folder and run:
 
