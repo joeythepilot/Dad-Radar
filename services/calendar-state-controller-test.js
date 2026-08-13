@@ -2,6 +2,9 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
+const airportCatalog = require(
+  "../data/airport-catalog"
+);
 
 const projectRoot = path.join(
   __dirname,
@@ -31,6 +34,8 @@ function createBrowserContext() {
 
   const context = {
     console,
+    dadRadarAirports:
+      airportCatalog,
     CustomEvent: TestCustomEvent,
     Date,
     Intl,
@@ -153,7 +158,23 @@ async function testCalendarPublishesState() {
   );
   assert.equal(
     stateEvent.detail.state.message,
-    "DAD IS ON LAYOVER IN AVP"
+    "DADDY IS ON LAYOVER IN WILKES-BARRE/SCRANTON, PENNSYLVANIA"
+  );
+  assert.equal(
+    stateEvent.detail.state
+      .dailySchedule.context,
+    "DADDY IS ON LAYOVER IN WILKES-BARRE/SCRANTON, PENNSYLVANIA"
+  );
+  assert.equal(
+    stateEvent.detail.state
+      .dailySchedule.entries.length,
+    1
+  );
+  assert.equal(
+    stateEvent.detail.state
+      .dailySchedule.entries[0]
+      .status,
+    "current"
   );
 
   const syncEvent =
@@ -186,7 +207,9 @@ async function testLiveFlightRefinesCalendarState() {
   context.dadRadarLiveFlightApi = {
     async getFlightSnapshot() {
       return {
-        provider: "flightaware",
+        provider: "flightradar24",
+        providerFlightId:
+          "ENY4140-1754290000-airline-0001",
         retrievedAt:
           new Date().toISOString(),
         displayIdent: "MQ4140",
@@ -222,7 +245,7 @@ async function testLiveFlightRefinesCalendarState() {
   assert.equal(result.mode, "APPROACH");
   assert.equal(
     result.state.source,
-    "flightaware"
+    "flightradar24"
   );
   assert.equal(
     result.state.flight.progress,
@@ -235,6 +258,24 @@ async function testLiveFlightRefinesCalendarState() {
   assert.equal(
     result.state.flight.groundSpeed,
     285
+  );
+  assert.equal(
+    result.state.flight.actualTrack
+      .length,
+    1
+  );
+  assert.equal(
+    result.state.flight.actualTrack[0]
+      .latitude,
+    36.4
+  );
+  assert.equal(
+    result.state.dailySchedule.context,
+    "DADDY IS ALMOST IN ASHEVILLE, NORTH CAROLINA"
+  );
+  assert.equal(
+    result.state.visualTransitionMs,
+    52 * 1000
   );
 
   const syncEvent =
@@ -272,7 +313,7 @@ async function testLiveFailureRetainsCalendarState() {
   context.dadRadarLiveFlightApi = {
     async getFlightSnapshot() {
       throw new Error(
-        "FlightAware unavailable"
+        "Flightradar24 unavailable"
       );
     }
   };
@@ -306,10 +347,169 @@ async function testLiveFailureRetainsCalendarState() {
   assert.ok(failedSync);
 }
 
+async function testApproachPersistsAcrossProviderRegression() {
+  const { context } =
+    createBrowserContext();
+
+  context.dadRadarCalendarApi = {
+    async getUpcomingEvents() {
+      return {
+        retrievedAt:
+          new Date().toISOString(),
+        events: [activeFlightEvent()]
+      };
+    }
+  };
+
+  let phase = "APPROACH";
+  let altitudeFeet = 3700;
+  let altitudeTrend = "";
+  const requestOptions = [];
+
+  context.dadRadarLiveFlightApi = {
+    async getFlightSnapshot(
+      event,
+      options
+    ) {
+      requestOptions.push(options);
+
+      return {
+        provider: "flightradar24",
+        providerFlightId:
+          "ENY4140-1754290000-airline-0001",
+        retrievedAt:
+          new Date().toISOString(),
+        displayIdent: "MQ4140",
+        phase,
+        status: "En Route",
+        origin: "ORD",
+        destination: "AVL",
+        progressPercent: 91,
+        position: {
+          latitude: 35.72,
+          longitude: -82.62,
+          altitudeFeet,
+          altitudeTrend,
+          groundSpeedKnots: 210,
+          headingDegrees: 145,
+          recordedAt:
+            new Date().toISOString()
+        }
+      };
+    }
+  };
+
+  await context.refreshCalendarState();
+
+  const approach =
+    await context
+      .refreshLiveFlightState();
+
+  assert.equal(
+    approach.mode,
+    "APPROACH"
+  );
+
+  phase = "EN_ROUTE";
+  altitudeFeet = 3100;
+  altitudeTrend = "D";
+
+  const finalDescent =
+    await context
+      .refreshLiveFlightState();
+
+  assert.equal(
+    finalDescent.mode,
+    "APPROACH"
+  );
+  assert.equal(
+    finalDescent.state.status,
+    "APPROACH"
+  );
+  assert.equal(
+    requestOptions[0]
+      .providerFlightId,
+    null
+  );
+  assert.equal(
+    requestOptions[1]
+      .providerFlightId,
+    "ENY4140-1754290000-airline-0001"
+  );
+}
+
+async function testPollingStopsAfterArrival() {
+  const { context } =
+    createBrowserContext();
+
+  context.dadRadarCalendarApi = {
+    async getUpcomingEvents() {
+      return {
+        retrievedAt:
+          new Date().toISOString(),
+        events: [activeFlightEvent()]
+      };
+    }
+  };
+
+  let requestCount = 0;
+
+  context.dadRadarLiveFlightApi = {
+    async getFlightSnapshot() {
+      requestCount += 1;
+
+      return {
+        provider: "flightradar24",
+        providerFlightId: "arrived-leg",
+        retrievedAt:
+          new Date().toISOString(),
+        displayIdent: "MQ4140",
+        phase: "ARRIVED",
+        status: "Arrived",
+        origin: "ORD",
+        destination: "AVL",
+        progressPercent: 100,
+        position: {
+          latitude: 35.44,
+          longitude: -82.54,
+          altitudeFeet: 2200,
+          altitudeTrend: "",
+          groundSpeedKnots: 24,
+          headingDegrees: 160,
+          recordedAt:
+            new Date().toISOString()
+        }
+      };
+    }
+  };
+
+  await context.refreshCalendarState();
+
+  const arrived =
+    await context
+      .refreshLiveFlightState();
+
+  assert.equal(arrived.mode, "ARRIVED");
+  assert.equal(requestCount, 1);
+
+  const nextRefresh =
+    await context
+      .refreshLiveFlightState();
+
+  assert.equal(nextRefresh, null);
+  assert.equal(
+    requestCount,
+    1,
+    "FR24 polling should stop after Arrived is confirmed."
+  );
+}
+
 async function runTests() {
   await testCalendarPublishesState();
   await testLiveFlightRefinesCalendarState();
   await testLiveFailureRetainsCalendarState();
+  await testApproachPersistsAcrossProviderRegression();
+  await testPollingStopsAfterArrival();
 
   console.log(
     "Calendar state controller tests passed."

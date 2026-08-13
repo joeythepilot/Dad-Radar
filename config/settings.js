@@ -25,8 +25,22 @@ const dadRadarSettings = {
 
   flightData: {
     enabled: true,
+    provider: "flightradar24",
+    acquisitionLeadMinutes: 15,
     refreshIntervalMs: 60 * 1000,
-    staleAfterMs: 3 * 60 * 1000
+    staleAfterMs: 3 * 60 * 1000,
+    visualInterpolationMs: 52 * 1000
+  },
+
+  audio: {
+    splitFlap: {
+      enabled: true,
+      source:
+        "./assets/audio/split-flap.mp3",
+      cueSeconds: 5.195,
+      fadeOutMs: 260,
+      volume: 0.68
+    }
   },
 
   developerMode: true

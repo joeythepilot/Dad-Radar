@@ -3,7 +3,14 @@ const initialMode = "OFFLINE";
 const dadRadarModes = {
   HOME: {
     status: "HOME",
-    message: "DAD IS HOME",
+    message: "DADDY IS HOME",
+    flight: null
+  },
+
+  LOCATION_UNKNOWN: {
+    status: "LOCATION UNKNOWN",
+    message:
+      "DADDY'S LOCATION IS NOT CONFIRMED",
     flight: null
   },
 

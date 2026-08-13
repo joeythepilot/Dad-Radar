@@ -60,7 +60,7 @@ function calendarResolved(
 
 function liveSnapshot(overrides = {}) {
   return {
-    provider: "flightaware",
+    provider: "flightradar24",
     retrievedAt: NOW,
     providerFlightId: "ENY4140-1",
     ident: "ENY4140",
@@ -72,6 +72,20 @@ function liveSnapshot(overrides = {}) {
     origin: "ORD",
     destination: "AVL",
     progressPercent: 68,
+    actualTrack: [
+      {
+        latitude: 41.9,
+        longitude: -87.9,
+        recordedAt:
+          "2026-08-04T17:10:00.000Z"
+      },
+      {
+        latitude: 38.2,
+        longitude: -84.6,
+        recordedAt:
+          "2026-08-04T17:59:30.000Z"
+      }
+    ],
     aircraft: {
       registration: "N123XY",
       type: "E75L"
@@ -113,7 +127,7 @@ function testFreshLiveFlightWins() {
   assert.equal(resolved.mode, "EN_ROUTE");
   assert.equal(
     resolved.state.source,
-    "flightaware"
+    "flightradar24"
   );
   assert.equal(
     resolved.state.status,
@@ -151,6 +165,38 @@ function testFreshLiveFlightWins() {
   assert.equal(
     resolved.state.flight.arrivalGate,
     "B4"
+  );
+  assert.equal(
+    resolved.state.flight.actualTrack
+      .length,
+    2
+  );
+}
+
+function testLiveGsoDestinationCity() {
+  const resolved =
+    reconcileScheduleWithLive(
+      calendarResolved(
+        "EN_ROUTE",
+        {
+          event: {
+            destination: "GSO"
+          }
+        }
+      ),
+      liveSnapshot({
+        destination: "GSO"
+      }),
+      { now: NOW }
+    );
+
+  assert.equal(
+    resolved.state.flight.destinationCity,
+    "Greensboro"
+  );
+  assert.equal(
+    resolved.state.flight.destinationLocation,
+    "Greensboro, North Carolina"
   );
 }
 
@@ -270,12 +316,161 @@ function testCommuteModeIsPreservedInFlight() {
   );
 }
 
+function testApproachDoesNotRegressAfterLevelOff() {
+  const calendar = calendarResolved();
+
+  const approach =
+    reconcileScheduleWithLive(
+      calendar,
+      liveSnapshot({
+        phase: "APPROACH",
+        position: {
+          ...liveSnapshot().position,
+          altitudeFeet: 3700,
+          altitudeTrend: ""
+        }
+      }),
+      { now: NOW }
+    );
+
+  const levelFlightRegression =
+    reconcileScheduleWithLive(
+      calendar,
+      liveSnapshot({
+        phase: "EN_ROUTE",
+        position: {
+          ...liveSnapshot().position,
+          altitudeFeet: 3700,
+          altitudeTrend: ""
+        }
+      }),
+      {
+        now: NOW,
+        previousResolved: approach
+      }
+    );
+
+  assert.equal(
+    levelFlightRegression.mode,
+    "APPROACH"
+  );
+  assert.equal(
+    levelFlightRegression.state.status,
+    "APPROACH"
+  );
+  assert.equal(
+    levelFlightRegression.state.livePhase,
+    "APPROACH"
+  );
+
+  const finalDescentRegression =
+    reconcileScheduleWithLive(
+      calendar,
+      liveSnapshot({
+        phase: "EN_ROUTE",
+        position: {
+          ...liveSnapshot().position,
+          altitudeFeet: 2400,
+          altitudeTrend: "D"
+        }
+      }),
+      {
+        now: NOW,
+        previousResolved:
+          levelFlightRegression
+      }
+    );
+
+  assert.equal(
+    finalDescentRegression.mode,
+    "APPROACH"
+  );
+}
+
+function testApproachReleasesForSustainedGoAround() {
+  const calendar = calendarResolved();
+
+  const approach =
+    reconcileScheduleWithLive(
+      calendar,
+      liveSnapshot({
+        phase: "APPROACH"
+      }),
+      { now: NOW }
+    );
+
+  const goAround =
+    reconcileScheduleWithLive(
+      calendar,
+      liveSnapshot({
+        phase: "EN_ROUTE",
+        position: {
+          ...liveSnapshot().position,
+          altitudeFeet: 13000,
+          altitudeTrend: "C"
+        }
+      }),
+      {
+        now: NOW,
+        previousResolved: approach
+      }
+    );
+
+  assert.equal(
+    goAround.mode,
+    "EN_ROUTE"
+  );
+  assert.equal(
+    goAround.state.livePhase,
+    "EN_ROUTE"
+  );
+}
+
+function testApproachLatchDoesNotCrossFlights() {
+  const approach =
+    reconcileScheduleWithLive(
+      calendarResolved(),
+      liveSnapshot({
+        phase: "APPROACH"
+      }),
+      { now: NOW }
+    );
+
+  const nextFlight =
+    calendarResolved(
+      "EN_ROUTE",
+      {
+        event: {
+          id: "flight-2"
+        }
+      }
+    );
+
+  const resolved =
+    reconcileScheduleWithLive(
+      nextFlight,
+      liveSnapshot({
+        phase: "EN_ROUTE"
+      }),
+      {
+        now: NOW,
+        previousResolved: approach
+      }
+    );
+
+  assert.equal(resolved.mode, "EN_ROUTE");
+}
+
 function runTests() {
   testFreshLiveFlightWins();
+  testLiveGsoDestinationCity();
   testStaleLiveFlightFallsBack();
   testRouteMismatchFallsBack();
   testLivePhasesDriveModes();
   testCommuteModeIsPreservedInFlight();
+  testApproachDoesNotRegressAfterLevelOff();
+  testApproachReleasesForSustainedGoAround();
+  testApproachLatchDoesNotCrossFlights();
 
   console.log(
     "Live flight state tests passed."

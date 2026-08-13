@@ -7,7 +7,9 @@
   let currentSchedule = null;
   let currentCalendarResolved = null;
   let currentLiveFlight = null;
+  let previousLiveResolved = null;
   let liveFlightEventKey = null;
+  let liveTrackPoints = [];
   let liveRequestPromise = null;
   let liveProviderUnavailable = false;
   let hasLoadedSchedule = false;
@@ -18,7 +20,6 @@
     "TAXI_OUT",
     "EN_ROUTE",
     "APPROACH",
-    "ARRIVED",
     "COMMUTING_TO_BASE",
     "COMMUTING_HOME"
   ]);
@@ -37,6 +38,8 @@
         settings.baseAirport ?? "ORD",
       displayTimeZone:
         settings.displayTimeZone,
+      displayTimeZoneLabel:
+        settings.displayTimeZoneLabel,
       lookAheadDays:
         settings.schedule
           .lookAheadDays,
@@ -59,10 +62,18 @@
         settings.flightData
           ?.refreshIntervalMs ??
         60 * 1000,
+      liveAcquisitionLeadMinutes:
+        settings.flightData
+          ?.acquisitionLeadMinutes ??
+        15,
       liveStaleAfterMs:
         settings.flightData
           ?.staleAfterMs ??
-        3 * 60 * 1000
+        3 * 60 * 1000,
+      visualInterpolationMs:
+        settings.flightData
+          ?.visualInterpolationMs ??
+        52 * 1000
     };
   }
 
@@ -82,15 +93,116 @@
     );
   }
 
+  function finiteCoordinate(value) {
+    if (
+      value === null ||
+      value === undefined ||
+      value === ""
+    ) {
+      return null;
+    }
+
+    const number = Number(value);
+
+    return Number.isFinite(number)
+      ? number
+      : null;
+  }
+
+  function appendLiveTrackPoint(snapshot) {
+    const latitude = finiteCoordinate(
+      snapshot?.position?.latitude
+    );
+
+    const longitude = finiteCoordinate(
+      snapshot?.position?.longitude
+    );
+
+    if (
+      latitude === null ||
+      longitude === null
+    ) {
+      return liveTrackPoints.slice();
+    }
+
+    const point = {
+      latitude,
+      longitude,
+      recordedAt:
+        snapshot.position.recordedAt ??
+        snapshot.retrievedAt ??
+        new Date().toISOString()
+    };
+
+    const previous =
+      liveTrackPoints[
+        liveTrackPoints.length - 1
+      ];
+
+    const isDuplicate = Boolean(
+      previous &&
+      (
+        previous.recordedAt ===
+          point.recordedAt ||
+        (
+          Math.abs(
+            previous.latitude -
+            point.latitude
+          ) < 0.0001 &&
+          Math.abs(
+            previous.longitude -
+            point.longitude
+          ) < 0.0001
+        )
+      )
+    );
+
+    if (!isDuplicate) {
+      liveTrackPoints.push(point);
+
+      if (liveTrackPoints.length > 180) {
+        liveTrackPoints =
+          liveTrackPoints.slice(-180);
+      }
+    }
+
+    return liveTrackPoints.slice();
+  }
+
   function isTrackableResolved(
     resolved
   ) {
+    const mode = resolved?.mode;
+
+    if (
+      mode === "PRE_FLIGHT" ||
+      mode === "BOARDING"
+    ) {
+      const start = new Date(
+        resolved.event?.times?.startUtc ??
+        resolved.event?.startUtc ?? ""
+      );
+
+      const leadMilliseconds =
+        controllerSettings()
+          .liveAcquisitionLeadMinutes *
+        60 * 1000;
+
+      if (
+        Number.isNaN(start.getTime()) ||
+        start.getTime() - Date.now() >
+          leadMilliseconds
+      ) {
+        return false;
+      }
+    }
+
     return Boolean(
       resolved?.event?.kind ===
         "flight" &&
       resolved.state?.flight &&
       TRACKABLE_MODES.has(
-        resolved.mode
+        mode
       ) &&
       Array.isArray(
         resolved.event
@@ -126,6 +238,8 @@
       liveFlightEventKey
     ) {
       currentLiveFlight = null;
+      previousLiveResolved = null;
+      liveTrackPoints = [];
       liveFlightEventKey =
         nextEventKey;
       liveProviderUnavailable =
@@ -148,17 +262,43 @@
                     .displayTimeZone,
                 staleAfterMs:
                   settings
-                    .liveStaleAfterMs
+                    .liveStaleAfterMs,
+                previousResolved:
+                  previousLiveResolved
               }
             )
         : calendarResolved;
 
+    if (resolved?.state?.liveData) {
+      previousLiveResolved =
+        resolved;
+    }
+
+    const dailySchedule =
+      global.dadRadarScheduleState
+        .buildDailySchedule(
+          currentSchedule,
+          resolved,
+          settings
+        );
+
+    const resolvedWithSchedule = {
+      ...resolved,
+      state: {
+        ...resolved.state,
+        dailySchedule,
+        visualTransitionMs:
+          settings
+            .visualInterpolationMs
+      }
+    };
+
     setDadRadarState(
-      resolved.state,
-      resolved.mode
+      resolvedWithSchedule.state,
+      resolvedWithSchedule.mode
     );
 
-    return resolved;
+    return resolvedWithSchedule;
   }
 
   async function refreshLiveFlightState() {
@@ -168,6 +308,11 @@
     if (
       !settings.liveFlightEnabled ||
       liveProviderUnavailable ||
+      ["ARRIVED", "LANDED"].includes(
+        String(
+          currentLiveFlight?.phase ?? ""
+        ).toUpperCase()
+      ) ||
       !global.dadRadarLiveFlightApi ||
       !global.dadRadarLiveFlightState ||
       !isTrackableResolved(
@@ -194,7 +339,13 @@
             await global
               .dadRadarLiveFlightApi
               .getFlightSnapshot(
-                requestedEvent
+                requestedEvent,
+                {
+                  providerFlightId:
+                    currentLiveFlight
+                      ?.providerFlightId ??
+                    null
+                }
               );
 
           if (
@@ -204,8 +355,15 @@
             return null;
           }
 
-          currentLiveFlight =
-            liveFlight;
+          if (liveFlight) {
+            currentLiveFlight = {
+              ...liveFlight,
+              actualTrack:
+                appendLiveTrackPoint(
+                  liveFlight
+                )
+            };
+          }
 
           const resolved =
             publishResolvedState();

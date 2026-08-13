@@ -8,10 +8,10 @@ const {
 } = require("./calendar-service");
 
 const {
-  FlightAwareConfigurationError,
-  FlightAwareRequestError,
+  Flightradar24ConfigurationError,
+  Flightradar24RequestError,
   getLiveFlightSnapshot
-} = require("./flightaware-service");
+} = require("./flightradar24-service");
 
 const app = express();
 const port = Number(process.env.PORT) || 4173;
@@ -25,10 +25,9 @@ app.get("/api/health", (request, response) => {
     ok: true,
     service: "Dad Radar",
     flightData: {
-      provider: "flightaware",
+      provider: "flightradar24",
       configured: Boolean(
-        process.env
-          .FLIGHTAWARE_AEROAPI_KEY
+        process.env.FR24_API_TOKEN
       )
     }
   });
@@ -81,7 +80,7 @@ app.post(
 
       response.json({
         ok: true,
-        provider: "flightaware",
+        provider: "flightradar24",
         retrievedAt:
           liveFlight?.retrievedAt ??
           new Date().toISOString(),
@@ -90,12 +89,12 @@ app.post(
     } catch (error) {
       if (
         error instanceof
-        FlightAwareConfigurationError
+        Flightradar24ConfigurationError
       ) {
         response.status(503).json({
           ok: false,
           error:
-            "FlightAware is not configured."
+            "Flightradar24 is not configured."
         });
         return;
       }
@@ -110,10 +109,10 @@ app.post(
 
       if (
         error instanceof
-        FlightAwareRequestError
+        Flightradar24RequestError
       ) {
         console.error(
-          "FlightAware request failed:",
+          "Flightradar24 request failed:",
           error.message
         );
 

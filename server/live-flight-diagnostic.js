@@ -162,7 +162,7 @@ function createDiagnosticReport(
             : 0
       },
       selectedFlight: null,
-      flightAware: null,
+      flightRadar24: null,
       display: null
     };
   }
@@ -188,7 +188,7 @@ function createDiagnosticReport(
   const liveAccepted = Boolean(
     liveFlight &&
     reconciled.state?.source ===
-      "flightaware"
+      "flightradar24"
   );
 
   return {
@@ -227,7 +227,7 @@ function createDiagnosticReport(
         selectedEvent
           .liveLookupCandidates ?? []
     },
-    flightAware: liveFlight
+    flightRadar24: liveFlight
       ? {
           providerFlightId:
             liveFlight
@@ -245,14 +245,8 @@ function createDiagnosticReport(
             liveFlight.destination ?? null,
           retrievedAt:
             liveFlight.retrievedAt ?? null,
-          departureDelayMinutes:
-            liveFlight.departure
-              ?.delayMinutes ?? null,
-          arrivalDelayMinutes:
-            liveFlight.arrival
-              ?.delayMinutes ?? null,
-          arrivalGate:
-            liveFlight.arrival?.gate ??
+          eta:
+            liveFlight.arrival?.best ??
             null,
           position:
             positionSummary(
@@ -386,7 +380,7 @@ function formatDiagnosticReport(report) {
     "no-live-match"
   ) {
     lines.push(
-      "FlightAware: No confident match.",
+      "Flightradar24: No live aircraft match.",
       `Display fallback: ${report.display.mode} (${report.display.source})`
     );
 
@@ -398,7 +392,7 @@ function formatDiagnosticReport(report) {
     "rejected-live-match"
   ) {
     lines.push(
-      `FlightAware: Snapshot rejected (${reportValue(report.flightAware.ident)}).`,
+      `Flightradar24: Snapshot rejected (${reportValue(report.flightRadar24.ident)}).`,
       "Reason: The snapshot was stale or did not match the Calendar route.",
       `Display fallback: ${report.display.mode} (${report.display.source})`
     );
@@ -406,15 +400,15 @@ function formatDiagnosticReport(report) {
     return lines.join("\n");
   }
 
-  const live = report.flightAware;
+  const live = report.flightRadar24;
   const position =
     live.position ?? {};
 
   lines.push(
-    `FlightAware: MATCHED ${reportValue(live.ident)}`,
+    `Flightradar24: MATCHED ${reportValue(live.ident)}`,
     `Phase: ${reportValue(live.phase)} | Status: ${reportValue(live.status)}`,
     `Route: ${reportValue(live.origin)} -> ${reportValue(live.destination)}`,
-    `Delay: departure ${reportValue(live.departureDelayMinutes)} min | arrival ${reportValue(live.arrivalDelayMinutes)} min`,
+    `Provider ETA: ${reportValue(live.eta)}`,
     `Position: ${reportValue(position.latitude)}, ${reportValue(position.longitude)}`,
     `Telemetry: ${reportValue(position.altitudeFeet)} ft | GS ${reportValue(position.groundSpeedKnots)} kt | HDG ${reportValue(position.headingDegrees)}`,
     `Display: ${reportValue(report.display.mode)} | ${reportValue(report.display.status)} | source ${reportValue(report.display.source)}`,
@@ -435,7 +429,7 @@ async function runCli() {
 
   const {
     getLiveFlightSnapshot
-  } = require("./flightaware-service");
+  } = require("./flightradar24-service");
 
   const report = await runDiagnostic({
     getUpcomingEvents,
@@ -461,10 +455,10 @@ if (require.main === module) {
   runCli().catch((error) => {
     if (
       error.name ===
-      "FlightAwareConfigurationError"
+      "Flightradar24ConfigurationError"
     ) {
       console.error(
-        "FlightAware is not configured. Add FLIGHTAWARE_AEROAPI_KEY to .env and try again."
+        "Flightradar24 is not configured. Add FR24_API_TOKEN to .env and try again."
       );
     } else if (
       error.code === "ENOENT" &&

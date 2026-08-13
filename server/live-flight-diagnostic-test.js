@@ -47,24 +47,19 @@ function schedule(events) {
 
 function matchedSnapshot() {
   return {
-    provider: "flightaware",
+    provider: "flightradar24",
     retrievedAt: NOW.toISOString(),
     providerFlightId: "ENY4140-1",
     ident: "ENY4140",
     displayIdent: "MQ4140",
     phase: "EN_ROUTE",
-    status: "En Route / On Time",
+    status: "En Route",
     origin: "ORD",
     destination: "AVL",
     progressPercent: 55,
-    departure: {
-      delayMinutes: 4
-    },
     arrival: {
       best:
-        "2026-08-04T19:15:00.000Z",
-      delayMinutes: 7,
-      gate: "B4"
+        "2026-08-04T19:15:00.000Z"
     },
     position: {
       latitude: 38.2,
@@ -127,12 +122,12 @@ async function testMatchedFlightReport() {
   assert.equal(requestedEvent, event);
   assert.equal(report.outcome, "matched");
   assert.equal(
-    report.flightAware.phase,
+    report.flightRadar24.phase,
     "EN_ROUTE"
   );
   assert.equal(
     report.display.source,
-    "flightaware"
+    "flightradar24"
   );
   assert.equal(
     report.display.groundSpeedKnots,
@@ -144,11 +139,15 @@ async function testMatchedFlightReport() {
 
   assert.match(
     formatted,
-    /FlightAware: MATCHED MQ4140/
+    /Flightradar24: MATCHED MQ4140/
   );
   assert.match(
     formatted,
     /GS 421 kt/
+  );
+  assert.match(
+    formatted,
+    /Provider ETA: 2026-08-04T19:15:00.000Z/
   );
 }
 

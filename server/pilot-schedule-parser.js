@@ -1,29 +1,10 @@
 const { DateTime } = require("luxon");
+const airportCatalog = require(
+  "../data/airport-catalog"
+);
 
 const DISPLAY_TIME_ZONE =
   "America/New_York";
-
-const DEFAULT_AIRPORT_TIME_ZONES = Object.freeze({
-  ATL: "America/New_York",
-  AVL: "America/New_York",
-  AVP: "America/New_York",
-  BDL: "America/New_York",
-  BOS: "America/New_York",
-  CLT: "America/New_York",
-  DCA: "America/New_York",
-  DFW: "America/Chicago",
-  DTW: "America/Detroit",
-  EWR: "America/New_York",
-  GSP: "America/New_York",
-  HPN: "America/New_York",
-  IAD: "America/New_York",
-  JFK: "America/New_York",
-  LGA: "America/New_York",
-  MIA: "America/New_York",
-  ORD: "America/Chicago",
-  PHL: "America/New_York",
-  ROC: "America/New_York"
-});
 
 const ROUTE_ARROW_PATTERN =
   "(?:\\u2192|->)";
@@ -179,7 +160,7 @@ function createFallbackTimes(event) {
 function createFlightTimes(
   event,
   flightDescription,
-  airportTimeZones
+  airportTimeZoneFor
 ) {
   const fallback =
     createFallbackTimes(event);
@@ -189,14 +170,14 @@ function createFlightTimes(
   }
 
   const departureZone =
-    airportTimeZones[
+    airportTimeZoneFor(
       flightDescription.origin
-    ];
+    );
 
   const arrivalZone =
-    airportTimeZones[
+    airportTimeZoneFor(
       flightDescription.destination
-    ];
+    );
 
   if (!departureZone || !arrivalZone) {
     return {
@@ -289,10 +270,14 @@ function parsePilotEvent(
   event,
   options = {}
 ) {
-  const airportTimeZones = {
-    ...DEFAULT_AIRPORT_TIME_ZONES,
-    ...(options.airportTimeZones ?? {})
-  };
+  const airportTimeZones =
+    options.airportTimeZones ?? {};
+
+  const airportTimeZoneFor =
+    (code) =>
+      airportTimeZones[code] ??
+      airportCatalog
+        .getAirportTimeZone(code);
 
   const summary =
     cleanText(event.summary);
@@ -400,7 +385,7 @@ function parsePilotEvent(
         createFlightTimes(
           event,
           normalizedDescriptionFlight,
-          airportTimeZones
+          airportTimeZoneFor
         ),
       updated:
         event.updated ?? null
@@ -498,7 +483,6 @@ function parsePilotSchedule(
 
 module.exports = {
   DISPLAY_TIME_ZONE,
-  DEFAULT_AIRPORT_TIME_ZONES,
   parseFlightDescription,
   parseLayoverDescription,
   parsePilotEvent,
