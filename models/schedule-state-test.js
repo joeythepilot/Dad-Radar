@@ -1,6 +1,7 @@
 const assert = require("node:assert/strict");
 
 const {
+  buildDailySchedule,
   calculateProgress,
   resolveScheduleState
 } = require("./schedule-state");
@@ -54,7 +55,7 @@ function testActiveFlight() {
       { now: NOW }
     );
 
-  assert.equal(result.mode, "EN_ROUTE");
+  assert.equal(result.mode, "DELAYED");
   assert.equal(
     result.state.source,
     "calendar"
@@ -73,11 +74,15 @@ function testActiveFlight() {
   );
   assert.equal(
     result.state.flight.destinationCity,
-    "SCRANTON"
+    "Wilkes-Barre/Scranton"
+  );
+  assert.equal(
+    result.state.flight.destinationLocation,
+    "Wilkes-Barre/Scranton, Pennsylvania"
   );
   assert.equal(
     result.state.flight.progress,
-    50
+    0
   );
   assert.equal(
     result.state.flight.eta,
@@ -98,6 +103,59 @@ function testCalendarProgress() {
       new Date(NOW)
     ),
     50
+  );
+}
+
+function testGsoDestinationCity() {
+  const result = resolveScheduleState(
+    createSchedule([
+      createFlight({
+        destination: "GSO"
+      })
+    ]),
+    { now: NOW }
+  );
+
+  assert.equal(
+    result.state.flight.destinationCity,
+    "Greensboro"
+  );
+  assert.equal(
+    result.state.flight.destinationLocation,
+    "Greensboro, North Carolina"
+  );
+}
+
+function testBilDestinationCity() {
+  const schedule = createSchedule([
+    createFlight({
+      destination: "BIL"
+    })
+  ]);
+
+  const result = resolveScheduleState(
+    schedule,
+    { now: NOW }
+  );
+
+  assert.equal(
+    result.state.flight.destinationCity,
+    "Billings"
+  );
+  assert.equal(
+    result.state.flight.destinationLocation,
+    "Billings, Montana"
+  );
+
+  const timeline = buildDailySchedule(
+    schedule,
+    result,
+    { now: NOW }
+  );
+
+  assert.equal(
+    timeline.context,
+    "DADDY'S FLIGHT TO BILLINGS, MONTANA IS 60 MIN LATE"
   );
 }
 
@@ -139,7 +197,7 @@ function testCommuteModes() {
   );
 }
 
-function testPreFlightWindow() {
+function testBoardingWindow() {
   const result = resolveScheduleState(
     createSchedule([
       createFlight({
@@ -157,14 +215,228 @@ function testPreFlightWindow() {
     ]),
     {
       now: NOW,
-      preFlightLeadMinutes: 45
+      boardingLeadMinutes: 30
     }
   );
 
-  assert.equal(result.mode, "PRE_FLIGHT");
+  assert.equal(result.mode, "BOARDING");
   assert.equal(
     result.state.flight.progress,
     0
+  );
+}
+
+function testCalendarOnlyFlightBecomesDelayed() {
+  const result = resolveScheduleState(
+    createSchedule([
+      createFlight({
+        times: {
+          source:
+            "description-wall-times",
+          startUtc:
+            "2026-08-04T13:50:00.000Z",
+          endUtc:
+            "2026-08-04T16:00:00.000Z",
+          endEastern:
+            "2026-08-04T12:00:00.000-04:00"
+        }
+      })
+    ]),
+    {
+      now: NOW,
+      delayGraceMinutes: 5
+    }
+  );
+
+  assert.equal(result.mode, "DELAYED");
+  assert.equal(
+    result.state.status,
+    "DELAYED"
+  );
+  assert.equal(
+    result.state.flight
+      .departureDelayMinutes,
+    10
+  );
+
+  const timeline = buildDailySchedule(
+    createSchedule([result.event]),
+    result,
+    { now: NOW }
+  );
+
+  assert.equal(
+    timeline.context,
+    "DADDY'S FLIGHT TO WILKES-BARRE/SCRANTON, PENNSYLVANIA IS 10 MIN LATE"
+  );
+}
+
+function testPreferredFlightWinsCalendarOverlap() {
+  const firstFlight = createFlight({
+    id: "first-flight",
+    origin: "DFW",
+    destination: "AVL",
+    flightNumber: "1429",
+    times: {
+      startUtc:
+        "2026-08-04T12:30:00.000Z",
+      endUtc:
+        "2026-08-04T15:30:00.000Z"
+    }
+  });
+
+  const nextFlight = createFlight({
+    id: "next-flight",
+    origin: "AVL",
+    destination: "ORD",
+    flightNumber: "3407",
+    times: {
+      startUtc:
+        "2026-08-04T13:45:00.000Z",
+      endUtc:
+        "2026-08-04T16:00:00.000Z"
+    }
+  });
+
+  const result = resolveScheduleState(
+    createSchedule([
+      firstFlight,
+      nextFlight
+    ]),
+    {
+      now: NOW,
+      preferredEventId: "first-flight"
+    }
+  );
+
+  assert.equal(
+    result.event.id,
+    "first-flight"
+  );
+  assert.equal(
+    result.state.flight.number,
+    "AA 1429"
+  );
+}
+
+function testEarlierFlightWinsColdStartOverlap() {
+  const firstFlight = createFlight({
+    id: "first-flight",
+    origin: "DFW",
+    destination: "AVL",
+    flightNumber: "1429",
+    times: {
+      startUtc:
+        "2026-08-04T12:30:00.000Z",
+      endUtc:
+        "2026-08-04T15:30:00.000Z"
+    }
+  });
+
+  const nextFlight = createFlight({
+    id: "next-flight",
+    origin: "AVL",
+    destination: "ORD",
+    flightNumber: "3407",
+    times: {
+      startUtc:
+        "2026-08-04T13:45:00.000Z",
+      endUtc:
+        "2026-08-04T16:00:00.000Z"
+    }
+  });
+
+  const result = resolveScheduleState(
+    createSchedule([
+      firstFlight,
+      nextFlight
+    ]),
+    { now: NOW }
+  );
+
+  assert.equal(
+    result.event.id,
+    "first-flight"
+  );
+}
+
+function testPreferredDelayedFlightSurvivesScheduledEnd() {
+  const delayedFlight = createFlight({
+    id: "delayed-flight",
+    origin: "DFW",
+    destination: "AVL",
+    flightNumber: "1429",
+    times: {
+      startUtc:
+        "2026-08-04T10:00:00.000Z",
+      endUtc:
+        "2026-08-04T13:30:00.000Z"
+    }
+  });
+
+  const overlappingFlight =
+    createFlight({
+      id: "overlapping-flight",
+      origin: "AVL",
+      destination: "ORD",
+      flightNumber: "3407",
+      times: {
+        startUtc:
+          "2026-08-04T13:45:00.000Z",
+        endUtc:
+          "2026-08-04T16:00:00.000Z"
+      }
+    });
+
+  const result = resolveScheduleState(
+    createSchedule([
+      delayedFlight,
+      overlappingFlight
+    ]),
+    {
+      now: NOW,
+      preferredEventId:
+        "delayed-flight",
+      legLockTimeoutMinutes: 8 * 60
+    }
+  );
+
+  assert.equal(
+    result.event.id,
+    "delayed-flight"
+  );
+  assert.equal(result.mode, "DELAYED");
+}
+
+function testDeadheadFamilyLanguage() {
+  const event = createFlight({
+    isDeadhead: true,
+    travelRole: "deadhead",
+    destination: "ROC"
+  });
+
+  const resolved = resolveScheduleState(
+    createSchedule([event]),
+    { now: NOW }
+  );
+
+  const timeline = buildDailySchedule(
+    createSchedule([event]),
+    resolved,
+    { now: NOW }
+  );
+
+  assert.equal(
+    timeline.entries[0].tag,
+    "DEADHEAD"
+  );
+  assert.equal(
+    timeline.context,
+    "DADDY'S RIDE TO ROCHESTER, NEW YORK IS 60 MIN LATE"
+  );
+  assert.equal(
+    resolved.state.flight.travelRole,
+    "deadhead"
   );
 }
 
@@ -190,7 +462,7 @@ function testLayover() {
   assert.equal(result.mode, "LAYOVER");
   assert.equal(
     result.state.message,
-    "DAD IS ON LAYOVER IN AVP"
+    "DADDY IS ON LAYOVER IN WILKES-BARRE/SCRANTON, PENNSYLVANIA"
   );
 }
 
@@ -231,17 +503,298 @@ function testCancelledFlightIsIgnored() {
     { now: NOW }
   );
 
+  assert.equal(
+    result.mode,
+    "LOCATION_UNKNOWN"
+  );
+  assert.equal(
+    result.state.status,
+    "LOCATION UNKNOWN"
+  );
+}
+
+function testAwayLocationPersistsAfterArrivalHold() {
+  const result = resolveScheduleState(
+    createSchedule([
+      createFlight({
+        destination: "GSO",
+        times: {
+          startUtc:
+            "2026-08-04T10:00:00.000Z",
+          endUtc:
+            "2026-08-04T12:00:00.000Z"
+        }
+      })
+    ]),
+    { now: NOW }
+  );
+
+  assert.equal(result.mode, "LAYOVER");
+  assert.equal(
+    result.state.message,
+    "DADDY IS ON THE GROUND IN GREENSBORO, NORTH CAROLINA"
+  );
+  assert.equal(
+    result.state.locationAirport,
+    "GSO"
+  );
+}
+
+function testAvlArrivalProvidesHomeEvidence() {
+  const result = resolveScheduleState(
+    createSchedule([
+      createFlight({
+        destination: "AVL",
+        times: {
+          startUtc:
+            "2026-08-04T10:00:00.000Z",
+          endUtc:
+            "2026-08-04T12:00:00.000Z"
+        }
+      })
+    ]),
+    { now: NOW }
+  );
+
   assert.equal(result.mode, "HOME");
+  assert.equal(
+    result.state.locationAirport,
+    "AVL"
+  );
+}
+
+function testNextFlightOriginProvidesLocationEvidence() {
+  const away = resolveScheduleState(
+    createSchedule([
+      createFlight({
+        origin: "ORD",
+        destination: "BIL",
+        times: {
+          startUtc:
+            "2026-08-04T16:00:00.000Z",
+          endUtc:
+            "2026-08-04T18:00:00.000Z"
+        }
+      })
+    ]),
+    { now: NOW }
+  );
+
+  assert.equal(away.mode, "LAYOVER");
+  assert.equal(
+    away.state.locationAirport,
+    "ORD"
+  );
+
+  const home = resolveScheduleState(
+    createSchedule([
+      createFlight({
+        origin: "AVL",
+        destination: "ORD",
+        times: {
+          startUtc:
+            "2026-08-04T16:00:00.000Z",
+          endUtc:
+            "2026-08-04T18:00:00.000Z"
+        }
+      })
+    ]),
+    { now: NOW }
+  );
+
+  assert.equal(home.mode, "HOME");
+  assert.equal(
+    home.state.locationAirport,
+    "AVL"
+  );
+}
+
+function testDailyScheduleTimeline() {
+  const completedFlight =
+    createFlight({
+      id: "completed-flight",
+      origin: "GSO",
+      destination: "ORD",
+      flightNumber: "3390",
+      times: {
+        startUtc:
+          "2026-08-04T10:00:00.000Z",
+        endUtc:
+          "2026-08-04T12:00:00.000Z"
+      }
+    });
+
+  const activeFlight =
+    createFlight();
+
+  const upcomingFlight =
+    createFlight({
+      id: "upcoming-flight",
+      origin: "AVP",
+      destination: "ORD",
+      flightNumber: "4412",
+      times: {
+        startUtc:
+          "2026-08-04T16:00:00.000Z",
+        endUtc:
+          "2026-08-04T18:00:00.000Z"
+      }
+    });
+
+  const schedule = createSchedule([
+    upcomingFlight,
+    completedFlight,
+    activeFlight
+  ]);
+
+  const resolved =
+    resolveScheduleState(
+      schedule,
+      { now: NOW }
+    );
+
+  const timeline =
+    buildDailySchedule(
+      schedule,
+      resolved,
+      {
+        now: NOW,
+        displayTimeZone:
+          "America/New_York",
+        displayTimeZoneLabel:
+          "EASTERN TIME"
+      }
+    );
+
+  assert.equal(
+    timeline.dateLabel,
+    "TUE AUG 4"
+  );
+  assert.equal(
+    timeline.context,
+    "DADDY'S FLIGHT TO WILKES-BARRE/SCRANTON, PENNSYLVANIA IS 60 MIN LATE"
+  );
+  assert.equal(
+    timeline.timeZoneLabel,
+    "EASTERN TIME"
+  );
+  assert.deepEqual(
+    timeline.entries.map(
+      (entry) => entry.status
+    ),
+    [
+      "completed",
+      "current",
+      "upcoming"
+    ]
+  );
+  assert.deepEqual(
+    timeline.entries.map(
+      (entry) => entry.label
+    ),
+    [
+      "GSO → ORD",
+      "ORD → AVP",
+      "AVP → ORD"
+    ]
+  );
+}
+
+function testEmptyDailySchedule() {
+  const schedule = createSchedule([]);
+  const resolved =
+    resolveScheduleState(
+      schedule,
+      { now: NOW }
+    );
+
+  const timeline =
+    buildDailySchedule(
+      schedule,
+      resolved,
+      { now: NOW }
+    );
+
+  assert.equal(
+    timeline.context,
+    "DADDY'S LOCATION IS NOT CONFIRMED"
+  );
+  assert.deepEqual(
+    timeline.entries,
+    []
+  );
+}
+
+function testDailyScheduleHasOneCurrentActivity() {
+  const activeFlight = createFlight();
+  const overlappingLayover = {
+    id: "overlapping-layover",
+    kind: "layover",
+    status: "confirmed",
+    airport: "AVP",
+    times: {
+      startUtc:
+        "2026-08-04T12:00:00.000Z",
+      endUtc:
+        "2026-08-04T16:00:00.000Z"
+    }
+  };
+
+  const schedule = createSchedule([
+    overlappingLayover,
+    activeFlight
+  ]);
+
+  const resolved =
+    resolveScheduleState(
+      schedule,
+      { now: NOW }
+    );
+
+  const timeline =
+    buildDailySchedule(
+      schedule,
+      resolved,
+      { now: NOW }
+    );
+
+  assert.equal(
+    timeline.entries.filter(
+      (entry) =>
+        entry.status === "current"
+    ).length,
+    1
+  );
+  assert.equal(
+    timeline.entries.find(
+      (entry) =>
+        entry.status === "current"
+    ).id,
+    activeFlight.id
+  );
 }
 
 function runTests() {
   testActiveFlight();
+  testGsoDestinationCity();
+  testBilDestinationCity();
   testCalendarProgress();
   testCommuteModes();
-  testPreFlightWindow();
+  testBoardingWindow();
+  testCalendarOnlyFlightBecomesDelayed();
+  testPreferredFlightWinsCalendarOverlap();
+  testEarlierFlightWinsColdStartOverlap();
+  testPreferredDelayedFlightSurvivesScheduledEnd();
+  testDeadheadFamilyLanguage();
   testLayover();
   testRecentlyArrived();
   testCancelledFlightIsIgnored();
+  testAwayLocationPersistsAfterArrivalHold();
+  testAvlArrivalProvidesHomeEvidence();
+  testNextFlightOriginProvidesLocationEvidence();
+  testDailyScheduleTimeline();
+  testEmptyDailySchedule();
+  testDailyScheduleHasOneCurrentActivity();
 
   console.log(
     "Schedule state tests passed."

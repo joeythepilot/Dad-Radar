@@ -36,7 +36,10 @@
         event.destination ?? null,
       startUtc:
         event.times?.startUtc ??
-        event.startUtc ?? null
+        event.startUtc ?? null,
+      providerFlightId:
+        providedOptions
+          .providerFlightId ?? null
     };
 
     try {

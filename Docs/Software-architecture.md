@@ -45,6 +45,8 @@ Updates the instrument panel.
 ### Audio Engine
 Plays startup sounds, split-flap effects, cabin chime, and shutdown audio.
 
+The split-flap controller starts its mechanical recording at 00:05.195 when the first changed flap is queued. One shared playback spans the entire board update, then fades for 260 milliseconds after the final flap settles so overlapping character animations never create overlapping audio tracks. The first pointer interaction silently primes browser audio for Chrome installations that enforce gesture-based autoplay restrictions.
+
 ### Poster Engine
 Displays the correct destination artwork.
 

@@ -1,29 +1,10 @@
 const { DateTime } = require("luxon");
+const airportCatalog = require(
+  "../data/airport-catalog"
+);
 
 const DISPLAY_TIME_ZONE =
   "America/New_York";
-
-const DEFAULT_AIRPORT_TIME_ZONES = Object.freeze({
-  ATL: "America/New_York",
-  AVL: "America/New_York",
-  AVP: "America/New_York",
-  BDL: "America/New_York",
-  BOS: "America/New_York",
-  CLT: "America/New_York",
-  DCA: "America/New_York",
-  DFW: "America/Chicago",
-  DTW: "America/Detroit",
-  EWR: "America/New_York",
-  GSP: "America/New_York",
-  HPN: "America/New_York",
-  IAD: "America/New_York",
-  JFK: "America/New_York",
-  LGA: "America/New_York",
-  MIA: "America/New_York",
-  ORD: "America/Chicago",
-  PHL: "America/New_York",
-  ROC: "America/New_York"
-});
 
 const ROUTE_ARROW_PATTERN =
   "(?:\\u2192|->)";
@@ -38,7 +19,17 @@ const COMMUTE_SUMMARY_PATTERN =
   new RegExp(
     `^COMMUTE\\s+([A-Z]{2,3})\\s*(\\d{1,4})\\s+([A-Z]{3})\\s*${ROUTE_ARROW_PATTERN}\\s*([A-Z]{3})`,
     "i"
-  );const LAYOVER_SUMMARY_PATTERN =
+  );
+
+const DEADHEAD_SUMMARY_PATTERN =
+  new RegExp(
+    `^DEADHEAD(?:\\s+FLIGHT)?\\s+(?:([A-Z]{2,3})\\s*)?(\\d{1,4})\\s+([A-Z]{3})\\s*${ROUTE_ARROW_PATTERN}\\s*([A-Z]{3})`,
+    "i"
+  );
+
+const DEADHEAD_PATTERN = /\bDEADHEAD\b/i;
+
+const LAYOVER_SUMMARY_PATTERN =
   /^Layover\s+([A-Z]{3})(?:\s+\(([^)]+)\))?/i;
 
 const DUTY_FREE_PATTERN =
@@ -179,7 +170,7 @@ function createFallbackTimes(event) {
 function createFlightTimes(
   event,
   flightDescription,
-  airportTimeZones
+  airportTimeZoneFor
 ) {
   const fallback =
     createFallbackTimes(event);
@@ -189,14 +180,14 @@ function createFlightTimes(
   }
 
   const departureZone =
-    airportTimeZones[
+    airportTimeZoneFor(
       flightDescription.origin
-    ];
+    );
 
   const arrivalZone =
-    airportTimeZones[
+    airportTimeZoneFor(
       flightDescription.destination
-    ];
+    );
 
   if (!departureZone || !arrivalZone) {
     return {
@@ -266,15 +257,29 @@ function createFlightTimes(
 function createLiveLookupCandidates(
   carrierCode,
   flightNumber,
-  isCommute
+  isCommute,
+  isDeadhead = false
 ) {
   if (!flightNumber) {
     return [];
   }
 
-  if (isCommute && carrierCode) {
+  const normalizedCarrier =
+    normalizeCarrier(carrierCode);
+
+  const isAmericanFamilyCarrier = [
+    "AA",
+    "MQ",
+    "ENY"
+  ].includes(normalizedCarrier);
+
+  if (
+    (isCommute || isDeadhead) &&
+    normalizedCarrier &&
+    !isAmericanFamilyCarrier
+  ) {
     return [
-      `${carrierCode}${flightNumber}`
+      `${normalizedCarrier}${flightNumber}`
     ];
   }
 
@@ -289,10 +294,14 @@ function parsePilotEvent(
   event,
   options = {}
 ) {
-  const airportTimeZones = {
-    ...DEFAULT_AIRPORT_TIME_ZONES,
-    ...(options.airportTimeZones ?? {})
-  };
+  const airportTimeZones =
+    options.airportTimeZones ?? {};
+
+  const airportTimeZoneFor =
+    (code) =>
+      airportTimeZones[code] ??
+      airportCatalog
+        .getAirportTimeZone(code);
 
   const summary =
     cleanText(event.summary);
@@ -303,6 +312,11 @@ function parsePilotEvent(
   const commuteMatch =
     summary.match(
       COMMUTE_SUMMARY_PATTERN
+    );
+
+  const deadheadMatch =
+    summary.match(
+      DEADHEAD_SUMMARY_PATTERN
     );
 
   const flightMatch =
@@ -318,32 +332,64 @@ function parsePilotEvent(
   const descriptionFlight =
     parseFlightDescription(description);
 
-  if (commuteMatch || flightMatch) {
+  const isDeadhead =
+    DEADHEAD_PATTERN.test(
+      `${summary} ${description}`
+    );
+
+  if (
+    commuteMatch ||
+    flightMatch ||
+    deadheadMatch ||
+    (isDeadhead && descriptionFlight)
+  ) {
     const isCommute =
       Boolean(commuteMatch);
 
     const match =
-      commuteMatch ?? flightMatch;
+      commuteMatch ??
+      deadheadMatch ??
+      flightMatch;
 
     const summaryCarrier =
       isCommute
         ? normalizeCarrier(match[1])
-        : null;
+        : deadheadMatch
+          ? normalizeCarrier(
+              deadheadMatch[1]
+            )
+          : null;
 
     const summaryFlightNumber =
       isCommute
         ? match[2]
-        : match[1];
+        : deadheadMatch
+          ? deadheadMatch[2]
+          : flightMatch?.[1] ??
+            descriptionFlight
+              ?.flightNumber;
 
     const summaryOrigin =
       isCommute
         ? normalizeAirport(match[3])
-        : normalizeAirport(match[2]);
+        : deadheadMatch
+          ? normalizeAirport(
+              deadheadMatch[3]
+            )
+          : normalizeAirport(
+              flightMatch?.[2]
+            );
 
     const summaryDestination =
       isCommute
         ? normalizeAirport(match[4])
-        : normalizeAirport(match[3]);
+        : deadheadMatch
+          ? normalizeAirport(
+              deadheadMatch[4]
+            )
+          : normalizeAirport(
+              flightMatch?.[3]
+            );
 
     const carrierCode =
       summaryCarrier ??
@@ -376,6 +422,13 @@ function parsePilotEvent(
       id: event.id ?? null,
       kind: "flight",
       isCommute,
+      isDeadhead,
+      travelRole:
+        isDeadhead
+          ? "deadhead"
+          : isCommute
+            ? "commute"
+            : "operating",
       summary,
       description,
       status:
@@ -392,15 +445,16 @@ function parsePilotEvent(
         createLiveLookupCandidates(
           carrierCode,
           flightNumber,
-          isCommute
+          isCommute,
+          isDeadhead
         ),
       requiresFlightVerification:
-        !isCommute,
+        !isCommute && !isDeadhead,
       times:
         createFlightTimes(
           event,
           normalizedDescriptionFlight,
-          airportTimeZones
+          airportTimeZoneFor
         ),
       updated:
         event.updated ?? null
@@ -498,7 +552,6 @@ function parsePilotSchedule(
 
 module.exports = {
   DISPLAY_TIME_ZONE,
-  DEFAULT_AIRPORT_TIME_ZONES,
   parseFlightDescription,
   parseLayoverDescription,
   parsePilotEvent,

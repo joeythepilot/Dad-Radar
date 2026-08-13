@@ -20,7 +20,7 @@ Version 0.7
 Hardware prototype.
 
 Version 0.8
-Family beta testing.
+Family beta testing on a Windows desktop with an iPad private-network display. See `Family-beta-guide.md`.
 
 Version 0.9
 Production-ready console.

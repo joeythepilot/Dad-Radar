@@ -478,19 +478,19 @@ h1 {
   grid-template-columns:
     minmax(
       0,
-      1.12fr
+      4fr
     )
     minmax(
       0,
-      0.72fr
+      3fr
     )
     minmax(
       0,
-      0.72fr
+      3fr
     )
     minmax(
       0,
-      1.74fr
+      8.5fr
     );
 
   align-items:
@@ -1011,29 +1011,6 @@ h1 {
     ease-out
     forwards;
 }
-
-#flight-board-text {
-  color:
-    #ded7c8;
-
-  font-size:
-    clamp(
-      0.9rem,
-      1.2vw,
-      1.4rem
-    );
-
-  letter-spacing:
-    clamp(
-      0.08rem,
-      0.13vw,
-      0.17rem
-    );
-
-  text-align:
-    center;
-}
-
 
 /* =========================================================
    Nested lower display
@@ -2182,6 +2159,7 @@ h1 {
     1;
 }
 
+.altimeter-ten-thousands-needle-layer,
 .altimeter-thousands-needle-layer,
 .altimeter-needle-layer {
   transform:
@@ -2207,14 +2185,41 @@ h1 {
     transform;
 }
 
-.altimeter-thousands-needle-layer {
+.altimeter-ten-thousands-needle-layer {
   z-index:
     2;
 }
 
-.altimeter-needle-layer {
+.altimeter-ten-thousands-pointer {
+  fill:
+    #e8deca;
+
+  stroke:
+    #3b332a;
+
+  stroke-width:
+    5;
+
+  stroke-linejoin:
+    round;
+
+  filter:
+    drop-shadow(
+      0
+      3px
+      3px
+      rgba(0, 0, 0, 0.7)
+    );
+}
+
+.altimeter-thousands-needle-layer {
   z-index:
     3;
+}
+
+.altimeter-needle-layer {
+  z-index:
+    4;
 }
 
 
@@ -2448,6 +2453,7 @@ h1 {
 
   .airspeed-needle-layer,
   .heading-compass-card,
+  .altimeter-ten-thousands-needle-layer,
   .altimeter-thousands-needle-layer,
   .altimeter-needle-layer {
     transition-duration:
@@ -2716,566 +2722,3 @@ h1 {
     )
     !important;
 }
-<!doctype html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>Dad Radar</title>
-
-  <link
-    rel="stylesheet"
-    href="./UI/styles.css"
-  >
-</head>
-
-
-<body>
-
-  <!-- =====================================================
-       Startup screen
-       ===================================================== -->
-
-  <section
-    class="startup-screen"
-    id="startup-screen"
-  >
-
-    <p
-      class="unit-label"
-      id="unit-label"
-    >
-      FLIGHT OPERATIONS UNIT NO. 001
-    </p>
-
-    <h1 id="startup-app-name">
-      DAD RADAR
-    </h1>
-
-    <p class="status-message">
-      INITIALIZING FLIGHT SYSTEMS...
-    </p>
-
-  </section>
-
-
-  <!-- =====================================================
-       Fixed 1920 × 1080 viewer
-
-       The dashboard always renders at its real design size.
-       JavaScript uniformly scales the whole display to fit
-       smaller preview windows.
-       ===================================================== -->
-
-  <div class="display-viewer">
-
-    <main
-      class="dashboard"
-      id="dashboard"
-      aria-labelledby="dashboard-app-name"
-      hidden
-    >
-
-      <span
-        class="visually-hidden"
-        id="dashboard-app-name"
-      >
-        DAD RADAR
-      </span>
-
-
-      <section class="panel-shell">
-
-        <!-- ===============================================
-             Full-width split-flap board
-             =============================================== -->
-
-        <section class="module flight-strip-module">
-
-          <div class="flight-strip-labels">
-
-            <span>FLIGHT</span>
-
-            <span>FROM</span>
-
-            <span>TO</span>
-
-            <span>STATUS</span>
-
-          </div>
-
-
-          <section class="flight-board">
-
-            <div
-              class="flight-board-row"
-              id="flight-board-flight"
-              hidden
-            >
-
-              <span
-                class="flap-cell"
-                id="flight-number"
-              >
-                1234
-              </span>
-
-              <span
-                class="flap-cell"
-                id="flight-origin"
-              >
-                ORD
-              </span>
-
-              <span
-                class="flap-cell"
-                id="flight-destination"
-              >
-                AVL
-              </span>
-
-              <span
-                class="flap-cell"
-                id="status-value"
-              >
-                EN ROUTE
-              </span>
-
-            </div>
-
-
-            <span id="flight-board-text">
-              NO ACTIVE FLIGHT
-            </span>
-
-          </section>
-
-        </section>
-
-
-        <!-- ===============================================
-             Lower dashboard
-
-             Left:
-             Full-height destination poster
-
-             Right:
-             Map above instrument cluster
-             =============================================== -->
-
-        <section class="lower-display-grid">
-
-          <!-- =============================================
-               Left column
-               ============================================= -->
-
-          <section class="left-module-stack">
-
-            <article class="module destination-panel">
-
-              <div class="destination-stage">
-
-                <img
-                  class="destination-poster-image"
-                  id="destination-poster"
-                  src="./assets/destinations/asheville-poster.jpeg"
-                  alt="Vintage Asheville, North Carolina travel poster"
-                  draggable="false"
-                >
-
-
-                <span
-                  class="visually-hidden"
-                  id="destination-city"
-                >
-                  ASHEVILLE
-                </span>
-
-                <span
-                  class="visually-hidden"
-                  id="destination-airport"
-                >
-                  AVL
-                </span>
-
-              </div>
-
-            </article>
-
-          </section>
-
-
-          <!-- =============================================
-               Right column
-               ============================================= -->
-
-          <section class="right-module-stack">
-
-            <!-- Route map -->
-
-            <article class="module map-panel">
-
-              <div class="map-information">
-
-                <div class="map-status-block">
-
-                  <p class="small-label">
-                    ROUTE PROGRESS
-                  </p>
-
-                  <span class="map-status-copy">
-                    ACTIVE FLIGHT TRACK
-                  </span>
-
-                </div>
-
-
-                <div class="clock-block">
-
-                  <p class="small-label">
-                    CURRENT TIME
-                  </p>
-
-                  <p
-                    class="clock-value"
-                    id="clock-value"
-                  >
-                    --:--
-                  </p>
-
-                  <span class="eta-zone">
-                    EASTERN TIME
-                  </span>
-
-                </div>
-
-
-                <div class="eta-block">
-
-                  <p class="small-label">
-                    ESTIMATED ARRIVAL
-                  </p>
-
-                  <p
-                    class="eta-value"
-                    id="eta-value"
-                  >
-                    --:--
-                  </p>
-
-                  <span
-                    class="eta-zone"
-                    id="eta-zone"
-                  >
-                    EASTERN TIME
-                  </span>
-
-                </div>
-
-              </div>
-
-
-              <div class="route-display">
-
-                <div
-                  class="map-grid"
-                  aria-hidden="true"
-                ></div>
-
-
-                <div
-                  class="weather-band weather-band-one"
-                  aria-hidden="true"
-                ></div>
-
-                <div
-                  class="weather-band weather-band-two"
-                  aria-hidden="true"
-                ></div>
-
-
-                <span
-                  class="route-airport route-origin"
-                  id="map-origin"
-                >
-                  ORD
-                </span>
-
-
-                <div class="route-line">
-
-                  <span
-                    class="route-trail"
-                    aria-hidden="true"
-                  ></span>
-
-                  <span
-                    class="aircraft-marker"
-                    aria-hidden="true"
-                  >
-                    ✈
-                  </span>
-
-                </div>
-
-
-                <span
-                  class="route-airport route-destination"
-                  id="map-destination"
-                >
-                  AVL
-                </span>
-
-              </div>
-
-            </article>
-
-
-            <!-- ===========================================
-                 Instrument cluster
-                 =========================================== -->
-
-            <article class="module instrument-panel">
-
-              <div class="instrument-row">
-
-                <!-- Airspeed -->
-
-                <div class="instrument airspeed-instrument">
-
-                  <img
-                    class="airspeed-layer airspeed-face-body"
-                    src="./assets/instruments/airspeed/airspeed-face-body.png"
-                    alt=""
-                    aria-hidden="true"
-                    draggable="false"
-                  >
-
-                  <img
-                    class="airspeed-layer airspeed-needle-layer"
-                    id="airspeed-needle"
-                    src="./assets/instruments/airspeed/airspeed-needle.png"
-                    alt=""
-                    aria-hidden="true"
-                    draggable="false"
-                  >
-
-
-                  <div class="gauge-readout airspeed-readout">
-
-                    <span class="instrument-label">
-                      AIRSPEED
-                    </span>
-
-                    <strong
-                      class="instrument-value"
-                      id="airspeed-value"
-                    >
-                      000
-                    </strong>
-
-                    <span class="instrument-unit">
-                      KT
-                    </span>
-
-                  </div>
-
-                </div>
-
-
-                <!-- Heading -->
-
-                <div class="instrument heading-instrument">
-
-                  <img
-                    class="heading-layer heading-compass-card"
-                    id="heading-card"
-                    src="./assets/instruments/heading/heading-compass-card.png"
-                    alt=""
-                    aria-hidden="true"
-                    draggable="false"
-                  >
-
-                  <img
-                    class="heading-layer heading-bezel-body"
-                    src="./assets/instruments/heading/heading-bezel-body.png"
-                    alt=""
-                    aria-hidden="true"
-                    draggable="false"
-                  >
-
-                  <img
-                    class="heading-layer heading-glass-overlay"
-                    src="./assets/instruments/heading/heading-airplane-glass-overlay.png"
-                    alt=""
-                    aria-hidden="true"
-                    draggable="false"
-                  >
-
-
-                  <div class="gauge-readout heading-readout">
-
-                    <span class="instrument-label">
-                      HEADING
-                    </span>
-
-                    <strong
-                      class="instrument-value"
-                      id="heading-value"
-                    >
-                      000
-                    </strong>
-
-                    <span class="instrument-unit">
-                      DEG
-                    </span>
-
-                  </div>
-
-                </div>
-
-
-                <!-- Altimeter -->
-
-                <div class="instrument altimeter-instrument">
-
-                  <img
-                    class="altimeter-layer altimeter-face-body"
-                    src="./assets/instruments/altimeter/altimeter-face-body.png"
-                    alt=""
-                    aria-hidden="true"
-                    draggable="false"
-                  >
-
-                  <img
-                    class="altimeter-layer altimeter-thousands-needle-layer"
-                    id="altitude-thousands-needle"
-                    src="./assets/instruments/altimeter/altimeter-thousands-needle.png"
-                    alt=""
-                    aria-hidden="true"
-                    draggable="false"
-                  >
-
-                  <img
-                    class="altimeter-layer altimeter-needle-layer"
-                    id="altitude-needle"
-                    src="./assets/instruments/altimeter/altimeter-needle.png"
-                    alt=""
-                    aria-hidden="true"
-                    draggable="false"
-                  >
-
-
-                  <div class="gauge-readout altimeter-readout">
-
-                    <span class="instrument-label">
-                      ALTITUDE
-                    </span>
-
-                    <strong
-                      class="instrument-value"
-                      id="altitude-value"
-                    >
-                      -----
-                    </strong>
-
-                    <span class="instrument-unit">
-                      FT
-                    </span>
-
-                  </div>
-
-                </div>
-
-              </div>
-
-            </article>
-
-          </section>
-
-        </section>
-
-      </section>
-
-    </main>
-
-  </div>
-
-
-  <!-- =====================================================
-       Application scripts
-       Keep this order
-       ===================================================== -->
-
-  <script src="./config/settings.js"></script>
-
-  <script src="./models/states.js"></script>
-
-  <script src="./App/state-engine.js"></script>
-
-  <script src="./services/mock-flight-service.js"></script>
-
-  <script src="./App/main.js"></script>
-
-
-  <!-- =====================================================
-       Fixed-size viewer scaling
-       ===================================================== -->
-
-  <script>
-    (() => {
-      "use strict";
-
-      const DESIGN_WIDTH = 1920;
-      const DESIGN_HEIGHT = 1080;
-
-      function scaleDadRadarViewer() {
-        const viewportWidth =
-          window.visualViewport?.width ??
-          window.innerWidth;
-
-        const viewportHeight =
-          window.visualViewport?.height ??
-          window.innerHeight;
-
-        const widthScale =
-          viewportWidth / DESIGN_WIDTH;
-
-        const heightScale =
-          viewportHeight / DESIGN_HEIGHT;
-
-        const viewerScale =
-          Math.min(
-            widthScale,
-            heightScale
-          );
-
-        document.documentElement.style.setProperty(
-          "--viewer-scale",
-          String(viewerScale)
-        );
-      }
-
-      window.addEventListener(
-        "resize",
-        scaleDadRadarViewer
-      );
-
-      window.visualViewport?.addEventListener(
-        "resize",
-        scaleDadRadarViewer
-      );
-
-      scaleDadRadarViewer();
-    })();
-  </script>
-
-</body>
-
-</html>

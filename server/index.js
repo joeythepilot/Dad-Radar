@@ -1,20 +1,36 @@
 const path = require("path");
 const express = require("express");
 
-require("dotenv").config();
+require("dotenv").config({ quiet: true });
 
 const {
   getUpcomingEvents
 } = require("./calendar-service");
 
 const {
-  FlightAwareConfigurationError,
-  FlightAwareRequestError,
+  Flightradar24ConfigurationError,
+  Flightradar24RequestError,
   getLiveFlightSnapshot
-} = require("./flightaware-service");
+} = require("./flightradar24-service");
 
 const app = express();
 const port = Number(process.env.PORT) || 4173;
+const host =
+  process.env.HOST || "0.0.0.0";
+const projectRoot = path.join(
+  __dirname,
+  ".."
+);
+
+const PUBLIC_DIRECTORIES = [
+  "App",
+  "UI",
+  "assets",
+  "config",
+  "data",
+  "models",
+  "services"
+];
 
 app.use(
   express.json({ limit: "16kb" })
@@ -25,10 +41,9 @@ app.get("/api/health", (request, response) => {
     ok: true,
     service: "Dad Radar",
     flightData: {
-      provider: "flightaware",
+      provider: "flightradar24",
       configured: Boolean(
-        process.env
-          .FLIGHTAWARE_AEROAPI_KEY
+        process.env.FR24_API_TOKEN
       )
     }
   });
@@ -81,7 +96,7 @@ app.post(
 
       response.json({
         ok: true,
-        provider: "flightaware",
+        provider: "flightradar24",
         retrievedAt:
           liveFlight?.retrievedAt ??
           new Date().toISOString(),
@@ -90,12 +105,12 @@ app.post(
     } catch (error) {
       if (
         error instanceof
-        FlightAwareConfigurationError
+        Flightradar24ConfigurationError
       ) {
         response.status(503).json({
           ok: false,
           error:
-            "FlightAware is not configured."
+            "Flightradar24 is not configured."
         });
         return;
       }
@@ -110,10 +125,10 @@ app.post(
 
       if (
         error instanceof
-        FlightAwareRequestError
+        Flightradar24RequestError
       ) {
         console.error(
-          "FlightAware request failed:",
+          "Flightradar24 request failed:",
           error.message
         );
 
@@ -139,15 +154,79 @@ app.post(
   }
 );
 
-app.use(
-  express.static(
-    path.join(__dirname, ".."),
-    { extensions: ["html"] }
-  )
-);
+for (const directory of
+  PUBLIC_DIRECTORIES) {
+  app.use(
+    `/${directory}`,
+    express.static(
+      path.join(
+        projectRoot,
+        directory
+      ),
+      {
+        dotfiles: "deny",
+        fallthrough: false,
+        index: false
+      }
+    )
+  );
+}
 
-app.listen(port, "127.0.0.1", () => {
-  console.log(
-    `Dad Radar service running at http://127.0.0.1:${port}`
+app.get("/", (_request, response) => {
+  response.sendFile(
+    path.join(projectRoot, "index.html")
   );
 });
+
+app.get(
+  ["/index.html", "/display"],
+  (_request, response) => {
+    response.sendFile(
+      path.join(projectRoot, "index.html")
+    );
+  }
+);
+
+function startServer(options = {}) {
+  const listenPort =
+    options.port ?? port;
+
+  const listenHost =
+    options.host ?? host;
+
+  const server = app.listen(
+    listenPort,
+    listenHost,
+    () => {
+      const address =
+        server.address();
+
+      const displayedPort =
+        typeof address === "object"
+          ? address.port
+          : listenPort;
+
+      console.log(
+        `Dad Radar service running on port ${displayedPort}.`
+      );
+      console.log(
+        `This PC: http://127.0.0.1:${displayedPort}`
+      );
+      console.log(
+        "Family display: run npm.cmd run beta:address for the iPad address."
+      );
+    }
+  );
+
+  return server;
+}
+
+if (require.main === module) {
+  startServer();
+}
+
+module.exports = {
+  app,
+  startServer,
+  PUBLIC_DIRECTORIES
+};

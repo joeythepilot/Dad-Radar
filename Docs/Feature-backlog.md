@@ -2,12 +2,12 @@
 
 ## Flight Operations
 
-- [ ] Split-flap flight board
-- [ ] Live aircraft tracking
+- [x] Split-flap flight board
+- [x] Live aircraft tracking
 - [ ] Flight status colors
-- [ ] Delay detection
-- [ ] Diversion mode
-- [ ] Automatic flight state transitions
+- [x] Delay detection
+- [x] Diversion mode
+- [x] Automatic flight state transitions
 - [ ] Local destination weather
 - [ ] Destination airport information
 
@@ -21,7 +21,7 @@
 
 ## Travel Posters
 
-- [ ] Poster engine
+- [x] Poster selection and unknown-destination fallback
 - [ ] 200+ destination posters
 - [ ] Seasonal poster variations
 - [ ] Layover artwork
@@ -42,3 +42,11 @@
 - [ ] Historical trip log
 - [ ] Flight statistics
 - [ ] Milestone celebrations
+
+## Family Beta
+
+- [x] Private home-network display server
+- [x] iPad split-flap audio unlock
+- [x] Windows setup and readiness check
+- [x] Missing-poster destination card
+- [ ] Complete Maxwell family field-test checklist

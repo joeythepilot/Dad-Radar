@@ -1,0 +1,208 @@
+{
+  "schemaVersion": 1,
+  "collection": {
+    "designReference": "assets/destinations/asheville-poster-7x8-baseline.png",
+    "comparisonFiles": [
+      "assets/destinations/asheville-poster-7x8-baseline.png",
+      "assets/destinations/ord-poster-7x8-candidate-v2.png",
+      "assets/destinations/dfw-poster-7x8-candidate-v2.png",
+      "assets/destinations/dca-poster-7x8-candidate-v2.png",
+      "assets/destinations/roc-poster-7x8-candidate-v1.png",
+      "assets/destinations/mia-poster-7x8-candidate-v1.png",
+      "assets/destinations/clt-poster-7x8-candidate-v1.png",
+      "assets/destinations/phx-poster-7x8-candidate-v1.png",
+      "assets/destinations/xna-poster-7x8-candidate-v1.png",
+      "assets/destinations/cmh-poster-7x8-candidate-v1.png"
+    ],
+    "reviewCanvas": {
+      "width": 1173,
+      "height": 1341,
+      "ratioWidth": 7,
+      "ratioHeight": 8,
+      "ratioTolerance": 0.001
+    },
+    "displayDelivery": {
+      "width": 2100,
+      "height": 2400
+    },
+    "archivalMaster": {
+      "width": 4200,
+      "height": 4800
+    }
+  },
+  "batches": [
+    {
+      "id": "pilot-hubs-01",
+      "label": "Hub and busy-destination pilot",
+      "status": "approved",
+      "airportCodes": ["MIA", "CLT", "PHX", "XNA", "CMH"]
+    }
+  ],
+  "destinations": [
+    {
+      "code": "MIA",
+      "icao": "KMIA",
+      "city": "Miami",
+      "region": "Florida",
+      "title": "MIAMI",
+      "subtitle": "FLORIDA",
+      "descriptor": "ART DECO • BISCAYNE • TROPICS",
+      "tagline": "Where the Americas Meet.",
+      "batch": "pilot-hubs-01",
+      "status": "approved",
+      "output": "assets/destinations/mia-poster-7x8-candidate-v1.png",
+      "visualProfileId": "tropical-rainbreak-dawn",
+      "design": {
+        "landmarks": [
+          "Freedom Tower",
+          "Miami Beach Art Deco facades",
+          "Biscayne Bay",
+          "Downtown and Brickell skyline"
+        ],
+        "skySignature": "Aqua-and-coral tropical dawn after rain with one distant vertical rain curtain and smooth high haze",
+        "seasonAndLight": "Humid summer dawn with clean reflected light on the bay",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small three-quarter-front aircraft low at mid-right over Biscayne Bay",
+        "foreground": "Biscayne water, restrained palms, and a low Art Deco waterfront",
+        "avoid": ["repeated sunset clouds", "hotel logos", "neon signage", "generic beach-resort skyline"]
+      },
+      "referenceSources": [
+        "https://www.miamiandbeaches.com/things-to-do/art-and-culture/miami-architecture",
+        "https://www.miamiandbeaches.com/things-to-do/history-and-heritage/miami-s-architectural-guide",
+        "https://www.miamiandbeaches.com/neighborhoods/downtown-miami-brickell-area"
+      ]
+    },
+    {
+      "code": "CLT",
+      "icao": "KCLT",
+      "city": "Charlotte",
+      "region": "North Carolina",
+      "title": "CHARLOTTE",
+      "subtitle": "NORTH CAROLINA",
+      "descriptor": "QUEEN CITY • SKYLINE • CAROLINAS",
+      "tagline": "A Crown Above the Carolinas.",
+      "batch": "pilot-hubs-01",
+      "status": "approved",
+      "output": "assets/destinations/clt-poster-7x8-candidate-v1.png",
+      "visualProfileId": "queen-city-starlight",
+      "design": {
+        "landmarks": [
+          "Bank of America Corporate Center",
+          "550 South Tryon",
+          "Romare Bearden Park",
+          "Uptown Charlotte skyline"
+        ],
+        "skySignature": "Clear ink-blue night with a slim crescent moon and sparse stars; no cloud layer",
+        "seasonAndLight": "Early autumn blue hour becoming night, with emerald and warm-gold city light",
+        "titleAlignment": "right",
+        "aircraftPlacement": "Small aircraft in the upper-left negative space, banking toward Uptown",
+        "foreground": "Dark green park terraces and restrained reflecting water",
+        "avoid": ["corporate logos", "sports branding", "sunset gradient", "generic fantasy towers"]
+      },
+      "referenceSources": [
+        "https://www.charlottesgotalot.com/neighborhoods/uptown",
+        "https://www.charlottesgotalot.com/articles/history/get-to-know-charlotte-the-queen-city",
+        "https://www.charlottesgotalot.com/articles/history/the-history-of-charlotte"
+      ]
+    },
+    {
+      "code": "PHX",
+      "icao": "KPHX",
+      "city": "Phoenix",
+      "region": "Arizona",
+      "title": "PHOENIX",
+      "subtitle": "ARIZONA",
+      "descriptor": "DESERT • SAGUAROS • RED ROCKS",
+      "tagline": "Valley of the Sun.",
+      "batch": "pilot-hubs-01",
+      "status": "approved",
+      "output": "assets/destinations/phx-poster-7x8-candidate-v1.png",
+      "visualProfileId": "sonoran-high-sun",
+      "design": {
+        "landmarks": [
+          "Camelback Mountain",
+          "Papago Park Hole-in-the-Rock",
+          "Downtown Phoenix skyline",
+          "Sonoran Desert saguaros"
+        ],
+        "skySignature": "Vast cloudless turquoise sky with a hard cream sun disk and visible heat shimmer",
+        "seasonAndLight": "Dry late-spring high sun with sharp graphic shadows",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small top-down banking aircraft just above the lower-left desert ridge",
+        "foreground": "Saguaro silhouettes, red sandstone, and sparse desert plants",
+        "avoid": ["Grand Canyon imagery", "Monument Valley buttes", "soft sunset clouds", "dense city skyline"]
+      },
+      "referenceSources": [
+        "https://www.visitphoenix.com/sonoran-desert/parks/camelback-mountain/",
+        "https://www.visitphoenix.com/sonoran-desert/parks/papago-park/",
+        "https://www.visitphoenix.com/greater-phoenix/phoenix/"
+      ]
+    },
+    {
+      "code": "XNA",
+      "icao": "KXNA",
+      "city": "Northwest Arkansas",
+      "region": "Arkansas",
+      "title": "NORTHWEST ARKANSAS",
+      "subtitle": "THE OZARKS",
+      "descriptor": "OZARKS • ART • TRAILS",
+      "tagline": "Where Art Meets the Wild.",
+      "batch": "pilot-hubs-01",
+      "status": "approved",
+      "output": "assets/destinations/xna-poster-7x8-candidate-v1.png",
+      "visualProfileId": "ozark-mist-dawn",
+      "design": {
+        "landmarks": [
+          "Crystal Bridges Museum pavilions",
+          "Fayetteville Old Main",
+          "Ozark forest ridgelines",
+          "Spring-fed reflective ponds"
+        ],
+        "skySignature": "Low lavender-grey dawn fog between layered Ozark ridges, with no defined cloud shapes",
+        "seasonAndLight": "Peak autumn at first light with cool mist and copper forest edges",
+        "titleAlignment": "center stacked",
+        "aircraftPlacement": "Tiny aircraft high at upper-right, seen in clean side profile above the fog",
+        "foreground": "Reflective museum pond, curved copper roofs, and forest trail",
+        "avoid": ["corporate retail branding", "university logos", "generic mountain lodge", "Appalachian-scale peaks"]
+      },
+      "referenceSources": [
+        "https://www.arkansas.com/experiences/discover/attraction-listings/crystal-bridges-museum-of-american-art",
+        "https://www.arkansas.com/regions-cities/regions/the-ozarks",
+        "https://www.arkansas.com/regions-cities/cities/bentonville"
+      ]
+    },
+    {
+      "code": "CMH",
+      "icao": "KCMH",
+      "city": "Columbus",
+      "region": "Ohio",
+      "title": "COLUMBUS",
+      "subtitle": "OHIO",
+      "descriptor": "RIVERFRONT • ART DECO • HEARTLAND",
+      "tagline": "At the Heart of Ohio.",
+      "batch": "pilot-hubs-01",
+      "status": "approved",
+      "output": "assets/destinations/cmh-poster-7x8-candidate-v1.png",
+      "visualProfileId": "scioto-first-snow",
+      "design": {
+        "landmarks": [
+          "LeVeque Tower",
+          "Scioto Mile riverfront",
+          "Main Street Bridge",
+          "Ohio Statehouse"
+        ],
+        "skySignature": "Pale slate winter overcast with fine diagonal snow and one soft golden break near the horizon",
+        "seasonAndLight": "First snow at a bright winter morning, with blue shadows and warm stone highlights",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small head-on aircraft near upper center-left, emerging below the snow band",
+        "foreground": "Icy Scioto River reflections and a clean modern bridge arc",
+        "avoid": ["college sports branding", "stadium imagery", "generic Midwest skyline", "heavy blizzard whiteout"]
+      },
+      "referenceSources": [
+        "https://www.experiencecolumbus.com/blog/post/10-of-the-biggest-things-to-see-and-do-in-a-top-10-best-big-city-in-the-us/",
+        "https://www.experiencecolumbus.com/blog/post/downtown-columbus-running-routes/",
+        "https://www.columbus.gov/files/sharedassets/city/v/1/building-and-zoning/bzs-boards-and-commissions/planning-document-library/downtown-design-guidelines-screen.pdf"
+      ]
+    }
+  ]
+}

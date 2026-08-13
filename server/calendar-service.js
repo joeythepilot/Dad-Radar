@@ -1,8 +1,10 @@
 const fs = require("fs/promises");
 const path = require("path");
 const { google } = require("googleapis");
+const { DateTime } = require("luxon");
 
 const {
+  DISPLAY_TIME_ZONE,
   parsePilotSchedule
 } = require("./pilot-schedule-parser");
 
@@ -17,6 +19,128 @@ const TOKEN_PATH = path.join(
 );
 
 let calendarClientPromise = null;
+
+function startOfDisplayDay(
+  value = new Date(),
+  timeZone = DISPLAY_TIME_ZONE
+) {
+  const date =
+    value instanceof Date
+      ? value
+      : new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    throw new TypeError(
+      "value must be a valid Date or date string."
+    );
+  }
+
+  return DateTime
+    .fromJSDate(date, {
+      zone: timeZone
+    })
+    .startOf("day")
+    .toUTC()
+    .toJSDate();
+}
+
+function calendarQueryWindow(
+  options = {}
+) {
+  const {
+    timeMin,
+    timeMax,
+    days = 14,
+    historyDays = 7,
+    now = new Date(),
+    timeZone = DISPLAY_TIME_ZONE
+  } = options;
+
+  if (
+    !Number.isFinite(days) ||
+    days <= 0
+  ) {
+    throw new TypeError(
+      "days must be a positive number."
+    );
+  }
+
+  if (
+    !Number.isFinite(historyDays) ||
+    historyDays < 0
+  ) {
+    throw new TypeError(
+      "historyDays must be a non-negative number."
+    );
+  }
+
+  const parseDate = (value, name) => {
+    const date =
+      value instanceof Date
+        ? value
+        : new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      throw new TypeError(
+        `${name} must be a valid Date or date string.`
+      );
+    }
+
+    return date;
+  };
+
+  let startTime;
+  let defaultEndTime;
+
+  if (timeMin !== undefined) {
+    startTime = parseDate(
+      timeMin,
+      "timeMin"
+    );
+    defaultEndTime = new Date(
+      startTime.getTime() +
+        days * 24 * 60 * 60 * 1000
+    );
+  } else {
+    const referenceTime = parseDate(
+      now,
+      "now"
+    );
+
+    const displayDayStart =
+      DateTime
+        .fromJSDate(referenceTime, {
+          zone: timeZone
+        })
+        .startOf("day");
+
+    startTime = displayDayStart
+      .minus({ days: historyDays })
+      .toUTC()
+      .toJSDate();
+
+    defaultEndTime = displayDayStart
+      .plus({ days })
+      .toUTC()
+      .toJSDate();
+  }
+
+  const endTime =
+    timeMax === undefined
+      ? defaultEndTime
+      : parseDate(timeMax, "timeMax");
+
+  if (endTime <= startTime) {
+    throw new RangeError(
+      "timeMax must be later than timeMin."
+    );
+  }
+
+  return {
+    startTime,
+    endTime
+  };
+}
 
 async function createCalendarClient() {
   const tokenContent = await fs.readFile(
@@ -44,26 +168,22 @@ async function getCalendarClient() {
 
 async function getUpcomingEvents(options = {}) {
   const {
-    timeMin = new Date(),
+    timeMin,
+    timeMax,
     days = 14,
+    historyDays = 7,
     maxResults = 100
   } = options;
 
-  const startTime =
-    timeMin instanceof Date
-      ? timeMin
-      : new Date(timeMin);
-
-  if (Number.isNaN(startTime.getTime())) {
-    throw new TypeError(
-      "timeMin must be a valid Date or date string."
-    );
-  }
-
-  const endTime = new Date(
-    startTime.getTime() +
-      days * 24 * 60 * 60 * 1000
-  );
+  const {
+    startTime,
+    endTime
+  } = calendarQueryWindow({
+    timeMin,
+    timeMax,
+    days,
+    historyDays
+  });
 
   const calendar = await getCalendarClient();
 
@@ -102,5 +222,7 @@ async function getUpcomingEvents(options = {}) {
 
 module.exports = {
   CALENDAR_ID,
-  getUpcomingEvents
+  calendarQueryWindow,
+  getUpcomingEvents,
+  startOfDisplayDay
 };

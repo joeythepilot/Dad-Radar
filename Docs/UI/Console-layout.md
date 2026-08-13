@@ -26,7 +26,7 @@ The display should invite curiosity without demanding attention.
 
 # Primary Display Zones
 
-The console is divided into five permanent modules.
+The console is divided into six permanent modules.
 
 ```
 ┌───────────────────────────────────────────────────────────────┐
@@ -35,7 +35,7 @@ The console is divided into five permanent modules.
 │                   │                                           │
 │ Destination       │             Moving Map                    │
 │ Poster            │                                           │
-│                   │                                           │
+│ Today's Duty      │                                           │
 ├───────────────────┴───────────────────────────────────────────┤
 │ Flight Instruments                  │ Power / Status Module   │
 └─────────────────────────────────────┴─────────────────────────┘
@@ -54,8 +54,9 @@ The eye should naturally move in this order:
 1. Split-Flap Flight Board
 2. Moving Map
 3. Destination Poster
-4. Flight Instruments
-5. Power / Status Module
+4. Today's Duty
+5. Flight Instruments
+6. Power / Status Module
 
 No module should compete for attention.
 
@@ -70,6 +71,10 @@ Primary flight information.
 Always visible.
 
 Highest priority.
+
+The four active fields use a 4 : 3 : 3 : 8.5 grid for FLIGHT, FROM, TO, and STATUS. This follows the actual character counts, keeps the flight number close to the left edge, and preserves a clear visual break between TO and STATUS.
+
+The final physical faceplate covers the entire upper monitor area except the split-flap tile openings. The software must therefore keep the mechanical row visible in every state and may never replace it with a full-width text message. In non-flight states, Flight and From use blank tiles, To shows the last confirmed airport when one exists, and Status shows the compact state label.
 
 ---
 
@@ -90,6 +95,20 @@ Provides personality.
 Displays vintage travel artwork for the current destination or layover.
 
 Should rotate slowly between approved artwork when appropriate.
+
+---
+
+## Today's Duty
+
+Provides a compact textual view of Daddy's complete Eastern Time schedule for the current day.
+
+The poster-and-schedule column occupies 27 percent of the lower console. Within that column, the poster receives 75 percent of the height and Today's Duty receives 25 percent, providing legible family-room viewing without cropping the poster artwork.
+
+The current activity receives the strongest emphasis. Completed items recede, while upcoming items remain readable.
+
+Context uses Delaney's natural family language, such as “Daddy is flying to Greensboro,” rather than operational jargon.
+
+The panel is derived from the same normalized Calendar schedule as the primary state and must not become a second source of truth.
 
 ---
 

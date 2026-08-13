@@ -115,6 +115,56 @@ function testManualCommute() {
   );
 }
 
+function testDeadheadSummary() {
+  const result = parsePilotEvent(
+    createEvent({
+      summary:
+        "Deadhead AA2456 ORD->ROC",
+      description: ""
+    })
+  );
+
+  assert.equal(result.kind, "flight");
+  assert.equal(result.isCommute, false);
+  assert.equal(result.isDeadhead, true);
+  assert.equal(
+    result.travelRole,
+    "deadhead"
+  );
+  assert.equal(result.carrierCode, "AA");
+  assert.equal(result.flightNumber, "2456");
+  assert.equal(result.origin, "ORD");
+  assert.equal(result.destination, "ROC");
+  assert.deepEqual(
+    result.liveLookupCandidates,
+    ["AA2456", "MQ2456", "ENY2456"]
+  );
+  assert.equal(
+    result.requiresFlightVerification,
+    false
+  );
+}
+
+function testDeadheadDescriptionMarker() {
+  const result = parsePilotEvent(
+    createEvent({
+      summary:
+        "Flight 1429 DFW->AVL",
+      description:
+        "Deadhead\nFlight: 1429 Stations: DFW->AVL Time: 2026-08-04T13:42:00 - 2026-08-04T16:35:00"
+    })
+  );
+
+  assert.equal(result.isDeadhead, true);
+  assert.equal(
+    result.travelRole,
+    "deadhead"
+  );
+  assert.equal(result.flightNumber, "1429");
+  assert.equal(result.origin, "DFW");
+  assert.equal(result.destination, "AVL");
+}
+
 function testLayover() {
   const result = parsePilotEvent(
     createEvent({
@@ -153,6 +203,74 @@ function testMissingAirportTimeZone() {
   assert.deepEqual(
     result.times.missingAirportTimeZones,
     ["XYZ"]
+  );
+}
+
+function testGsoTimeZoneIsKnown() {
+  const result = parsePilotEvent(
+    createEvent({
+      summary:
+        "Flight 3744 ORD->GSO",
+      description:
+        "Flight: 3744 Stations: ORD->GSO Time: 2026-08-04T10:00:00 - 2026-08-04T13:00:00"
+    })
+  );
+
+  assert.equal(
+    result.times.needsTimeZoneVerification,
+    false
+  );
+  assert.equal(
+    result.times.missingAirportTimeZones,
+    undefined
+  );
+}
+
+function testBilTimeZoneIsKnown() {
+  const result = parsePilotEvent(
+    createEvent({
+      summary:
+        "Flight 3429 DFW->BIL",
+      description:
+        "Flight: 3429 Stations: DFW->BIL Time: 2026-08-04T11:11:00 - 2026-08-04T12:31:00"
+    })
+  );
+
+  assert.equal(
+    result.times.departureZone,
+    "America/Chicago"
+  );
+  assert.equal(
+    result.times.arrivalZone,
+    "America/Denver"
+  );
+  assert.equal(
+    result.times.needsTimeZoneVerification,
+    false
+  );
+}
+
+function testGlobalCatalogTimeZoneIsKnown() {
+  const result = parsePilotEvent(
+    createEvent({
+      summary:
+        "Flight 5555 SEA->MCI",
+      description:
+        "Flight: 5555 Stations: SEA->MCI Time: 2026-08-04T09:00:00 - 2026-08-04T14:30:00"
+    })
+  );
+
+  assert.equal(
+    result.times.departureZone,
+    "America/Los_Angeles"
+  );
+  assert.equal(
+    result.times.arrivalZone,
+    "America/Chicago"
+  );
+  assert.equal(
+    result.times.needsTimeZoneVerification,
+    false
   );
 }
 
@@ -202,8 +320,13 @@ function testFullSchedule() {
 function runTests() {
   testRosterFlightTimeZones();
   testManualCommute();
+  testDeadheadSummary();
+  testDeadheadDescriptionMarker();
   testLayover();
   testMissingAirportTimeZone();
+  testGsoTimeZoneIsKnown();
+  testBilTimeZoneIsKnown();
+  testGlobalCatalogTimeZoneIsKnown();
   testFullSchedule();
 
   console.log(
@@ -212,4 +335,3 @@ function runTests() {
 }
 
 runTests();
-

@@ -1,5 +1,13 @@
 (function initializeLiveFlightStateModel(root, factory) {
-  const api = factory();
+  const airportCatalog =
+    typeof module === "object" &&
+    module.exports
+      ? require(
+          "../data/airport-catalog"
+        )
+      : root?.dadRadarAirports;
+
+  const api = factory(airportCatalog);
 
   if (
     typeof module === "object" &&
@@ -16,7 +24,9 @@
   typeof globalThis !== "undefined"
     ? globalThis
     : this,
-  function createLiveFlightStateModel() {
+  function createLiveFlightStateModel(
+    airportCatalog
+  ) {
     "use strict";
 
     const DEFAULT_OPTIONS = Object.freeze({
@@ -24,28 +34,8 @@
       staleAfterMs: 3 * 60 * 1000
     });
 
-    const AIRPORT_CITIES = Object.freeze({
-      ATL: "ATLANTA",
-      AVL: "ASHEVILLE",
-      AVP: "SCRANTON",
-      BDL: "HARTFORD",
-      BOS: "BOSTON",
-      CLT: "CHARLOTTE",
-      DCA: "WASHINGTON",
-      DFW: "DALLAS/FORT WORTH",
-      DTW: "DETROIT",
-      EWR: "NEWARK",
-      GSP: "GREENVILLE",
-      HPN: "WHITE PLAINS",
-      IAD: "WASHINGTON",
-      JFK: "NEW YORK",
-      LGA: "NEW YORK",
-      MIA: "MIAMI",
-      ORD: "CHICAGO",
-      PHL: "PHILADELPHIA",
-      ROC: "ROCHESTER",
-      TYS: "KNOXVILLE"
-    });
+    const APPROACH_RELEASE_ALTITUDE_FEET =
+      12500;
 
     const STATUS_LABELS = Object.freeze({
       BOARDING: "BOARDING",
@@ -192,14 +182,19 @@
 
     function liveMode(
       calendarResolved,
-      snapshot
+      phase
     ) {
-      const phase = String(
-        snapshot?.phase ?? ""
-      ).toUpperCase();
-
       const calendarMode =
         calendarResolved.mode;
+
+      if (
+        calendarMode === "DELAYED" &&
+        ["BOARDING", "TAXI_OUT"].includes(
+          phase
+        )
+      ) {
+        return "DELAYED";
+      }
 
       if (
         (phase === "EN_ROUTE" ||
@@ -228,12 +223,22 @@
 
     function statusLabel(
       mode,
-      snapshot,
+      phase,
       calendarState
     ) {
-      const phase = String(
-        snapshot?.phase ?? ""
-      ).toUpperCase();
+      if (
+        mode === "DELAYED" &&
+        ![
+          "EN_ROUTE",
+          "APPROACH",
+          "DIVERTED",
+          "CANCELLED",
+          "LANDED",
+          "ARRIVED"
+        ].includes(phase)
+      ) {
+        return "DELAYED";
+      }
 
       if (STATUS_LABELS[phase]) {
         return STATUS_LABELS[phase];
@@ -249,6 +254,98 @@
       return modeLabels[mode] ??
         calendarState?.status ??
         mode.replace(/_/g, " ");
+    }
+
+    function resolvedEventKey(resolved) {
+      const value =
+        resolved?.event?.id ??
+        resolved?.state?.eventId;
+
+      if (
+        value === null ||
+        value === undefined ||
+        value === ""
+      ) {
+        return null;
+      }
+
+      return String(value);
+    }
+
+    function isConfirmedApproachRelease(
+      snapshot
+    ) {
+      const altitudeFeet = finiteNumber(
+        snapshot?.position?.altitudeFeet
+      );
+
+      const altitudeTrend = String(
+        snapshot?.position
+          ?.altitudeTrend ?? ""
+      )
+        .trim()
+        .toUpperCase();
+
+      const isClimbing = [
+        "C",
+        "U",
+        "UP",
+        "CLIMBING"
+      ].includes(altitudeTrend);
+
+      return (
+        isClimbing &&
+        altitudeFeet !== null &&
+        altitudeFeet >=
+          APPROACH_RELEASE_ALTITUDE_FEET
+      );
+    }
+
+    function stabilizedLivePhase(
+      calendarResolved,
+      snapshot,
+      previousResolved
+    ) {
+      const phase = String(
+        snapshot?.phase ?? ""
+      )
+        .trim()
+        .toUpperCase();
+
+      const currentEventKey =
+        resolvedEventKey(
+          calendarResolved
+        );
+
+      const previousEventKey =
+        resolvedEventKey(
+          previousResolved
+        );
+
+      const previousPhase = String(
+        previousResolved?.state
+          ?.livePhase ?? ""
+      )
+        .trim()
+        .toUpperCase();
+
+      const sameFlight =
+        currentEventKey !== null &&
+        currentEventKey ===
+          previousEventKey;
+
+      if (
+        sameFlight &&
+        previousPhase === "APPROACH" &&
+        phase === "EN_ROUTE" &&
+        !isConfirmedApproachRelease(
+          snapshot
+        )
+      ) {
+        return "APPROACH";
+      }
+
+      return phase;
     }
 
     function reconcileScheduleWithLive(
@@ -300,9 +397,16 @@
         latitude !== null &&
         longitude !== null;
 
+      const phase =
+        stabilizedLivePhase(
+          calendarResolved,
+          snapshot,
+          options.previousResolved
+        );
+
       const mode = liveMode(
         calendarResolved,
-        snapshot
+        phase
       );
 
       const origin =
@@ -329,18 +433,71 @@
         snapshot.progressPercent
       );
 
+      const provider =
+        String(
+          snapshot.provider ??
+          "live-flight"
+        ).trim() || "live-flight";
+
+      const originAirport =
+        airportCatalog
+          ?.lookupAirport?.(origin);
+
+      const destinationAirport =
+        airportCatalog
+          ?.lookupAirport?.(
+            destination
+          );
+
       const flight = {
         ...calendarFlight,
         number:
           liveIdent ||
           calendarFlight.number,
         origin,
+        originCity:
+          originAirport?.city ??
+          calendarFlight.originCity ??
+          origin ??
+          "---",
+        originLocation:
+          airportCatalog
+            ?.formatLocation?.(origin) ??
+          calendarFlight.originLocation ??
+          origin ??
+          "---",
         destination,
         destinationCity:
-          AIRPORT_CITIES[destination] ??
+          destinationAirport?.city ??
           calendarFlight.destinationCity ??
           destination ??
           "---",
+        destinationLocation:
+          airportCatalog
+            ?.formatLocation?.(
+              destination
+            ) ??
+          calendarFlight
+            .destinationLocation ??
+          destination ??
+          "---",
+        isCommute:
+          Boolean(
+            calendarFlight.isCommute ??
+            calendarResolved.event
+              ?.isCommute
+          ),
+        isDeadhead:
+          Boolean(
+            calendarFlight.isDeadhead ??
+            calendarResolved.event
+              ?.isDeadhead
+          ),
+        travelRole:
+          calendarFlight.travelRole ??
+          calendarResolved.event
+            ?.travelRole ??
+          "operating",
         airspeed: null,
         groundSpeed: finiteNumber(
           position.groundSpeedKnots
@@ -361,10 +518,10 @@
             )
           : calendarFlight.eta,
         timingSource: arrivalTime
-          ? "flightaware"
+          ? provider
           : calendarFlight.timingSource,
         positionSource: hasLivePosition
-          ? "flightaware"
+          ? provider
           : calendarFlight.positionSource,
         latitude,
         longitude,
@@ -373,10 +530,25 @@
         providerStatus:
           snapshot.status ?? null,
         departureDelayMinutes:
-          finiteNumber(
-            snapshot.departure
-              ?.delayMinutes
-          ),
+          mode === "DELAYED"
+            ? Math.max(
+                finiteNumber(
+                  snapshot.departure
+                    ?.delayMinutes
+                ) ?? 0,
+                finiteNumber(
+                  calendarFlight
+                    .departureDelayMinutes
+                ) ?? 0
+              )
+            : finiteNumber(
+                snapshot.departure
+                  ?.delayMinutes
+              ) ??
+              finiteNumber(
+                calendarFlight
+                  .departureDelayMinutes
+              ),
         arrivalDelayMinutes:
           finiteNumber(
             snapshot.arrival
@@ -399,6 +571,17 @@
           snapshot.aircraft?.type ?? null,
         providerFlightId:
           snapshot.providerFlightId ??
+          null,
+        actualTrack:
+          Array.isArray(
+            snapshot.actualTrack
+          )
+            ? snapshot.actualTrack
+            : calendarFlight.actualTrack ??
+              [],
+        filedRoute:
+          snapshot.filedRoute ??
+          calendarFlight.filedRoute ??
           null
       };
 
@@ -409,11 +592,12 @@
           ...calendarResolved.state,
           status: statusLabel(
             mode,
-            snapshot,
+            phase,
             calendarResolved.state
           ),
-          source: "flightaware",
+          source: provider,
           liveData: true,
+          livePhase: phase,
           flight
         },
         liveFlight: snapshot

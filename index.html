@@ -6,10 +6,25 @@
 
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1.0"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
   >
 
   <title>Dad Radar</title>
+
+  <meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+  >
+
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="black"
+  >
+
+  <meta
+    name="theme-color"
+    content="#050706"
+  >
 
   <link
     rel="stylesheet"
@@ -30,6 +45,15 @@
 
 
 <body>
+
+  <button
+    class="beta-audio-button"
+    id="beta-audio-button"
+    type="button"
+    hidden
+  >
+    TAP ONCE FOR SPLIT-FLAP SOUND
+  </button>
 
   <!-- =====================================================
        Startup screen
@@ -89,8 +113,12 @@
 
           <div class="flight-strip-labels">
             <span>FLIGHT</span>
-            <span>FROM</span>
-            <span>TO</span>
+
+            <span class="flight-strip-route-labels">
+              <span>FROM</span>
+              <span>TO</span>
+            </span>
+
             <span>STATUS</span>
           </div>
 
@@ -100,7 +128,6 @@
             <div
               class="flight-board-row"
               id="flight-board-flight"
-              hidden
             >
 
               <span
@@ -110,18 +137,22 @@
                 1234
               </span>
 
-              <span
-                class="flap-cell"
-                id="flight-origin"
-              >
-                ORD
-              </span>
+              <span class="flap-route-section">
 
-              <span
-                class="flap-cell"
-                id="flight-destination"
-              >
-                AVL
+                <span
+                  class="flap-cell"
+                  id="flight-origin"
+                >
+                  ORD
+                </span>
+
+                <span
+                  class="flap-cell"
+                  id="flight-destination"
+                >
+                  AVL
+                </span>
+
               </span>
 
               <span
@@ -133,10 +164,6 @@
 
             </div>
 
-
-            <span id="flight-board-text">
-              NO ACTIVE FLIGHT
-            </span>
 
           </section>
 
@@ -154,7 +181,7 @@
         <section class="lower-display-grid">
 
           <!-- =============================================
-               Left: full-height destination poster
+               Left: destination poster and today's duty
                ============================================= -->
 
           <section class="left-module-stack">
@@ -166,10 +193,42 @@
                 <img
                   class="destination-poster-image"
                   id="destination-poster"
-                  src="./assets/destinations/asheville-poster.jpeg"
+                  src="./assets/destinations/asheville-poster-7x8-baseline.png"
                   alt="Vintage Asheville, North Carolina travel poster"
                   draggable="false"
                 >
+
+                <section
+                  class="destination-poster-fallback"
+                  id="destination-poster-fallback"
+                  hidden
+                  aria-live="polite"
+                >
+
+                  <span class="poster-fallback-kicker">
+                    DAD RADAR DESTINATIONS
+                  </span>
+
+                  <strong id="poster-fallback-city">
+                    DESTINATION
+                  </strong>
+
+                  <span id="poster-fallback-region">
+                    POSTER IN THE WORKS
+                  </span>
+
+                  <span
+                    class="poster-fallback-airport"
+                    id="poster-fallback-airport"
+                  >
+                    ---
+                  </span>
+
+                  <span class="poster-fallback-message">
+                    A NEW POSTCARD IS COMING SOON
+                  </span>
+
+                </section>
 
                 <span
                   class="visually-hidden"
@@ -186,6 +245,46 @@
                 </span>
 
               </div>
+
+            </article>
+
+
+            <article
+              class="module daily-schedule-panel"
+              aria-labelledby="daily-schedule-title"
+            >
+
+              <header class="daily-schedule-heading">
+
+                <h2 id="daily-schedule-title">
+                  TODAY'S DUTY
+                </h2>
+
+                <span id="daily-schedule-date">
+                  TODAY
+                </span>
+
+              </header>
+
+
+              <p class="daily-schedule-context">
+
+                <span class="daily-schedule-now">
+                  NOW
+                </span>
+
+                <strong id="daily-schedule-context">
+                  UPDATING TODAY'S SCHEDULE
+                </strong>
+
+              </p>
+
+
+              <ol
+                class="daily-schedule-list"
+                id="daily-schedule-list"
+                aria-live="polite"
+              ></ol>
 
             </article>
 
@@ -384,20 +483,16 @@
                     ></rect>
 
 
-                    <g
-                      class="map-land-layer"
-                      id="map-land-layer"
-                    ></g>
-
-                    <path
-                      class="map-country-borders"
-                      id="map-country-borders"
-                    ></path>
-
-                    <path
-                      class="map-state-borders"
-                      id="map-state-borders"
-                    ></path>
+                    <image
+                      class="map-vector-geography"
+                      href="./assets/maps/contiguous-us-vintage.svg"
+                      x="0"
+                      y="0"
+                      width="1200"
+                      height="650"
+                      preserveAspectRatio="none"
+                      aria-hidden="true"
+                    ></image>
 
 
                     <g
@@ -435,15 +530,34 @@
                       id="map-origin-marker"
                     >
 
-                      <circle
-                        class="airport-beacon-ring"
-                        r="10"
-                      ></circle>
+                      <g
+                        class="airport-symbol"
+                        aria-hidden="true"
+                      >
 
-                      <circle
-                        class="airport-beacon-core"
-                        r="4.5"
-                      ></circle>
+                        <circle
+                          class="airport-symbol-disc"
+                          r="15"
+                        ></circle>
+
+                        <path
+                          class="airport-symbol-runway"
+                          d="M -2.4 -11 L 2.4 -11 L 2.4 11 L -2.4 11 Z"
+                          transform="rotate(42)"
+                        ></path>
+
+                        <path
+                          class="airport-symbol-runway airport-symbol-runway-secondary"
+                          d="M -1.9 -8 L 1.9 -8 L 1.9 8 L -1.9 8 Z"
+                          transform="rotate(-48)"
+                        ></path>
+
+                        <circle
+                          class="airport-symbol-center"
+                          r="2.2"
+                        ></circle>
+
+                      </g>
 
                       <line
                         class="airport-leader"
@@ -494,15 +608,34 @@
                       id="map-destination-marker"
                     >
 
-                      <circle
-                        class="airport-beacon-ring"
-                        r="10"
-                      ></circle>
+                      <g
+                        class="airport-symbol"
+                        aria-hidden="true"
+                      >
 
-                      <circle
-                        class="airport-beacon-core"
-                        r="4.5"
-                      ></circle>
+                        <circle
+                          class="airport-symbol-disc"
+                          r="15"
+                        ></circle>
+
+                        <path
+                          class="airport-symbol-runway"
+                          d="M -2.4 -11 L 2.4 -11 L 2.4 11 L -2.4 11 Z"
+                          transform="rotate(42)"
+                        ></path>
+
+                        <path
+                          class="airport-symbol-runway airport-symbol-runway-secondary"
+                          d="M -1.9 -8 L 1.9 -8 L 1.9 8 L -1.9 8 Z"
+                          transform="rotate(-48)"
+                        ></path>
+
+                        <circle
+                          class="airport-symbol-center"
+                          r="2.2"
+                        ></circle>
+
+                      </g>
 
                       <line
                         class="airport-leader"
@@ -553,24 +686,65 @@
                       id="map-aircraft-marker"
                       filter="url(#route-map-aircraft-shadow)"
                     >
+                      <circle
+                        class="map-aircraft-pulse"
+                        r="27"
+                      ></circle>
+
                       <path
+                        class="map-aircraft-body"
                         d="
-                          M -25 -4
-                          L -8 -5
-                          L -1 -22
-                          L 5 -22
-                          L 2 -5
-                          L 25 -3
-                          L 29 0
-                          L 25 3
-                          L 2 5
-                          L 5 22
-                          L -1 22
-                          L -8 5
-                          L -25 4
-                          L -30 0
+                          M 34 0
+                          C 30 -3 24 -4 17 -4
+                          L 6 -5
+                          L -4 -24
+                          L -9 -24
+                          L -7 -5
+                          L -19 -4
+                          L -26 -12
+                          L -30 -12
+                          L -27 -3
+                          L -33 -2
+                          L -36 0
+                          L -33 2
+                          L -27 3
+                          L -30 12
+                          L -26 12
+                          L -19 4
+                          L -7 5
+                          L -9 24
+                          L -4 24
+                          L 6 5
+                          L 17 4
+                          C 24 4 30 3 34 0
                           Z
                         "
+                      ></path>
+
+                      <path
+                        class="map-aircraft-highlight"
+                        d="M -26 0 L 27 0"
+                      ></path>
+
+                      <ellipse
+                        class="map-aircraft-engine"
+                        cx="2"
+                        cy="-8"
+                        rx="6"
+                        ry="2.4"
+                      ></ellipse>
+
+                      <ellipse
+                        class="map-aircraft-engine"
+                        cx="2"
+                        cy="8"
+                        rx="6"
+                        ry="2.4"
+                      ></ellipse>
+
+                      <path
+                        class="map-aircraft-cockpit"
+                        d="M 24 -2.2 L 30 0 L 24 2.2 Z"
                       ></path>
                     </g>
 
@@ -608,10 +782,11 @@
                   <!-- Fixed compass rose -->
 
                   <g
-  class="map-compass-rose"
-  transform="translate(965 92)"
-  aria-hidden="true"
->
+                    class="map-compass-rose"
+                    id="map-compass-rose"
+                    transform="translate(1105 78)"
+                    aria-hidden="true"
+                  >
 
                     <circle r="47"></circle>
                     <circle r="35"></circle>
@@ -826,6 +1001,19 @@
                   draggable="false"
                 >
 
+                <svg
+                  class="altimeter-layer altimeter-ten-thousands-needle-layer"
+                  id="altitude-ten-thousands-needle"
+                  viewBox="0 0 1024 1024"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path
+                    class="altimeter-ten-thousands-pointer"
+                    d="M 512 512 L 498 468 L 512 382 L 526 468 Z"
+                  ></path>
+                </svg>
+
                 <img
                   class="altimeter-layer altimeter-thousands-needle-layer"
                   id="altitude-thousands-needle"
@@ -883,15 +1071,21 @@
        Existing application scripts
        ===================================================== -->
 
+  <script src="./data/airport-catalog.js"></script>
   <script src="./config/settings.js"></script>
+  <script src="./config/posters.js"></script>
   <script src="./models/states.js"></script>
   <script src="./models/schedule-state.js"></script>
   <script src="./models/live-flight-state.js"></script>
   <script src="./App/state-engine.js"></script>
+  <script src="./App/visual-state-controller.js"></script>
   <script src="./services/mock-flight-service.js"></script>
   <script src="./services/calendar-api-service.js"></script>
   <script src="./services/live-flight-api-service.js"></script>
   <script src="./services/calendar-state-controller.js"></script>
+  <script src="./App/instrument-math.js"></script>
+  <script src="./App/split-flap-audio.js"></script>
+  <script src="./App/split-flap-state.js"></script>
   <script src="./App/main.js"></script>
 
   <script

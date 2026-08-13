@@ -14,6 +14,11 @@ const startupScreen =
 const dashboard =
   document.getElementById("dashboard");
 
+const betaAudioButton =
+  document.getElementById(
+    "beta-audio-button"
+  );
+
 const statusMessage =
   document.querySelector(".status-message");
 
@@ -29,8 +34,15 @@ const dashboardAppName =
 const flightBoardFlight =
   document.getElementById("flight-board-flight");
 
-const flightBoardText =
-  document.getElementById("flight-board-text");
+const flightStripModule =
+  document.querySelector(
+    ".flight-strip-module"
+  );
+
+const flightBoard =
+  document.querySelector(
+    ".flight-board"
+  );
 
 const flightNumber =
   document.getElementById("flight-number");
@@ -49,6 +61,31 @@ const destinationCity =
 
 const destinationAirport =
   document.getElementById("destination-airport");
+
+const destinationPoster =
+  document.getElementById(
+    "destination-poster"
+  );
+
+const destinationPosterFallback =
+  document.getElementById(
+    "destination-poster-fallback"
+  );
+
+const posterFallbackCity =
+  document.getElementById(
+    "poster-fallback-city"
+  );
+
+const posterFallbackRegion =
+  document.getElementById(
+    "poster-fallback-region"
+  );
+
+const posterFallbackAirport =
+  document.getElementById(
+    "poster-fallback-airport"
+  );
 
 const mapOrigin =
   document.getElementById("map-origin");
@@ -89,6 +126,11 @@ const headingCard =
 const altitudeNeedle =
   document.getElementById("altitude-needle");
 
+const altitudeTenThousandsNeedle =
+  document.getElementById(
+    "altitude-ten-thousands-needle"
+  );
+
 const altitudeThousandsNeedle =
   document.getElementById(
     "altitude-thousands-needle"
@@ -99,6 +141,21 @@ const mapPanel =
 
 const destinationPanel =
   document.querySelector(".destination-panel");
+
+const dailyScheduleDate =
+  document.getElementById(
+    "daily-schedule-date"
+  );
+
+const dailyScheduleContext =
+  document.getElementById(
+    "daily-schedule-context"
+  );
+
+const dailyScheduleList =
+  document.getElementById(
+    "daily-schedule-list"
+  );
 
 const instrumentPanel =
   document.querySelector(".instrument-panel");
@@ -119,6 +176,37 @@ const STATUS_FLAP_COUNT = 8;
 
 const FLAP_ANIMATION_TIMEOUT = 500;
 
+let flightBoardBalanceFrame = null;
+
+const splitFlapAudioSettings =
+  dadRadarSettings.audio
+    ?.splitFlap ?? {};
+
+const splitFlapAudioController =
+  splitFlapAudioSettings.enabled !==
+    false &&
+  globalThis.dadRadarSplitFlapAudio
+    ? globalThis
+        .dadRadarSplitFlapAudio
+        .createSplitFlapAudioController({
+          source:
+            splitFlapAudioSettings
+              .source,
+          cueSeconds:
+            splitFlapAudioSettings
+              .cueSeconds,
+          fadeOutMs:
+            splitFlapAudioSettings
+              .fadeOutMs,
+          volume:
+            splitFlapAudioSettings
+              .volume
+        })
+    : null;
+
+const activeSplitFlapCells =
+  new Set();
+
 
 /* ---------------------------------------------------------
    Split-flap display helpers
@@ -128,6 +216,100 @@ function displayFlapCharacter(character) {
   return character === " "
     ? "\u00A0"
     : character;
+}
+
+
+function balanceFlightBoard() {
+  flightBoardBalanceFrame = null;
+
+  if (
+    !flightStripModule ||
+    !flightBoard ||
+    !flightBoardFlight ||
+    flightBoardFlight.hidden
+  ) {
+    return;
+  }
+
+  flightStripModule.style.setProperty(
+    "--flap-balance-offset",
+    "0px"
+  );
+
+  const flapCharacters =
+    flightBoardFlight.querySelectorAll(
+      ".flap-character"
+    );
+
+  if (!flapCharacters.length) {
+    return;
+  }
+
+  const boardRectangle =
+    flightBoard.getBoundingClientRect();
+
+  const rowRectangle =
+    flightBoardFlight
+      .getBoundingClientRect();
+
+  const firstRectangle =
+    flapCharacters[0]
+      .getBoundingClientRect();
+
+  const lastRectangle =
+    flapCharacters[
+      flapCharacters.length - 1
+    ].getBoundingClientRect();
+
+  if (
+    boardRectangle.width <= 0 ||
+    rowRectangle.width <= 0 ||
+    firstRectangle.width <= 0 ||
+    lastRectangle.width <= 0
+  ) {
+    return;
+  }
+
+  const leftGap =
+    firstRectangle.left -
+    boardRectangle.left;
+
+  const rightGap =
+    boardRectangle.right -
+    lastRectangle.right;
+
+  const renderedScale =
+    flightBoardFlight.offsetWidth > 0
+      ? rowRectangle.width /
+        flightBoardFlight.offsetWidth
+      : 1;
+
+  const balanceOffset =
+    (rightGap - leftGap) /
+    (2 * renderedScale);
+
+  if (!Number.isFinite(balanceOffset)) {
+    return;
+  }
+
+  flightStripModule.style.setProperty(
+    "--flap-balance-offset",
+    `${balanceOffset.toFixed(2)}px`
+  );
+}
+
+
+function scheduleFlightBoardBalance() {
+  if (flightBoardBalanceFrame !== null) {
+    window.cancelAnimationFrame(
+      flightBoardBalanceFrame
+    );
+  }
+
+  flightBoardBalanceFrame =
+    window.requestAnimationFrame(
+      balanceFlightBoard
+    );
 }
 
 
@@ -226,6 +408,31 @@ function wait(milliseconds) {
       milliseconds
     );
   });
+}
+
+
+function beginSplitFlapAudio(cell) {
+  const shouldStartAudio =
+    activeSplitFlapCells.size === 0;
+
+  activeSplitFlapCells.add(cell);
+
+  if (shouldStartAudio) {
+    splitFlapAudioController
+      ?.start();
+  }
+}
+
+
+function finishSplitFlapAudio(cell) {
+  activeSplitFlapCells.delete(cell);
+
+  if (
+    activeSplitFlapCells.size === 0
+  ) {
+    splitFlapAudioController
+      ?.stop();
+  }
 }
 
 
@@ -428,11 +635,20 @@ function queueFlapAnimation(
   cell._targetValue =
     nextCharacter;
 
+  if (
+    !cell._animationRunning &&
+    (cell.dataset.value ?? " ") ===
+      nextCharacter
+  ) {
+    return;
+  }
+
   if (cell._animationRunning) {
     return;
   }
 
   cell._animationRunning = true;
+  beginSplitFlapAudio(cell);
 
   async function runAnimationQueue() {
     if (delay > 0) {
@@ -483,6 +699,8 @@ function queueFlapAnimation(
         cell._targetValue,
         0
       );
+    } else {
+      finishSplitFlapAudio(cell);
     }
   }
 
@@ -562,6 +780,8 @@ function renderFlapText(
           FLAP_STAGGER_DELAY
       );
     });
+
+  scheduleFlightBoardBalance();
 }
 
 
@@ -569,62 +789,123 @@ function renderFlapText(
    Flight-board formatting
    --------------------------------------------------------- */
 
-function formatFlightNumber(
-  rawFlightNumber
+/* ---------------------------------------------------------
+   Destination poster selection
+   --------------------------------------------------------- */
+
+let displayedPosterAirport = null;
+
+function posterFallbackLocation(
+  flight,
+  airportCode
 ) {
-  const flightText =
-    String(rawFlightNumber ?? "")
-      .toUpperCase()
-      .trim();
+  const fullLocation = String(
+    flight?.destinationLocation ??
+    flight?.destinationCity ??
+    airportCode ??
+    "DESTINATION"
+  ).trim();
 
-  const numberMatch =
-    flightText.match(/(\d{1,4})$/);
+  const parts = fullLocation
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
 
-  if (numberMatch) {
-    return numberMatch[1]
-      .padStart(4, "0");
-  }
-
-  return flightText
-    .replace(/\s+/g, "")
-    .slice(-4)
-    .padStart(4, " ");
+  return {
+    city:
+      parts[0] ?? airportCode ??
+      "DESTINATION",
+    region:
+      parts.slice(1).join(", ") ||
+      "POSTER IN THE WORKS"
+  };
 }
 
+function updateDestinationPoster(flight) {
+  const airportCode = String(
+    flight?.destination ?? ""
+  )
+    .trim()
+    .toUpperCase();
 
-function formatBoardStatus(status) {
-  const statusLabels = {
-    HOME: "HOME",
-    "COMMUTING TO BASE": "TO BASE",
-    "PRE-FLIGHT": "PRE FLT",
-    "PRE FLIGHT": "PRE FLT",
-    BOARDING: "BOARDING",
-    "TAXI OUT": "TAXI OUT",
-    "EN ROUTE": "EN ROUTE",
-    APPROACH: "APPROACH",
-    DIVERTED: "DIVERTED",
-    LANDED: "LANDED",
-    CANCELLED: "CANCELED",
-    ARRIVED: "ARRIVED",
-    LAYOVER: "LAYOVER",
-    "COMMUTING HOME": "TO HOME",
-    OFFLINE: "OFFLINE"
-  };
+  const posterIdentity =
+    airportCode ||
+    [
+      flight?.destinationCity,
+      flight?.destinationLocation
+    ]
+      .filter(Boolean)
+      .join("|") ||
+    null;
 
-  const normalizedStatus =
-    String(status ?? "OFFLINE")
-      .toUpperCase()
-      .replace(/_/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
+  if (
+    posterIdentity &&
+    posterIdentity ===
+      displayedPosterAirport
+  ) {
+    return;
+  }
 
-  const boardLabel =
-    statusLabels[normalizedStatus] ??
-    normalizedStatus;
+  const poster =
+    globalThis.dadRadarPosters
+      ?.getPoster?.(airportCode) ?? null;
 
-  return boardLabel
-    .slice(0, STATUS_FLAP_COUNT)
-    .padEnd(STATUS_FLAP_COUNT, " ");
+  displayedPosterAirport =
+    posterIdentity;
+
+  if (poster && destinationPoster) {
+    destinationPoster.src =
+      poster.source;
+    destinationPoster.alt =
+      `Vintage ${poster.location} travel poster`;
+    destinationPoster.hidden = false;
+
+    if (destinationPosterFallback) {
+      destinationPosterFallback.hidden =
+        true;
+    }
+
+    destinationPanel?.style.setProperty(
+      "--destination-poster-image",
+      `url("${poster.source}")`
+    );
+
+    return;
+  }
+
+  const fallback =
+    posterFallbackLocation(
+      flight,
+      airportCode
+    );
+
+  if (destinationPoster) {
+    destinationPoster.hidden = true;
+  }
+
+  if (destinationPosterFallback) {
+    destinationPosterFallback.hidden =
+      false;
+  }
+
+  if (posterFallbackCity) {
+    posterFallbackCity.textContent =
+      fallback.city;
+  }
+
+  if (posterFallbackRegion) {
+    posterFallbackRegion.textContent =
+      fallback.region;
+  }
+
+  if (posterFallbackAirport) {
+    posterFallbackAirport.textContent =
+      airportCode || "---";
+  }
+
+  destinationPanel?.style.removeProperty(
+    "--destination-poster-image"
+  );
 }
 
 
@@ -761,6 +1042,13 @@ function updateInstrumentNeedles(
         "rotate(0deg)";
     }
 
+    if (altitudeTenThousandsNeedle) {
+      altitudeTenThousandsNeedle
+        .style
+        .transform =
+        "rotate(0deg)";
+    }
+
     if (altitudeThousandsNeedle) {
       altitudeThousandsNeedle
         .style
@@ -799,19 +1087,18 @@ function updateInstrumentNeedles(
     Long hand:
     one revolution every 1,000 feet.
   */
-  const altitudeHundredsAngle =
-    (
-      altitude % 1000
-    ) / 1000 * 360;
-
-  /*
-    Short hand:
-    one revolution every 10,000 feet.
-  */
-  const altitudeThousandsAngle =
-    (
-      altitude % 10000
-    ) / 10000 * 360;
+  const {
+    hundredsAngle:
+      altitudeHundredsAngle,
+    thousandsAngle:
+      altitudeThousandsAngle,
+    tenThousandsAngle:
+      altitudeTenThousandsAngle
+  } = globalThis
+    .dadRadarInstrumentMath
+    .altimeterNeedleAngles(
+      altitude
+    );
 
   if (airspeedNeedle) {
     airspeedNeedle.style.transform =
@@ -821,6 +1108,13 @@ function updateInstrumentNeedles(
   if (altitudeNeedle) {
     altitudeNeedle.style.transform =
       `rotate(${altitudeHundredsAngle}deg)`;
+  }
+
+  if (altitudeTenThousandsNeedle) {
+    altitudeTenThousandsNeedle
+      .style
+      .transform =
+      `rotate(${altitudeTenThousandsAngle}deg)`;
   }
 
   if (altitudeThousandsNeedle) {
@@ -840,13 +1134,313 @@ function updateInstrumentNeedles(
    Main dashboard rendering
    --------------------------------------------------------- */
 
+function updateDashboardTelemetry(state) {
+  const flight =
+    state?.flight ?? null;
+
+  const hasAirspeed =
+    flight?.airspeed !== null &&
+    flight?.airspeed !== undefined &&
+    Number.isFinite(
+      Number(flight.airspeed)
+    );
+
+  const hasGroundSpeed =
+    flight?.groundSpeed !== null &&
+    flight?.groundSpeed !== undefined &&
+    Number.isFinite(
+      Number(flight.groundSpeed)
+    );
+
+  const displayedSpeed =
+    hasAirspeed
+      ? Number(flight.airspeed)
+      : hasGroundSpeed
+        ? Number(flight.groundSpeed)
+        : null;
+
+  const hasHeading =
+    flight?.heading !== null &&
+    flight?.heading !== undefined &&
+    Number.isFinite(
+      Number(flight.heading)
+    );
+
+  const hasAltitude =
+    flight?.altitude !== null &&
+    flight?.altitude !== undefined &&
+    Number.isFinite(
+      Number(flight.altitude)
+    );
+
+  if (airspeedValue) {
+    airspeedValue.textContent =
+      displayedSpeed !== null
+        ? String(
+            Math.round(displayedSpeed)
+          )
+        : "---";
+  }
+
+  if (speedLabel) {
+    speedLabel.textContent =
+      hasAirspeed
+        ? "AIRSPEED"
+        : "GROUND SPEED";
+  }
+
+  if (headingValue) {
+    headingValue.textContent =
+      hasHeading
+        ? String(
+            Math.round(
+              Number(flight.heading)
+            ) % 360
+          ).padStart(3, "0")
+        : "---";
+  }
+
+  if (altitudeValue) {
+    altitudeValue.textContent =
+      hasAltitude
+        ? Math.round(
+            Number(flight.altitude)
+          ).toLocaleString("en-US")
+        : "-----";
+  }
+
+  updateInstrumentNeedles(
+    flight &&
+    (
+      displayedSpeed !== null ||
+      hasHeading ||
+      hasAltitude
+    )
+      ? flight
+      : null,
+    displayedSpeed
+  );
+}
+
+function renderDailySchedule(
+  dailySchedule
+) {
+  if (
+    !dailyScheduleDate ||
+    !dailyScheduleContext ||
+    !dailyScheduleList
+  ) {
+    return;
+  }
+
+  dailyScheduleDate.textContent =
+    dailySchedule?.dateLabel ??
+    "TODAY";
+
+  dailyScheduleDate.title =
+    dailySchedule?.timeZoneLabel ??
+    dadRadarSettings
+      .displayTimeZoneLabel;
+
+  dailyScheduleContext.textContent =
+    dailySchedule?.context ??
+    "UPDATING TODAY'S SCHEDULE";
+
+  dailyScheduleList.replaceChildren();
+
+  const entries =
+    Array.isArray(
+      dailySchedule?.entries
+    )
+      ? dailySchedule.entries
+      : [];
+
+  if (entries.length === 0) {
+    const emptyEntry =
+      document.createElement("li");
+
+    emptyEntry.className =
+      "daily-schedule-empty";
+
+    emptyEntry.textContent =
+      dailySchedule
+        ? "NO DUTY ITEMS TODAY"
+        : "AWAITING CALENDAR";
+
+    dailyScheduleList.appendChild(
+      emptyEntry
+    );
+
+    return;
+  }
+
+  entries.forEach((entry) => {
+    const listItem =
+      document.createElement("li");
+
+    const status =
+      [
+        "completed",
+        "current",
+        "upcoming"
+      ].includes(entry.status)
+        ? entry.status
+        : "upcoming";
+
+    listItem.className =
+      `daily-schedule-entry is-${status}`;
+
+    if (status === "current") {
+      listItem.setAttribute(
+        "aria-current",
+        "true"
+      );
+    }
+
+    const time =
+      document.createElement("time");
+
+    time.className =
+      "daily-schedule-time";
+
+    time.textContent =
+      entry.time ?? "--:--";
+
+    const label =
+      document.createElement("span");
+
+    label.className =
+      "daily-schedule-label";
+
+    label.textContent =
+      entry.label ??
+      "SCHEDULED ACTIVITY";
+
+    const tag =
+      document.createElement("span");
+
+    tag.className =
+      "daily-schedule-tag";
+
+    tag.textContent =
+      entry.tag ?? "";
+
+    listItem.append(
+      time,
+      label,
+      tag
+    );
+
+    dailyScheduleList.appendChild(
+      listItem
+    );
+  });
+}
+
 function updateDashboard(state) {
   if (!state) {
     return;
   }
 
+  renderDailySchedule(
+    state.dailySchedule
+  );
+
   const flight =
     state.flight ?? null;
+
+  const splitFlapFields =
+    globalThis.dadRadarSplitFlapState
+      ?.fieldsForState?.(state);
+
+  if (!splitFlapFields) {
+    throw new Error(
+      "Dad Radar split-flap state formatter is unavailable."
+    );
+  }
+
+  if (flightBoardFlight) {
+    flightBoardFlight.hidden = false;
+  }
+
+  renderFlapText(
+    flightNumber,
+    splitFlapFields.flightNumber,
+    4
+  );
+
+  renderFlapText(
+    flightOrigin,
+    splitFlapFields.origin,
+    3
+  );
+
+  renderFlapText(
+    flightDestination,
+    splitFlapFields.destination,
+    3
+  );
+
+  renderFlapText(
+    statusValue,
+    splitFlapFields.status,
+    STATUS_FLAP_COUNT
+  );
+
+  const groundAirport = String(
+    state.locationAirport ?? ""
+  )
+    .trim()
+    .toUpperCase();
+
+  const posterSubject =
+    flight ??
+    (
+      groundAirport
+        ? {
+            destination:
+              groundAirport,
+            destinationCity:
+              globalThis
+                .dadRadarAirports
+                ?.lookupAirport?.(
+                  groundAirport
+                )?.city ??
+              groundAirport,
+            destinationLocation:
+              globalThis
+                .dadRadarAirports
+                ?.formatLocation?.(
+                  groundAirport
+                ) ??
+              groundAirport
+          }
+        : null
+    );
+
+  if (posterSubject) {
+    updateDestinationPoster(
+      posterSubject
+    );
+  } else if (
+    [
+      "LOCATION UNKNOWN",
+      "OFFLINE"
+    ].includes(
+      String(state.status ?? "")
+        .toUpperCase()
+    )
+  ) {
+    updateDestinationPoster({
+      destination: null,
+      destinationCity:
+        "DESTINATION UNKNOWN",
+      destinationLocation:
+        state.status === "OFFLINE"
+          ? "Awaiting schedule connection"
+          : "Location to be confirmed"
+    });
+  }
 
   const hasAirspeed =
     flight?.airspeed !== null &&
@@ -887,44 +1481,6 @@ function updateDashboard(state) {
     );
 
   if (flight) {
-    if (flightBoardFlight) {
-      flightBoardFlight.hidden =
-        false;
-    }
-
-    if (flightBoardText) {
-      flightBoardText.hidden =
-        true;
-    }
-
-    renderFlapText(
-      flightNumber,
-      formatFlightNumber(
-        flight.number
-      ),
-      4
-    );
-
-    renderFlapText(
-      flightOrigin,
-      flight.origin,
-      3
-    );
-
-    renderFlapText(
-      flightDestination,
-      flight.destination,
-      3
-    );
-
-    renderFlapText(
-      statusValue,
-      formatBoardStatus(
-        state.status
-      ),
-      STATUS_FLAP_COUNT
-    );
-
     if (destinationCity) {
       destinationCity.textContent =
         flight.destinationCity ??
@@ -1041,20 +1597,6 @@ function updateDashboard(state) {
       displayedSpeed
     );
   } else {
-    if (flightBoardFlight) {
-      flightBoardFlight.hidden =
-        true;
-    }
-
-    if (flightBoardText) {
-      flightBoardText.hidden =
-        false;
-
-      flightBoardText.textContent =
-        state.message ??
-        "NO ACTIVE FLIGHT";
-    }
-
     if (mapPanel) {
       mapPanel.hidden =
         true;
@@ -1137,8 +1679,8 @@ function updateClock() {
 const modeShortcuts = {
   "1": "HOME",
   "2": "COMMUTING_TO_BASE",
-  "3": "PRE_FLIGHT",
-  "4": "BOARDING",
+  "3": "BOARDING",
+  "4": "DELAYED",
   "5": "TAXI_OUT",
   "6": "EN_ROUTE",
   "7": "APPROACH",
@@ -1203,7 +1745,10 @@ function startDashboardSequence() {
   }
 
   updateDashboard(
-    dadRadarState
+    typeof dadRadarVisualState !==
+      "undefined"
+      ? dadRadarVisualState
+      : dadRadarState
   );
 
   updateClock();
@@ -1232,6 +1777,8 @@ function startDashboardSequence() {
       dashboard.hidden =
         false;
     }
+
+    scheduleFlightBoardBalance();
   }, dadRadarSettings
     .startup
     .dashboardDelayMs);
@@ -1262,17 +1809,66 @@ function startDashboardSequence() {
    --------------------------------------------------------- */
 
 window.addEventListener(
-  "dad-radar:state-change",
+  "dad-radar:visual-state-change",
   (event) => {
-    updateDashboard(
-      event.detail.state
-    );
+    if (event.detail.telemetryOnly) {
+      updateDashboardTelemetry(
+        event.detail.state
+      );
+    } else {
+      updateDashboard(
+        event.detail.state
+      );
+    }
   }
 );
 
 window.addEventListener(
   "keydown",
   handleKeyboardShortcut
+);
+
+window.addEventListener(
+  "pointerdown",
+  () => {
+    splitFlapAudioController
+      ?.unlock();
+  },
+  { once: true }
+);
+
+async function enableBetaAudio() {
+  const unlocked =
+    await splitFlapAudioController
+      ?.unlock();
+
+  if (unlocked && betaAudioButton) {
+    betaAudioButton.hidden = true;
+  }
+}
+
+if (betaAudioButton) {
+  const isTouchDisplay =
+    globalThis.matchMedia?.(
+      "(pointer: coarse)"
+    ).matches ||
+    Number(
+      navigator.maxTouchPoints ?? 0
+    ) > 0;
+
+  betaAudioButton.hidden =
+    !isTouchDisplay;
+
+  betaAudioButton.addEventListener(
+    "click",
+    enableBetaAudio,
+    { once: true }
+  );
+}
+
+window.addEventListener(
+  "resize",
+  scheduleFlightBoardBalance
 );
 
 

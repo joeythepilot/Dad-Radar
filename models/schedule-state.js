@@ -1,5 +1,13 @@
 (function initializeScheduleStateModel(root, factory) {
-  const api = factory();
+  const airportCatalog =
+    typeof module === "object" &&
+    module.exports
+      ? require(
+          "../data/airport-catalog"
+        )
+      : root?.dadRadarAirports;
+
+  const api = factory(airportCatalog);
 
   if (
     typeof module === "object" &&
@@ -16,38 +24,19 @@
   typeof globalThis !== "undefined"
     ? globalThis
     : this,
-  function createScheduleStateModel() {
+  function createScheduleStateModel(
+    airportCatalog
+  ) {
     "use strict";
 
     const DEFAULT_OPTIONS = Object.freeze({
       homeAirport: "AVL",
       baseAirport: "ORD",
       displayTimeZone: "America/New_York",
-      preFlightLeadMinutes: 45,
+      boardingLeadMinutes: 30,
+      delayGraceMinutes: 5,
+      legLockTimeoutMinutes: 8 * 60,
       arrivedHoldMinutes: 45
-    });
-
-    const AIRPORT_CITIES = Object.freeze({
-      ATL: "ATLANTA",
-      AVL: "ASHEVILLE",
-      AVP: "SCRANTON",
-      BDL: "HARTFORD",
-      BOS: "BOSTON",
-      CLT: "CHARLOTTE",
-      DCA: "WASHINGTON",
-      DFW: "DALLAS/FORT WORTH",
-      DTW: "DETROIT",
-      EWR: "NEWARK",
-      GSP: "GREENVILLE",
-      HPN: "WHITE PLAINS",
-      IAD: "WASHINGTON",
-      JFK: "NEW YORK",
-      LGA: "NEW YORK",
-      MIA: "MIAMI",
-      ORD: "CHICAGO",
-      PHL: "PHILADELPHIA",
-      ROC: "ROCHESTER",
-      TYS: "KNOXVILLE"
     });
 
     const ACTIVE_EVENT_PRIORITY = Object.freeze({
@@ -56,6 +45,29 @@
       "duty-free": 2,
       other: 1
     });
+
+    function airportInfo(code) {
+      return airportCatalog
+        ?.lookupAirport?.(code) ?? null;
+    }
+
+    function airportCity(
+      code,
+      fallback = null
+    ) {
+      return airportInfo(code)?.city ??
+        code ??
+        fallback;
+    }
+
+    function airportLocation(
+      code,
+      fallback = null
+    ) {
+      return airportCatalog
+        ?.formatLocation?.(code) ??
+        airportCity(code, fallback);
+    }
 
     function toDate(value) {
       if (value instanceof Date) {
@@ -187,6 +199,396 @@
         .join(" ");
     }
 
+    function displayDateKey(
+      value,
+      timeZone
+    ) {
+      const date = toDate(value);
+
+      if (!date) {
+        return null;
+      }
+
+      const parts =
+        new Intl.DateTimeFormat(
+          "en-US",
+          {
+            timeZone,
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+          }
+        ).formatToParts(date);
+
+      const partValue = (type) =>
+        parts.find(
+          (part) => part.type === type
+        )?.value ?? "";
+
+      return [
+        partValue("year"),
+        partValue("month"),
+        partValue("day")
+      ].join("-");
+    }
+
+    function formatDateLabel(
+      value,
+      timeZone
+    ) {
+      const date = toDate(value);
+
+      if (!date) {
+        return "TODAY";
+      }
+
+      return new Intl.DateTimeFormat(
+        "en-US",
+        {
+          timeZone,
+          weekday: "short",
+          month: "short",
+          day: "numeric"
+        }
+      )
+        .format(date)
+        .replace(/,/g, "")
+        .toUpperCase();
+    }
+
+    function eventIdentity(event) {
+      if (!event) {
+        return null;
+      }
+
+      return String(
+        event.id ??
+        [
+          event.kind,
+          event.origin ?? event.airport,
+          event.destination,
+          eventStart(event)?.toISOString()
+        ].join("|")
+      );
+    }
+
+    function dailyEventLabel(event) {
+      if (event.kind === "flight") {
+        return [
+          event.origin ?? "---",
+          event.destination ?? "---"
+        ].join(" → ");
+      }
+
+      if (event.kind === "layover") {
+        const airport =
+          event.airport ?? "DESTINATION";
+
+        return `LAYOVER · ${
+          airportCity(airport, airport)
+        }`;
+      }
+
+      if (event.kind === "duty-free") {
+        return "HOME · DAY OFF";
+      }
+
+      return String(
+        event.summary ?? "SCHEDULED ACTIVITY"
+      )
+        .trim()
+        .toUpperCase();
+    }
+
+    function dailyEventTag(event) {
+      if (event.kind === "flight") {
+        return event.isDeadhead
+          ? "DEADHEAD"
+          : event.isCommute
+          ? "COMMUTE"
+          : event.flightNumber
+            ? `FLT ${event.flightNumber}`
+            : "FLIGHT";
+      }
+
+      if (event.kind === "layover") {
+        return "GROUND";
+      }
+
+      if (event.kind === "duty-free") {
+        return "OFF DUTY";
+      }
+
+      return "";
+    }
+
+    function dailyContext(
+      resolved,
+      entries
+    ) {
+      const mode =
+        resolved?.mode ??
+        "LOCATION_UNKNOWN";
+
+      const destinationLabel =
+        resolved?.state?.flight
+          ?.destinationLocation ??
+        resolved?.state?.flight
+          ?.destinationCity ??
+        resolved?.state?.flight
+          ?.destination ??
+        null;
+
+      const destination =
+        destinationLabel
+          ? String(
+              destinationLabel
+            ).toUpperCase()
+          : null;
+
+      const resolvedAirport =
+        resolved?.state
+          ?.locationAirport ??
+        resolved?.event?.airport ??
+        resolved?.event?.destination ??
+        null;
+
+      const resolvedLocation =
+        String(
+          airportLocation(
+            resolvedAirport,
+            "DESTINATION"
+          )
+        ).toUpperCase();
+
+      const isDeadhead =
+        Boolean(
+          resolved?.event?.isDeadhead ??
+          resolved?.state?.flight
+            ?.isDeadhead
+        );
+
+      const delayMinutes = Math.max(
+        0,
+        Math.floor(
+          Number(
+            resolved?.state?.flight
+              ?.departureDelayMinutes ?? 0
+          )
+        )
+      );
+
+      if (mode === "DELAYED") {
+        if (isDeadhead) {
+          return delayMinutes > 0
+            ? `DADDY'S RIDE TO ${destination ?? "THE NEXT STOP"} IS ${delayMinutes} MIN LATE`
+            : `DADDY'S RIDE TO ${destination ?? "THE NEXT STOP"} IS DELAYED`;
+        }
+
+        return delayMinutes > 0
+          ? `DADDY'S FLIGHT TO ${destination ?? "THE NEXT STOP"} IS ${delayMinutes} MIN LATE`
+          : `DADDY'S FLIGHT TO ${destination ?? "THE NEXT STOP"} IS DELAYED`;
+      }
+
+      if (isDeadhead) {
+        const deadheadContextByMode = {
+          BOARDING:
+            destination
+              ? `DADDY IS BOARDING HIS RIDE TO ${destination}`
+              : "DADDY IS BOARDING HIS RIDE",
+          TAXI_OUT:
+            destination
+              ? `DADDY IS RIDING TO ${destination}`
+              : "DADDY IS RIDING ALONG",
+          EN_ROUTE:
+            destination
+              ? `DADDY IS RIDING TO ${destination}`
+              : "DADDY IS RIDING ALONG",
+          APPROACH:
+            destination
+              ? `DADDY'S RIDE IS ALMOST IN ${destination}`
+              : "DADDY'S RIDE IS ALMOST THERE",
+          ARRIVED:
+            destination
+              ? `DADDY'S RIDE HAS ARRIVED IN ${destination}`
+              : "DADDY'S RIDE HAS ARRIVED"
+        };
+
+        if (deadheadContextByMode[mode]) {
+          return deadheadContextByMode[mode];
+        }
+      }
+
+      const contextByMode = {
+        COMMUTING_TO_BASE:
+          destination
+            ? `DADDY IS COMMUTING TO ${destination}`
+            : "DADDY IS COMMUTING TO BASE",
+        COMMUTING_HOME:
+          "DADDY IS FLYING HOME",
+        BOARDING:
+          destination
+            ? `DADDY IS BOARDING FOR ${destination}`
+            : "DADDY IS BOARDING",
+        TAXI_OUT:
+          destination
+            ? `DADDY IS TAXIING FOR ${destination}`
+            : "DADDY IS TAXIING",
+        EN_ROUTE:
+          destination
+            ? `DADDY IS FLYING TO ${destination}`
+            : "DADDY IS FLYING",
+        APPROACH:
+          destination
+            ? `DADDY IS ALMOST IN ${destination}`
+            : "DADDY IS ALMOST THERE",
+        DIVERTED:
+          destination
+            ? `DADDY'S FLIGHT DIVERTED TO ${destination}`
+            : "DADDY'S FLIGHT HAS DIVERTED",
+        ARRIVED:
+          destination
+            ? `DADDY HAS ARRIVED IN ${destination}`
+            : "DADDY HAS ARRIVED",
+        LAYOVER:
+          `DADDY IS ON LAYOVER IN ${resolvedLocation}`,
+        LOCATION_UNKNOWN:
+          "DADDY'S LOCATION IS NOT CONFIRMED",
+        OFFLINE:
+          "UPDATING TODAY'S SCHEDULE"
+      };
+
+      if (contextByMode[mode]) {
+        return contextByMode[mode];
+      }
+
+      const nextFlight =
+        entries.find(
+          (entry) =>
+            entry.kind === "flight" &&
+            entry.status === "upcoming"
+        );
+
+      if (nextFlight) {
+        return `DADDY IS HOME · NEXT FLIGHT ${nextFlight.time}`;
+      }
+
+      return entries.length > 0
+        ? "DADDY IS HOME TODAY"
+        : "NO FLYING SCHEDULED TODAY";
+    }
+
+    function buildDailySchedule(
+      schedule,
+      resolved,
+      providedOptions = {}
+    ) {
+      const options = {
+        ...DEFAULT_OPTIONS,
+        ...providedOptions
+      };
+
+      const now =
+        toDate(providedOptions.now) ??
+        new Date();
+
+      const todayKey =
+        displayDateKey(
+          now,
+          options.displayTimeZone
+        );
+
+      const resolvedEventIdentity =
+        eventIdentity(resolved?.event);
+
+      const entries = sortEvents(
+        schedule?.events
+      )
+        .filter((event) => {
+          const startKey =
+            displayDateKey(
+              eventStart(event),
+              options.displayTimeZone
+            );
+
+          const inclusiveEnd =
+            new Date(
+              eventEnd(event).getTime() - 1
+            );
+
+          const endKey =
+            displayDateKey(
+              inclusiveEnd,
+              options.displayTimeZone
+            );
+
+          return (
+            startKey <= todayKey &&
+            todayKey <= endKey
+          );
+        })
+        .map((event) => {
+          const start = eventStart(event);
+          const end = eventEnd(event);
+          const isResolvedEvent =
+            resolvedEventIdentity &&
+            eventIdentity(event) ===
+              resolvedEventIdentity;
+
+          let status = "upcoming";
+
+          if (
+            isResolvedEvent ||
+            (
+              !resolvedEventIdentity &&
+              start <= now &&
+              now < end
+            )
+          ) {
+            status = "current";
+          } else if (end <= now) {
+            status = "completed";
+          }
+
+          const startsToday =
+            displayDateKey(
+              start,
+              options.displayTimeZone
+            ) === todayKey;
+
+          return {
+            id: eventIdentity(event),
+            kind: event.kind ?? "other",
+            time:
+              event.kind === "duty-free" ||
+              !startsToday
+                ? "ALL DAY"
+                : formatTime(
+                    start,
+                    options.displayTimeZone
+                  ),
+            label: dailyEventLabel(event),
+            tag: dailyEventTag(event),
+            status
+          };
+        });
+
+      return {
+        dateLabel: formatDateLabel(
+          now,
+          options.displayTimeZone
+        ),
+        timeZoneLabel:
+          options.displayTimeZoneLabel ??
+          options.displayTimeZone,
+        context: dailyContext(
+          resolved,
+          entries
+        ),
+        entries
+      };
+    }
+
     function createFlightState(
       event,
       mode,
@@ -194,7 +596,8 @@
       options
     ) {
       const progress =
-        mode === "PRE_FLIGHT"
+        mode === "BOARDING" ||
+        mode === "DELAYED"
           ? 0
           : mode === "ARRIVED"
             ? 100
@@ -208,7 +611,8 @@
           "COMMUTING TO BASE",
         COMMUTING_HOME:
           "COMMUTING HOME",
-        PRE_FLIGHT: "PRE-FLIGHT",
+        BOARDING: "BOARDING",
+        DELAYED: "DELAYED",
         EN_ROUTE: "EN ROUTE",
         APPROACH: "APPROACH",
         ARRIVED: "ARRIVED"
@@ -217,6 +621,12 @@
       const endTime =
         event?.times?.endEastern ??
         event?.times?.endUtc;
+
+      const originAirport =
+        airportInfo(event.origin);
+
+      const destinationAirport =
+        airportInfo(event.destination);
 
       return {
         mode,
@@ -233,14 +643,37 @@
               event.carrierCode ?? null,
             origin:
               event.origin ?? null,
+            originCity:
+              originAirport?.city ??
+              event.origin ??
+              "---",
+            originLocation:
+              airportLocation(
+                event.origin,
+                event.origin ?? "---"
+              ),
             destination:
               event.destination ?? null,
             destinationCity:
-              AIRPORT_CITIES[
-                event.destination
-              ] ??
+              destinationAirport?.city ??
               event.destination ??
               "---",
+            destinationLocation:
+              airportLocation(
+                event.destination,
+                event.destination ?? "---"
+              ),
+            isCommute:
+              Boolean(event.isCommute),
+            isDeadhead:
+              Boolean(event.isDeadhead),
+            travelRole:
+              event.travelRole ??
+              (event.isDeadhead
+                ? "deadhead"
+                : event.isCommute
+                  ? "commute"
+                  : "operating"),
             airspeed: null,
             heading: null,
             altitude: null,
@@ -254,7 +687,19 @@
             positionSource:
               "schedule-estimate",
             liveLookupCandidates:
-              event.liveLookupCandidates ?? []
+              event.liveLookupCandidates ?? [],
+            departureDelayMinutes:
+              mode === "DELAYED"
+                ? Math.max(
+                    0,
+                    Math.floor(
+                      (
+                        now -
+                        eventStart(event)
+                      ) / 60000
+                    )
+                  )
+                : null
           }
         },
         event
@@ -287,11 +732,14 @@
     function createMessageState(
       mode,
       message,
-      event = null
+      event = null,
+      locationAirport = null
     ) {
       const statusLabels = {
         HOME: "HOME",
         LAYOVER: "LAYOVER",
+        LOCATION_UNKNOWN:
+          "LOCATION UNKNOWN",
         OFFLINE: "OFFLINE"
       };
 
@@ -303,17 +751,139 @@
           message,
           source: "calendar",
           eventId: event?.id ?? null,
+          locationAirport:
+            locationAirport ??
+            event?.airport ??
+            null,
           flight: null
         },
         event
       };
     }
 
-    function selectActiveEvent(
+    function createGroundLocationState(
+      airport,
+      options,
+      event = null
+    ) {
+      const normalizedAirport =
+        String(airport ?? "")
+          .trim()
+          .toUpperCase();
+
+      if (!normalizedAirport) {
+        return createMessageState(
+          "LOCATION_UNKNOWN",
+          "DADDY'S LOCATION IS NOT CONFIRMED",
+          event
+        );
+      }
+
+      if (
+        normalizedAirport ===
+        options.homeAirport
+      ) {
+        return createMessageState(
+          "HOME",
+          "DADDY IS HOME",
+          event,
+          normalizedAirport
+        );
+      }
+
+      const location =
+        String(
+          airportLocation(
+            normalizedAirport,
+            normalizedAirport
+          )
+        ).toUpperCase();
+
+      return createMessageState(
+        "LAYOVER",
+        `DADDY IS ON THE GROUND IN ${location}`,
+        event,
+        normalizedAirport
+      );
+    }
+
+    function inferGroundAirport(
       events,
       now
     ) {
-      return events
+      const lastFlight = events
+        .filter(
+          (event) =>
+            event.kind === "flight" &&
+            eventEnd(event) <= now
+        )
+        .at(-1) ?? null;
+
+      if (lastFlight?.destination) {
+        return lastFlight.destination;
+      }
+
+      const nextFlight =
+        events.find(
+          (event) =>
+            event.kind === "flight" &&
+            eventStart(event) > now
+        ) ?? null;
+
+      return nextFlight?.origin ?? null;
+    }
+
+    function selectActiveEvent(
+      events,
+      now,
+      preferredEventId = null,
+      legLockTimeoutMinutes =
+        DEFAULT_OPTIONS
+          .legLockTimeoutMinutes
+    ) {
+      if (preferredEventId) {
+        const preferredEvent =
+          events.find(
+            (event) =>
+              eventIdentity(event) ===
+              String(preferredEventId)
+          );
+
+        const preferredStart =
+          preferredEvent
+            ? eventStart(preferredEvent)
+            : null;
+
+        const preferredEnd =
+          preferredEvent
+            ? eventEnd(preferredEvent)
+            : null;
+
+        const lockExpiresAt =
+          preferredEnd &&
+          Number.isFinite(
+            legLockTimeoutMinutes
+          )
+            ? new Date(
+                preferredEnd.getTime() +
+                legLockTimeoutMinutes *
+                  60000
+              )
+            : preferredEnd;
+
+        if (
+          preferredEvent?.kind ===
+            "flight" &&
+          preferredStart &&
+          preferredStart <= now &&
+          lockExpiresAt &&
+          now <= lockExpiresAt
+        ) {
+          return preferredEvent;
+        }
+      }
+
+      const activeEvents = events
         .filter((event) => {
           const start = eventStart(event);
           const end = eventEnd(event);
@@ -322,7 +892,9 @@
             start <= now &&
             now < end
           );
-        })
+        });
+
+      return activeEvents
         .sort((left, right) => {
           const priorityDifference =
             (
@@ -336,9 +908,24 @@
               ] ?? 0
             );
 
-          return priorityDifference ||
+          if (priorityDifference) {
+            return priorityDifference;
+          }
+
+          if (
+            left.kind === "flight" &&
+            right.kind === "flight"
+          ) {
+            return (
+              eventStart(left) -
+              eventStart(right)
+            );
+          }
+
+          return (
             eventStart(right) -
-              eventStart(left);
+            eventStart(left)
+          );
         })[0] ?? null;
     }
 
@@ -360,9 +947,29 @@
           );
         }
 
+        const minutesSinceDeparture =
+          (
+            now - eventStart(event)
+          ) / 60000;
+
+        if (
+          options.calendarFlightPhase ===
+          "EN_ROUTE"
+        ) {
+          return createFlightState(
+            event,
+            "EN_ROUTE",
+            now,
+            options
+          );
+        }
+
         return createFlightState(
           event,
-          "EN_ROUTE",
+          minutesSinceDeparture >
+            options.delayGraceMinutes
+            ? "DELAYED"
+            : "BOARDING",
           now,
           options
         );
@@ -372,17 +979,16 @@
         const airport =
           event.airport ?? "DESTINATION";
 
+        const location = String(
+          airportLocation(
+            airport,
+            airport
+          )
+        ).toUpperCase();
+
         return createMessageState(
           "LAYOVER",
-          `DAD IS ON LAYOVER IN ${airport}`,
-          event
-        );
-      }
-
-      if (event.kind === "duty-free") {
-        return createMessageState(
-          "HOME",
-          "DAD IS HOME",
+          `DADDY IS ON LAYOVER IN ${location}`,
           event
         );
       }
@@ -410,10 +1016,26 @@
       const activeEvent =
         selectActiveEvent(
           events,
-          now
+          now,
+          options.preferredEventId,
+          options.legLockTimeoutMinutes
         );
 
       if (activeEvent) {
+        if (
+          activeEvent.kind ===
+          "duty-free"
+        ) {
+          return createGroundLocationState(
+            inferGroundAirport(
+              events,
+              now
+            ),
+            options,
+            activeEvent
+          );
+        }
+
         const activeState =
           resolveActiveEvent(
             activeEvent,
@@ -442,11 +1064,11 @@
 
         if (
           minutesUntilDeparture <=
-          options.preFlightLeadMinutes
+          options.boardingLeadMinutes
         ) {
           return createFlightState(
             nextFlight,
-            "PRE_FLIGHT",
+            "BOARDING",
             now,
             options
           );
@@ -481,27 +1103,20 @@
           );
         }
 
-        if (
-          lastFlight.destination !==
-            options.homeAirport &&
-          nextFlight
-        ) {
-          return createMessageState(
-            "LAYOVER",
-            `DAD IS ON THE GROUND IN ${lastFlight.destination}`,
-            lastFlight
-          );
-        }
+        return createGroundLocationState(
+          lastFlight.destination,
+          options
+        );
       }
 
-      return createMessageState(
-        "HOME",
-        "DAD IS HOME"
+      return createGroundLocationState(
+        nextFlight?.origin ?? null,
+        options
       );
     }
 
     return {
-      AIRPORT_CITIES,
+      buildDailySchedule,
       calculateProgress,
       resolveScheduleState,
       sortEvents

@@ -3,6 +3,7 @@ import path from "node:path";
 import process from "node:process";
 import { authenticate } from "@google-cloud/local-auth";
 import { google } from "googleapis";
+import "dotenv/config";
 
 const SCOPES = [
   "https://www.googleapis.com/auth/calendar.readonly"
@@ -15,6 +16,7 @@ const TOKEN_PATH =
   path.join(process.cwd(), "token.json");
 
 const CALENDAR_ID =
+  process.env.GOOGLE_CALENDAR_ID ||
   "family04491195316374346619@group.calendar.google.com";
 
 async function loadSavedCredentials() {
