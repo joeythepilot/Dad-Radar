@@ -328,9 +328,9 @@ async function testLiveFailureRetainsCalendarState() {
 
   assert.equal(
     calendarResult.mode,
-    "EN_ROUTE"
+    "DELAYED"
   );
-  assert.equal(result.mode, "EN_ROUTE");
+  assert.equal(result.mode, "DELAYED");
   assert.equal(
     result.state.source,
     "calendar"
@@ -504,12 +504,135 @@ async function testPollingStopsAfterArrival() {
   );
 }
 
+async function testAirborneLegStaysLockedDuringCalendarOverlap() {
+  const { context } =
+    createBrowserContext();
+
+  const firstFlight =
+    activeFlightEvent();
+
+  firstFlight.id = "first-flight";
+  firstFlight.origin = "DFW";
+  firstFlight.destination = "AVL";
+  firstFlight.flightNumber = "1429";
+  firstFlight.liveLookupCandidates = [
+    "AAL1429",
+    "AA1429"
+  ];
+  firstFlight.times = {
+    startUtc:
+      new Date(
+        Date.now() - 70 * 60000
+      ).toISOString(),
+    endUtc:
+      new Date(
+        Date.now() + 50 * 60000
+      ).toISOString()
+  };
+
+  const nextFlight = {
+    ...activeFlightEvent(),
+    id: "next-flight",
+    flightNumber: "3407",
+    origin: "AVL",
+    destination: "ORD",
+    liveLookupCandidates: [
+      "ENY3407",
+      "MQ3407"
+    ],
+    times: {
+      startUtc:
+        new Date(
+          Date.now() - 10 * 60000
+        ).toISOString(),
+      endUtc:
+        new Date(
+          Date.now() + 110 * 60000
+        ).toISOString()
+    }
+  };
+
+  context.dadRadarLiveFlightApi = {
+    async getFlightSnapshot(event) {
+      return {
+        provider: "flightradar24",
+        providerFlightId:
+          "locked-airborne-leg",
+        retrievedAt:
+          new Date().toISOString(),
+        displayIdent:
+          event.id === "first-flight"
+            ? "AA1429"
+            : "MQ3407",
+        phase: "EN_ROUTE",
+        status: "En Route",
+        origin: event.origin,
+        destination:
+          event.destination,
+        progressPercent: 60,
+        position: {
+          latitude: 35.5,
+          longitude: -84,
+          altitudeFeet: 24000,
+          groundSpeedKnots: 420,
+          headingDegrees: 95,
+          recordedAt:
+            new Date().toISOString()
+        }
+      };
+    }
+  };
+
+  let includeNextFlight = false;
+  context.dadRadarCalendarApi = {
+    async getUpcomingEvents() {
+      return {
+        retrievedAt:
+          new Date().toISOString(),
+        events: includeNextFlight
+          ? [firstFlight, nextFlight]
+          : [firstFlight]
+      };
+    }
+  };
+
+  await context.refreshCalendarState();
+  const airborne =
+    await context.refreshLiveFlightState();
+
+  assert.equal(
+    airborne.event.id,
+    "first-flight"
+  );
+
+  firstFlight.times.endUtc =
+    new Date(
+      Date.now() - 20 * 60000
+    ).toISOString();
+
+  includeNextFlight = true;
+
+  const locked =
+    await context.refreshCalendarState();
+
+  assert.equal(
+    locked.event.id,
+    "first-flight"
+  );
+  assert.equal(
+    locked.state.flight.number,
+    "AA 1429"
+  );
+  assert.equal(locked.mode, "EN_ROUTE");
+}
+
 async function runTests() {
   await testCalendarPublishesState();
   await testLiveFlightRefinesCalendarState();
   await testLiveFailureRetainsCalendarState();
   await testApproachPersistsAcrossProviderRegression();
   await testPollingStopsAfterArrival();
+  await testAirborneLegStaysLockedDuringCalendarOverlap();
 
   console.log(
     "Calendar state controller tests passed."

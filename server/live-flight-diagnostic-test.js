@@ -180,7 +180,7 @@ async function testNextFlightCanBeCheckedEarly() {
   );
   assert.equal(
     report.display.mode,
-    "PRE_FLIGHT"
+    "BOARDING"
   );
   assert.equal(
     report.display.source,

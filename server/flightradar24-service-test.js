@@ -179,6 +179,22 @@ function testTelemetryDrivesSurfacePhases() {
   assert.equal(
     determinePhase(
       {
+        altitudeFeet: 650,
+        groundSpeedKnots: 0,
+        verticalSpeedFeetPerMinute: 0
+      },
+      {
+        progressPercent: 0,
+        distanceFromOrigin: 0.4,
+        distanceToDestination: 470
+      }
+    ),
+    "BOARDING"
+  );
+
+  assert.equal(
+    determinePhase(
+      {
         altitudeFeet: 3600,
         groundSpeedKnots: 32,
         verticalSpeedFeetPerMinute: 0

@@ -1,6 +1,6 @@
 # Data Provider Cost Analysis
 
-Last updated: August 4, 2026
+Last updated: August 13, 2026
 
 ## Decision
 
@@ -24,14 +24,14 @@ This keeps the family-facing behavior intact while removing the expensive Flight
 | Average airborne leg | 1.5 hours |
 | Legs | 60/month |
 | Live refresh | 1 minute |
-| Live acquisition begins | 15 minutes before scheduled departure |
+| Live acquisition begins | 30 minutes before scheduled departure |
 | Airborne refreshes | 5,400 |
 | Initial full records | 60 |
 | Continuing light records | 5,340 |
-| Maximum preflight no-match queries | 900–1,800 |
+| Maximum pre-departure no-match queries | 1,800–3,600 |
 | Provider polling after Arrived | None |
 
-The range for preflight no-match queries reflects one callsign search per minute, with a second commercial-flight-number search only when the callsign search returns no aircraft. A no-data FR24 query costs one credit.
+The range for pre-departure no-match queries reflects one callsign search per minute, with a second commercial-flight-number search only when the callsign search returns no aircraft. A no-data FR24 query costs one credit.
 
 ## Selected FR24 Strategy
 
@@ -43,18 +43,18 @@ Subsequent one-minute updates use the light live-position endpoint. Its position
 | --- | ---: | ---: | ---: |
 | Initial full acquisition | 60 | 8 | 480 |
 | Continuing light telemetry | 5,340 | 6 | 32,040 |
-| Preflight no-match searches | 900–1,800 | 1 | 900–1,800 |
-| Total |  |  | **33,420–34,320** |
+| Pre-departure no-match searches | 1,800–3,600 | 1 | 1,800–3,600 |
+| Total |  |  | **34,320–36,120** |
 
-The Explorer API plan is $9 per month and normally includes 30,000 credits. At the published $0.0003 price for additional credits, the estimated monthly bill is **$10.03–$10.30 before tax**.
+The Explorer API plan is $9 per month and normally includes 30,000 credits. At the published $0.0003 price for additional credits, the estimated monthly bill is **$10.30–$10.84 before tax**.
 
-For comparison, requesting a full record every airborne minute would use approximately 44,100–45,000 credits and cost about $13.23–$13.50. The adaptive full-then-light design saves roughly $3.20 per month and still preserves every telemetry field Dad Radar actually displays.
+For comparison, requesting a full record every airborne minute would use approximately 45,000–46,800 credits and cost about $13.50–$14.04. The adaptive full-then-light design saves roughly $3.20 per month and still preserves every telemetry field Dad Radar actually displays.
 
 ## What We Intentionally Give Up
 
 | Removed field or feature | Replacement behavior |
 | --- | --- |
-| Preflight gate, boarding, cancellation, and airline delay status | Calendar displays the planned Pre-flight state until FR24 sees the aircraft |
+| Pre-departure gate, boarding, cancellation, and airline delay status | Calendar displays Boarding at T-minus 30 and infers Delayed after scheduled departure plus five minutes until FR24 confirms the aircraft is airborne |
 | Filed flight-plan route | Direct planned arc plus observed breadcrumb track |
 | Provider boarding and taxi labels | Dad Radar infers Taxi Out, En Route, Approach, and Arrived from position, groundspeed, vertical speed, altitude, route progress, and airport proximity |
 | Continuously refreshed airline ETA | Calendar ETA remains the fallback; the initial FR24 full record may refine it |

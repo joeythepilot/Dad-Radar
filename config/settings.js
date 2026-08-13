@@ -19,14 +19,16 @@ const dadRadarSettings = {
     lookAheadDays: 14,
     refreshIntervalMs: 5 * 60 * 1000,
     stateCheckIntervalMs: 30 * 1000,
-    preFlightLeadMinutes: 45,
+    boardingLeadMinutes: 30,
+    delayGraceMinutes: 5,
+    legLockTimeoutMinutes: 8 * 60,
     arrivedHoldMinutes: 45
   },
 
   flightData: {
     enabled: true,
     provider: "flightradar24",
-    acquisitionLeadMinutes: 15,
+    acquisitionLeadMinutes: 30,
     refreshIntervalMs: 60 * 1000,
     staleAfterMs: 3 * 60 * 1000,
     visualInterpolationMs: 52 * 1000

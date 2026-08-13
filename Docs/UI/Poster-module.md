@@ -37,8 +37,13 @@ The approved Asheville composition is the visual baseline. It features Asheville
 Approved destination artwork:
 
 - `AVL`: Asheville baseline with Asheville City Hall centered.
+- `ORD`: Chicago Candidate 2.
 - `DFW`: Candidate 2, with a right-aligned destination title, Texas twilight sky, Dallas/Fort Worth landmark montage, and stockyard foreground.
 - `DCA`: Candidate 2, with a centered National Mall composition, pearlescent spring atmosphere, Potomac water, and cherry-blossom foreground. Candidate 1 was rejected because its canvas was narrower than the collection standard.
+- `ROC`: Rochester Candidate 1.
+- `MIA`, `CLT`, `PHX`, `XNA`, and `CMH`: pilot batch `pilot-hubs-01`, approved by Joey and his family.
+
+If the current destination or confirmed ground location is absent from the approved library, the display uses a designed vintage placeholder with the catalog city, state or province, and three-letter airport code. It must never substitute another city's poster.
 
 ## Batch production
 
@@ -55,7 +60,7 @@ The batch workflow is:
 
 The validator checks manifest completeness, unique visual treatments, output naming, candidate dimensions, and the 7 : 8 collection ratio. Human review remains required for architecture, typography rendered inside the bitmap, and overall art direction.
 
-Pilot batch `pilot-hubs-01` contains review candidates for `MIA`, `CLT`, `PHX`, `XNA`, and `CMH`. None is considered locked until accepted individually.
+Pilot batch `pilot-hubs-01` contains the approved `MIA`, `CLT`, `PHX`, `XNA`, and `CMH` compositions. Future batches should follow the Maxwell family schedule so missing destinations are filled in order of real use.
 
 ## Verification
 

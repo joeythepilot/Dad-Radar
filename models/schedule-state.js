@@ -33,7 +33,9 @@
       homeAirport: "AVL",
       baseAirport: "ORD",
       displayTimeZone: "America/New_York",
-      preFlightLeadMinutes: 45,
+      boardingLeadMinutes: 30,
+      delayGraceMinutes: 5,
+      legLockTimeoutMinutes: 8 * 60,
       arrivedHoldMinutes: 45
     });
 
@@ -300,7 +302,9 @@
 
     function dailyEventTag(event) {
       if (event.kind === "flight") {
-        return event.isCommute
+        return event.isDeadhead
+          ? "DEADHEAD"
+          : event.isCommute
           ? "COMMUTE"
           : event.flightNumber
             ? `FLT ${event.flightNumber}`
@@ -357,6 +361,64 @@
           )
         ).toUpperCase();
 
+      const isDeadhead =
+        Boolean(
+          resolved?.event?.isDeadhead ??
+          resolved?.state?.flight
+            ?.isDeadhead
+        );
+
+      const delayMinutes = Math.max(
+        0,
+        Math.floor(
+          Number(
+            resolved?.state?.flight
+              ?.departureDelayMinutes ?? 0
+          )
+        )
+      );
+
+      if (mode === "DELAYED") {
+        if (isDeadhead) {
+          return delayMinutes > 0
+            ? `DADDY'S RIDE TO ${destination ?? "THE NEXT STOP"} IS ${delayMinutes} MIN LATE`
+            : `DADDY'S RIDE TO ${destination ?? "THE NEXT STOP"} IS DELAYED`;
+        }
+
+        return delayMinutes > 0
+          ? `DADDY'S FLIGHT TO ${destination ?? "THE NEXT STOP"} IS ${delayMinutes} MIN LATE`
+          : `DADDY'S FLIGHT TO ${destination ?? "THE NEXT STOP"} IS DELAYED`;
+      }
+
+      if (isDeadhead) {
+        const deadheadContextByMode = {
+          BOARDING:
+            destination
+              ? `DADDY IS BOARDING HIS RIDE TO ${destination}`
+              : "DADDY IS BOARDING HIS RIDE",
+          TAXI_OUT:
+            destination
+              ? `DADDY IS RIDING TO ${destination}`
+              : "DADDY IS RIDING ALONG",
+          EN_ROUTE:
+            destination
+              ? `DADDY IS RIDING TO ${destination}`
+              : "DADDY IS RIDING ALONG",
+          APPROACH:
+            destination
+              ? `DADDY'S RIDE IS ALMOST IN ${destination}`
+              : "DADDY'S RIDE IS ALMOST THERE",
+          ARRIVED:
+            destination
+              ? `DADDY'S RIDE HAS ARRIVED IN ${destination}`
+              : "DADDY'S RIDE HAS ARRIVED"
+        };
+
+        if (deadheadContextByMode[mode]) {
+          return deadheadContextByMode[mode];
+        }
+      }
+
       const contextByMode = {
         COMMUTING_TO_BASE:
           destination
@@ -364,10 +426,6 @@
             : "DADDY IS COMMUTING TO BASE",
         COMMUTING_HOME:
           "DADDY IS FLYING HOME",
-        PRE_FLIGHT:
-          destination
-            ? `DADDY IS GETTING READY TO FLY TO ${destination}`
-            : "DADDY IS GETTING READY TO FLY",
         BOARDING:
           destination
             ? `DADDY IS BOARDING FOR ${destination}`
@@ -538,7 +596,8 @@
       options
     ) {
       const progress =
-        mode === "PRE_FLIGHT"
+        mode === "BOARDING" ||
+        mode === "DELAYED"
           ? 0
           : mode === "ARRIVED"
             ? 100
@@ -552,7 +611,8 @@
           "COMMUTING TO BASE",
         COMMUTING_HOME:
           "COMMUTING HOME",
-        PRE_FLIGHT: "PRE-FLIGHT",
+        BOARDING: "BOARDING",
+        DELAYED: "DELAYED",
         EN_ROUTE: "EN ROUTE",
         APPROACH: "APPROACH",
         ARRIVED: "ARRIVED"
@@ -603,6 +663,17 @@
                 event.destination,
                 event.destination ?? "---"
               ),
+            isCommute:
+              Boolean(event.isCommute),
+            isDeadhead:
+              Boolean(event.isDeadhead),
+            travelRole:
+              event.travelRole ??
+              (event.isDeadhead
+                ? "deadhead"
+                : event.isCommute
+                  ? "commute"
+                  : "operating"),
             airspeed: null,
             heading: null,
             altitude: null,
@@ -616,7 +687,19 @@
             positionSource:
               "schedule-estimate",
             liveLookupCandidates:
-              event.liveLookupCandidates ?? []
+              event.liveLookupCandidates ?? [],
+            departureDelayMinutes:
+              mode === "DELAYED"
+                ? Math.max(
+                    0,
+                    Math.floor(
+                      (
+                        now -
+                        eventStart(event)
+                      ) / 60000
+                    )
+                  )
+                : null
           }
         },
         event
@@ -752,9 +835,55 @@
 
     function selectActiveEvent(
       events,
-      now
+      now,
+      preferredEventId = null,
+      legLockTimeoutMinutes =
+        DEFAULT_OPTIONS
+          .legLockTimeoutMinutes
     ) {
-      return events
+      if (preferredEventId) {
+        const preferredEvent =
+          events.find(
+            (event) =>
+              eventIdentity(event) ===
+              String(preferredEventId)
+          );
+
+        const preferredStart =
+          preferredEvent
+            ? eventStart(preferredEvent)
+            : null;
+
+        const preferredEnd =
+          preferredEvent
+            ? eventEnd(preferredEvent)
+            : null;
+
+        const lockExpiresAt =
+          preferredEnd &&
+          Number.isFinite(
+            legLockTimeoutMinutes
+          )
+            ? new Date(
+                preferredEnd.getTime() +
+                legLockTimeoutMinutes *
+                  60000
+              )
+            : preferredEnd;
+
+        if (
+          preferredEvent?.kind ===
+            "flight" &&
+          preferredStart &&
+          preferredStart <= now &&
+          lockExpiresAt &&
+          now <= lockExpiresAt
+        ) {
+          return preferredEvent;
+        }
+      }
+
+      const activeEvents = events
         .filter((event) => {
           const start = eventStart(event);
           const end = eventEnd(event);
@@ -763,7 +892,9 @@
             start <= now &&
             now < end
           );
-        })
+        });
+
+      return activeEvents
         .sort((left, right) => {
           const priorityDifference =
             (
@@ -777,9 +908,24 @@
               ] ?? 0
             );
 
-          return priorityDifference ||
+          if (priorityDifference) {
+            return priorityDifference;
+          }
+
+          if (
+            left.kind === "flight" &&
+            right.kind === "flight"
+          ) {
+            return (
+              eventStart(left) -
+              eventStart(right)
+            );
+          }
+
+          return (
             eventStart(right) -
-              eventStart(left);
+            eventStart(left)
+          );
         })[0] ?? null;
     }
 
@@ -801,9 +947,29 @@
           );
         }
 
+        const minutesSinceDeparture =
+          (
+            now - eventStart(event)
+          ) / 60000;
+
+        if (
+          options.calendarFlightPhase ===
+          "EN_ROUTE"
+        ) {
+          return createFlightState(
+            event,
+            "EN_ROUTE",
+            now,
+            options
+          );
+        }
+
         return createFlightState(
           event,
-          "EN_ROUTE",
+          minutesSinceDeparture >
+            options.delayGraceMinutes
+            ? "DELAYED"
+            : "BOARDING",
           now,
           options
         );
@@ -850,7 +1016,9 @@
       const activeEvent =
         selectActiveEvent(
           events,
-          now
+          now,
+          options.preferredEventId,
+          options.legLockTimeoutMinutes
         );
 
       if (activeEvent) {
@@ -896,11 +1064,11 @@
 
         if (
           minutesUntilDeparture <=
-          options.preFlightLeadMinutes
+          options.boardingLeadMinutes
         ) {
           return createFlightState(
             nextFlight,
-            "PRE_FLIGHT",
+            "BOARDING",
             now,
             options
           );

@@ -115,6 +115,56 @@ function testManualCommute() {
   );
 }
 
+function testDeadheadSummary() {
+  const result = parsePilotEvent(
+    createEvent({
+      summary:
+        "Deadhead AA2456 ORD->ROC",
+      description: ""
+    })
+  );
+
+  assert.equal(result.kind, "flight");
+  assert.equal(result.isCommute, false);
+  assert.equal(result.isDeadhead, true);
+  assert.equal(
+    result.travelRole,
+    "deadhead"
+  );
+  assert.equal(result.carrierCode, "AA");
+  assert.equal(result.flightNumber, "2456");
+  assert.equal(result.origin, "ORD");
+  assert.equal(result.destination, "ROC");
+  assert.deepEqual(
+    result.liveLookupCandidates,
+    ["AA2456", "MQ2456", "ENY2456"]
+  );
+  assert.equal(
+    result.requiresFlightVerification,
+    false
+  );
+}
+
+function testDeadheadDescriptionMarker() {
+  const result = parsePilotEvent(
+    createEvent({
+      summary:
+        "Flight 1429 DFW->AVL",
+      description:
+        "Deadhead\nFlight: 1429 Stations: DFW->AVL Time: 2026-08-04T13:42:00 - 2026-08-04T16:35:00"
+    })
+  );
+
+  assert.equal(result.isDeadhead, true);
+  assert.equal(
+    result.travelRole,
+    "deadhead"
+  );
+  assert.equal(result.flightNumber, "1429");
+  assert.equal(result.origin, "DFW");
+  assert.equal(result.destination, "AVL");
+}
+
 function testLayover() {
   const result = parsePilotEvent(
     createEvent({
@@ -270,6 +320,8 @@ function testFullSchedule() {
 function runTests() {
   testRosterFlightTimeZones();
   testManualCommute();
+  testDeadheadSummary();
+  testDeadheadDescriptionMarker();
   testLayover();
   testMissingAirportTimeZone();
   testGsoTimeZoneIsKnown();

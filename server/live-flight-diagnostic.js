@@ -112,7 +112,7 @@ function resolveSelectedFlight(
     },
     {
       now,
-      preFlightLeadMinutes:
+      boardingLeadMinutes:
         DEFAULT_DAYS * 24 * 60
     }
   );

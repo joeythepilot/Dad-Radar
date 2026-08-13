@@ -5,9 +5,14 @@
     "comparisonFiles": [
       "assets/destinations/asheville-poster-7x8-baseline.png",
       "assets/destinations/ord-poster-7x8-candidate-v2.png",
-      "assets/destinations/dfw-poster-7x8-baseline.png",
-      "assets/destinations/dca-poster-7x8-baseline.png",
-      "assets/destinations/roc-poster-7x8-candidate-v1.png"
+      "assets/destinations/dfw-poster-7x8-candidate-v2.png",
+      "assets/destinations/dca-poster-7x8-candidate-v2.png",
+      "assets/destinations/roc-poster-7x8-candidate-v1.png",
+      "assets/destinations/mia-poster-7x8-candidate-v1.png",
+      "assets/destinations/clt-poster-7x8-candidate-v1.png",
+      "assets/destinations/phx-poster-7x8-candidate-v1.png",
+      "assets/destinations/xna-poster-7x8-candidate-v1.png",
+      "assets/destinations/cmh-poster-7x8-candidate-v1.png"
     ],
     "reviewCanvas": {
       "width": 1173,
@@ -29,7 +34,7 @@
     {
       "id": "pilot-hubs-01",
       "label": "Hub and busy-destination pilot",
-      "status": "active",
+      "status": "approved",
       "airportCodes": ["MIA", "CLT", "PHX", "XNA", "CMH"]
     }
   ],
@@ -44,7 +49,7 @@
       "descriptor": "ART DECO • BISCAYNE • TROPICS",
       "tagline": "Where the Americas Meet.",
       "batch": "pilot-hubs-01",
-      "status": "candidate",
+      "status": "approved",
       "output": "assets/destinations/mia-poster-7x8-candidate-v1.png",
       "visualProfileId": "tropical-rainbreak-dawn",
       "design": {
@@ -77,7 +82,7 @@
       "descriptor": "QUEEN CITY • SKYLINE • CAROLINAS",
       "tagline": "A Crown Above the Carolinas.",
       "batch": "pilot-hubs-01",
-      "status": "candidate",
+      "status": "approved",
       "output": "assets/destinations/clt-poster-7x8-candidate-v1.png",
       "visualProfileId": "queen-city-starlight",
       "design": {
@@ -110,7 +115,7 @@
       "descriptor": "DESERT • SAGUAROS • RED ROCKS",
       "tagline": "Valley of the Sun.",
       "batch": "pilot-hubs-01",
-      "status": "candidate",
+      "status": "approved",
       "output": "assets/destinations/phx-poster-7x8-candidate-v1.png",
       "visualProfileId": "sonoran-high-sun",
       "design": {
@@ -143,7 +148,7 @@
       "descriptor": "OZARKS • ART • TRAILS",
       "tagline": "Where Art Meets the Wild.",
       "batch": "pilot-hubs-01",
-      "status": "candidate",
+      "status": "approved",
       "output": "assets/destinations/xna-poster-7x8-candidate-v1.png",
       "visualProfileId": "ozark-mist-dawn",
       "design": {
@@ -176,7 +181,7 @@
       "descriptor": "RIVERFRONT • ART DECO • HEARTLAND",
       "tagline": "At the Heart of Ohio.",
       "batch": "pilot-hubs-01",
-      "status": "candidate",
+      "status": "approved",
       "output": "assets/destinations/cmh-poster-7x8-candidate-v1.png",
       "visualProfileId": "scioto-first-snow",
       "design": {

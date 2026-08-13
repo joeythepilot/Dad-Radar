@@ -35,7 +35,7 @@ FR24 found a currently tracked aircraft with the expected identity and route, an
 
 ### `Flightradar24: No live aircraft match`
 
-Calendar worked, but FR24 does not currently see the scheduled aircraft. This is expected before pushback or takeoff. Dad Radar remains in its Calendar-derived Pre-flight state without treating the result as an error.
+Calendar worked, but FR24 does not currently see the scheduled aircraft. This is expected before pushback or takeoff. Dad Radar remains in its Calendar-derived Boarding or Delayed state without treating the result as an error.
 
 ### `Snapshot rejected`
 

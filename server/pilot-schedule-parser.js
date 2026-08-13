@@ -19,7 +19,17 @@ const COMMUTE_SUMMARY_PATTERN =
   new RegExp(
     `^COMMUTE\\s+([A-Z]{2,3})\\s*(\\d{1,4})\\s+([A-Z]{3})\\s*${ROUTE_ARROW_PATTERN}\\s*([A-Z]{3})`,
     "i"
-  );const LAYOVER_SUMMARY_PATTERN =
+  );
+
+const DEADHEAD_SUMMARY_PATTERN =
+  new RegExp(
+    `^DEADHEAD(?:\\s+FLIGHT)?\\s+(?:([A-Z]{2,3})\\s*)?(\\d{1,4})\\s+([A-Z]{3})\\s*${ROUTE_ARROW_PATTERN}\\s*([A-Z]{3})`,
+    "i"
+  );
+
+const DEADHEAD_PATTERN = /\bDEADHEAD\b/i;
+
+const LAYOVER_SUMMARY_PATTERN =
   /^Layover\s+([A-Z]{3})(?:\s+\(([^)]+)\))?/i;
 
 const DUTY_FREE_PATTERN =
@@ -247,15 +257,29 @@ function createFlightTimes(
 function createLiveLookupCandidates(
   carrierCode,
   flightNumber,
-  isCommute
+  isCommute,
+  isDeadhead = false
 ) {
   if (!flightNumber) {
     return [];
   }
 
-  if (isCommute && carrierCode) {
+  const normalizedCarrier =
+    normalizeCarrier(carrierCode);
+
+  const isAmericanFamilyCarrier = [
+    "AA",
+    "MQ",
+    "ENY"
+  ].includes(normalizedCarrier);
+
+  if (
+    (isCommute || isDeadhead) &&
+    normalizedCarrier &&
+    !isAmericanFamilyCarrier
+  ) {
     return [
-      `${carrierCode}${flightNumber}`
+      `${normalizedCarrier}${flightNumber}`
     ];
   }
 
@@ -290,6 +314,11 @@ function parsePilotEvent(
       COMMUTE_SUMMARY_PATTERN
     );
 
+  const deadheadMatch =
+    summary.match(
+      DEADHEAD_SUMMARY_PATTERN
+    );
+
   const flightMatch =
     summary.match(
       FLIGHT_SUMMARY_PATTERN
@@ -303,32 +332,64 @@ function parsePilotEvent(
   const descriptionFlight =
     parseFlightDescription(description);
 
-  if (commuteMatch || flightMatch) {
+  const isDeadhead =
+    DEADHEAD_PATTERN.test(
+      `${summary} ${description}`
+    );
+
+  if (
+    commuteMatch ||
+    flightMatch ||
+    deadheadMatch ||
+    (isDeadhead && descriptionFlight)
+  ) {
     const isCommute =
       Boolean(commuteMatch);
 
     const match =
-      commuteMatch ?? flightMatch;
+      commuteMatch ??
+      deadheadMatch ??
+      flightMatch;
 
     const summaryCarrier =
       isCommute
         ? normalizeCarrier(match[1])
-        : null;
+        : deadheadMatch
+          ? normalizeCarrier(
+              deadheadMatch[1]
+            )
+          : null;
 
     const summaryFlightNumber =
       isCommute
         ? match[2]
-        : match[1];
+        : deadheadMatch
+          ? deadheadMatch[2]
+          : flightMatch?.[1] ??
+            descriptionFlight
+              ?.flightNumber;
 
     const summaryOrigin =
       isCommute
         ? normalizeAirport(match[3])
-        : normalizeAirport(match[2]);
+        : deadheadMatch
+          ? normalizeAirport(
+              deadheadMatch[3]
+            )
+          : normalizeAirport(
+              flightMatch?.[2]
+            );
 
     const summaryDestination =
       isCommute
         ? normalizeAirport(match[4])
-        : normalizeAirport(match[3]);
+        : deadheadMatch
+          ? normalizeAirport(
+              deadheadMatch[4]
+            )
+          : normalizeAirport(
+              flightMatch?.[3]
+            );
 
     const carrierCode =
       summaryCarrier ??
@@ -361,6 +422,13 @@ function parsePilotEvent(
       id: event.id ?? null,
       kind: "flight",
       isCommute,
+      isDeadhead,
+      travelRole:
+        isDeadhead
+          ? "deadhead"
+          : isCommute
+            ? "commute"
+            : "operating",
       summary,
       description,
       status:
@@ -377,10 +445,11 @@ function parsePilotEvent(
         createLiveLookupCandidates(
           carrierCode,
           flightNumber,
-          isCommute
+          isCommute,
+          isDeadhead
         ),
       requiresFlightVerification:
-        !isCommute,
+        !isCommute && !isDeadhead,
       times:
         createFlightTimes(
           event,

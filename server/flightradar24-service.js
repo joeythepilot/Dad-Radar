@@ -7,6 +7,7 @@ const APPROACH_CAPTURE_ALTITUDE_FEET = 18000;
 const APPROACH_GROUND_SPEED_KNOTS = 250;
 const APPROACH_DISTANCE_NM = 90;
 const GROUND_SPEED_KNOTS = 65;
+const TAXI_SPEED_KNOTS = 3;
 const AIRPORT_PROXIMITY_NM = 4;
 const METADATA_CACHE_LIMIT = 128;
 
@@ -465,7 +466,10 @@ function determinePhase(
     distanceFromOrigin <=
       AIRPORT_PROXIMITY_NM
   ) {
-    return "TAXI_OUT";
+    return groundSpeedKnots >=
+      TAXI_SPEED_KNOTS
+      ? "TAXI_OUT"
+      : "BOARDING";
   }
 
   const isDescending =

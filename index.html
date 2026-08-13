@@ -6,10 +6,25 @@
 
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1.0"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
   >
 
   <title>Dad Radar</title>
+
+  <meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+  >
+
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="black"
+  >
+
+  <meta
+    name="theme-color"
+    content="#050706"
+  >
 
   <link
     rel="stylesheet"
@@ -30,6 +45,15 @@
 
 
 <body>
+
+  <button
+    class="beta-audio-button"
+    id="beta-audio-button"
+    type="button"
+    hidden
+  >
+    TAP ONCE FOR SPLIT-FLAP SOUND
+  </button>
 
   <!-- =====================================================
        Startup screen
@@ -104,7 +128,6 @@
             <div
               class="flight-board-row"
               id="flight-board-flight"
-              hidden
             >
 
               <span
@@ -142,10 +165,6 @@
             </div>
 
 
-            <span id="flight-board-text">
-              NO ACTIVE FLIGHT
-            </span>
-
           </section>
 
         </section>
@@ -174,10 +193,42 @@
                 <img
                   class="destination-poster-image"
                   id="destination-poster"
-                  src="./assets/destinations/asheville-poster.jpeg"
+                  src="./assets/destinations/asheville-poster-7x8-baseline.png"
                   alt="Vintage Asheville, North Carolina travel poster"
                   draggable="false"
                 >
+
+                <section
+                  class="destination-poster-fallback"
+                  id="destination-poster-fallback"
+                  hidden
+                  aria-live="polite"
+                >
+
+                  <span class="poster-fallback-kicker">
+                    DAD RADAR DESTINATIONS
+                  </span>
+
+                  <strong id="poster-fallback-city">
+                    DESTINATION
+                  </strong>
+
+                  <span id="poster-fallback-region">
+                    POSTER IN THE WORKS
+                  </span>
+
+                  <span
+                    class="poster-fallback-airport"
+                    id="poster-fallback-airport"
+                  >
+                    ---
+                  </span>
+
+                  <span class="poster-fallback-message">
+                    A NEW POSTCARD IS COMING SOON
+                  </span>
+
+                </section>
 
                 <span
                   class="visually-hidden"
@@ -1022,6 +1073,7 @@
 
   <script src="./data/airport-catalog.js"></script>
   <script src="./config/settings.js"></script>
+  <script src="./config/posters.js"></script>
   <script src="./models/states.js"></script>
   <script src="./models/schedule-state.js"></script>
   <script src="./models/live-flight-state.js"></script>
@@ -1033,6 +1085,7 @@
   <script src="./services/calendar-state-controller.js"></script>
   <script src="./App/instrument-math.js"></script>
   <script src="./App/split-flap-audio.js"></script>
+  <script src="./App/split-flap-state.js"></script>
   <script src="./App/main.js"></script>
 
   <script

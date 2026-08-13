@@ -188,6 +188,15 @@
         calendarResolved.mode;
 
       if (
+        calendarMode === "DELAYED" &&
+        ["BOARDING", "TAXI_OUT"].includes(
+          phase
+        )
+      ) {
+        return "DELAYED";
+      }
+
+      if (
         (phase === "EN_ROUTE" ||
           phase === "APPROACH") &&
         (calendarMode ===
@@ -217,6 +226,20 @@
       phase,
       calendarState
     ) {
+      if (
+        mode === "DELAYED" &&
+        ![
+          "EN_ROUTE",
+          "APPROACH",
+          "DIVERTED",
+          "CANCELLED",
+          "LANDED",
+          "ARRIVED"
+        ].includes(phase)
+      ) {
+        return "DELAYED";
+      }
+
       if (STATUS_LABELS[phase]) {
         return STATUS_LABELS[phase];
       }
@@ -458,6 +481,23 @@
             .destinationLocation ??
           destination ??
           "---",
+        isCommute:
+          Boolean(
+            calendarFlight.isCommute ??
+            calendarResolved.event
+              ?.isCommute
+          ),
+        isDeadhead:
+          Boolean(
+            calendarFlight.isDeadhead ??
+            calendarResolved.event
+              ?.isDeadhead
+          ),
+        travelRole:
+          calendarFlight.travelRole ??
+          calendarResolved.event
+            ?.travelRole ??
+          "operating",
         airspeed: null,
         groundSpeed: finiteNumber(
           position.groundSpeedKnots
@@ -490,10 +530,25 @@
         providerStatus:
           snapshot.status ?? null,
         departureDelayMinutes:
-          finiteNumber(
-            snapshot.departure
-              ?.delayMinutes
-          ),
+          mode === "DELAYED"
+            ? Math.max(
+                finiteNumber(
+                  snapshot.departure
+                    ?.delayMinutes
+                ) ?? 0,
+                finiteNumber(
+                  calendarFlight
+                    .departureDelayMinutes
+                ) ?? 0
+              )
+            : finiteNumber(
+                snapshot.departure
+                  ?.delayMinutes
+              ) ??
+              finiteNumber(
+                calendarFlight
+                  .departureDelayMinutes
+              ),
         arrivalDelayMinutes:
           finiteNumber(
             snapshot.arrival

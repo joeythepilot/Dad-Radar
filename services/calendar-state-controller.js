@@ -13,10 +13,11 @@
   let liveRequestPromise = null;
   let liveProviderUnavailable = false;
   let hasLoadedSchedule = false;
+  let lockedFlightEventKey = null;
 
   const TRACKABLE_MODES = new Set([
-    "PRE_FLIGHT",
     "BOARDING",
+    "DELAYED",
     "TAXI_OUT",
     "EN_ROUTE",
     "APPROACH",
@@ -49,9 +50,16 @@
       stateCheckIntervalMs:
         settings.schedule
           .stateCheckIntervalMs,
-      preFlightLeadMinutes:
+      boardingLeadMinutes:
         settings.schedule
-          .preFlightLeadMinutes,
+          .boardingLeadMinutes ?? 30,
+      delayGraceMinutes:
+        settings.schedule
+          .delayGraceMinutes ?? 5,
+      legLockTimeoutMinutes:
+        settings.schedule
+          .legLockTimeoutMinutes ??
+        8 * 60,
       arrivedHoldMinutes:
         settings.schedule
           .arrivedHoldMinutes,
@@ -65,7 +73,7 @@
       liveAcquisitionLeadMinutes:
         settings.flightData
           ?.acquisitionLeadMinutes ??
-        15,
+        30,
       liveStaleAfterMs:
         settings.flightData
           ?.staleAfterMs ??
@@ -175,8 +183,8 @@
     const mode = resolved?.mode;
 
     if (
-      mode === "PRE_FLIGHT" ||
-      mode === "BOARDING"
+      mode === "BOARDING" ||
+      mode === "DELAYED"
     ) {
       const start = new Date(
         resolved.event?.times?.startUtc ??
@@ -226,7 +234,11 @@
       global.dadRadarScheduleState
         .resolveScheduleState(
           currentSchedule,
-          settings
+          {
+            ...settings,
+            preferredEventId:
+              lockedFlightEventKey
+          }
         );
 
     const nextEventKey = eventKey(
@@ -268,6 +280,34 @@
               }
             )
         : calendarResolved;
+
+    const resolvedPhase = String(
+      resolved?.state?.livePhase ?? ""
+    ).toUpperCase();
+
+    if (
+      resolved?.event?.kind === "flight" &&
+      (
+        resolved.mode === "DELAYED" ||
+        [
+          "TAXI_OUT",
+          "EN_ROUTE",
+          "APPROACH",
+          "DIVERTED"
+        ].includes(resolvedPhase)
+      )
+    ) {
+      lockedFlightEventKey =
+        eventKey(resolved.event);
+    }
+
+    if (
+      ["ARRIVED", "LANDED"].includes(
+        resolvedPhase
+      )
+    ) {
+      lockedFlightEventKey = null;
+    }
 
     if (resolved?.state?.liveData) {
       previousLiveResolved =

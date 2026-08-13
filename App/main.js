@@ -14,6 +14,11 @@ const startupScreen =
 const dashboard =
   document.getElementById("dashboard");
 
+const betaAudioButton =
+  document.getElementById(
+    "beta-audio-button"
+  );
+
 const statusMessage =
   document.querySelector(".status-message");
 
@@ -28,9 +33,6 @@ const dashboardAppName =
 
 const flightBoardFlight =
   document.getElementById("flight-board-flight");
-
-const flightBoardText =
-  document.getElementById("flight-board-text");
 
 const flightStripModule =
   document.querySelector(
@@ -59,6 +61,31 @@ const destinationCity =
 
 const destinationAirport =
   document.getElementById("destination-airport");
+
+const destinationPoster =
+  document.getElementById(
+    "destination-poster"
+  );
+
+const destinationPosterFallback =
+  document.getElementById(
+    "destination-poster-fallback"
+  );
+
+const posterFallbackCity =
+  document.getElementById(
+    "poster-fallback-city"
+  );
+
+const posterFallbackRegion =
+  document.getElementById(
+    "poster-fallback-region"
+  );
+
+const posterFallbackAirport =
+  document.getElementById(
+    "poster-fallback-airport"
+  );
 
 const mapOrigin =
   document.getElementById("map-origin");
@@ -762,63 +789,123 @@ function renderFlapText(
    Flight-board formatting
    --------------------------------------------------------- */
 
-function formatFlightNumber(
-  rawFlightNumber
+/* ---------------------------------------------------------
+   Destination poster selection
+   --------------------------------------------------------- */
+
+let displayedPosterAirport = null;
+
+function posterFallbackLocation(
+  flight,
+  airportCode
 ) {
-  const flightText =
-    String(rawFlightNumber ?? "")
-      .toUpperCase()
-      .trim();
+  const fullLocation = String(
+    flight?.destinationLocation ??
+    flight?.destinationCity ??
+    airportCode ??
+    "DESTINATION"
+  ).trim();
 
-  const numberMatch =
-    flightText.match(/(\d{1,4})$/);
+  const parts = fullLocation
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
 
-  if (numberMatch) {
-    return numberMatch[1]
-      .padStart(4, "0");
-  }
-
-  return flightText
-    .replace(/\s+/g, "")
-    .slice(-4)
-    .padStart(4, " ");
+  return {
+    city:
+      parts[0] ?? airportCode ??
+      "DESTINATION",
+    region:
+      parts.slice(1).join(", ") ||
+      "POSTER IN THE WORKS"
+  };
 }
 
+function updateDestinationPoster(flight) {
+  const airportCode = String(
+    flight?.destination ?? ""
+  )
+    .trim()
+    .toUpperCase();
 
-function formatBoardStatus(status) {
-  const statusLabels = {
-    HOME: "HOME",
-    "LOCATION UNKNOWN": "LOC UNKN",
-    "COMMUTING TO BASE": "TO BASE",
-    "PRE-FLIGHT": "PRE FLT",
-    "PRE FLIGHT": "PRE FLT",
-    BOARDING: "BOARDING",
-    "TAXI OUT": "TAXI OUT",
-    "EN ROUTE": "EN ROUTE",
-    APPROACH: "APPROACH",
-    DIVERTED: "DIVERTED",
-    LANDED: "LANDED",
-    CANCELLED: "CANCELED",
-    ARRIVED: "ARRIVED",
-    LAYOVER: "LAYOVER",
-    "COMMUTING HOME": "TO HOME",
-    OFFLINE: "OFFLINE"
-  };
+  const posterIdentity =
+    airportCode ||
+    [
+      flight?.destinationCity,
+      flight?.destinationLocation
+    ]
+      .filter(Boolean)
+      .join("|") ||
+    null;
 
-  const normalizedStatus =
-    String(status ?? "OFFLINE")
-      .toUpperCase()
-      .replace(/_/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
+  if (
+    posterIdentity &&
+    posterIdentity ===
+      displayedPosterAirport
+  ) {
+    return;
+  }
 
-  const boardLabel =
-    statusLabels[normalizedStatus] ??
-    normalizedStatus;
+  const poster =
+    globalThis.dadRadarPosters
+      ?.getPoster?.(airportCode) ?? null;
 
-  return boardLabel
-    .slice(0, STATUS_FLAP_COUNT)
-    .padEnd(STATUS_FLAP_COUNT, " ");
+  displayedPosterAirport =
+    posterIdentity;
+
+  if (poster && destinationPoster) {
+    destinationPoster.src =
+      poster.source;
+    destinationPoster.alt =
+      `Vintage ${poster.location} travel poster`;
+    destinationPoster.hidden = false;
+
+    if (destinationPosterFallback) {
+      destinationPosterFallback.hidden =
+        true;
+    }
+
+    destinationPanel?.style.setProperty(
+      "--destination-poster-image",
+      `url("${poster.source}")`
+    );
+
+    return;
+  }
+
+  const fallback =
+    posterFallbackLocation(
+      flight,
+      airportCode
+    );
+
+  if (destinationPoster) {
+    destinationPoster.hidden = true;
+  }
+
+  if (destinationPosterFallback) {
+    destinationPosterFallback.hidden =
+      false;
+  }
+
+  if (posterFallbackCity) {
+    posterFallbackCity.textContent =
+      fallback.city;
+  }
+
+  if (posterFallbackRegion) {
+    posterFallbackRegion.textContent =
+      fallback.region;
+  }
+
+  if (posterFallbackAirport) {
+    posterFallbackAirport.textContent =
+      airportCode || "---";
+  }
+
+  destinationPanel?.style.removeProperty(
+    "--destination-poster-image"
+  );
 }
 
 
@@ -1262,6 +1349,99 @@ function updateDashboard(state) {
   const flight =
     state.flight ?? null;
 
+  const splitFlapFields =
+    globalThis.dadRadarSplitFlapState
+      ?.fieldsForState?.(state);
+
+  if (!splitFlapFields) {
+    throw new Error(
+      "Dad Radar split-flap state formatter is unavailable."
+    );
+  }
+
+  if (flightBoardFlight) {
+    flightBoardFlight.hidden = false;
+  }
+
+  renderFlapText(
+    flightNumber,
+    splitFlapFields.flightNumber,
+    4
+  );
+
+  renderFlapText(
+    flightOrigin,
+    splitFlapFields.origin,
+    3
+  );
+
+  renderFlapText(
+    flightDestination,
+    splitFlapFields.destination,
+    3
+  );
+
+  renderFlapText(
+    statusValue,
+    splitFlapFields.status,
+    STATUS_FLAP_COUNT
+  );
+
+  const groundAirport = String(
+    state.locationAirport ?? ""
+  )
+    .trim()
+    .toUpperCase();
+
+  const posterSubject =
+    flight ??
+    (
+      groundAirport
+        ? {
+            destination:
+              groundAirport,
+            destinationCity:
+              globalThis
+                .dadRadarAirports
+                ?.lookupAirport?.(
+                  groundAirport
+                )?.city ??
+              groundAirport,
+            destinationLocation:
+              globalThis
+                .dadRadarAirports
+                ?.formatLocation?.(
+                  groundAirport
+                ) ??
+              groundAirport
+          }
+        : null
+    );
+
+  if (posterSubject) {
+    updateDestinationPoster(
+      posterSubject
+    );
+  } else if (
+    [
+      "LOCATION UNKNOWN",
+      "OFFLINE"
+    ].includes(
+      String(state.status ?? "")
+        .toUpperCase()
+    )
+  ) {
+    updateDestinationPoster({
+      destination: null,
+      destinationCity:
+        "DESTINATION UNKNOWN",
+      destinationLocation:
+        state.status === "OFFLINE"
+          ? "Awaiting schedule connection"
+          : "Location to be confirmed"
+    });
+  }
+
   const hasAirspeed =
     flight?.airspeed !== null &&
     flight?.airspeed !== undefined &&
@@ -1301,44 +1481,6 @@ function updateDashboard(state) {
     );
 
   if (flight) {
-    if (flightBoardFlight) {
-      flightBoardFlight.hidden =
-        false;
-    }
-
-    if (flightBoardText) {
-      flightBoardText.hidden =
-        true;
-    }
-
-    renderFlapText(
-      flightNumber,
-      formatFlightNumber(
-        flight.number
-      ),
-      4
-    );
-
-    renderFlapText(
-      flightOrigin,
-      flight.origin,
-      3
-    );
-
-    renderFlapText(
-      flightDestination,
-      flight.destination,
-      3
-    );
-
-    renderFlapText(
-      statusValue,
-      formatBoardStatus(
-        state.status
-      ),
-      STATUS_FLAP_COUNT
-    );
-
     if (destinationCity) {
       destinationCity.textContent =
         flight.destinationCity ??
@@ -1455,20 +1597,6 @@ function updateDashboard(state) {
       displayedSpeed
     );
   } else {
-    if (flightBoardFlight) {
-      flightBoardFlight.hidden =
-        true;
-    }
-
-    if (flightBoardText) {
-      flightBoardText.hidden =
-        false;
-
-      flightBoardText.textContent =
-        state.message ??
-        "NO ACTIVE FLIGHT";
-    }
-
     if (mapPanel) {
       mapPanel.hidden =
         true;
@@ -1551,8 +1679,8 @@ function updateClock() {
 const modeShortcuts = {
   "1": "HOME",
   "2": "COMMUTING_TO_BASE",
-  "3": "PRE_FLIGHT",
-  "4": "BOARDING",
+  "3": "BOARDING",
+  "4": "DELAYED",
   "5": "TAXI_OUT",
   "6": "EN_ROUTE",
   "7": "APPROACH",
@@ -1708,6 +1836,35 @@ window.addEventListener(
   },
   { once: true }
 );
+
+async function enableBetaAudio() {
+  const unlocked =
+    await splitFlapAudioController
+      ?.unlock();
+
+  if (unlocked && betaAudioButton) {
+    betaAudioButton.hidden = true;
+  }
+}
+
+if (betaAudioButton) {
+  const isTouchDisplay =
+    globalThis.matchMedia?.(
+      "(pointer: coarse)"
+    ).matches ||
+    Number(
+      navigator.maxTouchPoints ?? 0
+    ) > 0;
+
+  betaAudioButton.hidden =
+    !isTouchDisplay;
+
+  betaAudioButton.addEventListener(
+    "click",
+    enableBetaAudio,
+    { once: true }
+  );
+}
 
 window.addEventListener(
   "resize",

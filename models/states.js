@@ -4,6 +4,7 @@ const dadRadarModes = {
   HOME: {
     status: "HOME",
     message: "DADDY IS HOME",
+    locationAirport: "AVL",
     flight: null
   },
 
@@ -29,8 +30,8 @@ const dadRadarModes = {
     }
   },
 
-  PRE_FLIGHT: {
-    status: "PRE-FLIGHT",
+  DELAYED: {
+    status: "DELAYED",
     flight: {
       number: "AA 1234",
       origin: "ORD",
@@ -40,7 +41,7 @@ const dadRadarModes = {
       heading: 0,
       altitude: 0,
       progress: 0,
-      eta: "7:42 PM"
+      eta: "DELAYED"
     }
   },
 
@@ -137,6 +138,7 @@ const dadRadarModes = {
   LAYOVER: {
     status: "LAYOVER",
     message: "ON LAYOVER",
+    locationAirport: "ORD",
     flight: null
   },
 

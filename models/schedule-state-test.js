@@ -55,7 +55,7 @@ function testActiveFlight() {
       { now: NOW }
     );
 
-  assert.equal(result.mode, "EN_ROUTE");
+  assert.equal(result.mode, "DELAYED");
   assert.equal(
     result.state.source,
     "calendar"
@@ -82,7 +82,7 @@ function testActiveFlight() {
   );
   assert.equal(
     result.state.flight.progress,
-    50
+    0
   );
   assert.equal(
     result.state.flight.eta,
@@ -155,7 +155,7 @@ function testBilDestinationCity() {
 
   assert.equal(
     timeline.context,
-    "DADDY IS FLYING TO BILLINGS, MONTANA"
+    "DADDY'S FLIGHT TO BILLINGS, MONTANA IS 60 MIN LATE"
   );
 }
 
@@ -197,7 +197,7 @@ function testCommuteModes() {
   );
 }
 
-function testPreFlightWindow() {
+function testBoardingWindow() {
   const result = resolveScheduleState(
     createSchedule([
       createFlight({
@@ -215,14 +215,228 @@ function testPreFlightWindow() {
     ]),
     {
       now: NOW,
-      preFlightLeadMinutes: 45
+      boardingLeadMinutes: 30
     }
   );
 
-  assert.equal(result.mode, "PRE_FLIGHT");
+  assert.equal(result.mode, "BOARDING");
   assert.equal(
     result.state.flight.progress,
     0
+  );
+}
+
+function testCalendarOnlyFlightBecomesDelayed() {
+  const result = resolveScheduleState(
+    createSchedule([
+      createFlight({
+        times: {
+          source:
+            "description-wall-times",
+          startUtc:
+            "2026-08-04T13:50:00.000Z",
+          endUtc:
+            "2026-08-04T16:00:00.000Z",
+          endEastern:
+            "2026-08-04T12:00:00.000-04:00"
+        }
+      })
+    ]),
+    {
+      now: NOW,
+      delayGraceMinutes: 5
+    }
+  );
+
+  assert.equal(result.mode, "DELAYED");
+  assert.equal(
+    result.state.status,
+    "DELAYED"
+  );
+  assert.equal(
+    result.state.flight
+      .departureDelayMinutes,
+    10
+  );
+
+  const timeline = buildDailySchedule(
+    createSchedule([result.event]),
+    result,
+    { now: NOW }
+  );
+
+  assert.equal(
+    timeline.context,
+    "DADDY'S FLIGHT TO WILKES-BARRE/SCRANTON, PENNSYLVANIA IS 10 MIN LATE"
+  );
+}
+
+function testPreferredFlightWinsCalendarOverlap() {
+  const firstFlight = createFlight({
+    id: "first-flight",
+    origin: "DFW",
+    destination: "AVL",
+    flightNumber: "1429",
+    times: {
+      startUtc:
+        "2026-08-04T12:30:00.000Z",
+      endUtc:
+        "2026-08-04T15:30:00.000Z"
+    }
+  });
+
+  const nextFlight = createFlight({
+    id: "next-flight",
+    origin: "AVL",
+    destination: "ORD",
+    flightNumber: "3407",
+    times: {
+      startUtc:
+        "2026-08-04T13:45:00.000Z",
+      endUtc:
+        "2026-08-04T16:00:00.000Z"
+    }
+  });
+
+  const result = resolveScheduleState(
+    createSchedule([
+      firstFlight,
+      nextFlight
+    ]),
+    {
+      now: NOW,
+      preferredEventId: "first-flight"
+    }
+  );
+
+  assert.equal(
+    result.event.id,
+    "first-flight"
+  );
+  assert.equal(
+    result.state.flight.number,
+    "AA 1429"
+  );
+}
+
+function testEarlierFlightWinsColdStartOverlap() {
+  const firstFlight = createFlight({
+    id: "first-flight",
+    origin: "DFW",
+    destination: "AVL",
+    flightNumber: "1429",
+    times: {
+      startUtc:
+        "2026-08-04T12:30:00.000Z",
+      endUtc:
+        "2026-08-04T15:30:00.000Z"
+    }
+  });
+
+  const nextFlight = createFlight({
+    id: "next-flight",
+    origin: "AVL",
+    destination: "ORD",
+    flightNumber: "3407",
+    times: {
+      startUtc:
+        "2026-08-04T13:45:00.000Z",
+      endUtc:
+        "2026-08-04T16:00:00.000Z"
+    }
+  });
+
+  const result = resolveScheduleState(
+    createSchedule([
+      firstFlight,
+      nextFlight
+    ]),
+    { now: NOW }
+  );
+
+  assert.equal(
+    result.event.id,
+    "first-flight"
+  );
+}
+
+function testPreferredDelayedFlightSurvivesScheduledEnd() {
+  const delayedFlight = createFlight({
+    id: "delayed-flight",
+    origin: "DFW",
+    destination: "AVL",
+    flightNumber: "1429",
+    times: {
+      startUtc:
+        "2026-08-04T10:00:00.000Z",
+      endUtc:
+        "2026-08-04T13:30:00.000Z"
+    }
+  });
+
+  const overlappingFlight =
+    createFlight({
+      id: "overlapping-flight",
+      origin: "AVL",
+      destination: "ORD",
+      flightNumber: "3407",
+      times: {
+        startUtc:
+          "2026-08-04T13:45:00.000Z",
+        endUtc:
+          "2026-08-04T16:00:00.000Z"
+      }
+    });
+
+  const result = resolveScheduleState(
+    createSchedule([
+      delayedFlight,
+      overlappingFlight
+    ]),
+    {
+      now: NOW,
+      preferredEventId:
+        "delayed-flight",
+      legLockTimeoutMinutes: 8 * 60
+    }
+  );
+
+  assert.equal(
+    result.event.id,
+    "delayed-flight"
+  );
+  assert.equal(result.mode, "DELAYED");
+}
+
+function testDeadheadFamilyLanguage() {
+  const event = createFlight({
+    isDeadhead: true,
+    travelRole: "deadhead",
+    destination: "ROC"
+  });
+
+  const resolved = resolveScheduleState(
+    createSchedule([event]),
+    { now: NOW }
+  );
+
+  const timeline = buildDailySchedule(
+    createSchedule([event]),
+    resolved,
+    { now: NOW }
+  );
+
+  assert.equal(
+    timeline.entries[0].tag,
+    "DEADHEAD"
+  );
+  assert.equal(
+    timeline.context,
+    "DADDY'S RIDE TO ROCHESTER, NEW YORK IS 60 MIN LATE"
+  );
+  assert.equal(
+    resolved.state.flight.travelRole,
+    "deadhead"
   );
 }
 
@@ -458,7 +672,7 @@ function testDailyScheduleTimeline() {
   );
   assert.equal(
     timeline.context,
-    "DADDY IS FLYING TO WILKES-BARRE/SCRANTON, PENNSYLVANIA"
+    "DADDY'S FLIGHT TO WILKES-BARRE/SCRANTON, PENNSYLVANIA IS 60 MIN LATE"
   );
   assert.equal(
     timeline.timeZoneLabel,
@@ -566,7 +780,12 @@ function runTests() {
   testBilDestinationCity();
   testCalendarProgress();
   testCommuteModes();
-  testPreFlightWindow();
+  testBoardingWindow();
+  testCalendarOnlyFlightBecomesDelayed();
+  testPreferredFlightWinsCalendarOverlap();
+  testEarlierFlightWinsColdStartOverlap();
+  testPreferredDelayedFlightSurvivesScheduledEnd();
+  testDeadheadFamilyLanguage();
   testLayover();
   testRecentlyArrived();
   testCancelledFlightIsIgnored();

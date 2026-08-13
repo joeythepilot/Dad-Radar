@@ -91,7 +91,7 @@ It exists so future work always builds on previous decisions instead of repeatin
 
 ✓ Initial acquisition uses the FR24 full live-position record. Later polls use the exact FR24 flight ID to select the light live-position record while retaining cached identity metadata for that leg.
 
-✓ Preflight airline status and decoded filed-route data are not required. Calendar owns Pre-flight, the map keeps its direct planned arc, and observed FR24 positions build the actual breadcrumb track.
+✓ Paid pre-departure airline status and decoded filed-route data are not required. Calendar publishes Boarding beginning 30 minutes before departure. If no airborne evidence appears by five minutes after scheduled departure, it publishes Delayed until live data confirms the aircraft is airborne. The map keeps its direct planned arc, and observed FR24 positions build the actual breadcrumb track.
 
 ✓ FR24 altitude arrives in feet. Groundspeed remains a distinct data field. Because no indicated-airspeed source is available, groundspeed may drive the existing speed gauge only when its digital readout is labeled Ground Speed.
 
@@ -100,7 +100,7 @@ It exists so future work always builds on previous decisions instead of repeatin
 
 ### Live Flight State Reconciliation
 
-✓ The browser requests live data only for a Calendar-selected flight in a trackable mode. Acquisition begins 15 minutes before scheduled departure. Home, Arrived, Layover, and Offline modes do not generate FR24 polling.
+✓ The browser requests live data only for a Calendar-selected flight in a trackable mode. Acquisition begins 30 minutes before scheduled departure, matching the Boarding window. Home, Arrived, Layover, and Offline modes do not generate FR24 polling.
 
 ✓ The default live polling interval is 60 seconds. A live snapshot older than three minutes is stale and cannot override Calendar state.
 
@@ -157,7 +157,7 @@ It exists so future work always builds on previous decisions instead of repeatin
 
 ✓ Automated checks enforce the poster manifest, naming, dimensions, and collection ratio. A batch contact sheet is required to catch repetition and visual drift, while human approval remains the gate for landmark fidelity and final art direction.
 
-✓ `MIA`, `CLT`, `PHX`, `XNA`, and `CMH` form pilot batch `pilot-hubs-01`. They remain candidates until Joey accepts each composition.
+✓ `MIA`, `CLT`, `PHX`, `XNA`, and `CMH` form pilot batch `pilot-hubs-01`. Joey and his family approved all five compositions for the display library.
 
 
 ### Live Motion and Approach
@@ -202,3 +202,30 @@ It exists so future work always builds on previous decisions instead of repeatin
 ✓ The schedule model, live reconciliation model, Calendar parser, and moving map all resolve airport codes through the same catalog.
 
 ✓ Airport metadata requires no runtime API call. Unknown codes retain safe three-letter-code fallbacks, and the catalog is informational only—not for navigation.
+
+
+## 2026-08-13
+
+### Family Beta
+
+✓ The first family beta runs on the downstairs Windows desktop and serves an upstairs iPad over the trusted private home network. The desktop retains Google and FR24 credentials; the iPad is a display client only.
+
+✓ The beta server listens on the local network but exposes only required browser assets and API routes. `.env`, `token.json`, `credentials.json`, backend code, package metadata, and project documentation are not publicly served.
+
+✓ The HP 23es 1920 × 1080 layout remains the primary design target. The iPad scales that complete 16 : 9 canvas proportionally in landscape rather than creating a separate layout.
+
+✓ iPad split-flap audio requires one explicit on-screen tap after a new browser session because Safari blocks uninitiated playback.
+
+✓ An operating, commuting, or deadhead leg becomes Calendar-delayed five minutes after scheduled departure unless live data confirms it is airborne. Delayed remains the split-flap status while the aircraft is still on the ground.
+
+✓ A delayed or airborne leg locks the Calendar selection through overlapping future events and for up to eight hours beyond its scheduled end. Confirmed Arrived or Landed releases the lock immediately.
+
+✓ Calendar deadhead events remain operationally trackable but use `DEADHEAD` in Today's Duty and family language that says Daddy is riding rather than operating.
+
+✓ The approved poster library is `AVL`, `CLT`, `CMH`, `DCA`, `DFW`, `MIA`, `ORD`, `PHX`, `ROC`, and `XNA`.
+
+✓ Dad Radar never substitutes an unrelated destination poster. An airport without approved artwork receives a designed vintage placeholder containing its real city, state or province, and three-letter airport code. New posters are produced in small batches driven by the upcoming schedule.
+
+✓ The final faceplate covers the upper monitor area except for the split-flap tile openings. The split-flap row is therefore permanent in every state and may never be replaced by browser text or another full-width presentation.
+
+✓ In a non-flight state, Flight and From remain visible as blank mechanical tiles. To displays the last confirmed airport when one exists—`AVL` for Home and the confirmed airport for Layover—and Status displays the compact state label. Unknown location leaves To blank rather than inventing an airport.

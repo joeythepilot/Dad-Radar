@@ -273,7 +273,7 @@ function testLivePhasesDriveModes() {
 
   const cancelled =
     reconcileScheduleWithLive(
-      calendarResolved("PRE_FLIGHT"),
+      calendarResolved("BOARDING"),
       liveSnapshot({
         phase: "CANCELLED",
         cancelled: true
@@ -283,8 +283,76 @@ function testLivePhasesDriveModes() {
 
   assert.equal(
     cancelled.mode,
-    "PRE_FLIGHT"
+    "BOARDING"
   );
+  assert.equal(
+    cancelled.state.status,
+    "CANCELLED"
+  );
+}
+
+function testDelayPersistsUntilAirborne() {
+  const delayedCalendar =
+    calendarResolved("DELAYED");
+
+  delayedCalendar.state.flight
+    .departureDelayMinutes = 15;
+
+  const taxiing =
+    reconcileScheduleWithLive(
+      delayedCalendar,
+      liveSnapshot({
+        phase: "TAXI_OUT",
+        departure: {
+          delayMinutes: null
+        },
+        position: {
+          ...liveSnapshot().position,
+          altitudeFeet: 680,
+          groundSpeedKnots: 18
+        }
+      }),
+      { now: NOW }
+    );
+
+  assert.equal(taxiing.mode, "DELAYED");
+  assert.equal(
+    taxiing.state.status,
+    "DELAYED"
+  );
+  assert.equal(
+    taxiing.state.flight
+      .departureDelayMinutes,
+    15
+  );
+
+  const airborne =
+    reconcileScheduleWithLive(
+      calendarResolved("DELAYED"),
+      liveSnapshot({
+        phase: "EN_ROUTE"
+      }),
+      { now: NOW }
+    );
+
+  assert.equal(airborne.mode, "EN_ROUTE");
+  assert.equal(
+    airborne.state.status,
+    "EN ROUTE"
+  );
+}
+
+function testCancellationOverridesCalendarDelay() {
+  const cancelled =
+    reconcileScheduleWithLive(
+      calendarResolved("DELAYED"),
+      liveSnapshot({
+        phase: "CANCELLED",
+        cancelled: true
+      }),
+      { now: NOW }
+    );
+
   assert.equal(
     cancelled.state.status,
     "CANCELLED"
@@ -467,6 +535,8 @@ function runTests() {
   testStaleLiveFlightFallsBack();
   testRouteMismatchFallsBack();
   testLivePhasesDriveModes();
+  testDelayPersistsUntilAirborne();
+  testCancellationOverridesCalendarDelay();
   testCommuteModeIsPreservedInFlight();
   testApproachDoesNotRegressAfterLevelOff();
   testApproachReleasesForSustainedGoAround();

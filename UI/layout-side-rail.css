@@ -13,6 +13,43 @@
    Main vertical balance
    ========================================================= */
 
+.beta-audio-button {
+  position: fixed;
+  z-index: 1000;
+
+  right: 18px;
+  bottom: 18px;
+
+  padding: 12px 15px;
+
+  border:
+    1px solid
+    rgba(221, 184, 112, 0.88);
+  border-radius: 3px;
+
+  background:
+    rgba(10, 12, 11, 0.94);
+
+  box-shadow:
+    0 3px 12px
+    rgba(0, 0, 0, 0.58);
+
+  color: #f0d39d;
+
+  font-family:
+    "Courier New",
+    monospace;
+
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+
+.beta-audio-button[hidden] {
+  display: none;
+}
+
 .panel-shell {
   grid-template-rows:
     minmax(0, 26fr)
@@ -132,6 +169,9 @@
   overflow: hidden !important;
 
   isolation: isolate;
+
+  --destination-poster-image:
+    url("../assets/destinations/asheville-poster-7x8-baseline.png");
 }
 
 
@@ -148,7 +188,7 @@
       rgba(20, 17, 13, 0.28),
       rgba(20, 17, 13, 0.28)
     ),
-    url("../assets/destinations/asheville-poster.jpeg");
+    var(--destination-poster-image);
 
   background-size: cover;
   background-position: center;
@@ -194,6 +234,172 @@
   place-self: center !important;
 
   transform: none !important;
+}
+
+
+.destination-poster-image[hidden] {
+  display: none !important;
+}
+
+
+.destination-poster-fallback {
+  position: absolute;
+  z-index: 3;
+
+  inset: 0;
+
+  display: grid;
+  grid-template-rows:
+    auto
+    1fr
+    auto
+    auto
+    auto;
+
+  place-items: center;
+
+  gap: 10px;
+
+  padding: 34px 24px 24px;
+
+  overflow: hidden;
+
+  border: 8px solid #d0a457;
+  outline:
+    2px solid
+    rgba(48, 35, 20, 0.9);
+  outline-offset: -15px;
+
+  background:
+    radial-gradient(
+      circle at 50% 42%,
+      rgba(237, 197, 117, 0.34),
+      transparent 40%
+    ),
+    linear-gradient(
+      160deg,
+      #294e5b 0%,
+      #18343f 45%,
+      #ba733d 100%
+    );
+
+  box-shadow:
+    inset 0 0 44px
+    rgba(23, 12, 6, 0.66);
+
+  color: #f6ddb0;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+
+.destination-poster-fallback[hidden] {
+  display: none;
+}
+
+
+.destination-poster-fallback::before {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 245, 219, 0.025) 0,
+      rgba(255, 245, 219, 0.025) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+
+.poster-fallback-kicker,
+.poster-fallback-region,
+.poster-fallback-message {
+  position: relative;
+  z-index: 1;
+
+  font-family:
+    "Courier New",
+    monospace;
+
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+
+.poster-fallback-kicker {
+  font-size: 14px;
+}
+
+
+#poster-fallback-city {
+  position: relative;
+  z-index: 1;
+
+  align-self: end;
+
+  max-width: 100%;
+
+  font-family:
+    Impact,
+    "Arial Narrow",
+    sans-serif;
+
+  font-size: 48px;
+  line-height: 0.92;
+  letter-spacing: 1px;
+
+  overflow-wrap: anywhere;
+
+  text-shadow:
+    0 2px 0 #4e2d1b,
+    0 5px 10px
+    rgba(22, 11, 5, 0.55);
+}
+
+
+.poster-fallback-region {
+  align-self: start;
+
+  max-width: 100%;
+
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+
+.poster-fallback-airport {
+  position: relative;
+  z-index: 1;
+
+  width: 100%;
+
+  padding-top: 10px;
+
+  border-top:
+    2px solid
+    rgba(246, 221, 176, 0.72);
+
+  font-family:
+    Impact,
+    "Arial Narrow",
+    sans-serif;
+
+  font-size: 62px;
+  line-height: 0.9;
+  letter-spacing: 7px;
+}
+
+
+.poster-fallback-message {
+  font-size: 11px;
 }
 
 

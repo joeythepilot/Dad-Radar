@@ -74,6 +74,8 @@ Highest priority.
 
 The four active fields use a 4 : 3 : 3 : 8.5 grid for FLIGHT, FROM, TO, and STATUS. This follows the actual character counts, keeps the flight number close to the left edge, and preserves a clear visual break between TO and STATUS.
 
+The final physical faceplate covers the entire upper monitor area except the split-flap tile openings. The software must therefore keep the mechanical row visible in every state and may never replace it with a full-width text message. In non-flight states, Flight and From use blank tiles, To shows the last confirmed airport when one exists, and Status shows the compact state label.
+
 ---
 
 ## Moving Map
