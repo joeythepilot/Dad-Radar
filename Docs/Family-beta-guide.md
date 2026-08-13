@@ -17,9 +17,27 @@ The family beta runs Dad Radar on the downstairs Windows desktop and uses the up
 
 Startup sounds, cabinet lighting, power behavior, and other physical cues remain on the Raspberry Pi build timeline.
 
-## First-time desktop setup
+## What to install on the home desktop
 
-Open the Dad Radar repository in VS Code. In a PowerShell terminal at the repository root, run:
+The home desktop is the Dad Radar host, not a development workstation. It needs:
+
+- Git for Windows, so it can download and later update the private Dad Radar repository
+- The current Node.js LTS release, which includes `npm`
+
+VS Code is optional. It can make the first setup more familiar, but Dad Radar does not require it to run. GitHub CLI is not required on the home desktop.
+
+After the family-beta pull request has been merged into `main`, open PowerShell and run:
+
+```powershell
+cd $env:USERPROFILE
+git clone https://github.com/joeythepilot/Dad-Radar.git
+cd Dad-Radar
+npm.cmd install
+```
+
+Because the repository is private, Git may open a browser and ask Joey to sign in to GitHub during the clone. This is a one-time authorization on that desktop.
+
+For later Dad Radar updates, open PowerShell in the `Dad-Radar` folder and run:
 
 ```powershell
 git pull
@@ -59,13 +77,13 @@ npm.cmd run diagnose:live
 
 ## Start the family display
 
-In the first VS Code terminal, run:
+In the first PowerShell window, from the `Dad-Radar` folder, run:
 
 ```powershell
 npm.cmd run beta:start
 ```
 
-Leave that terminal running. In a second terminal, run:
+Leave that window running. In a second PowerShell window, return to the `Dad-Radar` folder and run:
 
 ```powershell
 npm.cmd run beta:address
@@ -162,7 +180,7 @@ For each unexpected result, record the local time, flight number, expected resul
 
 ### Stop Dad Radar
 
-Select the terminal running `beta:start` and press `Ctrl+C`.
+Select the PowerShell window running `beta:start` and press `Ctrl+C`.
 
 ## Home-network safety
 
