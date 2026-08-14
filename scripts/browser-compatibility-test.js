@@ -36,7 +36,7 @@ const layoutStyles = fs.readFileSync(
 
 assert.match(
   html,
-  /<script[\s\S]*?src="\.\/App\/dad-radar-browser\.js\?v=ipad-es5-4"[\s\S]*?><\/script>/,
+  /<script[\s\S]*?src="\.\/App\/dad-radar-browser\.js\?v=ipad-es5-5"[\s\S]*?><\/script>/,
   "The display should load the compatibility bundle."
 );
 
@@ -48,7 +48,7 @@ assert.doesNotMatch(
 
 assert.match(
   html,
-  /IPAD-ES5-4/,
+  /IPAD-ES5-5/,
   "The display should expose its old-Safari boot diagnostic version."
 );
 
@@ -63,7 +63,7 @@ for (const stylesheetPath of [
       `\\.\\/UI\\/${stylesheetPath.replace(
         ".",
         "\\."
-      )}\\?v=ipad-es5-4`
+      )}\\?v=ipad-es5-5`
     ),
     `${stylesheetPath} should bypass the old iPad cache.`
   );
@@ -80,6 +80,20 @@ assert.match(
   /\.flap-character\s*\+\s*\.flap-character\s*\{[\s\S]*?margin-left:[\s\S]*?var\(--flap-gap\)/,
   "The flap board should not depend on unsupported Safari 12 flex gap."
 );
+
+for (const legacyGaugeText of [
+  ["instrument-label", "0\\.25rem"],
+  ["instrument-value", "0\\.62rem"],
+  ["instrument-unit", "0\\.22rem"]
+]) {
+  assert.match(
+    baseStyles,
+    new RegExp(
+      `\\.${legacyGaugeText[0]}\\s*\\{[\\s\\S]*?font-size:\\s*${legacyGaugeText[1]};[\\s\\S]*?font-size:\\s*clamp\\(`
+    ),
+    `${legacyGaugeText[0]} should retain a Safari 12 font-size fallback.`
+  );
+}
 
 assert.match(
   layoutStyles,

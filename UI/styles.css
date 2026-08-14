@@ -2289,11 +2289,18 @@ h1 {
     center;
 
   gap:
+    1px;
+
+  gap:
     clamp(
       1px,
       0.08vw,
       2px
     );
+
+  padding:
+    2px
+    3px;
 
   padding:
     clamp(
@@ -2357,11 +2364,17 @@ h1 {
     #b9ae96;
 
   font-size:
+    0.25rem;
+
+  font-size:
     clamp(
       0.25rem,
       0.29vw,
       0.35rem
     );
+
+  letter-spacing:
+    0.025rem;
 
   letter-spacing:
     clamp(
@@ -2384,6 +2397,9 @@ h1 {
     sans-serif;
 
   font-size:
+    0.62rem;
+
+  font-size:
     clamp(
       0.62rem,
       0.75vw,
@@ -2402,11 +2418,17 @@ h1 {
     var(--brass);
 
   font-size:
+    0.22rem;
+
+  font-size:
     clamp(
       0.22rem,
       0.26vw,
       0.31rem
     );
+
+  letter-spacing:
+    0.02rem;
 
   letter-spacing:
     clamp(

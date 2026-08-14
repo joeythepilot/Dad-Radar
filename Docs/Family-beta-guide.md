@@ -168,7 +168,7 @@ For each unexpected result, record the local time, flight number, expected resul
 
 - Completely close the existing Safari tab, then reopen the address printed by `beta:address`. Dad Radar versions its browser bundle and stylesheets so Safari cannot reuse the incompatible copy.
 - The first-generation iPad Air on iOS 12.5.5 uses a dedicated ES5 bundle and legacy CSS dimensions for the split-flap and instruments.
-- If startup still fails, photograph the full `STARTUP ERROR` line. Include its `IPAD-ES5-4` version marker in the report; do not include credentials or token text.
+- If startup still fails, photograph the full `STARTUP ERROR` line. Include its `IPAD-ES5-5` version marker in the report; do not include credentials or token text.
 
 ### Dad Radar loads but has no schedule
 
