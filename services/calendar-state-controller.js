@@ -21,6 +21,7 @@
     "TAXI_OUT",
     "EN_ROUTE",
     "APPROACH",
+    "LANDING",
     "COMMUTING_TO_BASE",
     "COMMUTING_HOME"
   ]);
@@ -293,6 +294,7 @@
           "TAXI_OUT",
           "EN_ROUTE",
           "APPROACH",
+          "LANDING",
           "DIVERTED"
         ].includes(resolvedPhase)
       )

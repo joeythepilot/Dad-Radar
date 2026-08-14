@@ -7,6 +7,7 @@ The family beta runs Dad Radar on the downstairs Windows desktop and uses the up
 - The HP 23es 1920 × 1080 layout, scaled proportionally for the iPad in landscape
 - Google Calendar schedule and Today's Duty timeline
 - Live Flightradar24 position, instruments, map motion, ETA, and phase changes
+- A distinct `LANDING` status below 3,000 feet AGL after Approach is confirmed
 - Split-flap animation and sound after one iPad tap
 - Boarding at 30 minutes before scheduled departure
 - Calendar-inferred Delayed status beginning five minutes after scheduled departure, until the aircraft is airborne
@@ -120,6 +121,7 @@ The approved display library currently includes:
 | CMH | Columbus, Ohio |
 | DCA | Washington, District of Columbia |
 | DFW | Dallas–Fort Worth, Texas |
+| LSE | La Crosse, Wisconsin |
 | MIA | Miami, Florida |
 | ORD | Chicago, Illinois |
 | PHX | Phoenix, Arizona |
@@ -141,6 +143,7 @@ For any other airport, Dad Radar displays a designed vintage placeholder with th
 | Delayed aircraft moving on the ground | `DELAYED` remains until airborne |
 | Airborne | `EN ROUTE` immediately |
 | Descending toward the destination below the approach thresholds | `APPROACH`; a temporary level-off must not return to `EN ROUTE` |
+| Confirmed approach below 3,000 feet above destination elevation | `LANDING`; a go-around returns to `APPROACH` after climbing above 3,500 feet AGL |
 | Arrived at AVL | `ARRIVED`, followed later by `HOME` |
 | Arrived away from AVL | `ARRIVED`, followed later by the away ground location or `LAYOVER` |
 | Next scheduled leg overlaps the current delay | Current leg remains displayed until arrival or the safety timeout |
@@ -160,6 +163,12 @@ For each unexpected result, record the local time, flight number, expected resul
 - If the helper cannot find an address, run `ipconfig`, find the Wi-Fi or Ethernet `IPv4 Address`, and open `http://THAT_ADDRESS:4173` on the iPad.
 - Confirm `beta:start` is still running.
 - In Windows Firewall, allow Node.js on Private networks only.
+
+### The old iPad stops at startup or loses the flap and gauges
+
+- Completely close the existing Safari tab, then reopen the address printed by `beta:address`. Dad Radar versions its browser bundle and stylesheets so Safari cannot reuse the incompatible copy.
+- The first-generation iPad Air on iOS 12.5.5 uses a dedicated ES5 bundle and legacy CSS dimensions for the split-flap and instruments.
+- If startup still fails, photograph the full `STARTUP ERROR` line. Include its `IPAD-ES5-3` version marker in the report; do not include credentials or token text.
 
 ### Dad Radar loads but has no schedule
 

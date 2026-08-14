@@ -23,6 +23,19 @@ assert.deepEqual(
   }
 );
 
+assert.equal(
+  fieldsForState({
+    status: "LANDING",
+    flight: {
+      number: "MQ 3704",
+      origin: "ORD",
+      destination: "AVL"
+    }
+  }).status,
+  "LANDING ",
+  "The landing phase should fit the eight-tile status field."
+);
+
 assert.deepEqual(
   fieldsForState({
     status: "HOME",

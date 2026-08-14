@@ -20,9 +20,23 @@ const html = fs.readFileSync(
   "utf8"
 );
 
+const baseStyles = fs.readFileSync(
+  path.join(projectRoot, "UI", "styles.css"),
+  "utf8"
+);
+
+const layoutStyles = fs.readFileSync(
+  path.join(
+    projectRoot,
+    "UI",
+    "layout-side-rail.css"
+  ),
+  "utf8"
+);
+
 assert.match(
   html,
-  /<script src="\.\/App\/dad-radar-browser\.js"><\/script>/,
+  /<script[\s\S]*?src="\.\/App\/dad-radar-browser\.js\?v=ipad-es5-3"[\s\S]*?><\/script>/,
   "The display should load the compatibility bundle."
 );
 
@@ -30,6 +44,47 @@ assert.doesNotMatch(
   html,
   /type="module"/,
   "The display must not require module-script support."
+);
+
+assert.match(
+  html,
+  /IPAD-ES5-3/,
+  "The display should expose its old-Safari boot diagnostic version."
+);
+
+for (const stylesheetPath of [
+  "styles.css",
+  "map.css",
+  "layout-side-rail.css"
+]) {
+  assert.match(
+    html,
+    new RegExp(
+      `\\.\\/UI\\/${stylesheetPath.replace(
+        ".",
+        "\\."
+      )}\\?v=ipad-es5-3`
+    ),
+    `${stylesheetPath} should bypass the old iPad cache.`
+  );
+}
+
+assert.match(
+  baseStyles,
+  /--flap-width:\s*45px;/,
+  "The flap board should retain a pre-clamp tile-width fallback."
+);
+
+assert.match(
+  baseStyles,
+  /\.flap-character\s*\+\s*\.flap-character\s*\{[\s\S]*?margin-left:[\s\S]*?var\(--flap-gap\)/,
+  "The flap board should not depend on unsupported Safari 12 flex gap."
+);
+
+assert.match(
+  layoutStyles,
+  /\.instrument-slot \.instrument\s*\{[\s\S]*?width:\s*13vw\s*!important;[\s\S]*?height:\s*13vw\s*!important;/,
+  "The instruments should have square Safari 12 fallback dimensions."
 );
 
 for (const unsupportedSyntax of [
@@ -44,6 +99,18 @@ for (const unsupportedSyntax of [
   {
     label: "Array.prototype.at",
     pattern: /\.at\s*\(/
+  },
+  {
+    label: "arrow functions",
+    pattern: /=>/
+  },
+  {
+    label: "const declarations",
+    pattern: /\bconst\s+/
+  },
+  {
+    label: "let declarations",
+    pattern: /\blet\s+/
   }
 ]) {
   assert.doesNotMatch(

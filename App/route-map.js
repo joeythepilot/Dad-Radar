@@ -1343,6 +1343,10 @@ function renderRouteMap(state) {
   const inverseZoom =
     1 / camera.zoom;
 
+  const plannedRouteDash =
+    `${(15 * inverseZoom).toFixed(1)} ` +
+    `${(9 * inverseZoom).toFixed(1)}`;
+
   const aircraftAngle =
     livePosition &&
     hasLiveHeading
@@ -1361,14 +1365,11 @@ function renderRouteMap(state) {
         "d",
         curve.path
       );
+
+      path.style.strokeDasharray =
+        plannedRouteDash;
     }
   });
-
-  if (elements.routeLine) {
-    elements.routeLine.style.strokeDasharray =
-      `${(15 * inverseZoom).toFixed(1)} ` +
-      `${(9 * inverseZoom).toFixed(1)}`;
-  }
 
   if (elements.routeProgress) {
     if (actualTrack) {

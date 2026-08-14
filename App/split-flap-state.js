@@ -78,6 +78,7 @@
         "TAXI OUT": "TAXI OUT",
         "EN ROUTE": "EN ROUTE",
         APPROACH: "APPROACH",
+        LANDING: "LANDING",
         DIVERTED: "DIVERTED",
         LANDED: "LANDED",
         CANCELLED: "CANCELED",

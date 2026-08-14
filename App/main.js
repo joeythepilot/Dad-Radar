@@ -1248,12 +1248,31 @@ function renderDailySchedule(
 
   dailyScheduleList.replaceChildren();
 
-  const entries =
+  const allEntries =
     Array.isArray(
       dailySchedule?.entries
     )
       ? dailySchedule.entries
       : [];
+
+  const viewportWidth =
+    window.visualViewport?.width ??
+    window.innerWidth;
+
+  const entries =
+    globalThis
+      .dadRadarDailyScheduleLayout
+      ?.selectVisibleEntries(
+        allEntries,
+        viewportWidth
+      ) ?? allEntries;
+
+  dailyScheduleList.setAttribute(
+    "aria-label",
+    entries.length === allEntries.length
+      ? `${allEntries.length} duty items`
+      : `${allEntries.length} duty items; showing ${entries.length} nearest the current activity`
+  );
 
   if (entries.length === 0) {
     const emptyEntry =
@@ -1684,6 +1703,7 @@ const modeShortcuts = {
   "5": "TAXI_OUT",
   "6": "EN_ROUTE",
   "7": "APPROACH",
+  l: "LANDING",
   "8": "DIVERTED",
   "9": "ARRIVED",
   "0": "LAYOVER",
@@ -1777,6 +1797,9 @@ function startDashboardSequence() {
       dashboard.hidden =
         false;
     }
+
+    window.__dadRadarBoot
+      ?.ready();
 
     scheduleFlightBoardBalance();
   }, dadRadarSettings

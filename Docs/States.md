@@ -22,8 +22,10 @@ An on-time aircraft is moving near the departure airport. A delayed aircraft con
 Aircraft is airborne.
 
 ## Approach
-Aircraft has descended below 10,000 feet.
-Play the cabin chime and transition to Approach mode.
+Dad Radar has confirmed arrival through converging evidence such as descent, destination distance, route progress, groundspeed, and altitude. Once confirmed, a temporary level-off cannot return the same flight to En Route.
+
+## Landing
+During a confirmed Approach, the aircraft is below 3,000 feet above the destination airport elevation and is not climbing. A go-around releases Landing back to Approach after a confirmed climb above 3,500 feet AGL. The hysteresis prevents a noisy altitude report from rapidly alternating the two statuses.
 
 ## Arrived
 Aircraft has arrived at the destination gate.
@@ -32,7 +34,7 @@ Aircraft has arrived at the destination gate.
 Daddy is on an overnight or extended layover between flight assignments. After a flight arrives away from AVL, the last destination remains Daddy's ground location even when no next flight is currently listed. The split-flap keeps Flight and From blank, displays the confirmed layover airport in To, and displays `LAYOVER` in Status.
 
 ## Deadhead
-Deadhead is a role attached to a normal flight rather than a competing operational phase. Today's Duty labels it `DEADHEAD` and explains that Daddy is riding. The split-flap still progresses through Boarding, Delayed, Taxi Out, En Route, Approach, and Arrived.
+Deadhead is a role attached to a normal flight rather than a competing operational phase. Today's Duty labels it `DEADHEAD` and explains that Daddy is riding. The split-flap still progresses through Boarding, Delayed, Taxi Out, En Route, Approach, Landing, and Arrived.
 
 ## Commuting Home
 Traveling from Chicago (ORD) back to Asheville (AVL) after completing a work trip.

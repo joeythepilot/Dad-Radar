@@ -187,6 +187,7 @@
 .map-route-shadow {
   stroke: rgba(61, 31, 22, 0.34);
   stroke-width: 8;
+  stroke-dasharray: 15 9;
 }
 
 .map-route-line {

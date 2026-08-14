@@ -168,6 +168,8 @@ It exists so future work always builds on previous decisions instead of repeatin
 
 ✓ Once a flight enters Approach, temporary level-offs and isolated provider regressions cannot demote it to En Route. The Approach latch is scoped to one calendar flight and releases for terminal phases or a confirmed climb through 12,500 feet.
 
+✓ Landing begins only after Approach is confirmed and the aircraft descends below 3,000 feet above the destination airport elevation. It remains latched until a terminal phase, except that a confirmed climb above 3,500 feet AGL returns a go-around to Approach.
+
 ✓ Operational phases update immediately. Position and instrument telemetry interpolate visually for 52 seconds between the approximately one-minute provider snapshots.
 
 ✓ Visual interpolation never mutates the raw Flightradar24 snapshot or claims an estimated intermediate value as a new observation.
@@ -222,10 +224,12 @@ It exists so future work always builds on previous decisions instead of repeatin
 
 ✓ Calendar deadhead events remain operationally trackable but use `DEADHEAD` in Today's Duty and family language that says Daddy is riding rather than operating.
 
-✓ The approved poster library is `AVL`, `CLT`, `CMH`, `DCA`, `DFW`, `MIA`, `ORD`, `PHX`, `ROC`, and `XNA`.
+✓ The approved poster library is `AVL`, `CLT`, `CMH`, `DCA`, `DFW`, `LSE`, `MIA`, `ORD`, `PHX`, `ROC`, and `XNA`.
 
 ✓ Dad Radar never substitutes an unrelated destination poster. An airport without approved artwork receives a designed vintage placeholder containing its real city, state or province, and three-letter airport code. New posters are produced in small batches driven by the upcoming schedule.
 
 ✓ The final faceplate covers the upper monitor area except for the split-flap tile openings. The split-flap row is therefore permanent in every state and may never be replaced by browser text or another full-width presentation.
 
 ✓ In a non-flight state, Flight and From remain visible as blank mechanical tiles. To displays the last confirmed airport when one exists—`AVL` for Home and the confirmed airport for Layover—and Status displays the compact state label. Unknown location leaves To blank rather than inventing an airport.
+
+✓ The first-generation iPad Air on iOS 12.5.5 receives an ES5 browser bundle plus explicit CSS fallbacks for unsupported `clamp()`, flex-gap, and `aspect-ratio` behavior. Versioned browser assets bypass stale Safari caches, and a visible startup diagnostic replaces silent initialization failures.

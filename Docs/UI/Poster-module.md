@@ -41,6 +41,7 @@ Approved destination artwork:
 - `DFW`: Candidate 2, with a right-aligned destination title, Texas twilight sky, Dallas/Fort Worth landmark montage, and stockyard foreground.
 - `DCA`: Candidate 2, with a centered National Mall composition, pearlescent spring atmosphere, Potomac water, and cherry-blossom foreground. Candidate 1 was rejected because its canvas was narrower than the collection standard.
 - `ROC`: Rochester Candidate 1.
+- `LSE`: La Crosse Candidate 1, approved for the family beta.
 - `MIA`, `CLT`, `PHX`, `XNA`, and `CMH`: pilot batch `pilot-hubs-01`, approved by Joey and his family.
 
 If the current destination or confirmed ground location is absent from the approved library, the display uses a designed vintage placeholder with the catalog city, state or province, and three-letter airport code. It must never substitute another city's poster.

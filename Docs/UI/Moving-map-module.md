@@ -27,8 +27,8 @@ It must read as a printed mid-century airline route chart, not a modern web map.
 
 ## Route and airport placards
 
-- The curved origin-to-destination arc is the deterministic planned route. Dad Radar does not purchase or decode a filed flight plan.
-- Before live acquisition, the darker completed segment may follow Calendar progress. After two FR24 observations, the darker line follows the actual accumulated aircraft track instead.
+- The dashed curved origin-to-destination arc is the deterministic planned route. Its shadow uses the same dash pattern so the gaps remain visually open. Dad Radar does not purchase or decode a filed flight plan.
+- Before live acquisition, the darker completed segment may follow Calendar progress. After two FR24 observations, a solid darker line follows the actual accumulated aircraft track instead.
 - Departure and destination placards sit together on the side of the endpoints opposite the route arc.
 - Placards use diagonal leader lines and must never sit directly on the route tangent.
 - Placards display the three-letter airport code and mapped city name.

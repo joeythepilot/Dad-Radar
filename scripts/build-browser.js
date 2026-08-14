@@ -22,6 +22,7 @@ const browserSources = [
   "App/instrument-math.js",
   "App/split-flap-audio.js",
   "App/split-flap-state.js",
+  "App/daily-schedule-layout.js",
   "App/main.js"
 ];
 
@@ -84,9 +85,10 @@ const result = babel.transformSync(
         require.resolve("@babel/preset-env"),
         {
           bugfixes: true,
+          forceAllTransforms: true,
           modules: false,
           targets: {
-            ios: "12"
+            ios: "9"
           }
         }
       ]
@@ -108,5 +110,5 @@ fs.writeFileSync(
 );
 
 console.log(
-  `Built ${path.relative(projectRoot, outputPath)} for iOS 12 and newer.`
+  `Built ${path.relative(projectRoot, outputPath)} in legacy Safari-compatible ES5.`
 );

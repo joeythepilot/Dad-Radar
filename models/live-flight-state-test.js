@@ -394,7 +394,7 @@ function testApproachDoesNotRegressAfterLevelOff() {
         phase: "APPROACH",
         position: {
           ...liveSnapshot().position,
-          altitudeFeet: 3700,
+          altitudeFeet: 7000,
           altitudeTrend: ""
         }
       }),
@@ -408,7 +408,7 @@ function testApproachDoesNotRegressAfterLevelOff() {
         phase: "EN_ROUTE",
         position: {
           ...liveSnapshot().position,
-          altitudeFeet: 3700,
+          altitudeFeet: 7000,
           altitudeTrend: ""
         }
       }),
@@ -438,7 +438,7 @@ function testApproachDoesNotRegressAfterLevelOff() {
         phase: "EN_ROUTE",
         position: {
           ...liveSnapshot().position,
-          altitudeFeet: 2400,
+          altitudeFeet: 5000,
           altitudeTrend: "D"
         }
       }),
@@ -451,6 +451,88 @@ function testApproachDoesNotRegressAfterLevelOff() {
 
   assert.equal(
     finalDescentRegression.mode,
+    "LANDING"
+  );
+  assert.equal(
+    finalDescentRegression.state.status,
+    "LANDING"
+  );
+  assert.equal(
+    finalDescentRegression.state.livePhase,
+    "LANDING"
+  );
+  assert.equal(
+    finalDescentRegression.state.flight
+      .altitudeAgl,
+    2836.1
+  );
+}
+
+function testLandingDoesNotTriggerOnDeparture() {
+  const departure =
+    reconcileScheduleWithLive(
+      calendarResolved(),
+      liveSnapshot({
+        phase: "EN_ROUTE",
+        position: {
+          ...liveSnapshot().position,
+          altitudeFeet: 4000,
+          altitudeTrend: "C"
+        }
+      }),
+      { now: NOW }
+    );
+
+  assert.equal(
+    departure.state.flight.altitudeAgl,
+    1836.1
+  );
+  assert.equal(
+    departure.mode,
+    "EN_ROUTE",
+    "Low altitude alone must not label a climbing departure as Landing."
+  );
+}
+
+function testLandingReleasesForGoAround() {
+  const calendar = calendarResolved();
+
+  const landing =
+    reconcileScheduleWithLive(
+      calendar,
+      liveSnapshot({
+        phase: "APPROACH",
+        position: {
+          ...liveSnapshot().position,
+          altitudeFeet: 5000,
+          altitudeTrend: "D"
+        }
+      }),
+      { now: NOW }
+    );
+
+  assert.equal(landing.mode, "LANDING");
+
+  const goAround =
+    reconcileScheduleWithLive(
+      calendar,
+      liveSnapshot({
+        phase: "APPROACH",
+        position: {
+          ...liveSnapshot().position,
+          altitudeFeet: 6000,
+          altitudeTrend: "C"
+        }
+      }),
+      {
+        now: NOW,
+        previousResolved: landing
+      }
+    );
+
+  assert.equal(goAround.mode, "APPROACH");
+  assert.equal(
+    goAround.state.status,
     "APPROACH"
   );
 }
@@ -539,6 +621,8 @@ function runTests() {
   testCancellationOverridesCalendarDelay();
   testCommuteModeIsPreservedInFlight();
   testApproachDoesNotRegressAfterLevelOff();
+  testLandingDoesNotTriggerOnDeparture();
+  testLandingReleasesForGoAround();
   testApproachReleasesForSustainedGoAround();
   testApproachLatchDoesNotCrossFlights();
 

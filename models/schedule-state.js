@@ -408,6 +408,10 @@
             destination
               ? `DADDY'S RIDE IS ALMOST IN ${destination}`
               : "DADDY'S RIDE IS ALMOST THERE",
+          LANDING:
+            destination
+              ? `DADDY'S RIDE IS LANDING IN ${destination}`
+              : "DADDY'S RIDE IS LANDING",
           ARRIVED:
             destination
               ? `DADDY'S RIDE HAS ARRIVED IN ${destination}`
@@ -442,6 +446,10 @@
           destination
             ? `DADDY IS ALMOST IN ${destination}`
             : "DADDY IS ALMOST THERE",
+        LANDING:
+          destination
+            ? `DADDY IS LANDING IN ${destination}`
+            : "DADDY IS LANDING",
         DIVERTED:
           destination
             ? `DADDY'S FLIGHT DIVERTED TO ${destination}`

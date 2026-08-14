@@ -39,45 +39,54 @@
   --muted:
     #9d9a92;
 
+  /* These fixed values are deliberate fallbacks for Safari 12.
+     Unsupported functions inside custom properties otherwise remain
+     syntactically valid and collapse the consuming layout later. */
   --outer-padding: 7px;
-  --outer-padding:
-    clamp(
-      7px,
-      0.65vw,
-      13px
-    );
-
   --panel-gap: 6px;
-  --panel-gap:
-    clamp(
-      6px,
-      0.56vw,
-      11px
-    );
-
   --flap-width: 35px;
-  --flap-width:
-    clamp(
-      35px,
-      3.2vw,
-      62px
-    );
-
   --flap-height: 53px;
-  --flap-height:
-    clamp(
-      53px,
-      4.95vw,
-      95px
-    );
-
   --flap-gap: 3px;
-  --flap-gap:
-    clamp(
-      3px,
-      0.22vw,
-      5px
-    );
+}
+
+
+@supports (width: clamp(1px, 2vw, 3px)) {
+  :root {
+    --outer-padding:
+      clamp(
+        7px,
+        0.65vw,
+        13px
+      );
+
+    --panel-gap:
+      clamp(
+        6px,
+        0.56vw,
+        11px
+      );
+
+    --flap-width:
+      clamp(
+        35px,
+        3.2vw,
+        62px
+      );
+
+    --flap-height:
+      clamp(
+        53px,
+        4.95vw,
+        95px
+      );
+
+    --flap-gap:
+      clamp(
+        3px,
+        0.22vw,
+        5px
+      );
+  }
 }
 
 
@@ -635,8 +644,10 @@ h1 {
   justify-content:
     center;
 
+  /* Adjacent margins provide the same spacing in Safari 12, which
+     predates flexbox gap support. */
   gap:
-    var(--flap-gap);
+    0;
 
   padding:
     0;
@@ -646,6 +657,12 @@ h1 {
 
   background:
     transparent;
+}
+
+
+.flap-character + .flap-character {
+  margin-left:
+    var(--flap-gap);
 }
 
 
@@ -2052,6 +2069,18 @@ h1 {
   inset:
     0;
 
+  top:
+    0;
+
+  right:
+    0;
+
+  bottom:
+    0;
+
+  left:
+    0;
+
   width:
     100%;
 
@@ -2644,28 +2673,34 @@ h1 {
 
 :root {
   --flap-width: 45px;
-  --flap-width:
-    clamp(
-      45px,
-      4.5vw,
-      86px
-    );
-
   --flap-height: 70px;
-  --flap-height:
-    clamp(
-      70px,
-      7vw,
-      134px
-    );
-
   --flap-gap: 2px;
-  --flap-gap:
-    clamp(
-      2px,
-      0.18vw,
-      4px
-    );
+}
+
+
+@supports (width: clamp(1px, 2vw, 3px)) {
+  :root {
+    --flap-width:
+      clamp(
+        45px,
+        4.5vw,
+        86px
+      );
+
+    --flap-height:
+      clamp(
+        70px,
+        7vw,
+        134px
+      );
+
+    --flap-gap:
+      clamp(
+        2px,
+        0.18vw,
+        4px
+      );
+  }
 }
 
 

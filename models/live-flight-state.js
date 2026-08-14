@@ -37,11 +37,18 @@
     const APPROACH_RELEASE_ALTITUDE_FEET =
       12500;
 
+    const LANDING_ENTRY_AGL_FEET =
+      3000;
+
+    const LANDING_RELEASE_AGL_FEET =
+      3500;
+
     const STATUS_LABELS = Object.freeze({
       BOARDING: "BOARDING",
       TAXI_OUT: "TAXI OUT",
       EN_ROUTE: "EN ROUTE",
       APPROACH: "APPROACH",
+      LANDING: "LANDING",
       DIVERTED: "DIVERTED",
       LANDED: "LANDED",
       ARRIVED: "ARRIVED",
@@ -197,8 +204,11 @@
       }
 
       if (
-        (phase === "EN_ROUTE" ||
-          phase === "APPROACH") &&
+        [
+          "EN_ROUTE",
+          "APPROACH",
+          "LANDING"
+        ].includes(phase) &&
         (calendarMode ===
           "COMMUTING_TO_BASE" ||
           calendarMode ===
@@ -212,6 +222,7 @@
         TAXI_OUT: "TAXI_OUT",
         EN_ROUTE: "EN_ROUTE",
         APPROACH: "APPROACH",
+        LANDING: "LANDING",
         DIVERTED: "DIVERTED",
         LANDED: "ARRIVED",
         ARRIVED: "ARRIVED"
@@ -231,6 +242,7 @@
         ![
           "EN_ROUTE",
           "APPROACH",
+          "LANDING",
           "DIVERTED",
           "CANCELLED",
           "LANDED",
@@ -272,13 +284,9 @@
       return String(value);
     }
 
-    function isConfirmedApproachRelease(
+    function isClimbingSnapshot(
       snapshot
     ) {
-      const altitudeFeet = finiteNumber(
-        snapshot?.position?.altitudeFeet
-      );
-
       const altitudeTrend = String(
         snapshot?.position
           ?.altitudeTrend ?? ""
@@ -286,15 +294,66 @@
         .trim()
         .toUpperCase();
 
-      const isClimbing = [
+      return [
         "C",
         "U",
         "UP",
         "CLIMBING"
       ].includes(altitudeTrend);
+    }
+
+    function altitudeAboveDestinationFeet(
+      calendarResolved,
+      snapshot
+    ) {
+      const altitudeFeet = finiteNumber(
+        snapshot?.position?.altitudeFeet
+      );
+
+      const destination =
+        normalizeAirport(
+          snapshot?.destination
+        ) ??
+        normalizeAirport(
+          calendarResolved?.state
+            ?.flight?.destination
+        ) ??
+        normalizeAirport(
+          calendarResolved?.event
+            ?.destination
+        );
+
+      const fieldElevationFeet =
+        finiteNumber(
+          airportCatalog
+            ?.lookupAirport?.(
+              destination
+            )?.elevationFeet
+        );
+
+      if (
+        altitudeFeet === null ||
+        fieldElevationFeet === null
+      ) {
+        return null;
+      }
+
+      return Math.max(
+        0,
+        altitudeFeet -
+          fieldElevationFeet
+      );
+    }
+
+    function isConfirmedApproachRelease(
+      snapshot
+    ) {
+      const altitudeFeet = finiteNumber(
+        snapshot?.position?.altitudeFeet
+      );
 
       return (
-        isClimbing &&
+        isClimbingSnapshot(snapshot) &&
         altitudeFeet !== null &&
         altitudeFeet >=
           APPROACH_RELEASE_ALTITUDE_FEET
@@ -335,6 +394,41 @@
           previousEventKey;
 
       if (
+        [
+          "LANDED",
+          "ARRIVED",
+          "DIVERTED",
+          "CANCELLED"
+        ].includes(phase)
+      ) {
+        return phase;
+      }
+
+      const altitudeAgl =
+        altitudeAboveDestinationFeet(
+          calendarResolved,
+          snapshot
+        );
+
+      if (
+        sameFlight &&
+        previousPhase === "LANDING"
+      ) {
+        if (
+          altitudeAgl !== null &&
+          altitudeAgl >=
+            LANDING_RELEASE_AGL_FEET &&
+          isClimbingSnapshot(snapshot)
+        ) {
+          return "APPROACH";
+        }
+
+        return "LANDING";
+      }
+
+      let stabilizedPhase = phase;
+
+      if (
         sameFlight &&
         previousPhase === "APPROACH" &&
         phase === "EN_ROUTE" &&
@@ -342,10 +436,20 @@
           snapshot
         )
       ) {
-        return "APPROACH";
+        stabilizedPhase = "APPROACH";
       }
 
-      return phase;
+      if (
+        stabilizedPhase === "APPROACH" &&
+        altitudeAgl !== null &&
+        altitudeAgl <
+          LANDING_ENTRY_AGL_FEET &&
+        !isClimbingSnapshot(snapshot)
+      ) {
+        return "LANDING";
+      }
+
+      return stabilizedPhase;
     }
 
     function reconcileScheduleWithLive(
@@ -449,6 +553,12 @@
             destination
           );
 
+      const altitudeAgl =
+        altitudeAboveDestinationFeet(
+          calendarResolved,
+          snapshot
+        );
+
       const flight = {
         ...calendarFlight,
         number:
@@ -508,6 +618,7 @@
         altitude: finiteNumber(
           position.altitudeFeet
         ),
+        altitudeAgl,
         progress:
           liveProgress ??
           calendarFlight.progress,

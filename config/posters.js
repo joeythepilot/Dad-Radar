@@ -36,6 +36,13 @@
       location:
         "Dallas–Fort Worth, Texas"
     }),
+    LSE: Object.freeze({
+      source:
+        "./assets/destinations/lse-poster-7x8-candidate-v1.png",
+      title: "LA CROSSE",
+      location:
+        "La Crosse, Wisconsin"
+    }),
     MIA: Object.freeze({
       source:
         "./assets/destinations/mia-poster-7x8-candidate-v1.png",

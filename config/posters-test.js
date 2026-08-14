@@ -20,6 +20,10 @@ function runTests() {
     getPoster("BIL"),
     null
   );
+  assert.equal(
+    getPoster("lse").location,
+    "La Crosse, Wisconsin"
+  );
 
   for (const [code, poster] of
     Object.entries(posterByAirport)) {

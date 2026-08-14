@@ -362,7 +362,7 @@ async function testApproachPersistsAcrossProviderRegression() {
   };
 
   let phase = "APPROACH";
-  let altitudeFeet = 3700;
+  let altitudeFeet = 7000;
   let altitudeTrend = "";
   const requestOptions = [];
 
@@ -411,7 +411,7 @@ async function testApproachPersistsAcrossProviderRegression() {
   );
 
   phase = "EN_ROUTE";
-  altitudeFeet = 3100;
+  altitudeFeet = 6000;
   altitudeTrend = "D";
 
   const finalDescent =

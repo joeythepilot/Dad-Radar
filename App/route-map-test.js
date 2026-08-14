@@ -533,6 +533,21 @@ function testObservedTrackReplacesEstimatedProgress() {
       .style.strokeDasharray,
     "none"
   );
+
+  assert.notEqual(
+    elements["map-route-line"]
+      .style.strokeDasharray,
+    "none",
+    "The planned route should remain dashed."
+  );
+
+  assert.equal(
+    elements["map-route-shadow"]
+      .style.strokeDasharray,
+    elements["map-route-line"]
+      .style.strokeDasharray,
+    "The planned-route shadow must use the same dash pattern instead of visually filling the gaps."
+  );
 }
 
 function testVisualStateDrivesAircraftMotion() {

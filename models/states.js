@@ -105,6 +105,22 @@ const dadRadarModes = {
     }
   },
 
+  LANDING: {
+    status: "LANDING",
+    flight: {
+      number: "AA 1234",
+      origin: "ORD",
+      destination: "AVL",
+      destinationCity: "ASHEVILLE",
+      airspeed: 145,
+      heading: 171,
+      altitude: 4800,
+      altitudeAgl: 2635,
+      progress: 98,
+      eta: "7:42 PM"
+    }
+  },
+
   DIVERTED: {
     status: "DIVERTED",
     flight: {
