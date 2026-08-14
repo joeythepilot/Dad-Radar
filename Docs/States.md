@@ -13,10 +13,10 @@ Traveling from Asheville (AVL) to Chicago (ORD) to begin a work trip.
 Beginning 30 minutes before scheduled departure, Daddy and the passengers are preparing to board. This Calendar-owned state does not require paid airline-status data.
 
 ## Delayed
-The scheduled departure time has passed by more than five minutes and Dad Radar has not yet confirmed that the aircraft is airborne. The split-flap remains Delayed while the aircraft is on the ground; Today's Duty shows the accumulated delay. Live airborne evidence immediately changes the state to En Route.
+The scheduled departure time has passed by more than five minutes and Dad Radar has not yet confirmed either an on-time Taxi Out or that the aircraft is airborne. If Delayed appears before ground movement begins, the split-flap remains Delayed while the aircraft is on the ground; Today's Duty shows the accumulated delay. Live airborne evidence immediately changes the state to En Route.
 
 ## Taxi Out
-An on-time aircraft is moving near the departure airport. A delayed aircraft continues to display Delayed during ground movement so the family sees the most important information.
+An on-time aircraft is moving near the departure airport. Once live data confirms Taxi Out, that state is clamped for the current flight: the Calendar's scheduled-departure-plus-five-minute fallback and a temporary stale or regressed provider snapshot cannot pull it backward to Delayed or Boarding. A flight that was already Delayed before Taxi Out continues to display Delayed during ground movement so the family sees the most important information.
 
 ## En Route
 Aircraft is airborne.

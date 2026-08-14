@@ -289,6 +289,91 @@ async function testLiveFlightRefinesCalendarState() {
   assert.equal(syncEvent.detail.ok, true);
 }
 
+async function testTaxiOutDoesNotRegressToCalendarDelay() {
+  const { context } =
+    createBrowserContext();
+
+  const flight = activeFlightEvent();
+
+  flight.times = {
+    startUtc:
+      new Date(
+        Date.now() - 4 * 60000
+      ).toISOString(),
+    endUtc:
+      new Date(
+        Date.now() + 60 * 60000
+      ).toISOString()
+  };
+
+  context.dadRadarCalendarApi = {
+    async getUpcomingEvents() {
+      return {
+        retrievedAt:
+          new Date().toISOString(),
+        events: [flight]
+      };
+    }
+  };
+
+  context.dadRadarLiveFlightApi = {
+    async getFlightSnapshot() {
+      return {
+        provider: "flightradar24",
+        providerFlightId:
+          "confirmed-taxi-out",
+        retrievedAt:
+          new Date().toISOString(),
+        displayIdent: "MQ4140",
+        phase: "TAXI_OUT",
+        status: "Taxiing",
+        origin: "ORD",
+        destination: "AVL",
+        progressPercent: 0,
+        departure: {
+          delayMinutes: null
+        },
+        position: {
+          latitude: 41.9769,
+          longitude: -87.9081,
+          altitudeFeet: 680,
+          groundSpeedKnots: 18,
+          headingDegrees: 95,
+          recordedAt:
+            new Date().toISOString()
+        }
+      };
+    }
+  };
+
+  const boarding =
+    await context.refreshCalendarState();
+
+  assert.equal(boarding.mode, "BOARDING");
+
+  const taxiOut =
+    await context.refreshLiveFlightState();
+
+  assert.equal(taxiOut.mode, "TAXI_OUT");
+
+  flight.times.startUtc =
+    new Date(
+      Date.now() - 6 * 60000
+    ).toISOString();
+
+  const afterDelayThreshold =
+    await context.refreshCalendarState();
+
+  assert.equal(
+    afterDelayThreshold.mode,
+    "TAXI_OUT"
+  );
+  assert.equal(
+    afterDelayThreshold.state.status,
+    "TAXI OUT"
+  );
+}
+
 async function testLiveFailureRetainsCalendarState() {
   const {
     context,
@@ -629,6 +714,7 @@ async function testAirborneLegStaysLockedDuringCalendarOverlap() {
 async function runTests() {
   await testCalendarPublishesState();
   await testLiveFlightRefinesCalendarState();
+  await testTaxiOutDoesNotRegressToCalendarDelay();
   await testLiveFailureRetainsCalendarState();
   await testApproachPersistsAcrossProviderRegression();
   await testPollingStopsAfterArrival();

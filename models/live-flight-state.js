@@ -189,7 +189,8 @@
 
     function liveMode(
       calendarResolved,
-      phase
+      phase,
+      previousResolved
     ) {
       const calendarMode =
         calendarResolved.mode;
@@ -200,6 +201,15 @@
           phase
         )
       ) {
+        if (
+          hasConfirmedTaxiOutClamp(
+            calendarResolved,
+            previousResolved
+          )
+        ) {
+          return "TAXI_OUT";
+        }
+
         return "DELAYED";
       }
 
@@ -282,6 +292,69 @@
       }
 
       return String(value);
+    }
+
+    function isSameResolvedFlight(
+      currentResolved,
+      previousResolved
+    ) {
+      const currentEventKey =
+        resolvedEventKey(
+          currentResolved
+        );
+
+      return (
+        currentEventKey !== null &&
+        currentEventKey ===
+          resolvedEventKey(
+            previousResolved
+          )
+      );
+    }
+
+    function hasConfirmedTaxiOutClamp(
+      calendarResolved,
+      previousResolved
+    ) {
+      return Boolean(
+        calendarResolved?.mode ===
+          "DELAYED" &&
+        previousResolved?.mode ===
+          "TAXI_OUT" &&
+        isSameResolvedFlight(
+          calendarResolved,
+          previousResolved
+        )
+      );
+    }
+
+    function clampedTaxiOutState(
+      calendarResolved,
+      previousResolved
+    ) {
+      return {
+        ...calendarResolved,
+        mode: "TAXI_OUT",
+        state: {
+          ...calendarResolved.state,
+          status: "TAXI OUT",
+          source:
+            previousResolved.state
+              .source ??
+            calendarResolved.state.source,
+          liveData: false,
+          livePhase: "TAXI_OUT",
+          flight: {
+            ...calendarResolved.state
+              .flight,
+            ...previousResolved.state
+              .flight
+          }
+        },
+        liveFlight:
+          previousResolved.liveFlight ??
+          null
+      };
     }
 
     function isClimbingSnapshot(
@@ -404,6 +477,19 @@
         return phase;
       }
 
+      if (
+        sameFlight &&
+        previousResolved?.mode ===
+          "TAXI_OUT" &&
+        ![
+          "EN_ROUTE",
+          "APPROACH",
+          "LANDING"
+        ].includes(phase)
+      ) {
+        return "TAXI_OUT";
+      }
+
       const altitudeAgl =
         altitudeAboveDestinationFeet(
           calendarResolved,
@@ -470,6 +556,12 @@
         ...providedOptions
       };
 
+      const preserveTaxiOut =
+        hasConfirmedTaxiOutClamp(
+          calendarResolved,
+          options.previousResolved
+        );
+
       if (
         !isLiveSnapshotFresh(
           snapshot,
@@ -480,7 +572,12 @@
           snapshot
         )
       ) {
-        return calendarResolved;
+        return preserveTaxiOut
+          ? clampedTaxiOutState(
+              calendarResolved,
+              options.previousResolved
+            )
+          : calendarResolved;
       }
 
       const calendarFlight =
@@ -510,7 +607,8 @@
 
       const mode = liveMode(
         calendarResolved,
-        phase
+        phase,
+        options.previousResolved
       );
 
       const origin =
@@ -652,6 +750,16 @@
                     .departureDelayMinutes
                 ) ?? 0
               )
+            : preserveTaxiOut
+              ? finiteNumber(
+                  snapshot.departure
+                    ?.delayMinutes
+                ) ??
+                finiteNumber(
+                  options.previousResolved
+                    ?.state?.flight
+                    ?.departureDelayMinutes
+                )
             : finiteNumber(
                 snapshot.departure
                   ?.delayMinutes

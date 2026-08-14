@@ -342,6 +342,139 @@ function testDelayPersistsUntilAirborne() {
   );
 }
 
+function testConfirmedTaxiOutClampsCalendarDelay() {
+  const boarding =
+    calendarResolved("BOARDING");
+
+  const confirmedTaxiOut =
+    reconcileScheduleWithLive(
+      boarding,
+      liveSnapshot({
+        phase: "TAXI_OUT",
+        departure: {
+          delayMinutes: null
+        },
+        position: {
+          ...liveSnapshot().position,
+          altitudeFeet: 680,
+          groundSpeedKnots: 18
+        }
+      }),
+      { now: NOW }
+    );
+
+  assert.equal(
+    confirmedTaxiOut.mode,
+    "TAXI_OUT"
+  );
+
+  const calendarDelay =
+    calendarResolved("DELAYED");
+
+  calendarDelay.state.flight
+    .departureDelayMinutes = 6;
+
+  const clamped =
+    reconcileScheduleWithLive(
+      calendarDelay,
+      liveSnapshot({
+        phase: "TAXI_OUT",
+        departure: {
+          delayMinutes: null
+        },
+        position: {
+          ...liveSnapshot().position,
+          altitudeFeet: 680,
+          groundSpeedKnots: 20
+        }
+      }),
+      {
+        now: NOW,
+        previousResolved:
+          confirmedTaxiOut
+      }
+    );
+
+  assert.equal(clamped.mode, "TAXI_OUT");
+  assert.equal(
+    clamped.state.status,
+    "TAXI OUT"
+  );
+  assert.equal(
+    clamped.state.flight
+      .departureDelayMinutes,
+    null
+  );
+}
+
+function testTaxiOutClampSurvivesProviderRegression() {
+  const confirmedTaxiOut =
+    reconcileScheduleWithLive(
+      calendarResolved("BOARDING"),
+      liveSnapshot({
+        phase: "TAXI_OUT"
+      }),
+      { now: NOW }
+    );
+
+  const regressed =
+    reconcileScheduleWithLive(
+      calendarResolved("DELAYED"),
+      liveSnapshot({
+        phase: "BOARDING"
+      }),
+      {
+        now: NOW,
+        previousResolved:
+          confirmedTaxiOut
+      }
+    );
+
+  assert.equal(regressed.mode, "TAXI_OUT");
+  assert.equal(
+    regressed.state.livePhase,
+    "TAXI_OUT"
+  );
+}
+
+function testTaxiOutClampSurvivesStaleSnapshot() {
+  const confirmedTaxiOut =
+    reconcileScheduleWithLive(
+      calendarResolved("BOARDING"),
+      liveSnapshot({
+        phase: "TAXI_OUT"
+      }),
+      { now: NOW }
+    );
+
+  const stale =
+    reconcileScheduleWithLive(
+      calendarResolved("DELAYED"),
+      liveSnapshot({
+        phase: "TAXI_OUT",
+        retrievedAt:
+          "2026-08-04T17:55:00.000Z"
+      }),
+      {
+        now: NOW,
+        staleAfterMs:
+          3 * 60 * 1000,
+        previousResolved:
+          confirmedTaxiOut
+      }
+    );
+
+  assert.equal(stale.mode, "TAXI_OUT");
+  assert.equal(
+    stale.state.status,
+    "TAXI OUT"
+  );
+  assert.equal(
+    stale.state.liveData,
+    false
+  );
+}
+
 function testCancellationOverridesCalendarDelay() {
   const cancelled =
     reconcileScheduleWithLive(
@@ -618,6 +751,9 @@ function runTests() {
   testRouteMismatchFallsBack();
   testLivePhasesDriveModes();
   testDelayPersistsUntilAirborne();
+  testConfirmedTaxiOutClampsCalendarDelay();
+  testTaxiOutClampSurvivesProviderRegression();
+  testTaxiOutClampSurvivesStaleSnapshot();
   testCancellationOverridesCalendarDelay();
   testCommuteModeIsPreservedInFlight();
   testApproachDoesNotRegressAfterLevelOff();

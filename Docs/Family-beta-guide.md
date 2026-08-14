@@ -10,7 +10,7 @@ The family beta runs Dad Radar on the downstairs Windows desktop and uses the up
 - A distinct `LANDING` status below 3,000 feet AGL after Approach is confirmed
 - Split-flap animation and sound after one iPad tap
 - Boarding at 30 minutes before scheduled departure
-- Calendar-inferred Delayed status beginning five minutes after scheduled departure, until the aircraft is airborne
+- Calendar-inferred Delayed status beginning five minutes after scheduled departure unless an on-time Taxi Out was already confirmed; an existing delay remains until the aircraft is airborne
 - Active-leg locking so an overlapping next flight cannot replace the current delayed or airborne flight
 - Deadhead parsing with `DEADHEAD` in Today's Duty and family language that says Daddy is riding rather than operating
 - A faceplate-safe split-flap that remains visible in every state; Home and Layover place the confirmed airport in To
@@ -166,8 +166,8 @@ For any other airport, Dad Radar displays a designed vintage placeholder with th
 | No active flight, Daddy away from AVL | Split-flap To shows the confirmed airport and Status shows `LAYOVER`; never `HOME` |
 | Daddy's location cannot be confirmed | Flight, From, and To are blank split-flap tiles; Status shows `LOC UNKN` |
 | 30 minutes before departure | `BOARDING` |
-| More than five minutes after scheduled departure, not airborne | `DELAYED`; Today's Duty shows accumulated minutes late |
-| On-time aircraft moving near the departure airport | `TAXI OUT` |
+| More than five minutes after scheduled departure, not airborne, and Taxi Out was not already confirmed | `DELAYED`; Today's Duty shows accumulated minutes late |
+| On-time aircraft moving near the departure airport | `TAXI OUT`; once confirmed, it must remain `TAXI OUT` across the scheduled-departure-plus-five-minute boundary |
 | Delayed aircraft moving on the ground | `DELAYED` remains until airborne |
 | Airborne | `EN ROUTE` immediately |
 | Descending toward the destination below the approach thresholds | `APPROACH`; a temporary level-off must not return to `EN ROUTE` |

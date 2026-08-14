@@ -54,7 +54,7 @@ For comparison, requesting a full record every airborne minute would use approxi
 
 | Removed field or feature | Replacement behavior |
 | --- | --- |
-| Pre-departure gate, boarding, cancellation, and airline delay status | Calendar displays Boarding at T-minus 30 and infers Delayed after scheduled departure plus five minutes until FR24 confirms the aircraft is airborne |
+| Pre-departure gate, boarding, cancellation, and airline delay status | Calendar displays Boarding at T-minus 30 and infers Delayed after scheduled departure plus five minutes unless live data already confirmed Taxi Out; a delay that appeared first remains until FR24 confirms the aircraft is airborne |
 | Filed flight-plan route | Direct planned arc plus observed breadcrumb track |
 | Provider boarding and taxi labels | Dad Radar infers Taxi Out, En Route, Approach, and Arrived from position, groundspeed, vertical speed, altitude, route progress, and airport proximity |
 | Continuously refreshed airline ETA | Calendar ETA remains the fallback; the initial FR24 full record may refine it |

@@ -91,7 +91,7 @@ It exists so future work always builds on previous decisions instead of repeatin
 
 ✓ Initial acquisition uses the FR24 full live-position record. Later polls use the exact FR24 flight ID to select the light live-position record while retaining cached identity metadata for that leg.
 
-✓ Paid pre-departure airline status and decoded filed-route data are not required. Calendar publishes Boarding beginning 30 minutes before departure. If no airborne evidence appears by five minutes after scheduled departure, it publishes Delayed until live data confirms the aircraft is airborne. The map keeps its direct planned arc, and observed FR24 positions build the actual breadcrumb track.
+✓ Paid pre-departure airline status and decoded filed-route data are not required. Calendar publishes Boarding beginning 30 minutes before departure. If neither an on-time Taxi Out nor airborne evidence appears by five minutes after scheduled departure, it publishes Delayed until live data confirms the aircraft is airborne. The map keeps its direct planned arc, and observed FR24 positions build the actual breadcrumb track.
 
 ✓ FR24 altitude arrives in feet. Groundspeed remains a distinct data field. Because no indicated-airspeed source is available, groundspeed may drive the existing speed gauge only when its digital readout is labeled Ground Speed.
 
@@ -218,7 +218,7 @@ It exists so future work always builds on previous decisions instead of repeatin
 
 ✓ iPad split-flap audio requires one explicit on-screen tap after a new browser session because Safari blocks uninitiated playback.
 
-✓ An operating, commuting, or deadhead leg becomes Calendar-delayed five minutes after scheduled departure unless live data confirms it is airborne. Delayed remains the split-flap status while the aircraft is still on the ground.
+✓ An operating, commuting, or deadhead leg becomes Calendar-delayed five minutes after scheduled departure unless live data already confirmed an on-time Taxi Out or an airborne phase. Once confirmed, Taxi Out is a monotonic floor for that flight and cannot regress to Boarding or a later Calendar-inferred Delayed state. A flight that became Delayed before Taxi Out remains Delayed while it is still on the ground.
 
 ✓ A delayed or airborne leg locks the Calendar selection through overlapping future events and for up to eight hours beyond its scheduled end. Confirmed Arrived or Landed releases the lock immediately.
 
