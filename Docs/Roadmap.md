@@ -73,7 +73,7 @@ The browser API client, pure reconciliation model, cost-controlled polling contr
 
 Filed-route acquisition was deliberately removed from the active design. The origin-to-destination curve is the planned route, while accumulated FR24 observations draw the actual breadcrumb track. The current 90-flight-hour provider cost model is documented in `Docs/Data-provider-cost-analysis.md`.
 
-Next milestone: deploy the family beta to the downstairs Windows desktop, use the upstairs iPad as the private-network display, and capture real-use results with the checklist in `Docs/Family-beta-guide.md`.
+The family beta is deployed on the downstairs Windows desktop with the upstairs iPad as the private-network display. Windows automatic startup removes the terminal dependency and restores the server after operating-system restarts. The active milestone is real-use flight testing, poster expansion, and bug capture using the checklist in `Docs/Family-beta-guide.md`.
 
 ---
 

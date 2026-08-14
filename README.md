@@ -9,8 +9,10 @@ Maxwell Family Flight Tracker — a handcrafted flight operations display for ai
 3. Complete the Google Calendar authorization flow documented by the server utilities.
 4. Add a Flightradar24 API token to `FR24_API_TOKEN` when live-flight lookup is needed. Dad Radar uses the separate Flightradar24 API subscription, not a consumer Gold or Business subscription.
 5. Run `npm.cmd run beta:check` to verify the family-beta installation without printing credential values.
-6. Start Dad Radar with `npm.cmd run beta:start`. Open `http://127.0.0.1:4173` on the desktop.
-7. Run `npm.cmd run beta:address` in a second terminal to print the private home-network address for an iPad.
+6. On the Windows family-beta PC, run `npm.cmd run beta:autostart:install` once and approve the Windows permission prompt. Dad Radar then starts invisibly after every reboot without a terminal.
+7. Run `npm.cmd run beta:autostart:status` to verify the background server, then run `npm.cmd run beta:address` to print the private home-network address for an iPad.
+
+For temporary development use, `npm.cmd run beta:start` remains available as a manual fallback.
 
 Run all deterministic tests with `npm test`.
 

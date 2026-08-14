@@ -3,3 +3,4 @@ App/dad-radar-browser.js
 .env
 credentials.json
 token.json
+runtime/

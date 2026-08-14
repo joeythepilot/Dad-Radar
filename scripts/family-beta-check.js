@@ -210,10 +210,13 @@ function printReport(report) {
       "Dad Radar is ready for the family beta."
     );
     console.log(
-      "Next: npm.cmd run beta:start"
+      "Recommended: npm.cmd run beta:autostart:install"
     );
     console.log(
-      "Then, in another terminal: npm.cmd run beta:address"
+      "Manual fallback: npm.cmd run beta:start"
+    );
+    console.log(
+      "Display address: npm.cmd run beta:address"
     );
     return;
   }

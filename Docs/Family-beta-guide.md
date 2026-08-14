@@ -43,7 +43,10 @@ For later Dad Radar updates, open PowerShell in the `Dad-Radar` folder and run:
 ```powershell
 git pull
 npm.cmd install
+npm.cmd run beta:autostart:restart
 ```
+
+The restart command rebuilds the legacy iPad browser bundle and restarts the background server. Windows may request permission. There is no need to reinstall the startup task after an ordinary code update unless the repository or Node.js installation is moved.
 
 If `.env` does not already exist, copy `.env.example` to `.env`, then add the real values:
 
@@ -76,15 +79,32 @@ npm.cmd run diagnose:live
 
 `beta:check` reports only whether each private item is present; it never prints token values. The live diagnostic may report no aircraft match when the next flight is not yet active. That is normal.
 
-## Start the family display
+## Install automatic startup
 
-In the first PowerShell window, from the `Dad-Radar` folder, run:
+Run this once from the `Dad-Radar` folder:
 
 ```powershell
-npm.cmd run beta:start
+npm.cmd run beta:autostart:install
 ```
 
-Leave that window running. In a second PowerShell window, return to the `Dad-Radar` folder and run:
+Windows displays one User Account Control permission prompt. Choose **Yes**. Dad Radar then runs as a background Windows task with no terminal window and automatically starts about 20 seconds after every boot, including a Windows Update restart. It starts even if nobody has signed into the PC yet and automatically retries after an unexpected failure.
+
+Verify both the Windows task and the web server:
+
+```powershell
+npm.cmd run beta:autostart:status
+```
+
+The expected result is:
+
+```text
+[PASS] Windows startup task: Installed
+[PASS] Dad Radar server: Responding
+```
+
+If `beta:start` was already running in another terminal during installation, the background host waits for that manual copy to stop and then takes over automatically. After installation reports success, close the old manual server with `Ctrl+C`, wait about 15 seconds, and run the status command again.
+
+To print the iPad address, run:
 
 ```powershell
 npm.cmd run beta:address
@@ -98,6 +118,14 @@ http://192.168.1.44:4173
 
 When Windows Defender Firewall asks, allow Node.js on **Private networks only**. Do not enable it for public networks.
 
+The manual command remains available as an emergency fallback:
+
+```powershell
+npm.cmd run beta:start
+```
+
+When started manually, that terminal must remain open. The automatic-startup installation does not require an open terminal.
+
 ## Set up the iPad
 
 1. Connect the iPad to the same home Wi-Fi as the desktop. A guest network may block devices from seeing one another.
@@ -108,7 +136,7 @@ When Windows Defender Firewall asks, allow Node.js on **Private networks only**.
 6. Keep the iPad plugged in and prevent automatic sleep while it is serving as the display.
 7. Optional: use iPad Guided Access to prevent accidental navigation away from Dad Radar.
 
-The desktop must remain awake, connected to the network, and running `beta:start`. Closing the terminal or putting the desktop to sleep stops the upstairs display.
+The desktop must remain awake and connected to the network. The monitor may turn off and Windows may be locked, but the PC itself must not sleep. Automatic startup survives restarts; sleep still suspends the home-network server until Windows wakes.
 
 ## Destination poster behavior
 
@@ -161,7 +189,9 @@ For each unexpected result, record the local time, flight number, expected resul
 - Confirm both devices are on the same non-guest network.
 - Run `npm.cmd run beta:address` again; the desktop address may have changed.
 - If the helper cannot find an address, run `ipconfig`, find the Wi-Fi or Ethernet `IPv4 Address`, and open `http://THAT_ADDRESS:4173` on the iPad.
-- Confirm `beta:start` is still running.
+- Run `npm.cmd run beta:autostart:status` and confirm that both checks pass.
+- If the Windows task is installed but the server is not responding, run `npm.cmd run beta:autostart:restart` and approve the permission prompt.
+- The background log is available at `runtime\family-beta.log`; Dad Radar does not intentionally record configured token values there.
 - In Windows Firewall, allow Node.js on Private networks only.
 
 ### The old iPad stops at startup or loses the flap and gauges
@@ -189,7 +219,15 @@ For each unexpected result, record the local time, flight number, expected resul
 
 ### Stop Dad Radar
 
-Select the PowerShell window running `beta:start` and press `Ctrl+C`.
+For a manually started server, select the PowerShell window running `beta:start` and press `Ctrl+C`.
+
+To stop the background server and permanently remove its Windows startup task, run:
+
+```powershell
+npm.cmd run beta:autostart:remove
+```
+
+Windows requests permission. Automatic startup can be restored later by running `npm.cmd run beta:autostart:install` again.
 
 ## Home-network safety
 
