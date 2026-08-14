@@ -22,11 +22,16 @@
     const days = normalizeDays(options.days);
 
     const controller =
-      new AbortController();
+      typeof global.AbortController ===
+      "function"
+        ? new global.AbortController()
+        : null;
 
-    const timeoutId = setTimeout(() => {
-      controller.abort();
-    }, REQUEST_TIMEOUT_MS);
+    const timeoutId = controller
+      ? global.setTimeout(() => {
+          controller.abort();
+        }, REQUEST_TIMEOUT_MS)
+      : null;
 
     try {
       const response = await fetch(
@@ -38,7 +43,7 @@
           },
           signal:
             options.signal ??
-            controller.signal
+            controller?.signal
         }
       );
 
@@ -72,7 +77,9 @@
 
       throw error;
     } finally {
-      clearTimeout(timeoutId);
+      if (timeoutId !== null) {
+        global.clearTimeout(timeoutId);
+      }
     }
   }
 

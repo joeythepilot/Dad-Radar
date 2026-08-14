@@ -22,6 +22,7 @@ async function runTests() {
       "/",
       "/display",
       "/api/health",
+      "/App/dad-radar-browser.js",
       "/App/main.js",
       "/UI/styles.css",
       "/config/settings.js",

@@ -39,6 +39,7 @@
   --muted:
     #9d9a92;
 
+  --outer-padding: 7px;
   --outer-padding:
     clamp(
       7px,
@@ -46,6 +47,7 @@
       13px
     );
 
+  --panel-gap: 6px;
   --panel-gap:
     clamp(
       6px,
@@ -53,6 +55,7 @@
       11px
     );
 
+  --flap-width: 35px;
   --flap-width:
     clamp(
       35px,
@@ -60,6 +63,7 @@
       62px
     );
 
+  --flap-height: 53px;
   --flap-height:
     clamp(
       53px,
@@ -67,6 +71,7 @@
       95px
     );
 
+  --flap-gap: 3px;
   --flap-gap:
     clamp(
       3px,
@@ -292,6 +297,7 @@ h1 {
    ========================================================= */
 
 .dashboard {
+  width: 100vw;
   width:
     min(
       100vw,
@@ -301,6 +307,7 @@ h1 {
       )
     );
 
+  height: 56.25vw;
   height:
     min(
       100vh,
@@ -2636,6 +2643,7 @@ h1 {
 */
 
 :root {
+  --flap-width: 45px;
   --flap-width:
     clamp(
       45px,
@@ -2643,6 +2651,7 @@ h1 {
       86px
     );
 
+  --flap-height: 70px;
   --flap-height:
     clamp(
       70px,
@@ -2650,6 +2659,7 @@ h1 {
       134px
     );
 
+  --flap-gap: 2px;
   --flap-gap:
     clamp(
       2px,

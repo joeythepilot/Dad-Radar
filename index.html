@@ -1067,78 +1067,8 @@
   </div>
 
 
-  <!-- =====================================================
-       Existing application scripts
-       ===================================================== -->
-
-  <script src="./data/airport-catalog.js"></script>
-  <script src="./config/settings.js"></script>
-  <script src="./config/posters.js"></script>
-  <script src="./models/states.js"></script>
-  <script src="./models/schedule-state.js"></script>
-  <script src="./models/live-flight-state.js"></script>
-  <script src="./App/state-engine.js"></script>
-  <script src="./App/visual-state-controller.js"></script>
-  <script src="./services/mock-flight-service.js"></script>
-  <script src="./services/calendar-api-service.js"></script>
-  <script src="./services/live-flight-api-service.js"></script>
-  <script src="./services/calendar-state-controller.js"></script>
-  <script src="./App/instrument-math.js"></script>
-  <script src="./App/split-flap-audio.js"></script>
-  <script src="./App/split-flap-state.js"></script>
-  <script src="./App/main.js"></script>
-
-  <script
-    type="module"
-    src="./App/route-map.js"
-  ></script>
-
-
-  <!-- =====================================================
-       Fixed-size viewer scaling
-       ===================================================== -->
-
-  <script>
-    (() => {
-      "use strict";
-
-      const DESIGN_WIDTH = 1920;
-      const DESIGN_HEIGHT = 1080;
-
-      function scaleDadRadarViewer() {
-        const viewportWidth =
-          window.visualViewport?.width ??
-          window.innerWidth;
-
-        const viewportHeight =
-          window.visualViewport?.height ??
-          window.innerHeight;
-
-        const viewerScale =
-          Math.min(
-            viewportWidth / DESIGN_WIDTH,
-            viewportHeight / DESIGN_HEIGHT
-          );
-
-        document.documentElement.style.setProperty(
-          "--viewer-scale",
-          String(viewerScale)
-        );
-      }
-
-      window.addEventListener(
-        "resize",
-        scaleDadRadarViewer
-      );
-
-      window.visualViewport?.addEventListener(
-        "resize",
-        scaleDadRadarViewer
-      );
-
-      scaleDadRadarViewer();
-    })();
-  </script>
+  <!-- Built for the first-generation iPad Air as well as current browsers. -->
+  <script src="./App/dad-radar-browser.js"></script>
 
 </body>
 

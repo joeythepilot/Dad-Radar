@@ -811,13 +811,19 @@
       events,
       now
     ) {
-      const lastFlight = events
-        .filter(
+      const completedFlights =
+        events.filter(
           (event) =>
             event.kind === "flight" &&
             eventEnd(event) <= now
-        )
-        .at(-1) ?? null;
+        );
+
+      const lastFlight =
+        completedFlights.length > 0
+          ? completedFlights[
+              completedFlights.length - 1
+            ]
+          : null;
 
       if (lastFlight?.destination) {
         return lastFlight.destination;
@@ -1083,7 +1089,11 @@
         );
 
       const lastFlight =
-        completedFlights.at(-1) ?? null;
+        completedFlights.length > 0
+          ? completedFlights[
+              completedFlights.length - 1
+            ]
+          : null;
 
       if (lastFlight) {
         const minutesSinceArrival =
