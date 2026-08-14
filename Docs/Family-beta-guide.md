@@ -174,6 +174,8 @@ For any other airport, Dad Radar displays a designed vintage placeholder with th
 | Confirmed approach below 3,000 feet above destination elevation | `LANDING`; a go-around returns to `APPROACH` after climbing above 3,500 feet AGL |
 | Arrived at AVL | `ARRIVED`, followed later by `HOME` |
 | Arrived away from AVL | `ARRIVED`, followed later by the away ground location or `LAYOVER` |
+| Final live position becomes stale after Landing or Arrived | Retain the highest confirmed phase and destination position; never return to `DELAYED` or move the map back to the origin |
+| Browser reloads during the Arrived hold | Restore `ARRIVED` at the destination from local confirmation, then complete the normal Home/Layover handoff |
 | Next scheduled leg overlaps the current delay | Current leg remains displayed until arrival or the safety timeout |
 | Deadhead event | Today's Duty shows `DEADHEAD` and describes Daddy as riding; the flap continues to show the operational phase |
 | Destination has no approved poster | Vintage city/state/airport-code placeholder |

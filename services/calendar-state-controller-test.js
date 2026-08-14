@@ -28,7 +28,9 @@ function readProjectFile(relativePath) {
   );
 }
 
-function createBrowserContext() {
+function createBrowserContext(
+  options = {}
+) {
   const dispatchedEvents = [];
   let nextTimerId = 1;
 
@@ -40,6 +42,8 @@ function createBrowserContext() {
     Date,
     Intl,
     Promise,
+    localStorage:
+      options.localStorage,
     clearInterval() {},
     setInterval() {
       const timerId = nextTimerId;
@@ -75,6 +79,21 @@ function createBrowserContext() {
   return {
     context,
     dispatchedEvents
+  };
+}
+
+function createMemoryStorage() {
+  const values = new Map();
+
+  return {
+    getItem(key) {
+      return values.has(key)
+        ? values.get(key)
+        : null;
+    },
+    setItem(key, value) {
+      values.set(key, String(value));
+    }
   };
 }
 
@@ -589,6 +608,180 @@ async function testPollingStopsAfterArrival() {
   );
 }
 
+async function testConfirmedArrivalDoesNotRewindToDeparture() {
+  const storage = createMemoryStorage();
+  const { context } =
+    createBrowserContext({
+      localStorage: storage
+    });
+
+  const flight = activeFlightEvent();
+
+  flight.id = "ord-hpn-arrival";
+  flight.origin = "ORD";
+  flight.destination = "HPN";
+  flight.times = {
+    startUtc:
+      new Date(
+        Date.now() - 80 * 60000
+      ).toISOString(),
+    endUtc:
+      new Date(
+        Date.now() + 30 * 60000
+      ).toISOString()
+  };
+
+  const schedule = {
+    retrievedAt:
+      new Date().toISOString(),
+    events: [flight]
+  };
+
+  context.dadRadarCalendarApi = {
+    async getUpcomingEvents() {
+      return schedule;
+    }
+  };
+
+  context.dadRadarLiveFlightApi = {
+    async getFlightSnapshot() {
+      return {
+        provider: "flightradar24",
+        providerFlightId:
+          "confirmed-hpn-arrival",
+        retrievedAt:
+          new Date().toISOString(),
+        displayIdent: "MQ4140",
+        phase: "ARRIVED",
+        status: "Arrived",
+        origin: "ORD",
+        destination: "HPN",
+        progressPercent: 100,
+        departure: {
+          delayMinutes: null
+        },
+        position: {
+          latitude: 41.067,
+          longitude: -73.708,
+          altitudeFeet: 439,
+          groundSpeedKnots: 18,
+          headingDegrees: 115,
+          recordedAt:
+            new Date().toISOString()
+        }
+      };
+    }
+  };
+
+  await context.refreshCalendarState();
+
+  const arrived =
+    await context.refreshLiveFlightState();
+
+  assert.equal(arrived.mode, "ARRIVED");
+  assert.equal(
+    arrived.state.flight.destination,
+    "HPN"
+  );
+
+  const realDate = Date;
+  const retainedNow =
+    realDate.now() + 4 * 60000;
+
+  context.Date = class extends realDate {
+    constructor(value) {
+      super(
+        value === undefined
+          ? retainedNow
+          : value
+      );
+    }
+
+    static now() {
+      return retainedNow;
+    }
+  };
+
+  const retained =
+    await context.refreshCalendarState();
+
+  assert.equal(retained.mode, "ARRIVED");
+  assert.equal(
+    retained.event.id,
+    "ord-hpn-arrival"
+  );
+  assert.equal(
+    retained.state.flight.origin,
+    "ORD"
+  );
+  assert.equal(
+    retained.state.flight.destination,
+    "HPN"
+  );
+  assert.equal(
+    retained.state.flight.progress,
+    100
+  );
+  assert.equal(
+    retained.state.flight.latitude,
+    41.067
+  );
+  assert.equal(
+    retained.state.flight
+      .departureDelayMinutes,
+    null
+  );
+
+  const reloaded =
+    createBrowserContext({
+      localStorage: storage
+    }).context;
+
+  reloaded.dadRadarCalendarApi = {
+    async getUpcomingEvents() {
+      return schedule;
+    }
+  };
+
+  const afterReload =
+    await reloaded.refreshCalendarState();
+
+  assert.equal(
+    afterReload.mode,
+    "ARRIVED"
+  );
+  assert.equal(
+    afterReload.state.flight.progress,
+    100
+  );
+
+  const layoverNow =
+    realDate.now() + 46 * 60000;
+
+  reloaded.Date = class extends realDate {
+    constructor(value) {
+      super(
+        value === undefined
+          ? layoverNow
+          : value
+      );
+    }
+
+    static now() {
+      return layoverNow;
+    }
+  };
+
+  const layover =
+    await reloaded.refreshCalendarState();
+
+  assert.equal(layover.mode, "LAYOVER");
+  assert.equal(
+    layover.state.locationAirport,
+    "HPN"
+  );
+}
+
 async function testAirborneLegStaysLockedDuringCalendarOverlap() {
   const { context } =
     createBrowserContext();
@@ -718,6 +911,7 @@ async function runTests() {
   await testLiveFailureRetainsCalendarState();
   await testApproachPersistsAcrossProviderRegression();
   await testPollingStopsAfterArrival();
+  await testConfirmedArrivalDoesNotRewindToDeparture();
   await testAirborneLegStaysLockedDuringCalendarOverlap();
 
   console.log(

@@ -28,7 +28,7 @@ Dad Radar has confirmed arrival through converging evidence such as descent, des
 During a confirmed Approach, the aircraft is below 3,000 feet above the destination airport elevation and is not climbing. A go-around releases Landing back to Approach after a confirmed climb above 3,500 feet AGL. The hysteresis prevents a noisy altitude report from rapidly alternating the two statuses.
 
 ## Arrived
-Aircraft has arrived at the destination gate.
+Aircraft has arrived at the destination. Live confirmation becomes the flight's effective completion time even when it lands before the scheduled Calendar end. Dad Radar retains the destination position and 100% route progress through the Arrived hold and across a browser reload; it can never rewind that completed flight to Delayed at its origin. The hold then yields to Home at AVL or the confirmed away-ground/Layover airport.
 
 ## Layover
 Daddy is on an overnight or extended layover between flight assignments. After a flight arrives away from AVL, the last destination remains Daddy's ground location even when no next flight is currently listed. The split-flap keeps Flight and From blank, displays the confirmed layover airport in To, and displays `LAYOVER` in Status.

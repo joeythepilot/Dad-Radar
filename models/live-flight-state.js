@@ -328,27 +328,84 @@
       );
     }
 
-    function clampedTaxiOutState(
+    function shouldPreserveConfirmedLiveState(
+      calendarResolved,
+      previousResolved
+    ) {
+      if (
+        !isSameResolvedFlight(
+          calendarResolved,
+          previousResolved
+        )
+      ) {
+        return false;
+      }
+
+      if (
+        calendarResolved.mode ===
+          "ARRIVED"
+      ) {
+        return previousResolved.mode ===
+          "ARRIVED";
+      }
+
+      const previousPhase = String(
+        previousResolved?.state
+          ?.livePhase ?? ""
+      )
+        .trim()
+        .toUpperCase();
+
+      return [
+        "BOARDING",
+        "DELAYED",
+        "TAXI_OUT",
+        "EN_ROUTE",
+        "APPROACH",
+        "LANDING",
+        "COMMUTING_TO_BASE",
+        "COMMUTING_HOME"
+      ].includes(calendarResolved.mode) &&
+        [
+          "TAXI_OUT",
+          "EN_ROUTE",
+          "APPROACH",
+          "LANDING",
+          "DIVERTED"
+        ].includes(previousPhase);
+    }
+
+    function clampedLiveState(
       calendarResolved,
       previousResolved
     ) {
       return {
         ...calendarResolved,
-        mode: "TAXI_OUT",
+        mode: previousResolved.mode,
         state: {
           ...calendarResolved.state,
-          status: "TAXI OUT",
+          status:
+            previousResolved.state
+              .status,
           source:
             previousResolved.state
               .source ??
             calendarResolved.state.source,
           liveData: false,
-          livePhase: "TAXI_OUT",
+          livePhase:
+            previousResolved.state
+              .livePhase,
           flight: {
             ...calendarResolved.state
               .flight,
             ...previousResolved.state
-              .flight
+              .flight,
+            progress:
+              previousResolved.mode ===
+                "ARRIVED"
+                ? 100
+                : previousResolved.state
+                    .flight.progress
           }
         },
         liveFlight:
@@ -556,8 +613,8 @@
         ...providedOptions
       };
 
-      const preserveTaxiOut =
-        hasConfirmedTaxiOutClamp(
+      const preserveConfirmedLiveState =
+        shouldPreserveConfirmedLiveState(
           calendarResolved,
           options.previousResolved
         );
@@ -572,8 +629,8 @@
           snapshot
         )
       ) {
-        return preserveTaxiOut
-          ? clampedTaxiOutState(
+        return preserveConfirmedLiveState
+          ? clampedLiveState(
               calendarResolved,
               options.previousResolved
             )
@@ -656,6 +713,24 @@
           calendarResolved,
           snapshot
         );
+
+      const providerDepartureDelayMinutes =
+        finiteNumber(
+          snapshot.departure
+            ?.delayMinutes
+        );
+
+      const previousDepartureDelayMinutes =
+        isSameResolvedFlight(
+          calendarResolved,
+          options.previousResolved
+        )
+          ? finiteNumber(
+              options.previousResolved
+                ?.state?.flight
+                ?.departureDelayMinutes
+            )
+          : null;
 
       const flight = {
         ...calendarFlight,
@@ -741,33 +816,15 @@
         departureDelayMinutes:
           mode === "DELAYED"
             ? Math.max(
-                finiteNumber(
-                  snapshot.departure
-                    ?.delayMinutes
-                ) ?? 0,
+                providerDepartureDelayMinutes ??
+                  0,
                 finiteNumber(
                   calendarFlight
                     .departureDelayMinutes
                 ) ?? 0
               )
-            : preserveTaxiOut
-              ? finiteNumber(
-                  snapshot.departure
-                    ?.delayMinutes
-                ) ??
-                finiteNumber(
-                  options.previousResolved
-                    ?.state?.flight
-                    ?.departureDelayMinutes
-                )
-            : finiteNumber(
-                snapshot.departure
-                  ?.delayMinutes
-              ) ??
-              finiteNumber(
-                calendarFlight
-                  .departureDelayMinutes
-              ),
+            : providerDepartureDelayMinutes ??
+              previousDepartureDelayMinutes,
         arrivalDelayMinutes:
           finiteNumber(
             snapshot.arrival

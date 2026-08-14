@@ -342,6 +342,74 @@ function testDelayPersistsUntilAirborne() {
   );
 }
 
+function testCalendarDelayStopsAccumulatingAfterAirborne() {
+  const delayedCalendar =
+    calendarResolved("DELAYED");
+
+  delayedCalendar.state.flight
+    .departureDelayMinutes = 15;
+
+  const delayedTaxi =
+    reconcileScheduleWithLive(
+      delayedCalendar,
+      liveSnapshot({
+        phase: "TAXI_OUT",
+        departure: {
+          delayMinutes: null
+        }
+      }),
+      { now: NOW }
+    );
+
+  const laterCalendar =
+    calendarResolved("DELAYED");
+
+  laterCalendar.state.flight
+    .departureDelayMinutes = 35;
+
+  const airborne =
+    reconcileScheduleWithLive(
+      laterCalendar,
+      liveSnapshot({
+        phase: "EN_ROUTE",
+        departure: {
+          delayMinutes: null
+        }
+      }),
+      {
+        now: NOW,
+        previousResolved: delayedTaxi
+      }
+    );
+
+  assert.equal(airborne.mode, "EN_ROUTE");
+  assert.equal(
+    airborne.state.flight
+      .departureDelayMinutes,
+    15,
+    "Calendar delay should freeze at the last confirmed ground value once the aircraft is airborne."
+  );
+
+  const acquiredAirborne =
+    reconcileScheduleWithLive(
+      laterCalendar,
+      liveSnapshot({
+        phase: "EN_ROUTE",
+        departure: {
+          delayMinutes: null
+        }
+      }),
+      { now: NOW }
+    );
+
+  assert.equal(
+    acquiredAirborne.state.flight
+      .departureDelayMinutes,
+    null,
+    "An overdue Calendar clock is not evidence of the actual departure delay for an already-airborne acquisition."
+  );
+}
+
 function testConfirmedTaxiOutClampsCalendarDelay() {
   const boarding =
     calendarResolved("BOARDING");
@@ -472,6 +540,123 @@ function testTaxiOutClampSurvivesStaleSnapshot() {
   assert.equal(
     stale.state.liveData,
     false
+  );
+}
+
+function testLandingClampSurvivesStaleSnapshot() {
+  const confirmedLanding =
+    reconcileScheduleWithLive(
+      calendarResolved("DELAYED"),
+      liveSnapshot({
+        phase: "LANDING",
+        progressPercent: 98,
+        position: {
+          ...liveSnapshot().position,
+          latitude: 35.45,
+          longitude: -82.55,
+          altitudeFeet: 3900,
+          groundSpeedKnots: 145
+        }
+      }),
+      { now: NOW }
+    );
+
+  assert.equal(
+    confirmedLanding.mode,
+    "LANDING"
+  );
+
+  const stale =
+    reconcileScheduleWithLive(
+      calendarResolved("DELAYED"),
+      liveSnapshot({
+        phase: "LANDING",
+        retrievedAt:
+          "2026-08-04T17:55:00.000Z"
+      }),
+      {
+        now: NOW,
+        staleAfterMs:
+          3 * 60 * 1000,
+        previousResolved:
+          confirmedLanding
+      }
+    );
+
+  assert.equal(stale.mode, "LANDING");
+  assert.equal(
+    stale.state.status,
+    "LANDING"
+  );
+  assert.equal(
+    stale.state.liveData,
+    false
+  );
+  assert.equal(
+    stale.state.flight.progress,
+    98
+  );
+  assert.equal(
+    stale.state.flight.latitude,
+    35.45
+  );
+}
+
+function testArrivalClampPreservesDestinationPosition() {
+  const confirmedArrival =
+    reconcileScheduleWithLive(
+      calendarResolved("DELAYED"),
+      liveSnapshot({
+        phase: "ARRIVED",
+        progressPercent: 100,
+        position: {
+          ...liveSnapshot().position,
+          latitude: 41.067,
+          longitude: -73.708,
+          altitudeFeet: 439,
+          groundSpeedKnots: 18
+        }
+      }),
+      { now: NOW }
+    );
+
+  const stale =
+    reconcileScheduleWithLive(
+      calendarResolved("ARRIVED"),
+      liveSnapshot({
+        phase: "ARRIVED",
+        retrievedAt:
+          "2026-08-04T17:55:00.000Z"
+      }),
+      {
+        now: NOW,
+        staleAfterMs:
+          3 * 60 * 1000,
+        previousResolved:
+          confirmedArrival
+      }
+    );
+
+  assert.equal(stale.mode, "ARRIVED");
+  assert.equal(
+    stale.state.status,
+    "ARRIVED"
+  );
+  assert.equal(
+    stale.state.liveData,
+    false
+  );
+  assert.equal(
+    stale.state.flight.progress,
+    100
+  );
+  assert.equal(
+    stale.state.flight.latitude,
+    41.067
+  );
+  assert.equal(
+    stale.state.flight.longitude,
+    -73.708
   );
 }
 
@@ -751,9 +936,12 @@ function runTests() {
   testRouteMismatchFallsBack();
   testLivePhasesDriveModes();
   testDelayPersistsUntilAirborne();
+  testCalendarDelayStopsAccumulatingAfterAirborne();
   testConfirmedTaxiOutClampsCalendarDelay();
   testTaxiOutClampSurvivesProviderRegression();
   testTaxiOutClampSurvivesStaleSnapshot();
+  testLandingClampSurvivesStaleSnapshot();
+  testArrivalClampPreservesDestinationPosition();
   testCancellationOverridesCalendarDelay();
   testCommuteModeIsPreservedInFlight();
   testApproachDoesNotRegressAfterLevelOff();

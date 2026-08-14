@@ -15,6 +15,15 @@
   let hasLoadedSchedule = false;
   let lockedFlightEventKey = null;
 
+  const CONFIRMED_ARRIVALS_STORAGE_KEY =
+    "dad-radar.confirmed-arrivals.v1";
+
+  const CONFIRMED_ARRIVAL_RETENTION_MS =
+    24 * 60 * 60 * 1000;
+
+  const confirmedArrivalTimes =
+    loadConfirmedArrivalTimes();
+
   const TRACKABLE_MODES = new Set([
     "BOARDING",
     "DELAYED",
@@ -100,6 +109,167 @@
           event.startUtc
       ].join("|")
     );
+  }
+
+  function validDate(value) {
+    const date = new Date(value);
+
+    return Number.isNaN(date.getTime())
+      ? null
+      : date;
+  }
+
+  function loadConfirmedArrivalTimes() {
+    try {
+      const stored =
+        global.localStorage?.getItem(
+          CONFIRMED_ARRIVALS_STORAGE_KEY
+        );
+
+      const parsed = stored
+        ? JSON.parse(stored)
+        : {};
+
+      return parsed &&
+        typeof parsed === "object"
+        ? { ...parsed }
+        : {};
+    } catch (_error) {
+      return {};
+    }
+  }
+
+  function saveConfirmedArrivalTimes() {
+    try {
+      global.localStorage?.setItem(
+        CONFIRMED_ARRIVALS_STORAGE_KEY,
+        JSON.stringify(
+          confirmedArrivalTimes
+        )
+      );
+    } catch (_error) {
+      // Arrival continuity still works in memory
+      // when browser storage is unavailable.
+    }
+  }
+
+  function pruneConfirmedArrivalTimes(
+    now = new Date()
+  ) {
+    let changed = false;
+
+    Object.keys(
+      confirmedArrivalTimes
+    ).forEach((key) => {
+      const confirmedAt = validDate(
+        confirmedArrivalTimes[key]
+      );
+
+      if (
+        !confirmedAt ||
+        now - confirmedAt >
+          CONFIRMED_ARRIVAL_RETENTION_MS ||
+        confirmedAt - now > 5 * 60000
+      ) {
+        delete confirmedArrivalTimes[key];
+        changed = true;
+      }
+    });
+
+    if (changed) {
+      saveConfirmedArrivalTimes();
+    }
+  }
+
+  function recordConfirmedArrival(event) {
+    const key = eventKey(event);
+
+    if (!key) {
+      return;
+    }
+
+    const existingArrival = validDate(
+      confirmedArrivalTimes[key]
+    );
+
+    const startedAt = validDate(
+      event?.times?.startUtc ??
+        event?.startUtc
+    );
+
+    if (
+      existingArrival &&
+      (!startedAt ||
+        existingArrival >= startedAt)
+    ) {
+      return;
+    }
+
+    confirmedArrivalTimes[key] =
+      new Date().toISOString();
+
+    pruneConfirmedArrivalTimes();
+    saveConfirmedArrivalTimes();
+  }
+
+  function scheduleWithConfirmedArrivals(
+    schedule
+  ) {
+    const now = new Date();
+
+    pruneConfirmedArrivalTimes(now);
+
+    if (!Array.isArray(schedule?.events)) {
+      return schedule;
+    }
+
+    let changed = false;
+
+    const events = schedule.events.map(
+      (event) => {
+        const confirmedAt = validDate(
+          confirmedArrivalTimes[
+            eventKey(event)
+          ]
+        );
+
+        const startedAt = validDate(
+          event?.times?.startUtc ??
+            event?.startUtc
+        );
+
+        if (
+          event?.kind !== "flight" ||
+          !confirmedAt ||
+          !startedAt ||
+          confirmedAt < startedAt ||
+          confirmedAt - startedAt >
+            CONFIRMED_ARRIVAL_RETENTION_MS
+        ) {
+          return event;
+        }
+
+        changed = true;
+
+        return {
+          ...event,
+          times: {
+            ...event.times,
+            endUtc:
+              confirmedAt.toISOString()
+          },
+          confirmedArrivalAt:
+            confirmedAt.toISOString()
+        };
+      }
+    );
+
+    return changed
+      ? {
+          ...schedule,
+          events
+        }
+      : schedule;
   }
 
   function finiteCoordinate(value) {
@@ -231,10 +401,15 @@
     const settings =
       controllerSettings();
 
+    const effectiveSchedule =
+      scheduleWithConfirmedArrivals(
+        currentSchedule
+      );
+
     const calendarResolved =
       global.dadRadarScheduleState
         .resolveScheduleState(
-          currentSchedule,
+          effectiveSchedule,
           {
             ...settings,
             preferredEventId:
@@ -308,6 +483,9 @@
         resolvedPhase
       )
     ) {
+      recordConfirmedArrival(
+        resolved.event
+      );
       lockedFlightEventKey = null;
     }
 
@@ -319,7 +497,7 @@
     const dailySchedule =
       global.dadRadarScheduleState
         .buildDailySchedule(
-          currentSchedule,
+          effectiveSchedule,
           resolved,
           settings
         );

@@ -548,6 +548,17 @@ function testObservedTrackReplacesEstimatedProgress() {
       .style.strokeDasharray,
     "The planned-route shadow must use the same dash pattern instead of visually filling the gaps."
   );
+
+  const [dashLength, dashGap] =
+    elements["map-route-line"]
+      .style.strokeDasharray
+      .split(/\s+/)
+      .map(Number);
+
+  assert.ok(
+    dashGap >= dashLength * 2,
+    "The planned route needs clearly separated short dashes rather than an almost-solid line."
+  );
 }
 
 function testVisualStateDrivesAircraftMotion() {

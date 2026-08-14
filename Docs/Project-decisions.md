@@ -102,7 +102,7 @@ It exists so future work always builds on previous decisions instead of repeatin
 
 ✓ The browser requests live data only for a Calendar-selected flight in a trackable mode. Acquisition begins 30 minutes before scheduled departure, matching the Boarding window. Home, Arrived, Layover, and Offline modes do not generate FR24 polling.
 
-✓ The default live polling interval is 60 seconds. A live snapshot older than three minutes is stale and cannot override Calendar state.
+✓ The default live polling interval is 60 seconds. A snapshot older than three minutes cannot supply new telemetry, but the same leg retains its highest confirmed live phase, last position, track, and progress rather than regressing to a Calendar-inferred earlier state.
 
 ✓ A live snapshot must still match the Calendar origin and destination before it can refine the display, even though the backend already performs route validation.
 
@@ -219,6 +219,8 @@ It exists so future work always builds on previous decisions instead of repeatin
 ✓ iPad split-flap audio requires one explicit on-screen tap after a new browser session because Safari blocks uninitiated playback.
 
 ✓ An operating, commuting, or deadhead leg becomes Calendar-delayed five minutes after scheduled departure unless live data already confirmed an on-time Taxi Out or an airborne phase. Once confirmed, Taxi Out is a monotonic floor for that flight and cannot regress to Boarding or a later Calendar-inferred Delayed state. A flight that became Delayed before Taxi Out remains Delayed while it is still on the ground.
+
+✓ Live-confirmed Arrived records an effective event completion time in browser storage. This protects early arrivals through stale provider data and browser reloads, keeps the map at the destination, and lets the Calendar's Arrived hold transition naturally to Home or Layover.
 
 ✓ A delayed or airborne leg locks the Calendar selection through overlapping future events and for up to eight hours beyond its scheduled end. Confirmed Arrived or Landed releases the lock immediately.
 

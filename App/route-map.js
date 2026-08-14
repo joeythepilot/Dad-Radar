@@ -73,6 +73,12 @@ const SURFACE_CAMERA_ZOOM = 6;
 const AIRPORT_PLACARD_CITY_WIDTH =
   114;
 
+const PLANNED_ROUTE_DASH_LENGTH =
+  6;
+
+const PLANNED_ROUTE_DASH_GAP =
+  14;
+
 const elements = {
   svg: document.getElementById("route-map-svg"),
   routeShadow: document.getElementById("map-route-shadow"),
@@ -1344,8 +1350,14 @@ function renderRouteMap(state) {
     1 / camera.zoom;
 
   const plannedRouteDash =
-    `${(15 * inverseZoom).toFixed(1)} ` +
-    `${(9 * inverseZoom).toFixed(1)}`;
+    `${(
+      PLANNED_ROUTE_DASH_LENGTH *
+      inverseZoom
+    ).toFixed(1)} ` +
+    `${(
+      PLANNED_ROUTE_DASH_GAP *
+      inverseZoom
+    ).toFixed(1)}`;
 
   const aircraftAngle =
     livePosition &&
