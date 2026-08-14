@@ -28,18 +28,18 @@
 
   <link
     rel="stylesheet"
-    href="./UI/styles.css?v=ipad-es5-3"
+    href="./UI/styles.css?v=ipad-es5-4"
   >
 
   <link
     rel="stylesheet"
-    href="./UI/map.css?v=ipad-es5-3"
+    href="./UI/map.css?v=ipad-es5-4"
   >
 
   <!-- Loads last and owns the new three-column layout. -->
   <link
     rel="stylesheet"
-    href="./UI/layout-side-rail.css?v=ipad-es5-3"
+    href="./UI/layout-side-rail.css?v=ipad-es5-4"
   >
 </head>
 
@@ -1076,9 +1076,40 @@
     (function installDadRadarBootDiagnostic() {
       "use strict";
 
-      var VERSION = "IPAD-ES5-3";
+      var VERSION = "IPAD-ES5-4";
       var timeoutId = null;
       var hasFinished = false;
+
+      function installLegacyLayoutMarker() {
+        var supportsModernLayout = false;
+
+        try {
+          supportsModernLayout =
+            window.CSS &&
+            typeof window.CSS.supports ===
+              "function" &&
+            window.CSS.supports(
+              "width",
+              "clamp(1px, 2vw, 3px)"
+            ) &&
+            window.CSS.supports(
+              "aspect-ratio",
+              "1 / 1"
+            );
+        } catch (error) {
+          supportsModernLayout = false;
+        }
+
+        if (!supportsModernLayout) {
+          document.documentElement
+            .setAttribute(
+              "data-dad-radar-legacy",
+              "true"
+            );
+        }
+      }
+
+      installLegacyLayoutMarker();
 
       function statusElement() {
         return document.querySelector(
@@ -1182,7 +1213,7 @@
   </script>
 
   <script
-    src="./App/dad-radar-browser.js?v=ipad-es5-3"
+    src="./App/dad-radar-browser.js?v=ipad-es5-4"
     onerror="window.__dadRadarBoot.fail('BROWSER BUNDLE DID NOT LOAD')"
   ></script>
 

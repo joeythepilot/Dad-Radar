@@ -36,7 +36,7 @@ const layoutStyles = fs.readFileSync(
 
 assert.match(
   html,
-  /<script[\s\S]*?src="\.\/App\/dad-radar-browser\.js\?v=ipad-es5-3"[\s\S]*?><\/script>/,
+  /<script[\s\S]*?src="\.\/App\/dad-radar-browser\.js\?v=ipad-es5-4"[\s\S]*?><\/script>/,
   "The display should load the compatibility bundle."
 );
 
@@ -48,7 +48,7 @@ assert.doesNotMatch(
 
 assert.match(
   html,
-  /IPAD-ES5-3/,
+  /IPAD-ES5-4/,
   "The display should expose its old-Safari boot diagnostic version."
 );
 
@@ -63,7 +63,7 @@ for (const stylesheetPath of [
       `\\.\\/UI\\/${stylesheetPath.replace(
         ".",
         "\\."
-      )}\\?v=ipad-es5-3`
+      )}\\?v=ipad-es5-4`
     ),
     `${stylesheetPath} should bypass the old iPad cache.`
   );
@@ -85,6 +85,24 @@ assert.match(
   layoutStyles,
   /\.instrument-slot \.instrument\s*\{[\s\S]*?width:\s*13vw\s*!important;[\s\S]*?height:\s*13vw\s*!important;/,
   "The instruments should have square Safari 12 fallback dimensions."
+);
+
+assert.match(
+  html,
+  /data-dad-radar-legacy/,
+  "The ES5 boot path should mark browsers that need the hard visual fallback."
+);
+
+assert.match(
+  layoutStyles,
+  /html\[data-dad-radar-legacy="true"\][\s\S]*?#flight-number[\s\S]*?flex:\s*0 0 186px\s*!important;/,
+  "The legacy split-flap board should use explicit group dimensions."
+);
+
+assert.match(
+  layoutStyles,
+  /html\[data-dad-radar-legacy="true"\][\s\S]*?\.instrument-slot \.instrument[\s\S]*?width:\s*132px\s*!important;[\s\S]*?height:\s*132px\s*!important;/,
+  "The legacy instrument rail should use explicit square dimensions."
 );
 
 for (const unsupportedSyntax of [
