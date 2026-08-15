@@ -23,6 +23,7 @@ const browserSources = [
   "App/split-flap-audio.js",
   "App/split-flap-state.js",
   "App/daily-schedule-layout.js",
+  "App/poster-image-loader.js",
   "App/main.js"
 ];
 

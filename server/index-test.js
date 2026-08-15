@@ -26,7 +26,8 @@ async function runTests() {
       "/App/main.js",
       "/UI/styles.css",
       "/config/settings.js",
-      "/assets/destinations/asheville-poster-7x8-baseline.png"
+      "/assets/destinations/asheville-poster-7x8-baseline.png",
+      "/assets/destinations/ord-poster-7x8-candidate-v2.png?v=ipad-poster-2"
     ]) {
       const response = await fetch(
         `${baseUrl}${publicPath}`

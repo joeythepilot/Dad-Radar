@@ -793,7 +793,13 @@ function renderFlapText(
    Destination poster selection
    --------------------------------------------------------- */
 
-let displayedPosterAirport = null;
+let requestedPosterAirport = null;
+
+const destinationPosterLoader =
+  globalThis.dadRadarPosterImages
+    ?.createPosterImageLoader?.({
+      version: "ipad-poster-2"
+    }) ?? null;
 
 function posterFallbackLocation(
   flight,
@@ -821,58 +827,10 @@ function posterFallbackLocation(
   };
 }
 
-function updateDestinationPoster(flight) {
-  const airportCode = String(
-    flight?.destination ?? ""
-  )
-    .trim()
-    .toUpperCase();
-
-  const posterIdentity =
-    airportCode ||
-    [
-      flight?.destinationCity,
-      flight?.destinationLocation
-    ]
-      .filter(Boolean)
-      .join("|") ||
-    null;
-
-  if (
-    posterIdentity &&
-    posterIdentity ===
-      displayedPosterAirport
-  ) {
-    return;
-  }
-
-  const poster =
-    globalThis.dadRadarPosters
-      ?.getPoster?.(airportCode) ?? null;
-
-  displayedPosterAirport =
-    posterIdentity;
-
-  if (poster && destinationPoster) {
-    destinationPoster.src =
-      poster.source;
-    destinationPoster.alt =
-      `Vintage ${poster.location} travel poster`;
-    destinationPoster.hidden = false;
-
-    if (destinationPosterFallback) {
-      destinationPosterFallback.hidden =
-        true;
-    }
-
-    destinationPanel?.style.setProperty(
-      "--destination-poster-image",
-      `url("${poster.source}")`
-    );
-
-    return;
-  }
-
+function showDestinationPosterFallback(
+  flight,
+  airportCode
+) {
   const fallback =
     posterFallbackLocation(
       flight,
@@ -905,6 +863,145 @@ function updateDestinationPoster(flight) {
 
   destinationPanel?.style.removeProperty(
     "--destination-poster-image"
+  );
+}
+
+function showLoadedDestinationPoster(
+  poster,
+  source,
+  posterIdentity,
+  flight,
+  airportCode
+) {
+  if (
+    !destinationPoster ||
+    requestedPosterAirport !==
+      posterIdentity
+  ) {
+    return;
+  }
+
+  destinationPoster.onerror = () => {
+    if (
+      requestedPosterAirport !==
+      posterIdentity
+    ) {
+      return;
+    }
+
+    requestedPosterAirport = null;
+
+    showDestinationPosterFallback(
+      flight,
+      airportCode
+    );
+  };
+
+  destinationPoster.src = source;
+  destinationPoster.alt =
+    `Vintage ${poster.location} travel poster`;
+  destinationPoster.hidden = false;
+
+  if (destinationPosterFallback) {
+    destinationPosterFallback.hidden =
+      true;
+  }
+
+  destinationPanel?.style.setProperty(
+    "--destination-poster-image",
+    `url("${source}")`
+  );
+
+}
+
+function updateDestinationPoster(flight) {
+  const airportCode = String(
+    flight?.destination ?? ""
+  )
+    .trim()
+    .toUpperCase();
+
+  const posterIdentity =
+    airportCode ||
+    [
+      flight?.destinationCity,
+      flight?.destinationLocation
+    ]
+      .filter(Boolean)
+      .join("|") ||
+    null;
+
+  if (
+    posterIdentity &&
+    posterIdentity ===
+      requestedPosterAirport
+  ) {
+    return;
+  }
+
+  const poster =
+    globalThis.dadRadarPosters
+      ?.getPoster?.(airportCode) ?? null;
+
+  requestedPosterAirport =
+    posterIdentity;
+
+  if (poster && destinationPoster) {
+    showDestinationPosterFallback(
+      flight,
+      airportCode
+    );
+
+    if (destinationPosterLoader) {
+      destinationPosterLoader.load(
+        poster.source,
+        {
+          onLoad({ source }) {
+            showLoadedDestinationPoster(
+              poster,
+              source,
+              posterIdentity,
+              flight,
+              airportCode
+            );
+          },
+          onError() {
+            if (
+              requestedPosterAirport !==
+              posterIdentity
+            ) {
+              return;
+            }
+
+            requestedPosterAirport = null;
+
+            showDestinationPosterFallback(
+              flight,
+              airportCode
+            );
+          }
+        }
+      );
+
+      return;
+    }
+
+    showLoadedDestinationPoster(
+      poster,
+      poster.source,
+      posterIdentity,
+      flight,
+      airportCode
+    );
+
+    return;
+  }
+
+  destinationPosterLoader?.cancel();
+
+  showDestinationPosterFallback(
+    flight,
+    airportCode
   );
 }
 

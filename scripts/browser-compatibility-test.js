@@ -36,7 +36,7 @@ const layoutStyles = fs.readFileSync(
 
 assert.match(
   html,
-  /<script[\s\S]*?src="\.\/App\/dad-radar-browser\.js\?v=ipad-es5-5"[\s\S]*?><\/script>/,
+  /<script[\s\S]*?src="\.\/App\/dad-radar-browser\.js\?v=ipad-es5-6"[\s\S]*?><\/script>/,
   "The display should load the compatibility bundle."
 );
 
@@ -48,7 +48,7 @@ assert.doesNotMatch(
 
 assert.match(
   html,
-  /IPAD-ES5-5/,
+  /IPAD-ES5-6/,
   "The display should expose its old-Safari boot diagnostic version."
 );
 
@@ -63,7 +63,7 @@ for (const stylesheetPath of [
       `\\.\\/UI\\/${stylesheetPath.replace(
         ".",
         "\\."
-      )}\\?v=ipad-es5-5`
+      )}\\?v=ipad-es5-6`
     ),
     `${stylesheetPath} should bypass the old iPad cache.`
   );
@@ -162,6 +162,18 @@ assert.match(
   bundle,
   /root\.globalThis = root/,
   "The bundle should install the globalThis compatibility fallback."
+);
+
+assert.match(
+  bundle,
+  /ipad-poster-2/,
+  "The legacy bundle should request versioned destination posters."
+);
+
+assert.match(
+  bundle,
+  /retry/,
+  "The legacy bundle should include poster cache-bypass retries."
 );
 
 console.log(

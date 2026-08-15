@@ -46,6 +46,8 @@ Approved destination artwork:
 
 If the current destination or confirmed ground location is absent from the approved library, the display uses a designed vintage placeholder with the catalog city, state or province, and three-letter airport code. It must never substitute another city's poster.
 
+Approved poster images load through the legacy-iPad-safe poster controller. Each asset receives a stable version query to bypass obsolete Home Screen cache entries. A failed request is retried twice with fresh cache-busting URLs; while it loads, or if all attempts fail, the destination's correct city/state/code placeholder fills the frame instead of Safari's broken-image icon. A later state refresh may try the approved poster again automatically.
+
 ## Batch production
 
 Poster batches are defined in `data/poster-batch-manifest.json`. Each destination record fixes its exact display copy, landmark references, visual profile, weather and light treatment, aircraft placement, and candidate output path before artwork is generated.
