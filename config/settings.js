@@ -42,6 +42,14 @@ const dadRadarSettings = {
       cueSeconds: 5.195,
       fadeOutMs: 260,
       volume: 0.68
+    },
+    tenThousandFootChime: {
+      enabled: true,
+      source:
+        "./assets/audio/ten-thousand-foot-chime.mp3",
+      thresholdFeet: 10000,
+      hysteresisFeet: 500,
+      volume: 0.7
     }
   },
 

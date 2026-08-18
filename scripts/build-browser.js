@@ -21,6 +21,7 @@ const browserSources = [
   "services/calendar-state-controller.js",
   "App/instrument-math.js",
   "App/split-flap-audio.js",
+  "App/altitude-chime.js",
   "App/split-flap-state.js",
   "App/daily-schedule-layout.js",
   "App/poster-image-loader.js",

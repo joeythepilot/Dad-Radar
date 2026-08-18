@@ -204,6 +204,27 @@ const splitFlapAudioController =
         })
     : null;
 
+const altitudeChimeSettings =
+  dadRadarSettings.audio
+    ?.tenThousandFootChime ?? {};
+
+const altitudeChimeController =
+  altitudeChimeSettings.enabled !== false &&
+  globalThis.dadRadarAltitudeChime
+    ? globalThis
+        .dadRadarAltitudeChime
+        .createAltitudeChimeController({
+          source:
+            altitudeChimeSettings.source,
+          thresholdFeet:
+            altitudeChimeSettings.thresholdFeet,
+          hysteresisFeet:
+            altitudeChimeSettings.hysteresisFeet,
+          volume:
+            altitudeChimeSettings.volume
+        })
+    : null;
+
 const activeSplitFlapCells =
   new Set();
 
@@ -1931,13 +1952,30 @@ function startDashboardSequence() {
 window.addEventListener(
   "dad-radar:visual-state-change",
   (event) => {
+    const nextState = event.detail.state;
+
+    if (
+      nextState?.liveData &&
+      nextState.flight
+    ) {
+      altitudeChimeController?.observe(
+        [
+          nextState.eventId ?? "",
+          nextState.flight.number ?? "",
+          nextState.flight.origin ?? "",
+          nextState.flight.destination ?? ""
+        ].join("|"),
+        nextState.flight.altitude
+      );
+    }
+
     if (event.detail.telemetryOnly) {
       updateDashboardTelemetry(
-        event.detail.state
+        nextState
       );
     } else {
       updateDashboard(
-        event.detail.state
+        nextState
       );
     }
   }
@@ -1953,14 +1991,24 @@ window.addEventListener(
   () => {
     splitFlapAudioController
       ?.unlock();
+    altitudeChimeController
+      ?.unlock();
   },
   { once: true }
 );
 
 async function enableBetaAudio() {
-  const unlocked =
+  const splitFlapUnlocked =
     await splitFlapAudioController
       ?.unlock();
+
+  const altitudeChimeUnlocked =
+    await altitudeChimeController
+      ?.unlock();
+
+  const unlocked =
+    splitFlapUnlocked ||
+    altitudeChimeUnlocked;
 
   if (unlocked && betaAudioButton) {
     betaAudioButton.hidden = true;
