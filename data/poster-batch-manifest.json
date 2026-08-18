@@ -36,6 +36,12 @@
       "label": "Hub and busy-destination pilot",
       "status": "approved",
       "airportCodes": ["MIA", "CLT", "PHX", "XNA", "CMH"]
+    },
+    {
+      "id": "family-trip-2026-08",
+      "label": "August family beta trip coverage",
+      "status": "candidate",
+      "airportCodes": ["PIA", "TVC", "HSV", "SYR"]
     }
   ],
   "destinations": [
@@ -203,6 +209,22 @@
         "https://www.experiencecolumbus.com/blog/post/downtown-columbus-running-routes/",
         "https://www.columbus.gov/files/sharedassets/city/v/1/building-and-zoning/bzs-boards-and-commissions/planning-document-library/downtown-design-guidelines-screen.pdf"
       ]
+    },
+    {
+      "code": "PIA", "icao": "KPIA", "city": "Peoria", "region": "Illinois", "title": "PEORIA", "subtitle": "ILLINOIS", "descriptor": "RIVER CITY • BRIDGE • HEARTLAND", "tagline": "River City of the Heartland.", "batch": "family-trip-2026-08", "status": "candidate", "output": "assets/destinations/pia-poster-7x8-candidate-v1.png", "visualProfileId": "illinois-river-copper-sunset",
+      "design": {"landmarks": ["Murray Baker Bridge", "Illinois River"], "skySignature": "Copper sunset clouds below a deep navy upper sky", "seasonAndLight": "Early autumn evening with warm river reflections", "titleAlignment": "center", "aircraftPlacement": "Small aircraft in the upper-right sky", "foreground": "Illinois River water and the bridge arc", "avoid": ["Chicago landmarks", "generic mountain scenery"]}, "referenceSources": ["https://www.peoriagov.org/", "https://www.peoriaparks.org/"]
+    },
+    {
+      "code": "TVC", "icao": "KTVC", "city": "Traverse City", "region": "Michigan", "title": "TRAVERSE CITY", "subtitle": "MICHIGAN", "descriptor": "BAY • CHERRIES • NORTHWOODS", "tagline": "Bay, Cherries & Northwoods.", "batch": "family-trip-2026-08", "status": "candidate", "output": "assets/destinations/tvc-poster-7x8-candidate-v1.png", "visualProfileId": "grand-traverse-aqua-day",
+      "design": {"landmarks": ["Grand Traverse Bay", "Old Mission Peninsula lighthouse"], "skySignature": "Pale aqua sky with long high cloud bands", "seasonAndLight": "Clear northern summer daylight", "titleAlignment": "center stacked", "aircraftPlacement": "Small aircraft high at upper-right over the bay", "foreground": "Cherry branches, orchard rows, and pine shoreline", "avoid": ["ocean surf", "tropical vegetation"]}, "referenceSources": ["https://www.traversecity.com/", "https://www.michigan.org/"]
+    },
+    {
+      "code": "HSV", "icao": "KHSV", "city": "Huntsville", "region": "Alabama", "title": "HUNTSVILLE", "subtitle": "ALABAMA", "descriptor": "ROCKET CITY • SPACE • HILLS", "tagline": "Rocket City, U.S.A.", "batch": "family-trip-2026-08", "status": "candidate", "output": "assets/destinations/hsv-poster-7x8-candidate-v1.png", "visualProfileId": "rocket-city-indigo-twilight",
+      "design": {"landmarks": ["Saturn V rocket", "U.S. Space & Rocket Center"], "skySignature": "Indigo night fading through a narrow amber horizon", "seasonAndLight": "Clear Southern twilight with warm facility light", "titleAlignment": "center", "aircraftPlacement": "Small aircraft just left of the rocket summit", "foreground": "Longleaf pines and low Appalachian foothills", "avoid": ["NASA logos", "sci-fi spacecraft"]}, "referenceSources": ["https://www.rocketcenter.com/", "https://www.huntsvilleal.gov/"]
+    },
+    {
+      "code": "SYR", "icao": "KSYR", "city": "Syracuse", "region": "New York", "title": "SYRACUSE", "subtitle": "NEW YORK", "descriptor": "ART DECO • LAKES • UPSTATE", "tagline": "The Heart of Central New York.", "batch": "family-trip-2026-08", "status": "candidate", "output": "assets/destinations/syr-poster-7x8-candidate-v1.png", "visualProfileId": "syracuse-lavender-autumn",
+      "design": {"landmarks": ["Niagara Mohawk Building", "Onondaga Lake"], "skySignature": "Soft lavender and gold autumn cloudscape", "seasonAndLight": "Peak fall foliage in clear late-afternoon light", "titleAlignment": "center", "aircraftPlacement": "Small aircraft at far right above the autumn canopy", "foreground": "Maple foliage and rolling Central New York hills", "avoid": ["New York City skyline", "university branding"]}, "referenceSources": ["https://www.visitsyracuse.com/", "https://www.syr.gov/"]
     }
   ]
 }

@@ -36,6 +36,12 @@
       location:
         "Dallas–Fort Worth, Texas"
     }),
+    HSV: Object.freeze({
+      source:
+        "./assets/destinations/hsv-poster-7x8-candidate-v1.png",
+      title: "HUNTSVILLE",
+      location: "Huntsville, Alabama"
+    }),
     LSE: Object.freeze({
       source:
         "./assets/destinations/lse-poster-7x8-candidate-v1.png",
@@ -61,11 +67,29 @@
       title: "PHOENIX",
       location: "Phoenix, Arizona"
     }),
+    PIA: Object.freeze({
+      source:
+        "./assets/destinations/pia-poster-7x8-candidate-v1.png",
+      title: "PEORIA",
+      location: "Peoria, Illinois"
+    }),
     ROC: Object.freeze({
       source:
         "./assets/destinations/roc-poster-7x8-candidate-v1.png",
       title: "ROCHESTER",
       location: "Rochester, New York"
+    }),
+    SYR: Object.freeze({
+      source:
+        "./assets/destinations/syr-poster-7x8-candidate-v1.png",
+      title: "SYRACUSE",
+      location: "Syracuse, New York"
+    }),
+    TVC: Object.freeze({
+      source:
+        "./assets/destinations/tvc-poster-7x8-candidate-v1.png",
+      title: "TRAVERSE CITY",
+      location: "Traverse City, Michigan"
     }),
     XNA: Object.freeze({
       source:
