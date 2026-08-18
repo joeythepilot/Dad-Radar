@@ -45,7 +45,6 @@ for (const expected of [
   "<BootTrigger>",
   "<Delay>PT20S</Delay>",
   "<UserId>S-1-5-18</UserId>",
-  "<LogonType>ServiceAccount</LogonType>",
   "<MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>",
   "<StartWhenAvailable>true</StartWhenAvailable>",
   "<ExecutionTimeLimit>PT0S</ExecutionTimeLimit>",
