@@ -22,6 +22,7 @@ Blank means blank split-flap tiles remain visible—not that the field or row di
 | State | Flight | From | To | Status |
 |---|---|---|---|---|
 | Home | blank | blank | `AVL` | `HOME` |
+| Same-day sit at base | blank | blank | `ORD` | `AT BASE` |
 | Layover in Rochester | blank | blank | `ROC` | `LAYOVER` |
 | Location Unknown | blank | blank | blank | `LOC UNKN` |
 | Offline with last known BIL | blank | blank | `BIL` | `OFFLINE` |

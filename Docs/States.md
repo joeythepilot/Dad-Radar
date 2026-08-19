@@ -30,6 +30,10 @@ During a confirmed Approach, the aircraft is below 3,000 feet above the destinat
 ## Arrived
 Aircraft has arrived at the destination. Live confirmation becomes the flight's effective completion time even when it lands before the scheduled Calendar end. Dad Radar retains the destination position and 100% route progress through the Arrived hold and across a browser reload; it can never rewind that completed flight to Delayed at its origin. The hold then yields to Home at AVL or the confirmed away-ground/Layover airport.
 
+## At Base
+
+Daddy is between same-day flights at ORD after the Arrived hold has ended. The split-flap keeps Flight and From blank, displays `ORD` in To, and displays `AT BASE` in Status. Today's Duty says Daddy is between flights in Chicago. Overnight or off-duty time away from AVL remains Layover.
+
 ## Layover
 Daddy is on an overnight or extended layover between flight assignments. After a flight arrives away from AVL, the last destination remains Daddy's ground location even when no next flight is currently listed. The split-flap keeps Flight and From blank, displays the confirmed layover airport in To, and displays `LAYOVER` in Status.
 

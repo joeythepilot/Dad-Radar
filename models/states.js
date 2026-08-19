@@ -151,6 +151,13 @@ const dadRadarModes = {
     }
   },
 
+  AT_BASE: {
+    status: "AT BASE",
+    message: "BETWEEN FLIGHTS",
+    locationAirport: "ORD",
+    flight: null
+  },
+
   LAYOVER: {
     status: "LAYOVER",
     message: "ON LAYOVER",

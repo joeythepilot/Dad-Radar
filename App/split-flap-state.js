@@ -83,6 +83,7 @@
         LANDED: "LANDED",
         CANCELLED: "CANCELED",
         ARRIVED: "ARRIVED",
+        "AT BASE": "AT BASE",
         LAYOVER: "LAYOVER",
         "COMMUTING HOME": "TO HOME",
         OFFLINE: "OFFLINE"

@@ -540,6 +540,90 @@ function testAwayLocationPersistsAfterArrivalHold() {
   );
 }
 
+function testSameDayBaseSitIsNotLayover() {
+  const result = resolveScheduleState(
+    createSchedule([
+      createFlight({
+        id: "arrived-at-base",
+        origin: "AVL",
+        destination: "ORD",
+        times: {
+          startUtc:
+            "2026-08-04T14:00:00.000Z",
+          endUtc:
+            "2026-08-04T17:24:00.000Z"
+        }
+      }),
+      createFlight({
+        id: "next-base-flight",
+        origin: "ORD",
+        destination: "XNA",
+        times: {
+          startUtc:
+            "2026-08-04T22:04:00.000Z",
+          endUtc:
+            "2026-08-05T00:00:00.000Z"
+        }
+      })
+    ]),
+    {
+      now: "2026-08-04T18:10:00.000Z",
+      arrivedHoldMinutes: 45
+    }
+  );
+
+  assert.equal(result.mode, "AT_BASE");
+  assert.equal(result.state.status, "AT BASE");
+  assert.equal(
+    result.state.message,
+    "DADDY IS BETWEEN FLIGHTS IN CHICAGO, ILLINOIS"
+  );
+  assert.equal(
+    result.state.locationAirport,
+    "ORD"
+  );
+  assert.equal(result.state.flight, null);
+}
+
+function testOvernightAtBaseRemainsLayover() {
+  const result = resolveScheduleState(
+    createSchedule([
+      createFlight({
+        id: "arrived-at-base",
+        origin: "AVL",
+        destination: "ORD",
+        times: {
+          startUtc:
+            "2026-08-04T14:00:00.000Z",
+          endUtc:
+            "2026-08-04T17:24:00.000Z"
+        }
+      }),
+      createFlight({
+        id: "tomorrow-base-flight",
+        origin: "ORD",
+        destination: "XNA",
+        times: {
+          startUtc:
+            "2026-08-05T14:00:00.000Z",
+          endUtc:
+            "2026-08-05T16:00:00.000Z"
+        }
+      })
+    ]),
+    {
+      now: "2026-08-04T18:10:00.000Z",
+      arrivedHoldMinutes: 45
+    }
+  );
+
+  assert.equal(result.mode, "LAYOVER");
+  assert.equal(
+    result.state.locationAirport,
+    "ORD"
+  );
+}
+
 function testAvlArrivalProvidesHomeEvidence() {
   const result = resolveScheduleState(
     createSchedule([
@@ -790,6 +874,8 @@ function runTests() {
   testRecentlyArrived();
   testCancelledFlightIsIgnored();
   testAwayLocationPersistsAfterArrivalHold();
+  testSameDayBaseSitIsNotLayover();
+  testOvernightAtBaseRemainsLayover();
   testAvlArrivalProvidesHomeEvidence();
   testNextFlightOriginProvidesLocationEvidence();
   testDailyScheduleTimeline();

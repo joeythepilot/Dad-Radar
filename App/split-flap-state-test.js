@@ -66,6 +66,20 @@ assert.deepEqual(
 
 assert.deepEqual(
   fieldsForState({
+    status: "AT BASE",
+    locationAirport: "ORD",
+    flight: null
+  }),
+  {
+    flightNumber: "    ",
+    origin: "   ",
+    destination: "ORD",
+    status: "AT BASE "
+  }
+);
+
+assert.deepEqual(
+  fieldsForState({
     status: "LOCATION UNKNOWN",
     flight: null
   }),

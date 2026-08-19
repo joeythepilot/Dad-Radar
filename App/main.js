@@ -1825,6 +1825,7 @@ const modeShortcuts = {
   "8": "DIVERTED",
   "9": "ARRIVED",
   "0": "LAYOVER",
+  b: "AT_BASE",
   "-": "COMMUTING_HOME",
   "=": "OFFLINE"
 };

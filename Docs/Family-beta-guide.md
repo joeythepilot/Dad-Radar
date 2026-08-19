@@ -163,6 +163,7 @@ For any other airport, Dad Radar displays a designed vintage placeholder with th
 | Scenario | Expected display |
 |---|---|
 | No active flight, Daddy confirmed in AVL | Split-flap To shows `AVL`, Status shows `HOME`, and the AVL poster remains available below |
+| Same-day gap between flights at ORD | Split-flap To shows `ORD`, Status shows `AT BASE`, and Today's Duty says Daddy is between flights in Chicago |
 | No active flight, Daddy away from AVL | Split-flap To shows the confirmed airport and Status shows `LAYOVER`; never `HOME` |
 | Daddy's location cannot be confirmed | Flight, From, and To are blank split-flap tiles; Status shows `LOC UNKN` |
 | 30 minutes before departure | `BOARDING` |

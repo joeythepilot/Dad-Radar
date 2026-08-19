@@ -458,6 +458,8 @@
           destination
             ? `DADDY HAS ARRIVED IN ${destination}`
             : "DADDY HAS ARRIVED",
+        AT_BASE:
+          `DADDY IS BETWEEN FLIGHTS IN ${resolvedLocation}`,
         LAYOVER:
           `DADDY IS ON LAYOVER IN ${resolvedLocation}`,
         LOCATION_UNKNOWN:
@@ -745,6 +747,7 @@
     ) {
       const statusLabels = {
         HOME: "HOME",
+        AT_BASE: "AT BASE",
         LAYOVER: "LAYOVER",
         LOCATION_UNKNOWN:
           "LOCATION UNKNOWN",
@@ -812,6 +815,49 @@
         `DADDY IS ON THE GROUND IN ${location}`,
         event,
         normalizedAirport
+      );
+    }
+
+    function isSameDayBaseSit(
+      lastFlight,
+      nextFlight,
+      options
+    ) {
+      return Boolean(
+        lastFlight?.destination ===
+          options.baseAirport &&
+        nextFlight?.origin ===
+          options.baseAirport &&
+        displayDateKey(
+          eventEnd(lastFlight),
+          options.displayTimeZone
+        ) ===
+          displayDateKey(
+            eventStart(nextFlight),
+            options.displayTimeZone
+          )
+      );
+    }
+
+    function createBaseSitState(options) {
+      const baseAirport = String(
+        options.baseAirport ?? ""
+      )
+        .trim()
+        .toUpperCase();
+
+      const location = String(
+        airportLocation(
+          baseAirport,
+          baseAirport || "BASE"
+        )
+      ).toUpperCase();
+
+      return createMessageState(
+        "AT_BASE",
+        `DADDY IS BETWEEN FLIGHTS IN ${location}`,
+        null,
+        baseAirport || null
       );
     }
 
@@ -1117,6 +1163,18 @@
             lastFlight,
             "ARRIVED",
             now,
+            options
+          );
+        }
+
+        if (
+          isSameDayBaseSit(
+            lastFlight,
+            nextFlight,
+            options
+          )
+        ) {
+          return createBaseSitState(
             options
           );
         }
