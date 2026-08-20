@@ -98,6 +98,46 @@ async function runTests() {
     "descent"
   );
 
+  const gradualAudio = fakeAudio();
+  const gradualController =
+    createAltitudeChimeController({
+      audioFactory: () => gradualAudio
+    });
+
+  assert.equal(
+    gradualController.observe("flight-3", 8000),
+    null
+  );
+  assert.equal(
+    gradualController.observe("flight-3", 9700),
+    null
+  );
+  assert.equal(
+    gradualController.observe("flight-3", 10100),
+    null
+  );
+  assert.equal(
+    gradualController.observe("flight-3", 10600),
+    "climb",
+    "A gradual climb through the hysteresis band must still chime."
+  );
+  assert.equal(
+    gradualController.observe("flight-3", 10300),
+    null
+  );
+  assert.equal(
+    gradualController.observe("flight-3", 9900),
+    null
+  );
+  assert.equal(
+    gradualController.observe("flight-3", 9400),
+    "descent",
+    "A gradual descent through the hysteresis band must still chime."
+  );
+
+  await Promise.resolve();
+  assert.equal(gradualAudio.playCount, 2);
+
   console.log("10,000-foot chime tests passed.");
 }
 

@@ -46,7 +46,7 @@ Approved destination artwork:
 
 If the current destination or confirmed ground location is absent from the approved library, the display uses a designed vintage placeholder with the catalog city, state or province, and three-letter airport code. It must never substitute another city's poster.
 
-Approved poster images load through the legacy-iPad-safe poster controller. Each asset receives a stable version query to bypass obsolete Home Screen cache entries. A failed request is retried twice with fresh cache-busting URLs; while it loads, or if all attempts fail, the destination's correct city/state/code placeholder fills the frame instead of Safari's broken-image icon. A later state refresh may try the approved poster again automatically.
+Approved poster images load through the legacy-iPad-safe poster controller. Each asset receives a stable version query to bypass obsolete Home Screen cache entries. A failed or silent eight-second request is retried twice with fresh cache-busting URLs. The destination's correct city/state/code placeholder remains visible until the actual on-screen image confirms that Safari rendered it; it also remains if all attempts fail. A later state refresh may try the approved poster again automatically.
 
 ## Batch production
 

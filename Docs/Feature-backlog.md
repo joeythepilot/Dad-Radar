@@ -16,7 +16,7 @@
 - [ ] "Dad's Next Event"
 - [ ] Layover countdown
 - [ ] Home countdown
-- [ ] Cabin chime below 10,000 feet
+- [x] Cabin chime crossing 10,000 feet in climb and descent
 - [ ] Personalized welcome home screen
 
 ## Travel Posters

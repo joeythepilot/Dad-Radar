@@ -25,6 +25,9 @@
     const DEFAULT_RETRY_DELAYS_MS =
       Object.freeze([1200, 4000]);
 
+    const DEFAULT_ATTEMPT_TIMEOUT_MS =
+      8000;
+
     function appendQuery(
       source,
       name,
@@ -108,8 +111,17 @@
           "destination-poster-1"
       );
 
+      const attemptTimeoutMs = Math.max(
+        0,
+        Number(
+          providedOptions.attemptTimeoutMs ??
+            DEFAULT_ATTEMPT_TIMEOUT_MS
+        ) || 0
+      );
+
       let generation = 0;
       let retryTimerId = null;
+      let attemptTimerId = null;
 
       function cancel() {
         generation += 1;
@@ -117,6 +129,11 @@
         if (retryTimerId !== null) {
           clearTimer(retryTimerId);
           retryTimerId = null;
+        }
+
+        if (attemptTimerId !== null) {
+          clearTimer(attemptTimerId);
+          attemptTimerId = null;
         }
       }
 
@@ -133,6 +150,7 @@
 
         function attemptLoad(attempt) {
           const image = createImage();
+          let settled = false;
 
           const url = posterAssetUrl(
             source,
@@ -143,27 +161,32 @@
             }
           );
 
-          image.onload = () => {
+          function finishAttempt(
+            succeeded,
+            reason = null
+          ) {
             if (
               requestGeneration !==
-              generation
+                generation ||
+              settled
             ) {
               return;
             }
 
-            retryTimerId = null;
+            settled = true;
 
-            callbacks.onLoad?.({
-              attempt,
-              source: url
-            });
-          };
+            if (attemptTimerId !== null) {
+              clearTimer(attemptTimerId);
+              attemptTimerId = null;
+            }
 
-          image.onerror = () => {
-            if (
-              requestGeneration !==
-              generation
-            ) {
+            if (succeeded) {
+              retryTimerId = null;
+
+              callbacks.onLoad?.({
+                attempt,
+                source: url
+              });
               return;
             }
 
@@ -184,11 +207,36 @@
 
             callbacks.onError?.({
               attempts: attempt + 1,
+              reason,
               source: url
             });
+          }
+
+          image.onload = () => {
+            finishAttempt(true);
+          };
+
+          image.onerror = () => {
+            finishAttempt(
+              false,
+              "error"
+            );
           };
 
           image.src = url;
+
+          if (attemptTimeoutMs > 0) {
+            attemptTimerId = setTimer(
+              () => {
+                attemptTimerId = null;
+                finishAttempt(
+                  false,
+                  "timeout"
+                );
+              },
+              attemptTimeoutMs
+            );
+          }
         }
 
         attemptLoad(0);
@@ -203,6 +251,7 @@
     }
 
     return Object.freeze({
+      DEFAULT_ATTEMPT_TIMEOUT_MS,
       createPosterImageLoader,
       posterAssetUrl
     });

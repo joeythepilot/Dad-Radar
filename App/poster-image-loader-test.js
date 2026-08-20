@@ -29,7 +29,7 @@ function testPosterAssetUrl() {
   );
 }
 
-function createHarness() {
+function createHarness(options = {}) {
   const images = [];
   const timers = [];
   const loaded = [];
@@ -38,6 +38,8 @@ function createHarness() {
   const loader =
     createPosterImageLoader({
       version: "ipad-poster-2",
+      attemptTimeoutMs:
+        options.attemptTimeoutMs ?? 0,
       nonce: () => 99,
       createImage() {
         const image = {};
@@ -74,6 +76,28 @@ function createHarness() {
       }
     }
   };
+}
+
+function testHungPosterRetriesAfterTimeout() {
+  const harness = createHarness({
+    attemptTimeoutMs: 8000
+  });
+
+  harness.loader.load(
+    "./assets/xna.png",
+    harness.callbacks
+  );
+
+  assert.equal(harness.timers[0].delay, 8000);
+  harness.timers[0].callback();
+  assert.equal(harness.timers[1].delay, 1200);
+
+  harness.timers[1].callback();
+  harness.images[1].onload();
+
+  assert.equal(harness.failed.length, 0);
+  assert.equal(harness.loaded.length, 1);
+  assert.equal(harness.loaded[0].attempt, 1);
 }
 
 function testFailedPosterRetriesWithFreshUrls() {
@@ -184,6 +208,7 @@ function testFinalFailureUsesFallback() {
 function runTests() {
   testPosterAssetUrl();
   testFailedPosterRetriesWithFreshUrls();
+  testHungPosterRetriesAfterTimeout();
   testNewPosterCancelsOldRequest();
   testFinalFailureUsesFallback();
 

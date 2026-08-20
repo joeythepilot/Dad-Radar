@@ -819,7 +819,7 @@ let requestedPosterAirport = null;
 const destinationPosterLoader =
   globalThis.dadRadarPosterImages
     ?.createPosterImageLoader?.({
-      version: "ipad-poster-2"
+      version: "ipad-poster-3"
     }) ?? null;
 
 function posterFallbackLocation(
@@ -860,11 +860,15 @@ function showDestinationPosterFallback(
 
   if (destinationPoster) {
     destinationPoster.hidden = true;
+    destinationPoster.style.display =
+      "none";
   }
 
   if (destinationPosterFallback) {
     destinationPosterFallback.hidden =
       false;
+    destinationPosterFallback.style.display =
+      "grid";
   }
 
   if (posterFallbackCity) {
@@ -902,7 +906,7 @@ function showLoadedDestinationPoster(
     return;
   }
 
-  destinationPoster.onerror = () => {
+  const handleVisiblePosterError = () => {
     if (
       requestedPosterAirport !==
       posterIdentity
@@ -918,20 +922,45 @@ function showLoadedDestinationPoster(
     );
   };
 
+  const handleVisiblePosterLoad = () => {
+    if (
+      requestedPosterAirport !==
+        posterIdentity
+    ) {
+      return;
+    }
+
+    destinationPoster.hidden = false;
+    destinationPoster.style.display =
+      "block";
+
+    if (destinationPosterFallback) {
+      destinationPosterFallback.hidden =
+        true;
+      destinationPosterFallback.style.display =
+        "none";
+    }
+
+    destinationPanel?.style.setProperty(
+      "--destination-poster-image",
+      `url("${source}")`
+    );
+  };
+
+  destinationPoster.onerror =
+    handleVisiblePosterError;
+  destinationPoster.onload =
+    handleVisiblePosterLoad;
+
   destinationPoster.src = source;
   destinationPoster.alt =
     `Vintage ${poster.location} travel poster`;
-  destinationPoster.hidden = false;
-
-  if (destinationPosterFallback) {
-    destinationPosterFallback.hidden =
-      true;
+  if (
+    destinationPoster.complete &&
+    destinationPoster.naturalWidth > 0
+  ) {
+    handleVisiblePosterLoad();
   }
-
-  destinationPanel?.style.setProperty(
-    "--destination-poster-image",
-    `url("${source}")`
-  );
 
 }
 

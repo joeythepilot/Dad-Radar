@@ -84,6 +84,8 @@
       let audio = null;
       let flightKey = null;
       let previousAltitude = null;
+      let hasReachedBelowBand = false;
+      let hasReachedAboveBand = false;
       const chimeDirections = new Set();
 
       function ensureAudio() {
@@ -108,6 +110,8 @@
 
         flightKey = nextFlightKey;
         previousAltitude = null;
+        hasReachedBelowBand = false;
+        hasReachedAboveBand = false;
         chimeDirections.clear();
       }
 
@@ -183,22 +187,34 @@
         const previous = previousAltitude;
         previousAltitude = altitude;
 
+        const belowBand =
+          altitude <=
+          thresholdFeet - hysteresisFeet;
+
+        const aboveBand =
+          altitude >=
+          thresholdFeet + hysteresisFeet;
+
+        const direction =
+          aboveBand &&
+          hasReachedBelowBand
+            ? "climb"
+            : belowBand &&
+                hasReachedAboveBand
+              ? "descent"
+              : null;
+
+        if (belowBand) {
+          hasReachedBelowBand = true;
+        }
+
+        if (aboveBand) {
+          hasReachedAboveBand = true;
+        }
+
         if (previous === null) {
           return null;
         }
-
-        const direction =
-          previous <
-            thresholdFeet - hysteresisFeet &&
-          altitude >=
-            thresholdFeet + hysteresisFeet
-            ? "climb"
-            : previous >
-                thresholdFeet + hysteresisFeet &&
-              altitude <=
-                thresholdFeet - hysteresisFeet
-              ? "descent"
-              : null;
 
         if (
           !direction ||

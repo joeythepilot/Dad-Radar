@@ -181,6 +181,7 @@ For any other airport, Dad Radar displays a designed vintage placeholder with th
 | Deadhead event | Today's Duty shows `DEADHEAD` and describes Daddy as riding; the flap continues to show the operational phase |
 | Destination has no approved poster | Vintage city/state/airport-code placeholder |
 | Approved poster request fails on the iPad | Correct destination placeholder appears while Dad Radar retries the image with a fresh cache URL; no broken-image square |
+| Aircraft gradually climbs or descends through 10,000 feet | Cabin chime plays once in each direction per flight after sound has been enabled with one tap |
 | FR24 temporarily fails | Calendar plan remains visible |
 | Calendar refresh fails after a successful load | Last known display state remains visible |
 
@@ -202,7 +203,7 @@ For each unexpected result, record the local time, flight number, expected resul
 
 - Completely close the existing Safari tab, then reopen the address printed by `beta:address`. Dad Radar versions its browser bundle and stylesheets so Safari cannot reuse the incompatible copy.
 - The first-generation iPad Air on iOS 12.5.5 uses a dedicated ES5 bundle and legacy CSS dimensions for the split-flap and instruments.
-- If startup still fails, photograph the full `STARTUP ERROR` line. Include its `IPAD-ES5-6` version marker in the report; do not include credentials or token text.
+- If startup still fails, photograph the full `STARTUP ERROR` line. Include its `IPAD-ES5-7` version marker in the report; do not include credentials or token text.
 
 ### Dad Radar loads but has no schedule
 
