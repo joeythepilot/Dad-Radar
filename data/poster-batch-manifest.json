@@ -42,6 +42,12 @@
       "label": "August family beta trip coverage",
       "status": "candidate",
       "airportCodes": ["PIA", "TVC", "HSV", "SYR"]
+    },
+    {
+      "id": "family-trip-2026-08-week-2",
+      "label": "August family beta follow-up trip coverage",
+      "status": "approved",
+      "airportCodes": ["SGF", "GRB"]
     }
   ],
   "destinations": [
@@ -225,6 +231,14 @@
     {
       "code": "SYR", "icao": "KSYR", "city": "Syracuse", "region": "New York", "title": "SYRACUSE", "subtitle": "NEW YORK", "descriptor": "ART DECO • LAKES • UPSTATE", "tagline": "The Heart of Central New York.", "batch": "family-trip-2026-08", "status": "candidate", "output": "assets/destinations/syr-poster-7x8-candidate-v1.png", "visualProfileId": "syracuse-lavender-autumn",
       "design": {"landmarks": ["Niagara Mohawk Building", "Onondaga Lake"], "skySignature": "Soft lavender and gold autumn cloudscape", "seasonAndLight": "Peak fall foliage in clear late-afternoon light", "titleAlignment": "center", "aircraftPlacement": "Small aircraft at far right above the autumn canopy", "foreground": "Maple foliage and rolling Central New York hills", "avoid": ["New York City skyline", "university branding"]}, "referenceSources": ["https://www.visitsyracuse.com/", "https://www.syr.gov/"]
+    },
+    {
+      "code": "SGF", "icao": "KSGF", "city": "Springfield", "region": "Missouri", "title": "SPRINGFIELD", "subtitle": "MISSOURI", "descriptor": "OZARKS • ROUTE 66 • ADVENTURE", "tagline": "The Ozarks on the Mother Road.", "batch": "family-trip-2026-08-week-2", "status": "approved", "output": "assets/destinations/sgf-poster-7x8-candidate-v1.png", "visualProfileId": "springfield-route66-golden-hour",
+      "design": {"landmarks": ["Historic Route 66", "Springfield skyline", "Ozark ridgelines"], "skySignature": "Layered amber golden-hour clouds above green Ozark hills", "seasonAndLight": "Late-summer golden hour with warm roadside light", "titleAlignment": "center", "aircraftPlacement": "Classic propeller airliner centered above the Ozark horizon", "foreground": "Route 66 roadway, historic highway shield, and a covered bridge", "avoid": ["Illinois state-capital imagery", "branded roadside businesses", "oversized mountain peaks"]}, "referenceSources": ["https://www.springfieldmo.org/visit-springfield-mo/", "https://www.springfieldmo.org/things-to-do/passes/", "https://www.springfield66.com/"]
+    },
+    {
+      "code": "GRB", "icao": "KGRB", "city": "Green Bay", "region": "Wisconsin", "title": "GREEN BAY", "subtitle": "WISCONSIN", "descriptor": "WATERFRONT • FOOTBALL • NORTHWOODS", "tagline": "Where the Bay Meets the Northwoods.", "batch": "family-trip-2026-08-week-2", "status": "approved", "output": "assets/destinations/grb-poster-7x8-candidate-v1.png", "visualProfileId": "green-bay-waterfront-autumn",
+      "design": {"landmarks": ["Fox River waterfront", "Downtown Green Bay", "classic stadium silhouette"], "skySignature": "Pale lake-blue autumn sky with broad cream clouds", "seasonAndLight": "Crisp autumn afternoon with copper foliage and warm brick", "titleAlignment": "center", "aircraftPlacement": "Classic propeller airliner high above the waterfront", "foreground": "Fox River promenade, working boat, water reflections, and autumn trees", "avoid": ["team logos", "trademarks", "dominant green-and-gold branding"]}, "referenceSources": ["https://www.greenbaywi.gov/585/Downtown", "https://www.greenbay.com/", "https://www.greenbay.com/visitorcenter/"]
     }
   ]
 }

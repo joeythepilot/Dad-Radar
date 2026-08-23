@@ -150,11 +150,13 @@ The approved display library currently includes:
 | CMH | Columbus, Ohio |
 | DCA | Washington, District of Columbia |
 | DFW | Dallas–Fort Worth, Texas |
+| GRB | Green Bay, Wisconsin |
 | LSE | La Crosse, Wisconsin |
 | MIA | Miami, Florida |
 | ORD | Chicago, Illinois |
 | PHX | Phoenix, Arizona |
 | ROC | Rochester, New York |
+| SGF | Springfield, Missouri |
 | XNA | Northwest Arkansas, Arkansas |
 
 For any other airport, Dad Radar displays a designed vintage placeholder with the real city, state or province, and airport code. It does not show an unrelated poster. New artwork should be produced in small, schedule-driven batches and added to `config/posters.js` only after approval.

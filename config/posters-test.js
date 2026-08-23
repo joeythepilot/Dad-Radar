@@ -24,6 +24,14 @@ function runTests() {
     getPoster("lse").location,
     "La Crosse, Wisconsin"
   );
+  assert.equal(
+    getPoster("grb").title,
+    "GREEN BAY"
+  );
+  assert.equal(
+    getPoster("sgf").location,
+    "Springfield, Missouri"
+  );
 
   for (const [code, poster] of
     Object.entries(posterByAirport)) {

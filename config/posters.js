@@ -36,6 +36,12 @@
       location:
         "Dallas–Fort Worth, Texas"
     }),
+    GRB: Object.freeze({
+      source:
+        "./assets/destinations/grb-poster-7x8-candidate-v1.png",
+      title: "GREEN BAY",
+      location: "Green Bay, Wisconsin"
+    }),
     HSV: Object.freeze({
       source:
         "./assets/destinations/hsv-poster-7x8-candidate-v1.png",
@@ -78,6 +84,12 @@
         "./assets/destinations/roc-poster-7x8-candidate-v1.png",
       title: "ROCHESTER",
       location: "Rochester, New York"
+    }),
+    SGF: Object.freeze({
+      source:
+        "./assets/destinations/sgf-poster-7x8-candidate-v1.png",
+      title: "SPRINGFIELD",
+      location: "Springfield, Missouri"
     }),
     SYR: Object.freeze({
       source:
