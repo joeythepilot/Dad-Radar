@@ -149,6 +149,10 @@
         snapshot.retrievedAt
       );
 
+      const recordedAt = toDate(
+        snapshot?.position?.recordedAt
+      );
+
       const staleAfterMs =
         finiteNumber(options.staleAfterMs) ??
         DEFAULT_OPTIONS.staleAfterMs;
@@ -157,10 +161,20 @@
         return false;
       }
 
-      return (
+      const retrievalIsFresh = (
         now.getTime() -
         retrievedAt.getTime()
       ) <= staleAfterMs;
+
+      const positionIsFresh =
+        !recordedAt ||
+        (
+          now.getTime() -
+          recordedAt.getTime()
+        ) <= staleAfterMs;
+
+      return retrievalIsFresh &&
+        positionIsFresh;
     }
 
     function routeMatches(event, snapshot) {
@@ -584,6 +598,9 @@
 
       if (
         stabilizedPhase === "APPROACH" &&
+        finiteNumber(
+          snapshot?.progressPercent
+        ) >= 65 &&
         altitudeAgl !== null &&
         altitudeAgl <
           LANDING_ENTRY_AGL_FEET &&

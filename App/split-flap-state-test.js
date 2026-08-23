@@ -93,6 +93,32 @@ assert.deepEqual(
 
 assert.deepEqual(
   fieldsForState({
+    status: "NO TRACK",
+    flight: null
+  }),
+  {
+    flightNumber: "    ",
+    origin: "   ",
+    destination: "   ",
+    status: "NO TRACK"
+  }
+);
+
+assert.deepEqual(
+  fieldsForState({
+    status: "CAL AUTH",
+    flight: null
+  }),
+  {
+    flightNumber: "    ",
+    origin: "   ",
+    destination: "   ",
+    status: "CAL AUTH"
+  }
+);
+
+assert.deepEqual(
+  fieldsForState({
     status: "OFFLINE",
     locationAirport: "BIL",
     flight: null

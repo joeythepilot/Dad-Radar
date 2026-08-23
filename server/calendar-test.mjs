@@ -15,6 +15,9 @@ const CREDENTIALS_PATH =
 const TOKEN_PATH =
   path.join(process.cwd(), "token.json");
 
+const FORCE_REAUTHORIZE =
+  process.argv.includes("--force");
+
 const CALENDAR_ID =
   process.env.GOOGLE_CALENDAR_ID ||
   "family04491195316374346619@group.calendar.google.com";
@@ -72,6 +75,28 @@ async function saveCredentials(client) {
 }
 
 async function authorize() {
+  if (FORCE_REAUTHORIZE) {
+    try {
+      const backupPath = path.join(
+        process.cwd(),
+        `token.expired-${Date.now()}.json`
+      );
+
+      await fs.rename(
+        TOKEN_PATH,
+        backupPath
+      );
+
+      console.log(
+        `Previous authorization preserved as ${path.basename(backupPath)}.`
+      );
+    } catch (error) {
+      if (error.code !== "ENOENT") {
+        throw error;
+      }
+    }
+  }
+
   const savedClient = await loadSavedCredentials();
 
   if (savedClient) {
@@ -135,6 +160,22 @@ async function main() {
 
 main().catch((error) => {
   console.error("Calendar test failed:");
-  console.error(error);
+
+  if (
+    error?.response?.data?.error ===
+      "invalid_grant"
+  ) {
+    console.error(
+      "The saved Google Calendar authorization has expired or was revoked."
+    );
+    console.error(
+      "Run: npm.cmd run calendar:reauthorize"
+    );
+  } else {
+    console.error(
+      error?.message ?? String(error)
+    );
+  }
+
   process.exitCode = 1;
 });

@@ -500,9 +500,11 @@ function determinePhase(
       APPROACH_ALTITUDE_FEET &&
     !isClimbing &&
     (
-      isDescending ||
       hasArrivalProgress ||
-      isNearDestination ||
+      isNearDestination
+    ) &&
+    (
+      isDescending ||
       isApproachSpeed
     );
 

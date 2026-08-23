@@ -2,6 +2,7 @@ const assert = require("node:assert/strict");
 
 const {
   calendarQueryWindow,
+  isCalendarAuthorizationError,
   startOfDisplayDay
 } = require("./calendar-service");
 
@@ -13,6 +14,29 @@ function testSummerDayBoundary() {
   assert.equal(
     start.toISOString(),
     "2026-08-04T04:00:00.000Z"
+  );
+}
+
+function testExpiredAuthorizationDetection() {
+  assert.equal(
+    isCalendarAuthorizationError({
+      code: 400,
+      response: {
+        data: {
+          error: "invalid_grant",
+          error_description:
+            "Token has been expired or revoked."
+        }
+      }
+    }),
+    true
+  );
+
+  assert.equal(
+    isCalendarAuthorizationError({
+      code: 500
+    }),
+    false
   );
 }
 
@@ -77,6 +101,7 @@ function runTests() {
   testInvalidBoundaryInput();
   testDefaultWindowIncludesLocationHistory();
   testExplicitMinimumDoesNotAddHistory();
+  testExpiredAuthorizationDetection();
 
   console.log(
     "Calendar service tests passed."

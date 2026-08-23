@@ -31,6 +31,7 @@
     "EN_ROUTE",
     "APPROACH",
     "LANDING",
+    "TRACKING_LOST",
     "COMMUTING_TO_BASE",
     "COMMUTING_HOME"
   ]);
@@ -70,6 +71,18 @@
         settings.schedule
           .legLockTimeoutMinutes ??
         8 * 60,
+      staleLandingHoldMinutes:
+        settings.schedule
+          .staleLandingHoldMinutes ??
+        15,
+      staleFlightHandoffMinutes:
+        settings.schedule
+          .staleFlightHandoffMinutes ??
+        30,
+      unconfirmedArrivalMinutes:
+        settings.schedule
+          .unconfirmedArrivalMinutes ??
+        45,
       arrivedHoldMinutes:
         settings.schedule
           .arrivedHoldMinutes,
@@ -348,6 +361,119 @@
     return liveTrackPoints.slice();
   }
 
+  function releaseStaleFlightLock(
+    schedule,
+    settings,
+    now = new Date()
+  ) {
+    if (
+      !lockedFlightEventKey ||
+      !Array.isArray(schedule?.events)
+    ) {
+      return false;
+    }
+
+    const lockedEvent =
+      schedule.events.find(
+        (event) =>
+          eventKey(event) ===
+          lockedFlightEventKey
+      );
+
+    if (!lockedEvent) {
+      lockedFlightEventKey = null;
+      return true;
+    }
+
+    const lockedStart = validDate(
+      lockedEvent?.times?.startUtc ??
+      lockedEvent?.startUtc
+    );
+
+    const lockedEnd = validDate(
+      lockedEvent?.times?.endUtc ??
+      lockedEvent?.endUtc
+    );
+
+    const newerStartedFlight =
+      schedule.events
+        .filter((event) => {
+          const start = validDate(
+            event?.times?.startUtc ??
+            event?.startUtc
+          );
+
+          return Boolean(
+            event?.kind === "flight" &&
+            start &&
+            lockedStart &&
+            start > lockedStart &&
+            start <= now
+          );
+        })
+        .sort((left, right) =>
+          validDate(
+            left.times?.startUtc ??
+            left.startUtc
+          ) -
+          validDate(
+            right.times?.startUtc ??
+            right.startUtc
+          )
+        )[0] ?? null;
+
+    const evidenceAt = validDate(
+      currentLiveFlight?.position
+        ?.recordedAt ??
+      previousLiveResolved?.state
+        ?.flight?.lastPositionAt ??
+      currentLiveFlight?.retrievedAt
+    );
+
+    const evidenceAgeMinutes =
+      evidenceAt
+        ? Math.max(
+            0,
+            (now - evidenceAt) / 60000
+          )
+        : Infinity;
+
+    const previousPhase = String(
+      previousLiveResolved?.state
+        ?.livePhase ?? ""
+    ).toUpperCase();
+
+    const staleLandingCanComplete =
+      previousPhase === "LANDING" &&
+      lockedEnd &&
+      now >= lockedEnd &&
+      evidenceAgeMinutes >=
+        settings
+          .staleLandingHoldMinutes;
+
+    const staleLegCanHandoff =
+      Boolean(newerStartedFlight) &&
+      evidenceAgeMinutes >=
+        settings
+          .staleFlightHandoffMinutes;
+
+    if (
+      !staleLandingCanComplete &&
+      !staleLegCanHandoff
+    ) {
+      return false;
+    }
+
+    if (staleLandingCanComplete) {
+      recordConfirmedArrival(
+        lockedEvent
+      );
+    }
+
+    lockedFlightEventKey = null;
+    return true;
+  }
+
   function isTrackableResolved(
     resolved
   ) {
@@ -400,6 +526,11 @@
 
     const settings =
       controllerSettings();
+
+    releaseStaleFlightLock(
+      currentSchedule,
+      settings
+    );
 
     const effectiveSchedule =
       scheduleWithConfirmedArrivals(
@@ -690,7 +821,12 @@
       );
 
       if (!hasLoadedSchedule) {
-        setDadRadarMode("OFFLINE");
+        setDadRadarMode(
+          error?.code ===
+            "calendar-authorization-required"
+            ? "CALENDAR_AUTH"
+            : "OFFLINE"
+        );
       }
 
       global.dispatchEvent(

@@ -207,6 +207,45 @@ async function testCalendarPublishesState() {
   assert.equal(syncEvent.detail.ok, true);
 }
 
+async function testExpiredCalendarShowsAuthorizationState() {
+  const {
+    context,
+    dispatchedEvents
+  } = createBrowserContext();
+
+  context.dadRadarCalendarApi = {
+    async getUpcomingEvents() {
+      const error = new Error(
+        "Google Calendar authorization must be renewed."
+      );
+      error.code =
+        "calendar-authorization-required";
+      throw error;
+    }
+  };
+
+  const result =
+    await context.refreshCalendarState();
+
+  assert.equal(result, null);
+
+  const stateEvent =
+    dispatchedEvents.find(
+      (event) =>
+        event.type ===
+        "dad-radar:state-change"
+    );
+
+  assert.equal(
+    stateEvent.detail.mode,
+    "CALENDAR_AUTH"
+  );
+  assert.equal(
+    stateEvent.detail.state.status,
+    "CAL AUTH"
+  );
+}
+
 async function testLiveFlightRefinesCalendarState() {
   const {
     context,
@@ -904,8 +943,123 @@ async function testAirborneLegStaysLockedDuringCalendarOverlap() {
   assert.equal(locked.mode, "EN_ROUTE");
 }
 
+async function testStaleLandingHandsOffToStartedNextLeg() {
+  const storage = createMemoryStorage();
+  const { context } = createBrowserContext({
+    localStorage: storage
+  });
+
+  const realDate = Date;
+  const initialNow = realDate.now();
+
+  const firstFlight = {
+    ...activeFlightEvent(),
+    id: "landing-flight",
+    origin: "TVC",
+    destination: "DCA",
+    times: {
+      startUtc: new realDate(
+        initialNow - 90 * 60000
+      ).toISOString(),
+      endUtc: new realDate(
+        initialNow + 5 * 60000
+      ).toISOString()
+    }
+  };
+
+  const nextFlight = {
+    ...activeFlightEvent(),
+    id: "next-started-flight",
+    origin: "DCA",
+    destination: "HSV",
+    flightNumber: "4321",
+    times: {
+      startUtc: new realDate(
+        initialNow + 10 * 60000
+      ).toISOString(),
+      endUtc: new realDate(
+        initialNow + 120 * 60000
+      ).toISOString()
+    }
+  };
+
+  context.dadRadarCalendarApi = {
+    async getUpcomingEvents() {
+      return {
+        retrievedAt:
+          new realDate().toISOString(),
+        events: [firstFlight, nextFlight]
+      };
+    }
+  };
+
+  context.dadRadarLiveFlightApi = {
+    async getFlightSnapshot(event) {
+      if (event.id !== firstFlight.id) {
+        return null;
+      }
+
+      return {
+        provider: "flightradar24",
+        retrievedAt:
+          new realDate(initialNow)
+            .toISOString(),
+        displayIdent: "MQ4140",
+        phase: "LANDING",
+        origin: "TVC",
+        destination: "DCA",
+        progressPercent: 98,
+        position: {
+          latitude: 38.86,
+          longitude: -77.04,
+          altitudeFeet: 900,
+          altitudeTrend: "D",
+          groundSpeedKnots: 135,
+          headingDegrees: 180,
+          recordedAt:
+            new realDate(initialNow)
+              .toISOString()
+        }
+      };
+    }
+  };
+
+  await context.refreshCalendarState();
+  const landing =
+    await context.refreshLiveFlightState();
+
+  assert.equal(landing.mode, "LANDING");
+
+  const laterNow =
+    initialNow + 40 * 60000;
+
+  context.Date = class extends realDate {
+    constructor(value) {
+      super(
+        value === undefined
+          ? laterNow
+          : value
+      );
+    }
+
+    static now() {
+      return laterNow;
+    }
+  };
+
+  const handedOff =
+    await context.refreshCalendarState();
+
+  assert.equal(
+    handedOff.event.id,
+    "next-started-flight"
+  );
+  assert.notEqual(handedOff.mode, "LANDING");
+}
+
 async function runTests() {
   await testCalendarPublishesState();
+  await testExpiredCalendarShowsAuthorizationState();
   await testLiveFlightRefinesCalendarState();
   await testTaxiOutDoesNotRegressToCalendarDelay();
   await testLiveFailureRetainsCalendarState();
@@ -913,6 +1067,7 @@ async function runTests() {
   await testPollingStopsAfterArrival();
   await testConfirmedArrivalDoesNotRewindToDeparture();
   await testAirborneLegStaysLockedDuringCalendarOverlap();
+  await testStaleLandingHandsOffToStartedNextLeg();
 
   console.log(
     "Calendar state controller tests passed."

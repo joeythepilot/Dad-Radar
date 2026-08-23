@@ -20,6 +20,21 @@ const TOKEN_PATH = path.join(
 
 let calendarClientPromise = null;
 
+function isCalendarAuthorizationError(
+  error
+) {
+  return Boolean(
+    error?.code === 400 &&
+    (
+      error?.response?.data?.error ===
+        "invalid_grant" ||
+      error?.response?.data
+        ?.error_description ===
+        "Token has been expired or revoked."
+    )
+  );
+}
+
 function startOfDisplayDay(
   value = new Date(),
   timeZone = DISPLAY_TIME_ZONE
@@ -223,6 +238,7 @@ async function getUpcomingEvents(options = {}) {
 module.exports = {
   CALENDAR_ID,
   calendarQueryWindow,
+  isCalendarAuthorizationError,
   getUpcomingEvents,
   startOfDisplayDay
 };

@@ -209,6 +209,25 @@ function testTelemetryDrivesSurfacePhases() {
   );
 }
 
+function testLowSlowDepartureIsNotApproach() {
+  assert.equal(
+    determinePhase(
+      {
+        altitudeFeet: 205,
+        groundSpeedKnots: 60,
+        verticalSpeedFeetPerMinute: 0
+      },
+      {
+        progressPercent: 1,
+        distanceFromOrigin: 3.4,
+        distanceToDestination: 520
+      }
+    ),
+    "TAXI_OUT",
+    "Low speed and altitude near the origin must not resemble an arrival."
+  );
+}
+
 function testExactProviderIdWins() {
   const normalizedLookup =
     normalizeLookup(
@@ -391,6 +410,7 @@ async function run() {
   testPositionUsesNativeFr24Units();
   testSnapshotNormalizesFullRecord();
   testTelemetryDrivesSurfacePhases();
+  testLowSlowDepartureIsNotApproach();
   testExactProviderIdWins();
   await testLiveLookupUsesOfficialFullEndpoint();
   await testCommercialFlightFallback();

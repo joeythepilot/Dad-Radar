@@ -36,6 +36,7 @@
       boardingLeadMinutes: 30,
       delayGraceMinutes: 5,
       legLockTimeoutMinutes: 8 * 60,
+      unconfirmedArrivalMinutes: 45,
       arrivedHoldMinutes: 45
     });
 
@@ -458,6 +459,10 @@
           destination
             ? `DADDY HAS ARRIVED IN ${destination}`
             : "DADDY HAS ARRIVED",
+        TRACKING_LOST:
+          destination
+            ? `DAD RADAR IS WAITING TO CONFIRM ${destination}`
+            : "DAD RADAR IS WAITING FOR FLIGHT DATA",
         AT_BASE:
           `DADDY IS BETWEEN FLIGHTS IN ${resolvedLocation}`,
         LAYOVER:
@@ -625,6 +630,7 @@
         DELAYED: "DELAYED",
         EN_ROUTE: "EN ROUTE",
         APPROACH: "APPROACH",
+        TRACKING_LOST: "NO TRACK",
         ARRIVED: "ARRIVED"
       };
 
@@ -1154,6 +1160,20 @@
           (
             now - eventEnd(lastFlight)
           ) / 60000;
+
+        if (
+          !lastFlight.confirmedArrivalAt &&
+          minutesSinceArrival <=
+            options
+              .unconfirmedArrivalMinutes
+        ) {
+          return createFlightState(
+            lastFlight,
+            "TRACKING_LOST",
+            now,
+            options
+          );
+        }
 
         if (
           minutesSinceArrival <=

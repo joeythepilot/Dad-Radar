@@ -208,7 +208,12 @@ function testStaleLiveFlightFallsBack() {
       calendar,
       liveSnapshot({
         retrievedAt:
-          "2026-08-04T17:55:00.000Z"
+          "2026-08-04T17:55:00.000Z",
+        position: {
+          ...liveSnapshot().position,
+          recordedAt:
+            "2026-08-04T17:55:00.000Z"
+        }
       }),
       {
         now: NOW,
@@ -223,6 +228,33 @@ function testStaleLiveFlightFallsBack() {
       { now: NOW }
     ),
     true
+  );
+}
+
+function testOldPositionIsStaleDespiteFreshLookup() {
+  const calendar = calendarResolved();
+
+  const resolved =
+    reconcileScheduleWithLive(
+      calendar,
+      liveSnapshot({
+        retrievedAt: NOW,
+        position: {
+          ...liveSnapshot().position,
+          recordedAt:
+            "2026-08-04T17:55:00.000Z"
+        }
+      }),
+      {
+        now: NOW,
+        staleAfterMs: 3 * 60 * 1000
+      }
+    );
+
+  assert.equal(
+    resolved,
+    calendar,
+    "A newly fetched response must not make an old aircraft position fresh."
   );
 }
 
@@ -812,6 +844,29 @@ function testLandingDoesNotTriggerOnDeparture() {
   );
 }
 
+function testApproachLabelCannotCreateDepartureLanding() {
+  const departure =
+    reconcileScheduleWithLive(
+      calendarResolved(),
+      liveSnapshot({
+        phase: "APPROACH",
+        progressPercent: 1,
+        position: {
+          ...liveSnapshot().position,
+          altitudeFeet: 205,
+          altitudeTrend: ""
+        }
+      }),
+      { now: NOW }
+    );
+
+  assert.equal(
+    departure.mode,
+    "APPROACH",
+    "A provider Approach label may be retained, but must not become Landing near departure."
+  );
+}
+
 function testLandingReleasesForGoAround() {
   const calendar = calendarResolved();
 
@@ -933,6 +988,7 @@ function runTests() {
   testFreshLiveFlightWins();
   testLiveGsoDestinationCity();
   testStaleLiveFlightFallsBack();
+  testOldPositionIsStaleDespiteFreshLookup();
   testRouteMismatchFallsBack();
   testLivePhasesDriveModes();
   testDelayPersistsUntilAirborne();
@@ -946,6 +1002,7 @@ function runTests() {
   testCommuteModeIsPreservedInFlight();
   testApproachDoesNotRegressAfterLevelOff();
   testLandingDoesNotTriggerOnDeparture();
+  testApproachLabelCannotCreateDepartureLanding();
   testLandingReleasesForGoAround();
   testApproachReleasesForSustainedGoAround();
   testApproachLatchDoesNotCrossFlights();

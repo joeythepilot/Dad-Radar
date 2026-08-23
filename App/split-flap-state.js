@@ -79,6 +79,7 @@
         "EN ROUTE": "EN ROUTE",
         APPROACH: "APPROACH",
         LANDING: "LANDING",
+        "NO TRACK": "NO TRACK",
         DIVERTED: "DIVERTED",
         LANDED: "LANDED",
         CANCELLED: "CANCELED",
@@ -86,7 +87,8 @@
         "AT BASE": "AT BASE",
         LAYOVER: "LAYOVER",
         "COMMUTING HOME": "TO HOME",
-        OFFLINE: "OFFLINE"
+        OFFLINE: "OFFLINE",
+        "CAL AUTH": "CAL AUTH"
       };
 
       const normalizedStatus = String(

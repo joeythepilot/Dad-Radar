@@ -331,6 +331,86 @@ function checkHealth(options = {}) {
   });
 }
 
+function interpretCalendarHealth(
+  statusCode,
+  payload
+) {
+  if (
+    statusCode === 200 &&
+    payload?.ok === true
+  ) {
+    return {
+      ok: true,
+      authorizationRequired: false
+    };
+  }
+
+  return {
+    ok: false,
+    authorizationRequired:
+      payload?.code ===
+      "calendar-authorization-required"
+  };
+}
+
+function checkCalendarHealth(options = {}) {
+  const port =
+    options.port ??
+    (Number(process.env.PORT) || 4173);
+
+  const timeoutMs =
+    options.timeoutMs ?? 10000;
+
+  return new Promise((resolve) => {
+    const request = http.get(
+      {
+        hostname: "127.0.0.1",
+        port,
+        path: "/api/calendar/upcoming?days=1",
+        timeout: timeoutMs
+      },
+      (response) => {
+        let body = "";
+
+        response.setEncoding("utf8");
+        response.on("data", (chunk) => {
+          body += chunk;
+        });
+        response.on("end", () => {
+          try {
+            resolve(
+              interpretCalendarHealth(
+                response.statusCode,
+                JSON.parse(body)
+              )
+            );
+          } catch (_error) {
+            resolve({
+              ok: false,
+              authorizationRequired: false
+            });
+          }
+        });
+      }
+    );
+
+    request.on("timeout", () => {
+      request.destroy();
+      resolve({
+        ok: false,
+        authorizationRequired: false
+      });
+    });
+
+    request.on("error", () => {
+      resolve({
+        ok: false,
+        authorizationRequired: false
+      });
+    });
+  });
+}
+
 function delay(milliseconds) {
   return new Promise((resolve) => {
     setTimeout(resolve, milliseconds);
@@ -474,6 +554,16 @@ async function status(options = {}) {
   const healthy =
     await checkHealth(options);
 
+  const calendarHealth = healthy
+    ? await (
+        options.calendarHealthCheck ??
+        checkCalendarHealth
+      )(options)
+    : {
+        ok: false,
+        authorizationRequired: false
+      };
+
   console.log(
     "DAD RADAR AUTOMATIC STARTUP STATUS"
   );
@@ -483,8 +573,15 @@ async function status(options = {}) {
   console.log(
     `[${healthy ? "PASS" : "FAIL"}] Dad Radar server: ${healthy ? "Responding" : "Not responding"}`
   );
+  console.log(
+    `[${calendarHealth.ok ? "PASS" : "FAIL"}] Google Calendar: ${calendarHealth.ok ? "Authorized" : calendarHealth.authorizationRequired ? "Authorization expired — run npm.cmd run calendar:reauthorize" : "Unavailable"}`
+  );
 
-  if (!installed || !healthy) {
+  if (
+    !installed ||
+    !healthy ||
+    !calendarHealth.ok
+  ) {
     process.exitCode = 1;
   }
 }
@@ -597,11 +694,13 @@ module.exports = {
   TASK_NAME,
   TASK_XML_PATH,
   assertSucceeded,
+  checkCalendarHealth,
   checkHealth,
   createTaskXml,
   elevatedTaskScript,
   encodePowerShell,
   escapeXml,
+  interpretCalendarHealth,
   queryTask,
   quotePowerShellLiteral,
   requireWindows,

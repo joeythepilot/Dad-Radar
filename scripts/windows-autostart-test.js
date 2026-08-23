@@ -8,6 +8,7 @@ const path = require("node:path");
 const {
   TASK_NAME,
   assertSucceeded,
+  interpretCalendarHealth,
   createTaskXml,
   elevatedTaskScript,
   encodePowerShell,
@@ -99,6 +100,32 @@ assert.match(
 assert.throws(
   () => elevatedTaskScript("unknown"),
   /Unsupported/
+);
+
+assert.deepEqual(
+  interpretCalendarHealth(
+    200,
+    { ok: true }
+  ),
+  {
+    ok: true,
+    authorizationRequired: false
+  }
+);
+
+assert.deepEqual(
+  interpretCalendarHealth(
+    401,
+    {
+      ok: false,
+      code:
+        "calendar-authorization-required"
+    }
+  ),
+  {
+    ok: false,
+    authorizationRequired: true
+  }
 );
 
 const encoded = encodePowerShell(

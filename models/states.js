@@ -151,6 +151,12 @@ const dadRadarModes = {
     }
   },
 
+  CALENDAR_AUTH: {
+    status: "CAL AUTH",
+    message: "GOOGLE CALENDAR AUTHORIZATION REQUIRED",
+    flight: null
+  },
+
   AT_BASE: {
     status: "AT BASE",
     message: "BETWEEN FLIGHTS",

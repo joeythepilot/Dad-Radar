@@ -100,6 +100,7 @@ The expected result is:
 ```text
 [PASS] Windows startup task: Installed
 [PASS] Dad Radar server: Responding
+[PASS] Google Calendar: Authorized
 ```
 
 If `beta:start` was already running in another terminal during installation, the background host waits for that manual copy to stop and then takes over automatically. After installation reports success, close the old manual server with `Ctrl+C`, wait about 15 seconds, and run the status command again.
@@ -169,21 +170,25 @@ For any other airport, Dad Radar displays a designed vintage placeholder with th
 | 30 minutes before departure | `BOARDING` |
 | More than five minutes after scheduled departure, not airborne, and Taxi Out was not already confirmed | `DELAYED`; Today's Duty shows accumulated minutes late |
 | On-time aircraft moving near the departure airport | `TAXI OUT`; once confirmed, it must remain `TAXI OUT` across the scheduled-departure-plus-five-minute boundary |
+| Aircraft is low and slow immediately after departure | Remain `TAXI OUT` or advance to `EN ROUTE`; never show `APPROACH` or `LANDING` near the origin |
 | Delayed aircraft moving on the ground | `DELAYED` remains until airborne |
 | Airborne | `EN ROUTE` immediately |
 | Descending toward the destination below the approach thresholds | `APPROACH`; a temporary level-off must not return to `EN ROUTE` |
 | Confirmed approach below 3,000 feet above destination elevation | `LANDING`; a go-around returns to `APPROACH` after climbing above 3,500 feet AGL |
 | Arrived at AVL | `ARRIVED`, followed later by `HOME` |
 | Arrived away from AVL | `ARRIVED`, followed later by the away ground location or `LAYOVER` |
+| Scheduled arrival time passes without live arrival confirmation | `NO TRACK` while Dad Radar keeps looking; the calendar clock alone must not show `ARRIVED` |
 | Final live position becomes stale after Landing or Arrived | Retain the highest confirmed phase and destination position; never return to `DELAYED` or move the map back to the origin |
 | Browser reloads during the Arrived hold | Restore `ARRIVED` at the destination from local confirmation, then complete the normal Home/Layover handoff |
 | Next scheduled leg overlaps the current delay | Current leg remains displayed until arrival or the safety timeout |
+| Prior leg is stuck in Landing and a later leg has started | Release the stale lock and track the later leg after the bounded handoff timeout |
 | Deadhead event | Today's Duty shows `DEADHEAD` and describes Daddy as riding; the flap continues to show the operational phase |
 | Destination has no approved poster | Vintage city/state/airport-code placeholder |
 | Approved poster request fails on the iPad | Correct destination placeholder appears while Dad Radar retries the image with a fresh cache URL; no broken-image square |
 | Aircraft gradually climbs or descends through 10,000 feet | Cabin chime plays once in each direction per flight after sound has been enabled with one tap |
 | FR24 temporarily fails | Calendar plan remains visible |
 | Calendar refresh fails after a successful load | Last known display state remains visible |
+| Google Calendar authorization expires | Status shows `CAL AUTH`; reauthorize on the desktop instead of treating the schedule as generically offline |
 
 For each unexpected result, record the local time, flight number, expected result, actual result, and a photo or screenshot. Never include `.env`, `token.json`, `credentials.json`, or API-token text in a report.
 
@@ -194,7 +199,7 @@ For each unexpected result, record the local time, flight number, expected resul
 - Confirm both devices are on the same non-guest network.
 - Run `npm.cmd run beta:address` again; the desktop address may have changed.
 - If the helper cannot find an address, run `ipconfig`, find the Wi-Fi or Ethernet `IPv4 Address`, and open `http://THAT_ADDRESS:4173` on the iPad.
-- Run `npm.cmd run beta:autostart:status` and confirm that both checks pass.
+- Run `npm.cmd run beta:autostart:status` and confirm that all three checks pass.
 - If the Windows task is installed but the server is not responding, run `npm.cmd run beta:autostart:restart` and approve the permission prompt.
 - The background log is available at `runtime\family-beta.log`; Dad Radar does not intentionally record configured token values there.
 - In Windows Firewall, allow Node.js on Private networks only.
@@ -203,12 +208,13 @@ For each unexpected result, record the local time, flight number, expected resul
 
 - Completely close the existing Safari tab, then reopen the address printed by `beta:address`. Dad Radar versions its browser bundle and stylesheets so Safari cannot reuse the incompatible copy.
 - The first-generation iPad Air on iOS 12.5.5 uses a dedicated ES5 bundle and legacy CSS dimensions for the split-flap and instruments.
-- If startup still fails, photograph the full `STARTUP ERROR` line. Include its `IPAD-ES5-7` version marker in the report; do not include credentials or token text.
+- If startup still fails, photograph the full `STARTUP ERROR` line. Include its `IPAD-ES5-8` version marker in the report; do not include credentials or token text.
 
 ### Dad Radar loads but has no schedule
 
 - Run `npm.cmd run beta:check`.
 - If `token.json` is missing, run `npm.cmd run calendar:authorize`.
+- If the display or startup status reports `CAL AUTH`, run `npm.cmd run calendar:reauthorize` and complete the Google browser flow. The old token is preserved as a timestamped backup and credential values are not printed.
 - Confirm `GOOGLE_CALENDAR_ID` in `.env` points to the Pilot Schedule calendar.
 
 ### Calendar works but there is no live aircraft

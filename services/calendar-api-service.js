@@ -50,10 +50,16 @@
       const data = await response.json();
 
       if (!response.ok || data.ok !== true) {
-        throw new Error(
+        const requestError = new Error(
           data.error ||
           `Calendar request failed with status ${response.status}.`
         );
+
+        requestError.code =
+          data.code ??
+          "calendar-unavailable";
+
+        throw requestError;
       }
 
       return {

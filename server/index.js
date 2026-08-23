@@ -4,7 +4,8 @@ const express = require("express");
 require("dotenv").config({ quiet: true });
 
 const {
-  getUpcomingEvents
+  getUpcomingEvents,
+  isCalendarAuthorizationError
 } = require("./calendar-service");
 
 const {
@@ -76,10 +77,24 @@ app.get(
         error
       );
 
-      response.status(500).json({
+      const authorizationRequired =
+        isCalendarAuthorizationError(
+          error
+        );
+
+      response.status(
+        authorizationRequired
+          ? 401
+          : 500
+      ).json({
         ok: false,
+        code: authorizationRequired
+          ? "calendar-authorization-required"
+          : "calendar-unavailable",
         error:
-          "Unable to load the Pilot Schedule calendar."
+          authorizationRequired
+            ? "Google Calendar authorization must be renewed."
+            : "Unable to load the Pilot Schedule calendar."
       });
     }
   }

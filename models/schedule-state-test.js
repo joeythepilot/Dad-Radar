@@ -226,6 +226,25 @@ function testBoardingWindow() {
   );
 }
 
+function testClockAloneCannotConfirmArrival() {
+  const result = resolveScheduleState(
+    createSchedule([
+      createFlight({
+        times: {
+          startUtc:
+            "2026-08-04T11:30:00.000Z",
+          endUtc:
+            "2026-08-04T13:55:00.000Z"
+        }
+      })
+    ]),
+    { now: NOW }
+  );
+
+  assert.equal(result.mode, "TRACKING_LOST");
+  assert.equal(result.state.status, "NO TRACK");
+}
+
 function testCalendarOnlyFlightBecomesDelayed() {
   const result = resolveScheduleState(
     createSchedule([
@@ -470,6 +489,8 @@ function testRecentlyArrived() {
   const result = resolveScheduleState(
     createSchedule([
       createFlight({
+        confirmedArrivalAt:
+          "2026-08-04T13:30:00.000Z",
         times: {
           startUtc:
             "2026-08-04T11:30:00.000Z",
@@ -872,6 +893,7 @@ function runTests() {
   testDeadheadFamilyLanguage();
   testLayover();
   testRecentlyArrived();
+  testClockAloneCannotConfirmArrival();
   testCancelledFlightIsIgnored();
   testAwayLocationPersistsAfterArrivalHold();
   testSameDayBaseSitIsNotLayover();

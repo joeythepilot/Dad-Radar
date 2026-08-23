@@ -36,7 +36,7 @@ const layoutStyles = fs.readFileSync(
 
 assert.match(
   html,
-  /<script[\s\S]*?src="\.\/App\/dad-radar-browser\.js\?v=ipad-es5-7"[\s\S]*?><\/script>/,
+  /<script[\s\S]*?src="\.\/App\/dad-radar-browser\.js\?v=ipad-es5-8"[\s\S]*?><\/script>/,
   "The display should load the compatibility bundle."
 );
 
@@ -48,7 +48,7 @@ assert.doesNotMatch(
 
 assert.match(
   html,
-  /IPAD-ES5-7/,
+  /IPAD-ES5-8/,
   "The display should expose its old-Safari boot diagnostic version."
 );
 
@@ -63,7 +63,7 @@ for (const stylesheetPath of [
       `\\.\\/UI\\/${stylesheetPath.replace(
         ".",
         "\\."
-      )}\\?v=ipad-es5-7`
+      )}\\?v=ipad-es5-8`
     ),
     `${stylesheetPath} should bypass the old iPad cache.`
   );
