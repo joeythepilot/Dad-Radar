@@ -259,6 +259,42 @@
     };
   }
 
+  function preserveLiveMotion(
+    nextState
+  ) {
+    const preserved =
+      holdCurrentMotion(nextState);
+
+    return {
+      ...preserved,
+      liveData: true,
+      livePhase:
+        visualState.livePhase ??
+        preserved.livePhase,
+      source:
+        visualState.source ??
+        preserved.source,
+      flight: {
+        ...preserved.flight,
+        lastPositionAt:
+          visualState.flight
+            ?.lastPositionAt ??
+          preserved.flight
+            ?.lastPositionAt,
+        actualTrack:
+          visualState.flight
+            ?.actualTrack ??
+          preserved.flight
+            ?.actualTrack,
+        filedRoute:
+          visualState.flight
+            ?.filedRoute ??
+          preserved.flight
+            ?.filedRoute
+      }
+    };
+  }
+
   function animateToState(
     nextState,
     mode
@@ -361,6 +397,21 @@
       event.detail?.mode ?? "CUSTOM";
 
     if (!nextState) {
+      return;
+    }
+
+    if (
+      visualState?.liveData &&
+      !nextState.liveData &&
+      sameFlight(
+        visualState,
+        nextState
+      )
+    ) {
+      publishVisualState(
+        preserveLiveMotion(nextState),
+        mode
+      );
       return;
     }
 

@@ -268,10 +268,63 @@ function testReducedMotionUpdatesImmediately() {
   );
 }
 
+function testCalendarRefreshPreservesLiveMotion() {
+  const harness = createHarness(
+    liveState()
+  );
+
+  harness.dispatchState({
+    ...liveState(),
+    source: "calendar",
+    liveData: false,
+    status: "EN ROUTE",
+    flight: {
+      ...liveState().flight,
+      groundSpeed: null,
+      heading: null,
+      altitude: null,
+      latitude: null,
+      longitude: null,
+      lastPositionAt: null
+    }
+  });
+
+  const preserved =
+    harness.visualEvents.at(-1)
+      .detail.state;
+
+  assert.equal(preserved.liveData, true);
+  assert.equal(
+    preserved.flight.altitude,
+    30000,
+    "A calendar refresh must not erase the live altitude."
+  );
+  assert.equal(
+    preserved.flight.latitude,
+    40,
+    "A calendar refresh must not erase the live position."
+  );
+
+  harness.dispatchState(
+    targetState()
+  );
+
+  assert.ok(
+    harness.frames.size > 0,
+    "The next live sample should still interpolate after a calendar refresh."
+  );
+  assert.equal(
+    harness.visualEvents.at(-1)
+      .detail.state.flight.altitude,
+    30000
+  );
+}
+
 function runTests() {
   testLiveMotionIsInterpolated();
   testSameSnapshotDoesNotRestartMotion();
   testReducedMotionUpdatesImmediately();
+  testCalendarRefreshPreservesLiveMotion();
 
   console.log(
     "Visual state controller tests passed."

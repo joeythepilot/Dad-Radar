@@ -2060,37 +2060,52 @@ function startDashboardSequence() {
    Event listeners
    --------------------------------------------------------- */
 
+function observeAltitudeChime(nextState) {
+  if (
+    !nextState?.liveData ||
+    !nextState.flight
+  ) {
+    return;
+  }
+
+  const chimeDirection =
+    altitudeChimeController?.observe(
+      [
+        nextState.eventId ?? "",
+        nextState.flight.number ?? "",
+        nextState.flight.origin ?? "",
+        nextState.flight.destination ?? ""
+      ].join("|"),
+      nextState.flight.altitude
+    );
+
+  if (chimeDirection) {
+    reportClientDiagnostic(
+      "altitude-chime-crossing",
+      {
+        direction: chimeDirection,
+        altitude:
+          nextState.flight.altitude
+      }
+    );
+  }
+}
+
+window.addEventListener(
+  "dad-radar:state-change",
+  (event) => {
+    observeAltitudeChime(
+      event.detail.state
+    );
+  }
+);
+
 window.addEventListener(
   "dad-radar:visual-state-change",
   (event) => {
     const nextState = event.detail.state;
 
-    if (
-      nextState?.liveData &&
-      nextState.flight
-    ) {
-      const chimeDirection =
-        altitudeChimeController?.observe(
-        [
-          nextState.eventId ?? "",
-          nextState.flight.number ?? "",
-          nextState.flight.origin ?? "",
-          nextState.flight.destination ?? ""
-        ].join("|"),
-        nextState.flight.altitude
-      );
-
-      if (chimeDirection) {
-        reportClientDiagnostic(
-          "altitude-chime-crossing",
-          {
-            direction: chimeDirection,
-            altitude:
-              nextState.flight.altitude
-          }
-        );
-      }
-    }
+    observeAltitudeChime(nextState);
 
     if (event.detail.telemetryOnly) {
       updateDashboardTelemetry(
