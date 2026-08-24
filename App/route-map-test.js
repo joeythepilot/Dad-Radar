@@ -200,6 +200,14 @@ function testGroundLocationUsesDomesticOverview() {
   );
 }
 
+function testReferenceCitiesStayReadableWhileZoomed() {
+  assert.match(
+    ROUTE_MAP_SOURCE,
+    /scaleReferenceCities\(camera\)/,
+    "Reference-city labels should counter-scale as the map zooms."
+  );
+}
+
 function viewBox(element) {
   return element.attributes
     .viewBox
@@ -752,6 +760,7 @@ function testSurfaceZoomAtBothRouteEnds() {
 function runTests() {
   testDetailedMapAsset();
   testGroundLocationUsesDomesticOverview();
+  testReferenceCitiesStayReadableWhileZoomed();
   testRouteAutoFitAndPlacards();
   testAirportEndpointIcons();
   testBillingsRouteIsKnown();

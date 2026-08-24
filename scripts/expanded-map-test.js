@@ -38,11 +38,16 @@ for (const country of [
 
 assert.match(mapSource, /id="land-paper"/);
 assert.match(mapSource, /id="land-clip"/);
-assert.match(mapSource, /class="terrain-ridge-field/);
+assert.match(mapSource, /north-america-caribbean-relief\.png/);
+assert.match(mapSource, /class="state-boundary"/);
+assert.ok(
+  (mapSource.match(/data-fips=/g) ?? []).length >= 49,
+  "The expanded map should contain the contiguous states and D.C."
+);
 assert.doesNotMatch(mapSource, /stroke-dasharray/);
 assert.match(
   dashboardSource,
-  /north-america-caribbean-vintage\.svg\?v=natural-earth-3/
+  /north-america-caribbean-vintage\.svg\?v=natural-earth-4/
 );
 assert.doesNotMatch(dashboardSource, /map-us-detail/);
 

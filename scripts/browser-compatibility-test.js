@@ -36,7 +36,7 @@ const layoutStyles = fs.readFileSync(
 
 assert.match(
   html,
-  /<script[\s\S]*?src="\.\/App\/dad-radar-browser\.js\?v=ipad-es5-11"[\s\S]*?><\/script>/,
+  /<script[\s\S]*?src="\.\/App\/dad-radar-browser\.js\?v=ipad-es5-12"[\s\S]*?><\/script>/,
   "The display should load the compatibility bundle."
 );
 
@@ -63,7 +63,7 @@ for (const stylesheetPath of [
       `\\.\\/UI\\/${stylesheetPath.replace(
         ".",
         "\\."
-      )}\\?v=ipad-es5-11`
+      )}\\?v=ipad-es5-12`
     ),
     `${stylesheetPath} should bypass the old iPad cache.`
   );
@@ -166,7 +166,7 @@ assert.match(
 
 assert.match(
   bundle,
-  /ipad-poster-5/,
+  /ipad-poster-6/,
   "The legacy bundle should request versioned destination posters."
 );
 
@@ -174,6 +174,18 @@ assert.match(
   bundle,
   /loadVisibleDestinationPoster/,
   "Destination posters should retry on the visible image element."
+);
+
+assert.match(
+  html,
+  /id="destination-poster"[\s\S]*?hidden[\s\S]*?id="destination-poster-fallback"[\s\S]*?aria-live=/,
+  "The display should start with the poster fallback visible behind the hidden image."
+);
+
+assert.match(
+  bundle,
+  /groundAirport[\s\S]*?destination:[\s\S]*?groundAirport/,
+  "A layover airport should take priority when selecting the destination poster."
 );
 
 assert.match(

@@ -149,8 +149,39 @@ function renderReferenceCities() {
 
   elements.cityLayer.innerHTML = REFERENCE_CITIES.map((city) => {
     const point = project(city[2], city[1]);
-    return `<g class="map-city-reference" transform="translate(${point.x.toFixed(1)} ${point.y.toFixed(1)})"><circle r="2.2"></circle><text x="5" y="-4">${city[0]}</text></g>`;
+    return `<g class="map-city-reference" data-map-x="${point.x.toFixed(1)}" data-map-y="${point.y.toFixed(1)}" transform="translate(${point.x.toFixed(1)} ${point.y.toFixed(1)})"><circle r="2.2"></circle><text x="5" y="-4">${city[0]}</text></g>`;
   }).join("");
+}
+
+function scaleReferenceCities(camera) {
+  if (
+    !elements.cityLayer ||
+    typeof elements.cityLayer
+      .querySelectorAll !== "function"
+  ) {
+    return;
+  }
+
+  const inverseZoom = 1 / camera.zoom;
+
+  elements.cityLayer
+    .querySelectorAll(
+      ".map-city-reference"
+    )
+    .forEach((city) => {
+      const x = Number(
+        city.getAttribute("data-map-x")
+      );
+      const y = Number(
+        city.getAttribute("data-map-y")
+      );
+
+      city.setAttribute(
+        "transform",
+        `translate(${x} ${y}) ` +
+        `scale(${inverseZoom.toFixed(4)})`
+      );
+    });
 }
 
 function refreshWeatherRadar() {
@@ -882,6 +913,7 @@ function applyCamera(camera) {
   );
 
   positionCompass(camera);
+  scaleReferenceCities(camera);
 }
 
 function resetCamera() {

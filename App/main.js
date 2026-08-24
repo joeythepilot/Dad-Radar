@@ -949,7 +949,7 @@ function loadVisibleDestinationPoster(
         ?.posterAssetUrl?.(
           poster.source,
           {
-            version: "ipad-poster-5",
+            version: "ipad-poster-6",
             attempt,
             nonce: requestNonce
           }
@@ -1601,29 +1601,27 @@ function updateDashboard(state) {
     .toUpperCase();
 
   const posterSubject =
-    flight ??
-    (
-      groundAirport
-        ? {
-            destination:
-              groundAirport,
-            destinationCity:
-              globalThis
-                .dadRadarAirports
-                ?.lookupAirport?.(
-                  groundAirport
-                )?.city ??
-              groundAirport,
-            destinationLocation:
-              globalThis
-                .dadRadarAirports
-                ?.formatLocation?.(
-                  groundAirport
-                ) ??
-              groundAirport
-          }
-        : null
-    );
+    groundAirport
+      ? {
+          ...(flight ?? {}),
+          destination:
+            groundAirport,
+          destinationCity:
+            globalThis
+              .dadRadarAirports
+              ?.lookupAirport?.(
+                groundAirport
+              )?.city ??
+            groundAirport,
+          destinationLocation:
+            globalThis
+              .dadRadarAirports
+              ?.formatLocation?.(
+                groundAirport
+              ) ??
+            groundAirport
+        }
+      : flight;
 
   if (posterSubject) {
     updateDestinationPoster(
