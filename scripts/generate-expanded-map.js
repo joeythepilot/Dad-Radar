@@ -13,6 +13,14 @@ const outputPath = path.join(
   "maps",
   "north-america-caribbean-vintage.svg"
 );
+const reliefAssetPath = path.join(
+  projectRoot,
+  "assets",
+  "maps",
+  "north-america-caribbean-relief.png"
+);
+const reliefDataUrl =
+  `data:image/png;base64,${fs.readFileSync(reliefAssetPath).toString("base64")}`;
 
 const bounds = {
   west: -135,
@@ -129,7 +137,7 @@ const svg = `<?xml version="1.0" encoding="UTF-8"?>
     ${landPaths}
   </g>
   <g class="terrain-relief" clip-path="url(#land-clip)">
-    <image href="north-america-caribbean-relief.png" x="315" y="45" width="570" height="560" preserveAspectRatio="none"/>
+    <image href="${reliefDataUrl}" x="315" y="45" width="570" height="560" preserveAspectRatio="none"/>
   </g>
   <g class="state-boundaries" fill="none">
     ${statePaths}

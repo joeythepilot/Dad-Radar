@@ -77,6 +77,11 @@ const destinationPosterFallback =
     "destination-poster-fallback"
   );
 
+const destinationStage =
+  document.querySelector(
+    ".destination-stage"
+  );
+
 const posterFallbackCity =
   document.getElementById(
     "poster-fallback-city"
@@ -915,6 +920,9 @@ function showDestinationPosterFallback(
   destinationPanel?.style.removeProperty(
     "--destination-poster-image"
   );
+  destinationStage?.classList.remove(
+    "has-poster-background"
+  );
 }
 
 function loadVisibleDestinationPoster(
@@ -1028,6 +1036,48 @@ function loadVisibleDestinationPoster(
   attemptLoad(0);
 }
 
+function showDestinationPosterBackground(
+  poster
+) {
+  const source =
+    globalThis.dadRadarPosterImages
+      ?.posterAssetUrl?.(
+        poster.source,
+        {
+          version: "ipad-poster-7"
+        }
+      ) ?? poster.source;
+
+  destinationPanel?.style.setProperty(
+    "--destination-poster-image",
+    `url("${source}")`
+  );
+  destinationStage?.classList.add(
+    "has-poster-background"
+  );
+
+  if (destinationPoster) {
+    destinationPoster.hidden = true;
+    destinationPoster.setAttribute(
+      "hidden",
+      ""
+    );
+    destinationPoster.style.display =
+      "none";
+  }
+
+  if (destinationPosterFallback) {
+    destinationPosterFallback.hidden =
+      true;
+    destinationPosterFallback.setAttribute(
+      "hidden",
+      ""
+    );
+    destinationPosterFallback.style.display =
+      "none";
+  }
+}
+
 function updateDestinationPoster(flight) {
   const airportCode = String(
     flight?.destination ?? ""
@@ -1076,16 +1126,8 @@ function updateDestinationPoster(flight) {
   }
 
   if (poster && destinationPoster) {
-    showDestinationPosterFallback(
-      flight,
-      airportCode
-    );
-
-    loadVisibleDestinationPoster(
-      poster,
-      posterIdentity,
-      flight,
-      airportCode
+    showDestinationPosterBackground(
+      poster
     );
     return;
   }

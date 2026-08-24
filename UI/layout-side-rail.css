@@ -222,6 +222,14 @@
   overflow: hidden !important;
 }
 
+.destination-stage.has-poster-background {
+  background-image:
+    var(--destination-poster-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
 
 .destination-poster-image {
   width: auto !important;

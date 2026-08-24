@@ -36,7 +36,7 @@ const layoutStyles = fs.readFileSync(
 
 assert.match(
   html,
-  /<script[\s\S]*?src="\.\/App\/dad-radar-browser\.js\?v=ipad-es5-12"[\s\S]*?><\/script>/,
+  /<script[\s\S]*?src="\.\/App\/dad-radar-browser\.js\?v=ipad-es5-13"[\s\S]*?><\/script>/,
   "The display should load the compatibility bundle."
 );
 
@@ -63,7 +63,7 @@ for (const stylesheetPath of [
       `\\.\\/UI\\/${stylesheetPath.replace(
         ".",
         "\\."
-      )}\\?v=ipad-es5-12`
+      )}\\?v=ipad-es5-13`
     ),
     `${stylesheetPath} should bypass the old iPad cache.`
   );
@@ -166,7 +166,7 @@ assert.match(
 
 assert.match(
   bundle,
-  /ipad-poster-6/,
+  /ipad-poster-7/,
   "The legacy bundle should request versioned destination posters."
 );
 
@@ -174,6 +174,12 @@ assert.match(
   bundle,
   /loadVisibleDestinationPoster/,
   "Destination posters should retry on the visible image element."
+);
+
+assert.match(
+  bundle,
+  /showDestinationPosterBackground/,
+  "Approved posters should render without depending on an image load event."
 );
 
 assert.match(
