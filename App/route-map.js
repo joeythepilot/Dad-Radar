@@ -63,8 +63,8 @@ function airportForMap(value) {
 }
 
 const MAP_FRAME = {
-  left: 60,
-  right: 1140,
+  left: 315,
+  right: 885,
   top: 45,
   bottom: 605
 };

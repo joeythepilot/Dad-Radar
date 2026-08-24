@@ -834,12 +834,9 @@ function renderFlapText(
    --------------------------------------------------------- */
 
 let requestedPosterAirport = null;
-
-const destinationPosterLoader =
-  globalThis.dadRadarPosterImages
-    ?.createPosterImageLoader?.({
-      version: "ipad-poster-4"
-    }) ?? null;
+let destinationPosterRetryTimer = null;
+const DESTINATION_POSTER_RETRY_DELAYS =
+  [0, 1200, 4000];
 
 function posterFallbackLocation(
   flight,
@@ -878,12 +875,22 @@ function showDestinationPosterFallback(
     );
 
   if (destinationPoster) {
+    destinationPoster.removeAttribute(
+      "src"
+    );
     destinationPoster.hidden = true;
+    destinationPoster.setAttribute(
+      "hidden",
+      ""
+    );
     destinationPoster.style.display =
       "none";
   }
 
   if (destinationPosterFallback) {
+    destinationPosterFallback.removeAttribute(
+      "hidden"
+    );
     destinationPosterFallback.hidden =
       false;
     destinationPosterFallback.style.display =
@@ -910,9 +917,8 @@ function showDestinationPosterFallback(
   );
 }
 
-function showLoadedDestinationPoster(
+function loadVisibleDestinationPoster(
   poster,
-  source,
   posterIdentity,
   flight,
   airportCode
@@ -925,23 +931,12 @@ function showLoadedDestinationPoster(
     return;
   }
 
-  const handleVisiblePosterError = () => {
-    if (
-      requestedPosterAirport !==
-      posterIdentity
-    ) {
-      return;
-    }
+  destinationPoster.alt =
+    `Vintage ${poster.location} travel poster`;
 
-    requestedPosterAirport = null;
+  const requestNonce = Date.now();
 
-    showDestinationPosterFallback(
-      flight,
-      airportCode
-    );
-  };
-
-  const handleVisiblePosterLoad = () => {
+  function attemptLoad(attempt) {
     if (
       requestedPosterAirport !==
         posterIdentity
@@ -949,38 +944,88 @@ function showLoadedDestinationPoster(
       return;
     }
 
-    destinationPoster.hidden = false;
-    destinationPoster.style.display =
-      "block";
+    const source =
+      globalThis.dadRadarPosterImages
+        ?.posterAssetUrl?.(
+          poster.source,
+          {
+            version: "ipad-poster-5",
+            attempt,
+            nonce: requestNonce
+          }
+        ) ?? poster.source;
 
-    if (destinationPosterFallback) {
-      destinationPosterFallback.hidden =
-        true;
-      destinationPosterFallback.style.display =
-        "none";
-    }
+    destinationPoster.onload = () => {
+      if (
+        requestedPosterAirport !==
+          posterIdentity
+      ) {
+        return;
+      }
 
-    destinationPanel?.style.setProperty(
-      "--destination-poster-image",
-      `url("${source}")`
-    );
-  };
+      destinationPoster.hidden = false;
+      destinationPoster.removeAttribute(
+        "hidden"
+      );
+      destinationPoster.style.display =
+        "block";
 
-  destinationPoster.onerror =
-    handleVisiblePosterError;
-  destinationPoster.onload =
-    handleVisiblePosterLoad;
+      if (destinationPosterFallback) {
+        destinationPosterFallback.hidden =
+          true;
+        destinationPosterFallback.setAttribute(
+          "hidden",
+          ""
+        );
+        destinationPosterFallback.style.display =
+          "none";
+      }
 
-  destinationPoster.src = source;
-  destinationPoster.alt =
-    `Vintage ${poster.location} travel poster`;
-  if (
-    destinationPoster.complete &&
-    destinationPoster.naturalWidth > 0
-  ) {
-    handleVisiblePosterLoad();
+      destinationPanel?.style.setProperty(
+        "--destination-poster-image",
+        `url("${source}")`
+      );
+    };
+
+    destinationPoster.onerror = () => {
+      if (
+        requestedPosterAirport !==
+          posterIdentity
+      ) {
+        return;
+      }
+
+      const nextAttempt = attempt + 1;
+
+      if (
+        nextAttempt <
+          DESTINATION_POSTER_RETRY_DELAYS.length
+      ) {
+        destinationPosterRetryTimer =
+          window.setTimeout(
+            () => {
+              destinationPosterRetryTimer =
+                null;
+              attemptLoad(nextAttempt);
+            },
+            DESTINATION_POSTER_RETRY_DELAYS[
+              nextAttempt
+            ]
+          );
+        return;
+      }
+
+      requestedPosterAirport = null;
+      showDestinationPosterFallback(
+        flight,
+        airportCode
+      );
+    };
+
+    destinationPoster.src = source;
   }
 
+  attemptLoad(0);
 }
 
 function updateDestinationPoster(flight) {
@@ -1023,58 +1068,27 @@ function updateDestinationPoster(flight) {
   requestedPosterAirport =
     posterIdentity;
 
+  if (destinationPosterRetryTimer) {
+    window.clearTimeout(
+      destinationPosterRetryTimer
+    );
+    destinationPosterRetryTimer = null;
+  }
+
   if (poster && destinationPoster) {
     showDestinationPosterFallback(
       flight,
       airportCode
     );
 
-    if (destinationPosterLoader) {
-      destinationPosterLoader.load(
-        poster.source,
-        {
-          onLoad({ source }) {
-            showLoadedDestinationPoster(
-              poster,
-              source,
-              posterIdentity,
-              flight,
-              airportCode
-            );
-          },
-          onError() {
-            if (
-              requestedPosterAirport !==
-              posterIdentity
-            ) {
-              return;
-            }
-
-            requestedPosterAirport = null;
-
-            showDestinationPosterFallback(
-              flight,
-              airportCode
-            );
-          }
-        }
-      );
-
-      return;
-    }
-
-    showLoadedDestinationPoster(
+    loadVisibleDestinationPoster(
       poster,
-      poster.source,
       posterIdentity,
       flight,
       airportCode
     );
-
     return;
   }
-
-  destinationPosterLoader?.cancel();
 
   showDestinationPosterFallback(
     flight,

@@ -21,8 +21,8 @@ const bounds = {
 };
 
 const frame = {
-  left: 60,
-  right: 1140,
+  left: 315,
+  right: 885,
   top: 45,
   bottom: 605
 };
@@ -97,17 +97,20 @@ const landPaths = features.map((feature, index) =>
 ).join("\n    ");
 
 const mountainRanges = [
-  [[-130,60],[-124,58],[-116,51],[-109,45],[-103,36],[-105,30],[-111,35],[-116,44],[-123,52]],
-  [[-126,51],[-123,45],[-120,37],[-116,31],[-113,34],[-118,45],[-122,52]],
-  [[-87,32],[-84,34],[-80,39],[-75,45],[-70,49],[-74,50],[-81,43],[-86,36]],
-  [[-112,32],[-108,27],[-103,20],[-99,15],[-95,16],[-100,25],[-106,32]],
-  [[-105,30],[-101,27],[-96,20],[-91,16],[-94,14],[-101,20]]
+  { width: 58, angle: 54, points: [[-125,58],[-120,53],[-116,49],[-112,45],[-109,41],[-106,37],[-105,33]] },
+  { width: 38, angle: 74, points: [[-123,49],[-122,44],[-120,39],[-118,35],[-116,32]] },
+  { width: 32, angle: -48, points: [[-84,34],[-82,37],[-80,40],[-77,43],[-74,46]] },
+  { width: 48, angle: 55, points: [[-109,30],[-106,27],[-103,23],[-100,19],[-98,16]] },
+  { width: 34, angle: 48, points: [[-103,29],[-100,25],[-97,21],[-94,18]] }
 ];
 
-const relief = mountainRanges.map((range, index) => {
-  const d = reliefPath(range, true);
-  return `<path class="terrain-mass terrain-${index}" d="${d}"/><path class="terrain-highlight" d="${d}"/>`;
-}).join("\n    ");
+const relief = mountainRanges.flatMap((range, rangeIndex) =>
+  range.points.map((coordinate, pointIndex) => {
+    const point = project(coordinate);
+    const height = range.width * 0.42;
+    return `<g class="terrain-ridge-field terrain-${rangeIndex}" transform="translate(${point[0].toFixed(1)} ${point[1].toFixed(1)}) rotate(${range.angle})"><ellipse class="terrain-ridge-shadow" rx="${range.width}" ry="${height.toFixed(1)}"/><path class="terrain-ridge-light" d="M${(-range.width * .72).toFixed(1)} 0 Q0 ${(-height * .7).toFixed(1)} ${(range.width * .72).toFixed(1)} 0"/><path class="terrain-ridge-line" d="M${(-range.width * .58).toFixed(1)} ${(height * .2).toFixed(1)} Q0 ${(-height * .35).toFixed(1)} ${(range.width * .58).toFixed(1)} ${(height * .2).toFixed(1)}"/></g>`;
+  })
+).join("\n    ");
 
 const landClipPaths = features.map((feature) =>
   `<path d="${geometryPath(feature.geometry)}"/>`
@@ -123,21 +126,24 @@ const svg = `<?xml version="1.0" encoding="UTF-8"?>
       <circle cx="9" cy="22" r=".8" fill="#6c583d" opacity=".10"/>
       <circle cx="40" cy="5" r=".55" fill="#f2e5bd" opacity=".32"/>
     </pattern>
-    <filter id="relief-soft" x="-10%" y="-10%" width="120%" height="120%">
-      <feGaussianBlur stdDeviation="3.2"/>
-    </filter>
+    <radialGradient id="ridge-shade" cx="46%" cy="42%" rx="54%" ry="58%">
+      <stop offset="0" stop-color="#5f583c" stop-opacity=".34"/>
+      <stop offset=".58" stop-color="#7b704b" stop-opacity=".17"/>
+      <stop offset="1" stop-color="#7b704b" stop-opacity="0"/>
+    </radialGradient>
     <clipPath id="land-clip" fill-rule="evenodd">${landClipPaths}</clipPath>
   </defs>
   <g class="countries" fill-rule="evenodd">
     ${landPaths}
   </g>
   <g class="terrain" clip-path="url(#land-clip)">
-    <g filter="url(#relief-soft)">${relief}</g>
+    ${relief}
   </g>
   <style>
     .country{fill:url(#land-paper);stroke:#6a583d;stroke-width:1.25;vector-effect:non-scaling-stroke}
-    .terrain-mass{fill:#6d6745;opacity:.24;stroke:#534a32;stroke-width:5}
-    .terrain-highlight{fill:none;stroke:#eee0b4;stroke-width:5;opacity:.18;transform:translate(-2px,-2px)}
+    .terrain-ridge-shadow{fill:url(#ridge-shade)}
+    .terrain-ridge-light{fill:none;stroke:#eee1b7;stroke-width:2.2;opacity:.22}
+    .terrain-ridge-line{fill:none;stroke:#584d34;stroke-width:1.2;opacity:.19}
   </style>
 </svg>\n`;
 

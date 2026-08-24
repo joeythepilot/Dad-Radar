@@ -689,10 +689,10 @@ function testSurfaceZoomIsContinuous() {
   );
 
   const expectedAircraftX =
-    60 +
+    315 +
     (
       (-103.4 + 135) / 80
-    ) * 1080;
+    ) * 570;
 
   const surfaceCenterX =
     surfaceCamera[0] +
