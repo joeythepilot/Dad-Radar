@@ -2789,3 +2789,32 @@ h1 {
     )
     !important;
 }
+/* Geographic reference and local-server NOAA radar overlay. */
+.map-us-detail {
+  opacity: 0.92;
+}
+
+.map-weather-image {
+  opacity: 0.42;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+.map-city-reference circle {
+  fill: #4c3925;
+  stroke: #ead8a8;
+  stroke-width: 0.8;
+  vector-effect: non-scaling-stroke;
+}
+
+.map-city-reference text {
+  fill: #4c3925;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  paint-order: stroke;
+  stroke: #ead8a8;
+  stroke-width: 2.5px;
+  vector-effect: non-scaling-stroke;
+}

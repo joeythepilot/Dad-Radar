@@ -55,6 +55,7 @@ PORT=4173
 HOST=0.0.0.0
 GOOGLE_CALENDAR_ID=your_calendar_id
 FR24_API_TOKEN=your_token
+FLIGHTAWARE_AEROAPI_KEY=your_optional_personal_aeroapi_key
 ```
 
 Do not replace an existing `.env`; it may already contain the correct private values.

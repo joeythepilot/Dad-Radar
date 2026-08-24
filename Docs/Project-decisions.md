@@ -83,7 +83,9 @@ It exists so future work always builds on previous decisions instead of repeatin
 
 ✓ FlightAware AeroAPI v4 was the first live-flight provider evaluated for Prototype 001 and was retired because the projected personal-display cost was too high.
 
-✓ Flightradar24 is the live-flight provider. Its token remains on the local backend and is loaded only from `FR24_API_TOKEN`.
+✓ adsb.lol is the primary live-position provider. Flightradar24 remains the automatic backup; its token stays on the local backend and is loaded only from `FR24_API_TOKEN`.
+
+✓ FlightAware AeroAPI is used only for optional, cached filed-route enrichment through `FLIGHTAWARE_AEROAPI_KEY`. A missing route or key retains the direct dashed planned curve.
 
 ✓ Provider responses are normalized before reaching the rest of Dad Radar so another provider can be substituted later.
 

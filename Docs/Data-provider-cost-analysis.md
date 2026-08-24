@@ -4,9 +4,9 @@ Last updated: August 13, 2026
 
 ## Decision
 
-Dad Radar uses Flightradar24 as its live-flight provider. Google Calendar remains the authoritative source before a live aircraft is acquired, so a separate paid preflight airline-status feed is not required.
+Dad Radar uses adsb.lol as its primary live-position provider and retains Flightradar24 as an automatic fallback. Google Calendar remains authoritative before a live aircraft is acquired. FlightAware AeroAPI is an optional, cached filed-route enrichment only; it is not used for continuous position polling.
 
-The filed route is also intentionally excluded. Flightradar24 does not publish decoded filed-route fixes through its live-position API. FAA CIFP data is available, but it is raw ARINC 424 data that would require the navigation-fix, airway, SID, and STAR decoder the project has decided not to maintain.
+When a FlightAware Personal key is configured, one route lookup per leg supplies decoded fixes for the dashed planned line. Without it, the direct curve remains. This keeps the recurring paid workload small while leaving the position display operational without FlightAware.
 
 The map therefore uses:
 

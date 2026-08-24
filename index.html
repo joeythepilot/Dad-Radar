@@ -28,18 +28,18 @@
 
   <link
     rel="stylesheet"
-    href="./UI/styles.css?v=ipad-es5-8"
+    href="./UI/styles.css?v=ipad-es5-9"
   >
 
   <link
     rel="stylesheet"
-    href="./UI/map.css?v=ipad-es5-8"
+    href="./UI/map.css?v=ipad-es5-9"
   >
 
   <!-- Loads last and owns the new three-column layout. -->
   <link
     rel="stylesheet"
-    href="./UI/layout-side-rail.css?v=ipad-es5-8"
+    href="./UI/layout-side-rail.css?v=ipad-es5-9"
   >
 </head>
 
@@ -53,6 +53,15 @@
     hidden
   >
     TAP ONCE FOR SPLIT-FLAP SOUND
+  </button>
+
+  <button
+    class="beta-audio-button diagnostic-chime-button"
+    id="diagnostic-chime-button"
+    type="button"
+    hidden
+  >
+    TEST 10,000 FT CHIME
   </button>
 
   <!-- =====================================================
@@ -485,11 +494,22 @@
 
                     <image
                       class="map-vector-geography"
-                      href="./assets/maps/contiguous-us-vintage.svg"
+                      href="./assets/maps/north-america-caribbean-vintage.svg"
                       x="0"
                       y="0"
                       width="1200"
                       height="650"
+                      preserveAspectRatio="none"
+                      aria-hidden="true"
+                    ></image>
+
+                    <image
+                      class="map-vector-geography map-us-detail"
+                      href="./assets/maps/contiguous-us-vintage.svg"
+                      x="182"
+                      y="153"
+                      width="810"
+                      height="265"
                       preserveAspectRatio="none"
                       aria-hidden="true"
                     ></image>
@@ -500,11 +520,26 @@
                       id="map-country-label-layer"
                     ></g>
 
+                    <g
+                      class="map-city-label-layer"
+                      id="map-city-label-layer"
+                    ></g>
+
 
                     <g
                       class="map-weather-layer"
                       id="map-weather-layer"
-                    ></g>
+                    >
+                      <image
+                        id="map-weather-image"
+                        class="map-weather-image"
+                        x="60"
+                        y="45"
+                        width="1080"
+                        height="560"
+                        preserveAspectRatio="none"
+                      ></image>
+                    </g>
 
 
                     <path
@@ -1213,7 +1248,7 @@
   </script>
 
   <script
-    src="./App/dad-radar-browser.js?v=ipad-es5-8"
+    src="./App/dad-radar-browser.js?v=ipad-es5-9"
     onerror="window.__dadRadarBoot.fail('BROWSER BUNDLE DID NOT LOAD')"
   ></script>
 

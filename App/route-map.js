@@ -1,18 +1,31 @@
 /* =========================================================
    DAD RADAR
    Self-contained vintage route map controller
-   No external libraries or runtime network requests.
+   No external libraries. Weather imagery is supplied by the local Dad Radar server.
    ========================================================= */
 
 const airportCatalog =
   globalThis.dadRadarAirports;
 
 const MAP_BOUNDS = {
-  west: -126,
-  east: -66,
-  south: 24,
-  north: 51
+  west: -135,
+  east: -55,
+  south: 5,
+  north: 62
 };
+
+const REFERENCE_CITIES = [
+  ["VANCOUVER", 49.28, -123.12], ["CALGARY", 51.05, -114.07],
+  ["TORONTO", 43.65, -79.38], ["MONTREAL", 45.5, -73.57],
+  ["SEATTLE", 47.61, -122.33], ["SAN FRANCISCO", 37.77, -122.42],
+  ["LOS ANGELES", 34.05, -118.24], ["DENVER", 39.74, -104.99],
+  ["DALLAS", 32.78, -96.8], ["CHICAGO", 41.88, -87.63],
+  ["ATLANTA", 33.75, -84.39], ["MIAMI", 25.76, -80.19],
+  ["WASHINGTON", 38.91, -77.04], ["NEW YORK", 40.71, -74.01],
+  ["MEXICO CITY", 19.43, -99.13], ["MONTERREY", 25.69, -100.32],
+  ["NASSAU", 25.04, -77.35], ["HAVANA", 23.11, -82.37],
+  ["SAN JUAN", 18.47, -66.11], ["SANTO DOMINGO", 18.49, -69.93]
+];
 
 function airportForMap(value) {
   const airport =
@@ -94,6 +107,8 @@ const elements = {
   destinationCity: document.getElementById("map-destination-city"),
   loadingMessage: document.getElementById("map-loading-message"),
   shell: document.getElementById("route-map-shell")
+  ,cityLayer: document.getElementById("map-city-label-layer")
+  ,weatherImage: document.getElementById("map-weather-image")
 };
 
 let lastRenderedState = null;
@@ -125,6 +140,29 @@ function project(longitude, latitude) {
       yRatio *
         (MAP_FRAME.bottom - MAP_FRAME.top)
   };
+}
+
+function renderReferenceCities() {
+  if (!elements.cityLayer) {
+    return;
+  }
+
+  elements.cityLayer.innerHTML = REFERENCE_CITIES.map((city) => {
+    const point = project(city[2], city[1]);
+    return `<g class="map-city-reference" transform="translate(${point.x.toFixed(1)} ${point.y.toFixed(1)})"><circle r="2.2"></circle><text x="5" y="-4">${city[0]}</text></g>`;
+  }).join("");
+}
+
+function refreshWeatherRadar() {
+  if (!elements.weatherImage) {
+    return;
+  }
+
+  const bucket = Math.floor(Date.now() / 300000);
+  elements.weatherImage.setAttribute(
+    "href",
+    `/api/weather/radar?bbox=${MAP_BOUNDS.west},${MAP_BOUNDS.south},${MAP_BOUNDS.east},${MAP_BOUNDS.north}&width=1080&height=560&v=${bucket}`
+  );
 }
 
 function buildCurve(origin, destination) {
@@ -1502,6 +1540,14 @@ window.addEventListener(
 );
 
 resetCamera();
+renderReferenceCities();
+refreshWeatherRadar();
+if (typeof window.setInterval === "function") {
+  window.setInterval(
+    refreshWeatherRadar,
+    300000
+  );
+}
 
 try {
   const initialRouteState =
