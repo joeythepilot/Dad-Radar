@@ -838,7 +838,7 @@ let requestedPosterAirport = null;
 const destinationPosterLoader =
   globalThis.dadRadarPosterImages
     ?.createPosterImageLoader?.({
-      version: "ipad-poster-3"
+      version: "ipad-poster-4"
     }) ?? null;
 
 function posterFallbackLocation(
@@ -1000,10 +1000,18 @@ function updateDestinationPoster(flight) {
       .join("|") ||
     null;
 
+  const visiblePosterIsReady =
+    destinationPoster &&
+    destinationPoster.hidden === false &&
+    destinationPoster.style.display !==
+      "none" &&
+    destinationPoster.naturalWidth > 0;
+
   if (
     posterIdentity &&
     posterIdentity ===
-      requestedPosterAirport
+      requestedPosterAirport &&
+    visiblePosterIsReady
   ) {
     return;
   }

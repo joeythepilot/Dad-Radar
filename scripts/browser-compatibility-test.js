@@ -166,7 +166,7 @@ assert.match(
 
 assert.match(
   bundle,
-  /ipad-poster-3/,
+  /ipad-poster-4/,
   "The legacy bundle should request versioned destination posters."
 );
 

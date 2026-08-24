@@ -891,6 +891,37 @@ function resetCamera() {
   });
 }
 
+function domesticOverviewCamera() {
+  const northwest =
+    project(-126.5, 50.5);
+  const southeast =
+    project(-66.5, 23.5);
+  const center = {
+    x: (northwest.x + southeast.x) / 2,
+    y: (northwest.y + southeast.y) / 2
+  };
+  const aspectRatio =
+    viewportAspectRatio();
+  let width =
+    southeast.x - northwest.x;
+  let height =
+    southeast.y - northwest.y;
+
+  if (width / height < aspectRatio) {
+    width = height * aspectRatio;
+  } else {
+    height = width / aspectRatio;
+  }
+
+  return {
+    x: center.x - width / 2,
+    y: center.y - height / 2,
+    width,
+    height,
+    zoom: BASE_VIEW_BOX.width / width
+  };
+}
+
 function positionCompass(camera) {
   if (!elements.compassRose) {
     return;
@@ -1290,18 +1321,76 @@ function renderLivePositionOnly(flight) {
   return true;
 }
 
+function renderGroundLocation(state) {
+  const airport = airportForMap(
+    state?.locationAirport
+  );
+
+  if (!airport) {
+    return false;
+  }
+
+  clearRoute();
+
+  const camera =
+    domesticOverviewCamera();
+
+  applyCamera(camera);
+
+  const point = project(
+    airport.longitude,
+    airport.latitude
+  );
+
+  positionAirportMarker(
+    elements.destinationMarker,
+    point,
+    { x: 66, y: -64 },
+    1 / camera.zoom
+  );
+
+  if (elements.destinationMarker) {
+    elements.destinationMarker.setAttribute(
+      "visibility",
+      "visible"
+    );
+  }
+
+  updateRouteLabels(
+    {
+      origin: "---",
+      destination: airport.code,
+      destinationCity: airport.city
+    },
+    null,
+    airport
+  );
+
+  elements.shell
+    ?.classList
+    .add("is-ready");
+
+  setMessage("", false);
+  return true;
+}
+
 function renderRouteMap(state) {
   lastRenderedState = state ?? null;
 
   const flight = state?.flight;
 
   if (!flight) {
-    clearRoute();
-    setMessage(
-      state?.message ??
-        "AWAITING FLIGHT DATA",
-      true
-    );
+    if (!renderGroundLocation(state)) {
+      clearRoute();
+      applyCamera(
+        domesticOverviewCamera()
+      );
+      setMessage(
+        state?.message ??
+          "AWAITING FLIGHT DATA",
+        true
+      );
+    }
     return;
   }
 
@@ -1502,7 +1591,12 @@ function syncRouteMapReadyState(state) {
     ?.classList
     .toggle(
       "is-ready",
-      Boolean(state?.flight)
+      Boolean(
+        state?.flight ||
+        airportForMap(
+          state?.locationAirport
+        )
+      )
     );
 }
 

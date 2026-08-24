@@ -80,11 +80,11 @@ function intersectsMap(feature) {
   );
 }
 
-function reliefPath(points) {
+function reliefPath(points, close = false) {
   return points.map((point, index) => {
     const projected = project(point);
     return `${index === 0 ? "M" : "L"}${projected[0].toFixed(1)} ${projected[1].toFixed(1)}`;
-  }).join("");
+  }).join("") + (close ? "Z" : "");
 }
 
 const features = topojson
@@ -97,17 +97,21 @@ const landPaths = features.map((feature, index) =>
 ).join("\n    ");
 
 const mountainRanges = [
-  [[-127, 59], [-122, 54], [-117, 50], [-113, 46], [-110, 42], [-107, 38], [-106, 33]],
-  [[-124, 50], [-122, 45], [-121, 40], [-119, 36], [-117, 33]],
-  [[-84, 34], [-82, 37], [-80, 40], [-78, 43], [-75, 46], [-72, 48]],
-  [[-109, 31], [-106, 27], [-103, 23], [-100, 19], [-98, 16]],
-  [[-103, 29], [-100, 25], [-98, 22], [-96, 19]]
+  [[-130,60],[-124,58],[-116,51],[-109,45],[-103,36],[-105,30],[-111,35],[-116,44],[-123,52]],
+  [[-126,51],[-123,45],[-120,37],[-116,31],[-113,34],[-118,45],[-122,52]],
+  [[-87,32],[-84,34],[-80,39],[-75,45],[-70,49],[-74,50],[-81,43],[-86,36]],
+  [[-112,32],[-108,27],[-103,20],[-99,15],[-95,16],[-100,25],[-106,32]],
+  [[-105,30],[-101,27],[-96,20],[-91,16],[-94,14],[-101,20]]
 ];
 
-const relief = mountainRanges.map((range) => {
-  const d = reliefPath(range);
-  return `<path class="terrain-shadow" d="${d}"/><path class="terrain-ridge" d="${d}"/><path class="terrain-crest" d="${d}"/>`;
+const relief = mountainRanges.map((range, index) => {
+  const d = reliefPath(range, true);
+  return `<path class="terrain-mass terrain-${index}" d="${d}"/><path class="terrain-highlight" d="${d}"/>`;
 }).join("\n    ");
+
+const landClipPaths = features.map((feature) =>
+  `<path d="${geometryPath(feature.geometry)}"/>`
+).join("");
 
 const svg = `<?xml version="1.0" encoding="UTF-8"?>
 <!-- Generated from world-atlas 2.0.2 / Natural Earth 1:50m country boundaries. -->
@@ -119,18 +123,21 @@ const svg = `<?xml version="1.0" encoding="UTF-8"?>
       <circle cx="9" cy="22" r=".8" fill="#6c583d" opacity=".10"/>
       <circle cx="40" cy="5" r=".55" fill="#f2e5bd" opacity=".32"/>
     </pattern>
+    <filter id="relief-soft" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="3.2"/>
+    </filter>
+    <clipPath id="land-clip" fill-rule="evenodd">${landClipPaths}</clipPath>
   </defs>
   <g class="countries" fill-rule="evenodd">
     ${landPaths}
   </g>
-  <g class="terrain" fill="none" stroke-linecap="round" stroke-linejoin="round">
-    ${relief}
+  <g class="terrain" clip-path="url(#land-clip)">
+    <g filter="url(#relief-soft)">${relief}</g>
   </g>
   <style>
     .country{fill:url(#land-paper);stroke:#6a583d;stroke-width:1.25;vector-effect:non-scaling-stroke}
-    .terrain-shadow{stroke:#5e5438;stroke-width:14;opacity:.075}
-    .terrain-ridge{stroke:#756446;stroke-width:6;opacity:.13}
-    .terrain-crest{stroke:#eee0b4;stroke-width:1.25;opacity:.34;stroke-dasharray:2 7}
+    .terrain-mass{fill:#6d6745;opacity:.24;stroke:#534a32;stroke-width:5}
+    .terrain-highlight{fill:none;stroke:#eee0b4;stroke-width:5;opacity:.18;transform:translate(-2px,-2px)}
   </style>
 </svg>\n`;
 

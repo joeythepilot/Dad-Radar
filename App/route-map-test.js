@@ -107,7 +107,7 @@ class FakeElement {
   }
 }
 
-function createHarness(flight) {
+function createHarness(flight, state = null) {
   const ids = [
     "route-map-svg",
     "map-route-shadow",
@@ -153,9 +153,8 @@ function createHarness(flight) {
       clearTimeout,
       setTimeout
     },
-    dadRadarState: {
-      flight
-    }
+    dadRadarState:
+      state ?? { flight }
   };
 
   vm.runInNewContext(
@@ -167,6 +166,38 @@ function createHarness(flight) {
     elements,
     listeners
   };
+}
+
+function testGroundLocationUsesDomesticOverview() {
+  const { elements } =
+    createHarness(null, {
+      flight: null,
+      locationAirport: "GSP",
+      message:
+        "DADDY IS ON THE GROUND IN GREER, SOUTH CAROLINA"
+    });
+
+  const camera = viewBox(
+    elements["route-map-svg"]
+  );
+
+  assert.ok(
+    camera[2] < 1100,
+    "A domestic ground state should use the U.S. overview instead of the full international map."
+  );
+  assert.equal(
+    elements["map-loading-message"].hidden,
+    true,
+    "The ground location should be marked without covering the center of the map."
+  );
+  assert.equal(
+    elements["map-destination"].textContent,
+    "GSP"
+  );
+  assert.equal(
+    elements["map-destination-marker"].attributes.visibility,
+    "visible"
+  );
 }
 
 function viewBox(element) {
@@ -720,6 +751,7 @@ function testSurfaceZoomAtBothRouteEnds() {
 
 function runTests() {
   testDetailedMapAsset();
+  testGroundLocationUsesDomesticOverview();
   testRouteAutoFitAndPlacards();
   testAirportEndpointIcons();
   testBillingsRouteIsKnown();
