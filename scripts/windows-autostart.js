@@ -276,6 +276,25 @@ function queryTask(options = {}) {
   );
 }
 
+function interpretTaskQuery(result = {}) {
+  if (!result.error && result.status === 0) {
+    return {
+      installed: true,
+      permissionDenied: false
+    };
+  }
+
+  const output = `${result.stdout ?? ""}\n${result.stderr ?? ""}`;
+  const permissionDenied =
+    /access is denied/i.test(output) ||
+    result.error?.code === "EACCES";
+
+  return {
+    installed: false,
+    permissionDenied
+  };
+}
+
 function checkHealth(options = {}) {
   const port =
     options.port ??
@@ -547,9 +566,9 @@ async function status(options = {}) {
   loadEnvironment();
 
   const taskResult = queryTask(options);
-  const installed =
-    !taskResult.error &&
-    taskResult.status === 0;
+  const taskStatus =
+    interpretTaskQuery(taskResult);
+  const installed = taskStatus.installed;
 
   const healthy =
     await checkHealth(options);
@@ -568,7 +587,7 @@ async function status(options = {}) {
     "DAD RADAR AUTOMATIC STARTUP STATUS"
   );
   console.log(
-    `[${installed ? "PASS" : "FAIL"}] Windows startup task: ${installed ? "Installed" : "Not installed"}`
+    `[${installed ? "PASS" : taskStatus.permissionDenied ? "WARN" : "FAIL"}] Windows startup task: ${installed ? "Installed" : taskStatus.permissionDenied ? "Permission required to verify — run this status command as Administrator" : "Not installed"}`
   );
   console.log(
     `[${healthy ? "PASS" : "FAIL"}] Dad Radar server: ${healthy ? "Responding" : "Not responding"}`
@@ -578,7 +597,7 @@ async function status(options = {}) {
   );
 
   if (
-    !installed ||
+    (!installed && !taskStatus.permissionDenied) ||
     !healthy ||
     !calendarHealth.ok
   ) {
@@ -701,6 +720,7 @@ module.exports = {
   encodePowerShell,
   escapeXml,
   interpretCalendarHealth,
+  interpretTaskQuery,
   queryTask,
   quotePowerShellLiteral,
   requireWindows,

@@ -9,6 +9,7 @@ const {
   TASK_NAME,
   assertSucceeded,
   interpretCalendarHealth,
+  interpretTaskQuery,
   createTaskXml,
   elevatedTaskScript,
   encodePowerShell,
@@ -110,6 +111,36 @@ assert.deepEqual(
   {
     ok: true,
     authorizationRequired: false
+  }
+);
+
+assert.deepEqual(
+  interpretTaskQuery({ status: 0 }),
+  {
+    installed: true,
+    permissionDenied: false
+  }
+);
+
+assert.deepEqual(
+  interpretTaskQuery({
+    status: 1,
+    stderr: "ERROR: Access is denied."
+  }),
+  {
+    installed: false,
+    permissionDenied: true
+  }
+);
+
+assert.deepEqual(
+  interpretTaskQuery({
+    status: 1,
+    stderr: "The system cannot find the file specified."
+  }),
+  {
+    installed: false,
+    permissionDenied: false
   }
 );
 

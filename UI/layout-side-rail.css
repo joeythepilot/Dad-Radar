@@ -50,6 +50,10 @@
   display: none;
 }
 
+.diagnostic-chime-button {
+  bottom: 72px;
+}
+
 .panel-shell {
   grid-template-rows:
     minmax(0, 26fr)

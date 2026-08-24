@@ -19,6 +19,11 @@ const betaAudioButton =
     "beta-audio-button"
   );
 
+const diagnosticChimeButton =
+  document.getElementById(
+    "diagnostic-chime-button"
+  );
+
 const statusMessage =
   document.querySelector(".status-message");
 
@@ -227,6 +232,20 @@ const altitudeChimeController =
 
 const activeSplitFlapCells =
   new Set();
+
+function reportClientDiagnostic(type, details = {}) {
+  try {
+    void fetch("/api/diagnostics/event", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ type, ...details })
+    });
+  } catch (_error) {
+    // Diagnostics must never affect the family display.
+  }
+}
 
 
 /* ---------------------------------------------------------
@@ -1988,7 +2007,8 @@ window.addEventListener(
       nextState?.liveData &&
       nextState.flight
     ) {
-      altitudeChimeController?.observe(
+      const chimeDirection =
+        altitudeChimeController?.observe(
         [
           nextState.eventId ?? "",
           nextState.flight.number ?? "",
@@ -1997,6 +2017,17 @@ window.addEventListener(
         ].join("|"),
         nextState.flight.altitude
       );
+
+      if (chimeDirection) {
+        reportClientDiagnostic(
+          "altitude-chime-crossing",
+          {
+            direction: chimeDirection,
+            altitude:
+              nextState.flight.altitude
+          }
+        );
+      }
     }
 
     if (event.detail.telemetryOnly) {
@@ -2061,6 +2092,30 @@ if (betaAudioButton) {
     "click",
     enableBetaAudio,
     { once: true }
+  );
+}
+
+if (diagnosticChimeButton) {
+  diagnosticChimeButton.hidden =
+    !/[?&]diagnostics=1(?:&|$)/.test(
+      globalThis.location?.search ?? ""
+    );
+
+  diagnosticChimeButton.addEventListener(
+    "click",
+    async () => {
+      const played =
+        await altitudeChimeController
+          ?.play();
+      diagnosticChimeButton.textContent =
+        played
+          ? "CHIME PLAYED"
+          : "CHIME BLOCKED";
+      reportClientDiagnostic(
+        "altitude-chime-test",
+        { played: Boolean(played) }
+      );
+    }
   );
 }
 

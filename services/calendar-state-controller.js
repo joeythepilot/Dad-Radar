@@ -695,7 +695,10 @@
                   providerFlightId:
                     currentLiveFlight
                       ?.providerFlightId ??
-                    null
+                    null,
+                  provider:
+                    currentLiveFlight
+                      ?.provider ?? null
                 }
               );
 

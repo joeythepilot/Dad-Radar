@@ -39,7 +39,9 @@
         event.startUtc ?? null,
       providerFlightId:
         providedOptions
-          .providerFlightId ?? null
+          .providerFlightId ?? null,
+      provider:
+        providedOptions.provider ?? null
     };
 
     try {
