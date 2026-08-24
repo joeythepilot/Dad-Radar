@@ -42,6 +42,14 @@
       title: "GREEN BAY",
       location: "Green Bay, Wisconsin"
     }),
+    GSP: Object.freeze({
+      source:
+        "./assets/destinations/gsp-poster-7x8-candidate-v1.png",
+      title:
+        "GREENVILLE–SPARTANBURG",
+      location:
+        "Greenville–Spartanburg, South Carolina"
+    }),
     HSV: Object.freeze({
       source:
         "./assets/destinations/hsv-poster-7x8-candidate-v1.png",

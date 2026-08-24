@@ -33,8 +33,10 @@ const dadRadarSettings = {
     provider: "flightradar24",
     acquisitionLeadMinutes: 30,
     refreshIntervalMs: 60 * 1000,
+    activeRefreshIntervalMs: 30 * 1000,
     staleAfterMs: 3 * 60 * 1000,
-    visualInterpolationMs: 52 * 1000
+    visualInterpolationMs: 52 * 1000,
+    activeVisualInterpolationMs: 27 * 1000
   },
 
   audio: {

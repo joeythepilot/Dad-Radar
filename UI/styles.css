@@ -2791,7 +2791,8 @@ h1 {
 }
 /* Geographic reference and local-server NOAA radar overlay. */
 .map-us-detail {
-  opacity: 0.92;
+  opacity: 0.58;
+  mix-blend-mode: multiply;
 }
 
 .map-weather-image {

@@ -41,7 +41,7 @@ It must read as a printed mid-century airline route chart, not a modern web map.
 - Calendar progress positions the aircraft on the route path when live coordinates are unavailable. When a live position is available, its nearest point on the route determines the completed-track segment.
 - Cataloged airports inside the contiguous-U.S. artwork bounds can render immediately, even when Dad Radar has never displayed that route before.
 - Routes outside the current contiguous-U.S. artwork fall back to a live-position-only display when usable live coordinates are in bounds; future regional map assets can reuse the same global catalog.
-- Consecutive live positions interpolate linearly over 52 seconds, along with heading and route progress, so the marker glides between the approximately one-minute Flightradar24 snapshots.
+- Consecutive live positions interpolate linearly over 27 seconds during active flight and 52 seconds during idle/acquisition states, along with heading and route progress, so the marker glides between adaptive provider snapshots.
 - The interpolated marker is a visual presentation of the two surrounding provider observations. It is never stored or labeled as a newly observed live position.
 - Operational phase and status changes remain immediate even while the marker continues its visual transition.
 

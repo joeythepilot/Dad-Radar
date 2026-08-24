@@ -65,7 +65,7 @@ Last verified: August 13, 2026
 
 Dad Radar can authenticate with the Pilot Schedule Google Calendar, retrieve upcoming events, parse roster flights and manually entered commutes, resolve the current high-level display state, and publish that state to the existing interface.
 
-The browser now requests normalized Flightradar24 snapshots for the Calendar-selected flight. Initial acquisition uses a full live record; continuing one-minute telemetry uses the light record. Operational phase, ETA, progress, heading, vertical speed, altitude, groundspeed, and map coordinates can refine the Calendar plan.
+The browser now requests provider-neutral snapshots for the Calendar-selected flight. adsb.lol is primary and Flightradar24 is the sticky automatic fallback. Active phases refresh every 30 seconds while acquisition and ground states use 60 seconds. Operational phase, ETA, progress, heading, vertical speed, altitude, groundspeed, and map coordinates can refine the Calendar plan.
 
 Calendar remains authoritative before live acquisition and whenever Flightradar24 is unavailable, returns no confident match, or becomes stale. Paid pre-departure airline status is intentionally omitted: Boarding begins at T-minus 30 and Calendar-inferred Delayed begins five minutes after scheduled departure unless an on-time Taxi Out was already confirmed. Confirmed Taxi Out cannot regress at that boundary; a delay that appeared first remains until airborne evidence arrives. Active-leg locking prevents cascading calendar overlaps from replacing the current delayed or airborne flight. Groundspeed remains distinct from airspeed in the state model, but it drives the speed gauge and a Ground Speed readout because no indicated-airspeed source is available.
 

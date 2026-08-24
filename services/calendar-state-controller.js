@@ -4,6 +4,7 @@
   let refreshTimerId = null;
   let stateTimerId = null;
   let liveTimerId = null;
+  let lastLiveRefreshAt = 0;
   let currentSchedule = null;
   let currentCalendarResolved = null;
   let currentLiveFlight = null;
@@ -93,6 +94,10 @@
         settings.flightData
           ?.refreshIntervalMs ??
         60 * 1000,
+      liveActiveRefreshIntervalMs:
+        settings.flightData
+          ?.activeRefreshIntervalMs ??
+        30 * 1000,
       liveAcquisitionLeadMinutes:
         settings.flightData
           ?.acquisitionLeadMinutes ??
@@ -104,7 +109,11 @@
       visualInterpolationMs:
         settings.flightData
           ?.visualInterpolationMs ??
-        52 * 1000
+        52 * 1000,
+      activeVisualInterpolationMs:
+        settings.flightData
+          ?.activeVisualInterpolationMs ??
+        27 * 1000
     };
   }
 
@@ -122,6 +131,44 @@
           event.startUtc
       ].join("|")
     );
+  }
+
+  function desiredLiveRefreshInterval(
+    settings
+  ) {
+    return global
+      .dadRadarLiveRefreshSchedule
+      ?.intervalForState(
+        currentLiveFlight,
+        currentCalendarResolved,
+        {
+          idleIntervalMs:
+            settings
+              .liveRefreshIntervalMs,
+          activeIntervalMs:
+            settings
+              .liveActiveRefreshIntervalMs
+        }
+      ) ??
+      settings.liveRefreshIntervalMs;
+  }
+
+  function refreshLiveFlightOnSchedule() {
+    const settings = controllerSettings();
+    const now = Date.now();
+    const interval =
+      desiredLiveRefreshInterval(
+        settings
+      );
+
+    if (
+      now - lastLiveRefreshAt <
+      interval - 250
+    ) {
+      return null;
+    }
+
+    return refreshLiveFlightState();
   }
 
   function validDate(value) {
@@ -639,8 +686,15 @@
         ...resolved.state,
         dailySchedule,
         visualTransitionMs:
+          desiredLiveRefreshInterval(
+            settings
+          ) ===
           settings
-            .visualInterpolationMs
+            .liveActiveRefreshIntervalMs
+            ? settings
+                .activeVisualInterpolationMs
+            : settings
+                .visualInterpolationMs
       }
     };
 
@@ -653,6 +707,7 @@
   }
 
   async function refreshLiveFlightState() {
+    lastLiveRefreshAt = Date.now();
     const settings =
       controllerSettings();
 
@@ -872,6 +927,8 @@
 
       liveTimerId = null;
     }
+
+    lastLiveRefreshAt = 0;
   }
 
   function startCalendarStateController() {
@@ -907,10 +964,16 @@
       );
 
     if (settings.liveFlightEnabled) {
+      lastLiveRefreshAt = Date.now();
       liveTimerId =
         global.setInterval(
-          refreshLiveFlightState,
-          settings.liveRefreshIntervalMs
+          refreshLiveFlightOnSchedule,
+          Math.min(
+            settings
+              .liveRefreshIntervalMs,
+            settings
+              .liveActiveRefreshIntervalMs
+          )
         );
     }
   }

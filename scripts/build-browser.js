@@ -18,6 +18,7 @@ const browserSources = [
   "services/mock-flight-service.js",
   "services/calendar-api-service.js",
   "services/live-flight-api-service.js",
+  "services/live-refresh-schedule.js",
   "services/calendar-state-controller.js",
   "App/instrument-math.js",
   "App/split-flap-audio.js",

@@ -104,7 +104,7 @@ It exists so future work always builds on previous decisions instead of repeatin
 
 ✓ The browser requests live data only for a Calendar-selected flight in a trackable mode. Acquisition begins 30 minutes before scheduled departure, matching the Boarding window. Home, Arrived, Layover, and Offline modes do not generate FR24 polling.
 
-✓ The default live polling interval is 60 seconds. A snapshot older than three minutes cannot supply new telemetry, but the same leg retains its highest confirmed live phase, last position, track, and progress rather than regressing to a Calendar-inferred earlier state.
+✓ Live polling is adaptive: 60 seconds during acquisition, Boarding, Delayed, and ground states; 30 seconds during Taxi Out, En Route, Approach, and Landing. A snapshot older than three minutes cannot supply new telemetry, but the same leg retains its highest confirmed live phase, last position, track, and progress rather than regressing to a Calendar-inferred earlier state.
 
 ✓ A live snapshot must still match the Calendar origin and destination before it can refine the display, even though the backend already performs route validation.
 
@@ -172,7 +172,7 @@ It exists so future work always builds on previous decisions instead of repeatin
 
 ✓ Landing begins only after Approach is confirmed and the aircraft descends below 3,000 feet above the destination airport elevation. It remains latched until a terminal phase, except that a confirmed climb above 3,500 feet AGL returns a go-around to Approach.
 
-✓ Operational phases update immediately. Position and instrument telemetry interpolate visually for 52 seconds between the approximately one-minute provider snapshots.
+✓ Operational phases update immediately. Position and instrument telemetry interpolate visually for 52 seconds between idle snapshots and 27 seconds between active 30-second snapshots.
 
 ✓ Visual interpolation never mutates the raw Flightradar24 snapshot or claims an estimated intermediate value as a new observation.
 

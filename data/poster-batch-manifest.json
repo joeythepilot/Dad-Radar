@@ -12,7 +12,8 @@
       "assets/destinations/clt-poster-7x8-candidate-v1.png",
       "assets/destinations/phx-poster-7x8-candidate-v1.png",
       "assets/destinations/xna-poster-7x8-candidate-v1.png",
-      "assets/destinations/cmh-poster-7x8-candidate-v1.png"
+      "assets/destinations/cmh-poster-7x8-candidate-v1.png",
+      "assets/destinations/gsp-poster-7x8-candidate-v1.png"
     ],
     "reviewCanvas": {
       "width": 1173,
@@ -48,6 +49,12 @@
       "label": "August family beta follow-up trip coverage",
       "status": "approved",
       "airportCodes": ["SGF", "GRB"]
+    },
+    {
+      "id": "carolinas-2026-08",
+      "label": "Carolinas family beta destination coverage",
+      "status": "approved",
+      "airportCodes": ["GSP"]
     }
   ],
   "destinations": [
@@ -239,6 +246,10 @@
     {
       "code": "GRB", "icao": "KGRB", "city": "Green Bay", "region": "Wisconsin", "title": "GREEN BAY", "subtitle": "WISCONSIN", "descriptor": "WATERFRONT • FOOTBALL • NORTHWOODS", "tagline": "Where the Bay Meets the Northwoods.", "batch": "family-trip-2026-08-week-2", "status": "approved", "output": "assets/destinations/grb-poster-7x8-candidate-v1.png", "visualProfileId": "green-bay-waterfront-autumn",
       "design": {"landmarks": ["Fox River waterfront", "Downtown Green Bay", "classic stadium silhouette"], "skySignature": "Pale lake-blue autumn sky with broad cream clouds", "seasonAndLight": "Crisp autumn afternoon with copper foliage and warm brick", "titleAlignment": "center", "aircraftPlacement": "Classic propeller airliner high above the waterfront", "foreground": "Fox River promenade, working boat, water reflections, and autumn trees", "avoid": ["team logos", "trademarks", "dominant green-and-gold branding"]}, "referenceSources": ["https://www.greenbaywi.gov/585/Downtown", "https://www.greenbay.com/", "https://www.greenbay.com/visitorcenter/"]
+    },
+    {
+      "code": "GSP", "icao": "KGSP", "city": "Greenville–Spartanburg", "region": "South Carolina", "title": "GREENVILLE–SPARTANBURG", "subtitle": "SOUTH CAROLINA", "descriptor": "BLUE RIDGE • REEDY RIVER • UPSTATE", "tagline": "The Upstate beneath the Blue Ridge.", "batch": "carolinas-2026-08", "status": "approved", "output": "assets/destinations/gsp-poster-7x8-candidate-v1.png", "visualProfileId": "upstate-falls-golden-afternoon",
+      "design": {"landmarks": ["Falls Park on the Reedy", "Liberty Bridge", "Blue Ridge foothills", "Spartanburg rail heritage"], "skySignature": "Warm Carolina-blue late-afternoon sky with broad cream clouds", "seasonAndLight": "Late summer with warm sunlight across the Upstate", "titleAlignment": "center", "aircraftPlacement": "Classic silver propeller airliner above the Blue Ridge horizon", "foreground": "Reedy River falls, curved pedestrian bridge, and leafy park", "avoid": ["airline logos", "modern jets", "generic coastal imagery"]}, "referenceSources": ["https://www.visitgreenvillesc.com/things-to-do/attractions/falls-park-on-the-reedy/", "https://www.visitspartanburg.com/", "https://gspairport.com/"]
     }
   ]
 }
