@@ -57,11 +57,49 @@ assert.equal(
 
 for (const argument of [
   "--app=http://127.0.0.1:4173",
-  "--start-maximized",
+  "--start-fullscreen",
   "--autoplay-policy=no-user-gesture-required"
 ]) {
   assert.ok(host.EDGE_ARGUMENTS.includes(argument));
 }
+
+assert.equal(
+  host.EDGE_ARGUMENTS.includes(
+    "--start-maximized"
+  ),
+  false
+);
+
+assert.match(
+  host.displayProcessQueryScript(
+    "C:\\Dad Radar\\edge-profile"
+  ),
+  /Get-CimInstance Win32_Process/
+);
+assert.match(
+  host.displayProcessQueryScript(
+    "C:\\Dad Radar\\edge-profile"
+  ),
+  /edge-profile/
+);
+
+assert.equal(
+  host.isDisplayRunning({
+    spawnSync() {
+      return { status: 0 };
+    }
+  }),
+  true
+);
+
+assert.equal(
+  host.isDisplayRunning({
+    spawnSync() {
+      return { status: 1 };
+    }
+  }),
+  false
+);
 
 async function testWaitForServer() {
   const states = [false, false, true];

@@ -3,7 +3,10 @@
 const fs = require("node:fs");
 const http = require("node:http");
 const path = require("node:path");
-const { spawn } = require("node:child_process");
+const {
+  spawn,
+  spawnSync
+} = require("node:child_process");
 
 const PROJECT_ROOT = path.resolve(__dirname, "..");
 const DISPLAY_URL = "http://127.0.0.1:4173";
@@ -15,12 +18,53 @@ const PROFILE_DIRECTORY = path.join(
 
 const EDGE_ARGUMENTS = Object.freeze([
   `--app=${DISPLAY_URL}`,
-  "--start-maximized",
+  "--start-fullscreen",
   "--no-first-run",
   "--disable-session-crashed-bubble",
   "--autoplay-policy=no-user-gesture-required",
   `--user-data-dir=${PROFILE_DIRECTORY}`
 ]);
+
+function quotePowerShellLiteral(value) {
+  return `'${String(value).replaceAll("'", "''")}'`;
+}
+
+function displayProcessQueryScript(
+  profileDirectory = PROFILE_DIRECTORY
+) {
+  const profileLiteral =
+    quotePowerShellLiteral(profileDirectory);
+
+  return `$ErrorActionPreference = 'SilentlyContinue'
+$profile = ${profileLiteral}
+$process = Get-CimInstance Win32_Process -Filter "Name = 'msedge.exe'" |
+  Where-Object { $_.CommandLine -and $_.CommandLine.IndexOf($profile, [System.StringComparison]::OrdinalIgnoreCase) -ge 0 } |
+  Select-Object -First 1
+if ($null -ne $process) { exit 0 }
+exit 1`;
+}
+
+function isDisplayRunning(options = {}) {
+  const query = options.spawnSync ?? spawnSync;
+  const result = query(
+    "powershell.exe",
+    [
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-Command",
+      displayProcessQueryScript(
+        options.profileDirectory
+      )
+    ],
+    {
+      stdio: "ignore",
+      windowsHide: true
+    }
+  );
+
+  return result.status === 0;
+}
 
 function edgeCandidates(environment = process.env) {
   return [
@@ -128,12 +172,22 @@ async function main() {
     throw new Error("Microsoft Edge could not be found.");
   }
 
+  if (isDisplayRunning()) {
+    return;
+  }
+
   const ready = await waitForServer();
 
   if (!ready) {
     throw new Error(
       "Dad Radar server did not become ready within one minute."
     );
+  }
+
+  // Recheck after the readiness wait so two startup
+  // triggers cannot create duplicate display windows.
+  if (isDisplayRunning()) {
+    return;
   }
 
   fs.mkdirSync(PROFILE_DIRECTORY, { recursive: true });
@@ -151,9 +205,12 @@ module.exports = {
   DISPLAY_URL,
   EDGE_ARGUMENTS,
   PROFILE_DIRECTORY,
+  displayProcessQueryScript,
   edgeCandidates,
   findEdge,
   healthCheck,
+  isDisplayRunning,
   launchEdge,
-  waitForServer
+  waitForServer,
+  quotePowerShellLiteral
 };
