@@ -84,7 +84,25 @@
         throw requestError;
       }
 
-      return data?.liveFlight ?? null;
+      if (data?.liveFlight) {
+        return data.liveFlight;
+      }
+
+      if (data?.filedRoute) {
+        return {
+          routeOnly: true,
+          provider: "flightaware",
+          retrievedAt:
+            data.retrievedAt ??
+            new Date().toISOString(),
+          origin: body.origin,
+          destination:
+            body.destination,
+          filedRoute: data.filedRoute
+        };
+      }
+
+      return null;
     } catch (error) {
       if (error.name === "AbortError") {
         const timeoutError = new Error(

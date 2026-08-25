@@ -135,6 +135,55 @@ async function testNoMatchReturnsNull() {
   assert.equal(result, null);
 }
 
+async function testPreflightRouteReturnsRouteOnlySnapshot() {
+  const filedRoute = {
+    provider: "flightaware",
+    fixes: [
+      {
+        name: "BDF",
+        latitude: 41.1,
+        longitude: -89.6
+      }
+    ]
+  };
+
+  const context = createContext(
+    async () => ({
+      ok: true,
+      status: 200,
+      async json() {
+        return {
+          ok: true,
+          retrievedAt:
+            "2026-08-25T03:10:00.000Z",
+          liveFlight: null,
+          filedRoute
+        };
+      }
+    })
+  );
+
+  const result = await context
+    .dadRadarLiveFlightApi
+    .getFlightSnapshot({
+      origin: "ORD",
+      destination: "XNA",
+      liveLookupCandidates: [
+        "AA1234"
+      ],
+      times: {
+        startUtc:
+          "2026-08-25T03:20:00.000Z"
+      }
+    });
+
+  assert.equal(result.routeOnly, true);
+  assert.equal(result.provider, "flightaware");
+  assert.equal(result.origin, "ORD");
+  assert.equal(result.destination, "XNA");
+  assert.deepEqual(result.filedRoute, filedRoute);
+}
+
 async function testConfigurationErrorIsTagged() {
   const context = createContext(
     async () => ({
@@ -176,6 +225,7 @@ async function testConfigurationErrorIsTagged() {
 async function runTests() {
   await testPostsProviderNeutralLookup();
   await testNoMatchReturnsNull();
+  await testPreflightRouteReturnsRouteOnlySnapshot();
   await testConfigurationErrorIsTagged();
 
   console.log(

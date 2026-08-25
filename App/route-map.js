@@ -106,6 +106,7 @@ const elements = {
   destinationCode: document.getElementById("map-destination"),
   destinationCity: document.getElementById("map-destination-city"),
   loadingMessage: document.getElementById("map-loading-message"),
+  routeStatus: document.getElementById("map-route-status"),
   shell: document.getElementById("route-map-shell")
   ,cityLayer: document.getElementById("map-city-label-layer")
   ,weatherImage: document.getElementById("map-weather-image")
@@ -1454,6 +1455,13 @@ function renderRouteMap(state) {
       destination,
       flight.filedRoute
     );
+
+  if (elements.routeStatus) {
+    elements.routeStatus.textContent =
+      curve.kind === "filed"
+        ? "FILED ROUTE • LIVE TRACK"
+        : "FILED ROUTE PENDING";
+  }
 
   const progress =
     clamp(

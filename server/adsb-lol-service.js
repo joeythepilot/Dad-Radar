@@ -133,7 +133,11 @@ async function requestAdsbLol(path, options = {}) {
 
   try {
     const response = await (options.fetchImpl ?? fetch)(url, {
-      headers: { Accept: "application/json" },
+      headers: {
+        Accept: "application/json",
+        "User-Agent":
+          "Dad-Radar/1.0 family-flight-display"
+      },
       signal: controller.signal
     });
     const data = await response.json().catch(() => null);

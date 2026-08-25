@@ -145,7 +145,11 @@ app.post(
         retrievedAt:
           liveFlight?.retrievedAt ??
           new Date().toISOString(),
-        liveFlight
+        liveFlight,
+        filedRoute:
+          result.filedRoute ??
+          liveFlight?.filedRoute ??
+          null
       });
     } catch (error) {
       if (error instanceof TypeError) {

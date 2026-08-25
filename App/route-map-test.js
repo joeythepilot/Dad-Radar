@@ -122,6 +122,7 @@ function createHarness(flight, state = null) {
     "map-destination",
     "map-destination-city",
     "map-loading-message",
+    "map-route-status",
     "route-map-shell"
   ];
 
@@ -443,15 +444,26 @@ function testCatalogSuppliesUnlistedRoute() {
 }
 
 function testFiledRouteFixesShapeTheTrack() {
-  const directPath =
+  const directHarness =
     createHarness({
       origin: "ORD",
       destination: "AVL",
       progress: 48
-    }).elements["map-route-line"]
-      .attributes.d;
+    });
 
-  const filedPath =
+  const directPath =
+    directHarness.elements[
+      "map-route-line"
+    ].attributes.d;
+
+  assert.equal(
+    directHarness.elements[
+      "map-route-status"
+    ].textContent,
+    "FILED ROUTE PENDING"
+  );
+
+  const filedHarness =
     createHarness({
       origin: "ORD",
       destination: "AVL",
@@ -473,8 +485,19 @@ function testFiledRouteFixesShapeTheTrack() {
           }
         ]
       }
-    }).elements["map-route-line"]
-      .attributes.d;
+    });
+
+  const filedPath =
+    filedHarness.elements[
+      "map-route-line"
+    ].attributes.d;
+
+  assert.equal(
+    filedHarness.elements[
+      "map-route-status"
+    ].textContent,
+    "FILED ROUTE • LIVE TRACK"
+  );
 
   assert.notEqual(
     filedPath,

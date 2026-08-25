@@ -65,11 +65,68 @@ async function requestJson(path, options) {
 function matchingFlight(flights, lookup) {
   const origin = String(lookup?.origin ?? "").toUpperCase();
   const destination = String(lookup?.destination ?? "").toUpperCase();
-  return (Array.isArray(flights) ? flights : []).find((flight) => {
+  const scheduledStart = new Date(
+    lookup?.startUtc ?? ""
+  ).getTime();
+
+  const matches = (Array.isArray(flights) ? flights : []).filter((flight) => {
     const flightOrigin = String(flight.origin?.code_iata ?? flight.origin?.code ?? "").toUpperCase();
     const flightDestination = String(flight.destination?.code_iata ?? flight.destination?.code ?? "").toUpperCase();
     return flightOrigin === origin && flightDestination === destination;
-  }) ?? null;
+  });
+
+  if (!Number.isFinite(scheduledStart)) {
+    return matches[0] ?? null;
+  }
+
+  return matches
+    .map((flight) => {
+      const candidateStart = new Date(
+        flight.scheduled_out ??
+        flight.scheduled_off ??
+        flight.estimated_out ??
+        ""
+      ).getTime();
+
+      return {
+        flight,
+        difference: Number.isFinite(candidateStart)
+          ? Math.abs(candidateStart - scheduledStart)
+          : Number.POSITIVE_INFINITY
+      };
+    })
+    .sort((left, right) =>
+      left.difference - right.difference
+    )[0]?.flight ?? null;
+}
+
+function routeIdentCandidates(snapshot, lookup) {
+  const supplied = Array.isArray(
+    lookup?.liveLookupCandidates ??
+    lookup?.lookupCandidates
+  )
+    ? lookup.liveLookupCandidates ??
+      lookup.lookupCandidates
+    : [];
+
+  return [
+    snapshot?.ident,
+    snapshot?.displayIdent,
+    ...supplied
+  ]
+    .map((value) =>
+      String(value ?? "")
+        .trim()
+        .toUpperCase()
+        .replace(/\s+/g, "")
+    )
+    .filter((value) =>
+      /^[A-Z]{2,3}\d{1,4}[A-Z]?$/.test(value)
+    )
+    .filter((value, index, values) =>
+      values.indexOf(value) === index
+    )
+    .slice(0, 4);
 }
 
 async function getFiledRoute(snapshot, lookup, providedOptions = {}) {
@@ -84,29 +141,63 @@ async function getFiledRoute(snapshot, lookup, providedOptions = {}) {
     fetchImpl: providedOptions.fetchImpl ?? fetch,
     cache: providedOptions.cache ?? routeCache
   };
-  const key = [lookup?.startUtc, lookup?.origin, lookup?.destination, snapshot?.ident].join("|");
+  const identCandidates = routeIdentCandidates(
+    snapshot,
+    lookup
+  );
+  const key = [
+    lookup?.startUtc,
+    lookup?.origin,
+    lookup?.destination,
+    identCandidates.join(",")
+  ].join("|");
+
   if (options.cache.has(key)) {
     return options.cache.get(key);
   }
 
-  const ident = encodeURIComponent(snapshot?.ident ?? snapshot?.displayIdent ?? "");
-  if (!ident) {
-    return null;
-  }
-  const flightsPayload = await requestJson(`/flights/${ident}`, options);
-  const flight = matchingFlight(flightsPayload?.flights, lookup);
-  if (!flight?.fa_flight_id) {
-    cacheSet(options.cache, key, null);
+  if (identCandidates.length === 0) {
     return null;
   }
 
-  const routePayload = await requestJson(
-    `/flights/${encodeURIComponent(flight.fa_flight_id)}/route`,
-    options
-  );
-  const route = normalizeFiledRoute(routePayload);
-  cacheSet(options.cache, key, route);
-  return route;
+  for (const identCandidate of identCandidates) {
+    let flightsPayload = null;
+
+    try {
+      flightsPayload = await requestJson(
+        `/flights/${encodeURIComponent(identCandidate)}`,
+        options
+      );
+    } catch (error) {
+      if (error?.status === 404) {
+        continue;
+      }
+
+      throw error;
+    }
+    const flight = matchingFlight(
+      flightsPayload?.flights,
+      lookup
+    );
+
+    if (!flight?.fa_flight_id) {
+      continue;
+    }
+
+    const routePayload = await requestJson(
+      `/flights/${encodeURIComponent(flight.fa_flight_id)}/route`,
+      options
+    );
+    const route = normalizeFiledRoute(routePayload);
+
+    if (route) {
+      cacheSet(options.cache, key, route);
+      return route;
+    }
+  }
+
+  cacheSet(options.cache, key, null);
+  return null;
 }
 
 module.exports = {
@@ -114,5 +205,6 @@ module.exports = {
   FlightAwareRouteError,
   getFiledRoute,
   matchingFlight,
-  normalizeFiledRoute
+  normalizeFiledRoute,
+  routeIdentCandidates
 };

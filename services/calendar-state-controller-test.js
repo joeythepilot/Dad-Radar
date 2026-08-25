@@ -943,6 +943,62 @@ async function testAirborneLegStaysLockedDuringCalendarOverlap() {
   assert.equal(locked.mode, "EN_ROUTE");
 }
 
+async function testPreflightFiledRoutePublishesWithoutLiveMatch() {
+  const { context } =
+    createBrowserContext();
+  const flight = activeFlightEvent();
+  const filedRoute = {
+    provider: "flightaware",
+    routeText: "ORD BDF AVL",
+    fixes: [
+      {
+        name: "BDF",
+        latitude: 41.1,
+        longitude: -89.6
+      }
+    ]
+  };
+
+  context.dadRadarCalendarApi = {
+    async getUpcomingEvents() {
+      return {
+        retrievedAt:
+          new Date().toISOString(),
+        events: [flight]
+      };
+    }
+  };
+
+  context.dadRadarLiveFlightApi = {
+    async getFlightSnapshot() {
+      return {
+        routeOnly: true,
+        provider: "flightaware",
+        retrievedAt:
+          new Date().toISOString(),
+        origin: flight.origin,
+        destination:
+          flight.destination,
+        filedRoute
+      };
+    }
+  };
+
+  await context.refreshCalendarState();
+  const resolved =
+    await context.refreshLiveFlightState();
+
+  assert.deepEqual(
+    resolved.state.flight.filedRoute,
+    filedRoute
+  );
+  assert.notEqual(
+    resolved.state.liveData,
+    true,
+    "A route-only response must not masquerade as live position data."
+  );
+}
+
 async function testStaleLandingHandsOffToStartedNextLeg() {
   const storage = createMemoryStorage();
   const { context } = createBrowserContext({
@@ -1066,6 +1122,7 @@ async function runTests() {
   await testApproachPersistsAcrossProviderRegression();
   await testPollingStopsAfterArrival();
   await testConfirmedArrivalDoesNotRewindToDeparture();
+  await testPreflightFiledRoutePublishesWithoutLiveMatch();
   await testAirborneLegStaysLockedDuringCalendarOverlap();
   await testStaleLandingHandsOffToStartedNextLeg();
 

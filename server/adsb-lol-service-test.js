@@ -45,9 +45,11 @@ assert.equal(normalized.aircraft.registration, "N123AA");
 
 (async () => {
   let requestedUrl = null;
+  let requestedOptions = null;
   const snapshot = await getLiveFlightSnapshot(lookup, {
-    async fetchImpl(url) {
+    async fetchImpl(url, options) {
       requestedUrl = String(url);
+      requestedOptions = options;
       return {
         ok: true,
         status: 200,
@@ -59,6 +61,10 @@ assert.equal(normalized.aircraft.registration, "N123AA");
   });
 
   assert.match(requestedUrl, /\/callsign\/ENY3631$/);
+  assert.match(
+    requestedOptions.headers["User-Agent"],
+    /Dad-Radar/
+  );
   assert.equal(snapshot.provider, "adsb.lol");
   console.log("adsb.lol live-flight service tests passed.");
 })().catch((error) => {

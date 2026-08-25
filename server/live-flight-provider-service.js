@@ -4,6 +4,19 @@ const adsbLol = require("./adsb-lol-service");
 const flightradar24 = require("./flightradar24-service");
 const flightaware = require("./flightaware-route-service");
 
+const ADSB_LOL_FORBIDDEN_COOLDOWN_MS =
+  15 * 60 * 1000;
+
+let adsbLolCooldownUntil = 0;
+
+function adsbLolIsCoolingDown(now = Date.now()) {
+  return now < adsbLolCooldownUntil;
+}
+
+function resetProviderCooldowns() {
+  adsbLolCooldownUntil = 0;
+}
+
 function providerOrder(hint) {
   return hint === "flightradar24"
     ? ["flightradar24", "adsb.lol"]
@@ -12,8 +25,65 @@ function providerOrder(hint) {
 
 async function getLiveFlightSnapshot(lookup, options = {}) {
   const attempts = [];
+  const routeLookup =
+    options.routeLookup ??
+    flightaware.getFiledRoute;
+
+  // Route acquisition starts immediately but does not
+  // block live position acquisition.
+  const preflightRoutePromise =
+    (async () => {
+      try {
+        const route = await routeLookup(
+          null,
+          lookup,
+          options.routeOptions
+        );
+
+        return {
+          route,
+          attempt: {
+            provider:
+              "flightaware-route",
+            outcome: route
+              ? "preflight-matched"
+              : "preflight-no-match"
+          }
+        };
+      } catch (error) {
+        if (options.onProviderError) {
+          options.onProviderError(
+            "flightaware-route",
+            error
+          );
+        }
+
+        return {
+          route: null,
+          attempt: {
+            provider:
+              "flightaware-route",
+            outcome: "error",
+            error: error.message
+          }
+        };
+      }
+    })();
 
   for (const provider of providerOrder(lookup?.provider)) {
+    if (
+      provider === "adsb.lol" &&
+      adsbLolIsCoolingDown(
+        options.now?.() ?? Date.now()
+      )
+    ) {
+      attempts.push({
+        provider,
+        outcome: "cooldown"
+      });
+      continue;
+    }
+
     try {
       const providerLookup = {
         ...lookup,
@@ -29,24 +99,51 @@ async function getLiveFlightSnapshot(lookup, options = {}) {
       attempts.push({ provider, outcome: snapshot ? "matched" : "no-match" });
 
       if (snapshot) {
-        try {
-          const filedRoute = await (
-            options.routeLookup ?? flightaware.getFiledRoute
-          )(snapshot, lookup, options.routeOptions);
-          if (filedRoute) {
-            snapshot.filedRoute = filedRoute;
-            attempts.push({ provider: "flightaware-route", outcome: "matched" });
-          }
-        } catch (error) {
-          attempts.push({ provider: "flightaware-route", outcome: "error", error: error.message });
-          if (options.onProviderError) {
-            options.onProviderError("flightaware-route", error);
+        const preflight =
+          await preflightRoutePromise;
+        let filedRoute =
+          preflight.route;
+
+        attempts.unshift(
+          preflight.attempt
+        );
+
+        if (!filedRoute) {
+          try {
+            filedRoute = await routeLookup(
+              snapshot,
+              lookup,
+              options.routeOptions
+            );
+            if (filedRoute) {
+              snapshot.filedRoute = filedRoute;
+              attempts.push({ provider: "flightaware-route", outcome: "matched" });
+            }
+          } catch (error) {
+            attempts.push({ provider: "flightaware-route", outcome: "error", error: error.message });
+            if (options.onProviderError) {
+              options.onProviderError("flightaware-route", error);
+            }
           }
         }
-        return { snapshot, attempts };
+
+        if (filedRoute) {
+          snapshot.filedRoute = filedRoute;
+        }
+
+        return { snapshot, filedRoute, attempts };
       }
     } catch (error) {
       attempts.push({ provider, outcome: "error", error: error.message });
+
+      if (
+        provider === "adsb.lol" &&
+        error?.status === 403
+      ) {
+        adsbLolCooldownUntil =
+          (options.now?.() ?? Date.now()) +
+          ADSB_LOL_FORBIDDEN_COOLDOWN_MS;
+      }
 
       const isFr24NotConfigured =
         error instanceof flightradar24.Flightradar24ConfigurationError;
@@ -57,10 +154,22 @@ async function getLiveFlightSnapshot(lookup, options = {}) {
     }
   }
 
-  return { snapshot: null, attempts };
+  const preflight =
+    await preflightRoutePromise;
+
+  attempts.unshift(preflight.attempt);
+
+  return {
+    snapshot: null,
+    filedRoute: preflight.route,
+    attempts
+  };
 }
 
 module.exports = {
+  ADSB_LOL_FORBIDDEN_COOLDOWN_MS,
+  adsbLolIsCoolingDown,
   getLiveFlightSnapshot,
-  providerOrder
+  providerOrder,
+  resetProviderCooldowns
 };

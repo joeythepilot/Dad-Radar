@@ -8,6 +8,7 @@
   let currentSchedule = null;
   let currentCalendarResolved = null;
   let currentLiveFlight = null;
+  let currentFiledRoute = null;
   let previousLiveResolved = null;
   let liveFlightEventKey = null;
   let liveTrackPoints = [];
@@ -604,6 +605,7 @@
       liveFlightEventKey
     ) {
       currentLiveFlight = null;
+      currentFiledRoute = null;
       previousLiveResolved = null;
       liveTrackPoints = [];
       liveFlightEventKey =
@@ -612,15 +614,32 @@
         false;
     }
 
+    const calendarResolvedWithRoute =
+      currentFiledRoute &&
+      calendarResolved?.state?.flight
+        ? {
+            ...calendarResolved,
+            state: {
+              ...calendarResolved.state,
+              flight: {
+                ...calendarResolved.state
+                  .flight,
+                filedRoute:
+                  currentFiledRoute
+              }
+            }
+          }
+        : calendarResolved;
+
     currentCalendarResolved =
-      calendarResolved;
+      calendarResolvedWithRoute;
 
     const resolved =
       currentLiveFlight &&
       global.dadRadarLiveFlightState
         ? global.dadRadarLiveFlightState
             .reconcileScheduleWithLive(
-              calendarResolved,
+              calendarResolvedWithRoute,
               currentLiveFlight,
               {
                 displayTimeZone:
@@ -633,7 +652,7 @@
                   previousLiveResolved
               }
             )
-        : calendarResolved;
+        : calendarResolvedWithRoute;
 
     const resolvedPhase = String(
       resolved?.state?.livePhase ?? ""
@@ -759,9 +778,37 @@
 
           if (
             requestedEventKey !==
-            liveFlightEventKey
+              liveFlightEventKey
           ) {
             return null;
+          }
+
+          if (liveFlight?.filedRoute) {
+            currentFiledRoute =
+              liveFlight.filedRoute;
+          }
+
+          if (liveFlight?.routeOnly) {
+            const resolved =
+              publishResolvedState();
+
+            global.dispatchEvent(
+              new CustomEvent(
+                "dad-radar:live-flight-sync",
+                {
+                  detail: {
+                    ok: true,
+                    routeOnly: true,
+                    retrievedAt:
+                      liveFlight.retrievedAt,
+                    liveFlight: null,
+                    resolved
+                  }
+                }
+              )
+            );
+
+            return resolved;
           }
 
           if (liveFlight) {
