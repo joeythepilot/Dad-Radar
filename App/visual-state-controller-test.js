@@ -320,11 +320,20 @@ function testCalendarRefreshPreservesLiveMotion() {
   );
 }
 
+function testFrameRateIsSafeForLegacyIpad() {
+  assert.match(
+    SOURCE,
+    /VISUAL_FRAME_INTERVAL_MS\s*=\s*\n?\s*1000\s*\/\s*20/,
+    "Live telemetry should use a smooth but legacy-iPad-safe frame rate."
+  );
+}
+
 function runTests() {
   testLiveMotionIsInterpolated();
   testSameSnapshotDoesNotRestartMotion();
   testReducedMotionUpdatesImmediately();
   testCalendarRefreshPreservesLiveMotion();
+  testFrameRateIsSafeForLegacyIpad();
 
   console.log(
     "Visual state controller tests passed."

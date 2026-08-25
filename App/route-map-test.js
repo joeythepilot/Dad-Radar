@@ -208,6 +208,19 @@ function testReferenceCitiesStayReadableWhileZoomed() {
   );
 }
 
+function testTelemetryMapRenderingIsThrottled() {
+  assert.match(
+    ROUTE_MAP_SOURCE,
+    /TELEMETRY_MAP_INTERVAL_MS\s*=\s*\n?\s*125/,
+    "Heavy map rendering should be throttled during live interpolation."
+  );
+  assert.match(
+    ROUTE_MAP_SOURCE,
+    /event\.detail\?\.telemetryOnly/,
+    "The route map should distinguish lightweight telemetry frames."
+  );
+}
+
 function viewBox(element) {
   return element.attributes
     .viewBox
@@ -761,6 +774,7 @@ function runTests() {
   testDetailedMapAsset();
   testGroundLocationUsesDomesticOverview();
   testReferenceCitiesStayReadableWhileZoomed();
+  testTelemetryMapRenderingIsThrottled();
   testRouteAutoFitAndPlacards();
   testAirportEndpointIcons();
   testBillingsRouteIsKnown();

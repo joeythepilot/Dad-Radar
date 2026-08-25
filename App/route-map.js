@@ -113,6 +113,9 @@ const elements = {
 
 let lastRenderedState = null;
 let resizeTimer = null;
+let lastTelemetryMapRenderAt = 0;
+
+const TELEMETRY_MAP_INTERVAL_MS = 125;
 
 function clamp(value, minimum, maximum) {
   return Math.max(
@@ -1635,6 +1638,27 @@ function syncRouteMapReadyState(state) {
 window.addEventListener(
   "dad-radar:visual-state-change",
   (event) => {
+    const telemetryOnly =
+      Boolean(
+        event.detail?.telemetryOnly
+      );
+
+    if (telemetryOnly) {
+      const now = Date.now();
+
+      if (
+        now - lastTelemetryMapRenderAt <
+          TELEMETRY_MAP_INTERVAL_MS
+      ) {
+        return;
+      }
+
+      lastTelemetryMapRenderAt = now;
+    } else {
+      lastTelemetryMapRenderAt =
+        Date.now();
+    }
+
     renderRouteMap(
       event.detail?.state
     );

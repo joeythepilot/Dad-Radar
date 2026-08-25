@@ -5,7 +5,7 @@
     52 * 1000;
 
   const VISUAL_FRAME_INTERVAL_MS =
-    1000 / 30;
+    1000 / 20;
 
   const MOTION_FIELDS = Object.freeze([
     "airspeed",
