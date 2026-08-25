@@ -1331,9 +1331,9 @@ html[data-dad-radar-legacy="true"]
    ========================================================= */
 
 :root {
-  --panel-glow: rgba(244, 194, 111, 0.16);
-  --panel-glass: rgba(255, 235, 187, 0.055);
-  --instrument-light: rgba(255, 190, 89, 0.2);
+  --panel-glow: rgba(255, 191, 79, 0.34);
+  --panel-glass: rgba(255, 226, 165, 0.11);
+  --instrument-light: rgba(255, 176, 60, 0.42);
 }
 
 .panel-shell {
@@ -1372,17 +1372,18 @@ html[data-dad-radar-legacy="true"]
 }
 
 .module {
+  border-color: rgba(123, 94, 57, 0.72);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
     inset 0 0 18px rgba(0, 0, 0, 0.6),
-    inset 0 0 8px var(--panel-glow),
+    inset 0 0 13px var(--panel-glow),
     0 4px 12px rgba(0, 0, 0, 0.48);
 }
 
 .destination-panel {
   box-shadow:
     inset 0 0 24px rgba(0, 0, 0, 0.55),
-    inset 0 0 11px rgba(249, 196, 101, 0.2),
+    inset 0 0 16px rgba(255, 187, 70, 0.4),
     0 4px 12px rgba(0, 0, 0, 0.48) !important;
 }
 
@@ -1394,29 +1395,36 @@ html[data-dad-radar-legacy="true"]
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(118deg, var(--panel-glass), transparent 28%),
-    radial-gradient(ellipse at center, transparent 58%, rgba(35, 20, 10, 0.19) 100%);
+    linear-gradient(118deg, var(--panel-glass), transparent 31%),
+    radial-gradient(ellipse at center, transparent 50%, rgba(78, 42, 12, 0.25) 100%);
   box-shadow:
-    inset 0 0 15px rgba(255, 213, 135, 0.11),
-    inset 0 0 28px rgba(25, 15, 8, 0.28);
+    inset 0 0 12px rgba(255, 218, 142, 0.3),
+    inset 0 0 34px rgba(38, 20, 7, 0.34);
 }
 
 .instrument-slot {
   box-shadow:
     inset 0 0 18px rgba(0, 0, 0, 0.72),
-    inset 0 0 9px var(--instrument-light),
+    inset 0 0 15px var(--instrument-light),
     0 3px 10px rgba(0, 0, 0, 0.5) !important;
 }
 
 .instrument-slot .instrument {
   filter:
-    drop-shadow(0 0 4px rgba(244, 180, 76, 0.16))
-    brightness(1.04);
+    drop-shadow(0 0 7px rgba(255, 177, 55, 0.34))
+    brightness(1.08);
 }
 
-.duty-panel {
+.daily-schedule-panel {
   box-shadow:
     inset 0 0 16px rgba(0, 0, 0, 0.7),
     inset 0 0 7px rgba(235, 177, 86, 0.12),
     0 3px 10px rgba(0, 0, 0, 0.48) !important;
+}
+
+.left-module-stack {
+  grid-template-rows:
+    minmax(0, 69fr)
+    minmax(0, 31fr)
+    !important;
 }

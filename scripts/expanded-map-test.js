@@ -52,7 +52,7 @@ assert.ok(
 assert.doesNotMatch(mapSource, /stroke-dasharray/);
 assert.match(
   dashboardSource,
-  /north-america-caribbean-vintage\.svg\?v=natural-earth-6/
+  /north-america-caribbean-vintage\.svg\?v=natural-earth-7/
 );
 assert.doesNotMatch(dashboardSource, /map-us-detail/);
 

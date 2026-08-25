@@ -257,12 +257,31 @@
   stroke-width: 2.8;
 }
 
+.airport-placard-role-band {
+  fill: #6f3028;
+  stroke: #4b211d;
+  stroke-width: 0.7;
+}
+
+.airport-placard-destination .airport-placard-role-band {
+  fill: #8b372b;
+}
+
+.airport-placard-pin {
+  fill: #d4aa5f;
+  stroke: #593921;
+  stroke-width: 0.65;
+}
+
 .airport-placard-role {
-  fill: #7a3d2e;
+  fill: #f4dfb0;
   font-family: "Courier New", monospace;
-  font-size: 8px;
+  font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 2px;
+  paint-order: stroke fill;
+  stroke: rgba(55, 25, 20, 0.55);
+  stroke-width: 0.45px;
 }
 
 .airport-code {
