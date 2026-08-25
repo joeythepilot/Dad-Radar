@@ -238,29 +238,27 @@
 }
 
 .airport-placard-body {
-  fill: url("#airport-placard-paper");
-  stroke: url("#airport-placard-brass");
-  stroke-width: 3;
+  fill: transparent;
+  stroke: none;
+}
+
+.airport-placard-art {
+  pointer-events: none;
   filter: url("#route-map-aircraft-shadow");
 }
 
 .airport-placard-inner-border {
-  fill: none;
-  stroke: rgba(80, 51, 29, 0.76);
-  stroke-width: 1;
+  display: none;
   pointer-events: none;
 }
 
 .airport-placard-destination .airport-placard-body {
-  fill: url("#airport-placard-paper");
-  stroke: url("#airport-placard-brass");
-  stroke-width: 4;
+  fill: transparent;
+  stroke: none;
 }
 
 .airport-placard-role-band {
-  fill: #3d3024;
-  stroke: #211912;
-  stroke-width: 0.7;
+  display: none;
 }
 
 .airport-placard-destination .airport-placard-role-band {
@@ -268,24 +266,22 @@
 }
 
 .airport-placard-pin {
-  fill: url("#airport-placard-brass");
-  stroke: #593921;
-  stroke-width: 0.65;
+  display: none;
 }
 
 .airport-placard-role {
-  fill: #f4dfb0;
+  fill: #6a1f1b;
   font-family: "Courier New", monospace;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 2px;
   paint-order: stroke fill;
-  stroke: rgba(55, 25, 20, 0.55);
-  stroke-width: 0.45px;
+  stroke: rgba(255, 245, 216, 0.55);
+  stroke-width: 0.3px;
 }
 
 .airport-code {
-  fill: #4e3524;
+  fill: #3b281b;
   font-family: Georgia, "Times New Roman", serif;
   font-size: 31px;
   font-weight: 700;
@@ -293,7 +289,7 @@
 }
 
 .airport-city {
-  fill: #6a4b31;
+  fill: #6a1f1b;
   font-family: "Courier New", monospace;
   font-size: 11px;
   font-weight: 700;

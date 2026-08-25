@@ -710,7 +710,7 @@ h1 {
   background:
     #050606
     url(
-      "../assets/split-flap/split-flap-tile.png"
+      "../assets/split-flap/split-flap-tile-lit-v1.png"
     )
     center /
     100%
@@ -914,7 +914,7 @@ h1 {
 
   background-image:
     url(
-      "../assets/split-flap/split-flap-tile.png"
+      "../assets/split-flap/split-flap-tile-lit-v1.png"
     );
 
   background-repeat:
@@ -2110,9 +2110,19 @@ h1 {
     1;
 }
 
+.instrument-internal-light {
+  z-index: 2;
+  inset: 13%;
+  width: 74%;
+  height: 74%;
+  border-radius: 50%;
+  opacity: 0.19;
+  mix-blend-mode: screen;
+}
+
 .airspeed-needle-layer {
   z-index:
-    2;
+    3;
 
   transform:
     rotate(
@@ -2177,12 +2187,12 @@ h1 {
 
 .heading-bezel-body {
   z-index:
-    2;
+    3;
 }
 
 .heading-glass-overlay {
   z-index:
-    3;
+    4;
 }
 
 
