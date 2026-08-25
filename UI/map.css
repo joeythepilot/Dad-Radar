@@ -238,37 +238,37 @@
 }
 
 .airport-placard-body {
-  fill: #d7bd86;
-  stroke: #6f4c2f;
-  stroke-width: 2;
+  fill: url("#airport-placard-paper");
+  stroke: url("#airport-placard-brass");
+  stroke-width: 3;
   filter: url("#route-map-aircraft-shadow");
 }
 
 .airport-placard-inner-border {
   fill: none;
-  stroke: rgba(105, 69, 40, 0.62);
-  stroke-width: 0.8;
+  stroke: rgba(80, 51, 29, 0.76);
+  stroke-width: 1;
   pointer-events: none;
 }
 
 .airport-placard-destination .airport-placard-body {
-  fill: #dfc58d;
-  stroke: #8b552e;
-  stroke-width: 2.8;
+  fill: url("#airport-placard-paper");
+  stroke: url("#airport-placard-brass");
+  stroke-width: 4;
 }
 
 .airport-placard-role-band {
-  fill: #6f3028;
-  stroke: #4b211d;
+  fill: #3d3024;
+  stroke: #211912;
   stroke-width: 0.7;
 }
 
 .airport-placard-destination .airport-placard-role-band {
-  fill: #8b372b;
+  fill: #503722;
 }
 
 .airport-placard-pin {
-  fill: #d4aa5f;
+  fill: url("#airport-placard-brass");
   stroke: #593921;
   stroke-width: 0.65;
 }

@@ -28,18 +28,18 @@
 
   <link
     rel="stylesheet"
-    href="./UI/styles.css?v=ipad-es5-15"
+    href="./UI/styles.css?v=ipad-es5-16"
   >
 
   <link
     rel="stylesheet"
-    href="./UI/map.css?v=ipad-es5-15"
+    href="./UI/map.css?v=ipad-es5-16"
   >
 
   <!-- Loads last and owns the new three-column layout. -->
   <link
     rel="stylesheet"
-    href="./UI/layout-side-rail.css?v=ipad-es5-15"
+    href="./UI/layout-side-rail.css?v=ipad-es5-16"
   >
 </head>
 
@@ -480,6 +480,30 @@
                       ></feDropShadow>
                     </filter>
 
+                    <linearGradient
+                      id="airport-placard-paper"
+                      x1="0"
+                      y1="0"
+                      x2="1"
+                      y2="1"
+                    >
+                      <stop offset="0" stop-color="#ead6a3"></stop>
+                      <stop offset="0.48" stop-color="#d8bd82"></stop>
+                      <stop offset="1" stop-color="#c7a569"></stop>
+                    </linearGradient>
+
+                    <linearGradient
+                      id="airport-placard-brass"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop offset="0" stop-color="#e1ba69"></stop>
+                      <stop offset="0.5" stop-color="#8a5b2d"></stop>
+                      <stop offset="1" stop-color="#d09a4b"></stop>
+                    </linearGradient>
+
                   </defs>
 
 
@@ -594,12 +618,10 @@
 
                       <g class="airport-placard airport-placard-origin">
 
-                        <rect
+                        <path
                           class="airport-placard-body"
-                          width="132"
-                          height="72"
-                          rx="2"
-                        ></rect>
+                          d="M 8 0 H 124 L 132 8 V 64 L 124 72 H 8 L 0 64 V 8 Z"
+                        ></path>
 
                         <text
                           class="airport-code"
@@ -621,7 +643,7 @@
                           CHICAGO
                         </text>
 
-                        <rect class="airport-placard-role-band" x="4" y="4" width="124" height="15" rx="1"></rect>
+                        <path class="airport-placard-role-band" d="M 9 4 H 123 L 128 9 V 19 H 4 V 9 Z"></path>
 
                         <circle class="airport-placard-pin" cx="10" cy="11.5" r="2.2"></circle>
                         <circle class="airport-placard-pin" cx="122" cy="11.5" r="2.2"></circle>
@@ -633,14 +655,10 @@
                           text-anchor="middle"
                         >FROM</text>
 
-                        <rect
+                        <path
                           class="airport-placard-inner-border"
-                          x="4"
-                          y="4"
-                          width="124"
-                          height="64"
-                          rx="1"
-                        ></rect>
+                          d="M 9 4 H 123 L 128 9 V 63 L 123 68 H 9 L 4 63 V 9 Z"
+                        ></path>
 
                       </g>
 
@@ -693,12 +711,10 @@
 
                       <g class="airport-placard airport-placard-destination">
 
-                        <rect
+                        <path
                           class="airport-placard-body"
-                          width="132"
-                          height="72"
-                          rx="2"
-                        ></rect>
+                          d="M 8 0 H 124 L 132 8 V 64 L 124 72 H 8 L 0 64 V 8 Z"
+                        ></path>
 
                         <text
                           class="airport-code"
@@ -720,7 +736,7 @@
                           ASHEVILLE
                         </text>
 
-                        <rect class="airport-placard-role-band" x="4" y="4" width="124" height="15" rx="1"></rect>
+                        <path class="airport-placard-role-band" d="M 9 4 H 123 L 128 9 V 19 H 4 V 9 Z"></path>
 
                         <circle class="airport-placard-pin" cx="10" cy="11.5" r="2.2"></circle>
                         <circle class="airport-placard-pin" cx="122" cy="11.5" r="2.2"></circle>
@@ -732,14 +748,10 @@
                           text-anchor="middle"
                         >TO</text>
 
-                        <rect
+                        <path
                           class="airport-placard-inner-border"
-                          x="4"
-                          y="4"
-                          width="124"
-                          height="64"
-                          rx="1"
-                        ></rect>
+                          d="M 9 4 H 123 L 128 9 V 63 L 123 68 H 9 L 4 63 V 9 Z"
+                        ></path>
 
                       </g>
 
