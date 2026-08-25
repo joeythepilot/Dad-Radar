@@ -2791,8 +2791,9 @@ h1 {
 }
 /* Geographic reference and local-server NOAA radar overlay. */
 .map-weather-image {
-  opacity: 0.42;
+  opacity: 0.64;
   mix-blend-mode: multiply;
+  filter: saturate(1.22) contrast(1.18);
   pointer-events: none;
 }
 
@@ -2813,4 +2814,16 @@ h1 {
   stroke: #ead8a8;
   stroke-width: 2.5px;
   vector-effect: non-scaling-stroke;
+}
+
+.map-city-reference-home circle {
+  fill: #8d3429;
+  stroke-width: 1.2;
+}
+
+.map-city-reference-home text {
+  fill: #713027;
+  font-size: 12px;
+  letter-spacing: 1px;
+  stroke-width: 3px;
 }

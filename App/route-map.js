@@ -21,6 +21,7 @@ const REFERENCE_CITIES = [
   ["LOS ANGELES", 34.05, -118.24], ["DENVER", 39.74, -104.99],
   ["DALLAS", 32.78, -96.8], ["CHICAGO", 41.88, -87.63],
   ["ATLANTA", 33.75, -84.39], ["MIAMI", 25.76, -80.19],
+  ["ASHEVILLE", 35.6, -82.55, "home"],
   ["WASHINGTON", 38.91, -77.04], ["NEW YORK", 40.71, -74.01],
   ["MEXICO CITY", 19.43, -99.13], ["MONTERREY", 25.69, -100.32],
   ["NASSAU", 25.04, -77.35], ["HAVANA", 23.11, -82.37],
@@ -115,6 +116,8 @@ const elements = {
 let lastRenderedState = null;
 let resizeTimer = null;
 let lastTelemetryMapRenderAt = 0;
+let persistedTrackFlightKey = null;
+let persistedActualTrack = [];
 
 const TELEMETRY_MAP_INTERVAL_MS = 125;
 
@@ -153,7 +156,11 @@ function renderReferenceCities() {
 
   elements.cityLayer.innerHTML = REFERENCE_CITIES.map((city) => {
     const point = project(city[2], city[1]);
-    return `<g class="map-city-reference" data-map-x="${point.x.toFixed(1)}" data-map-y="${point.y.toFixed(1)}" transform="translate(${point.x.toFixed(1)} ${point.y.toFixed(1)})"><circle r="2.2"></circle><text x="5" y="-4">${city[0]}</text></g>`;
+    const modifier =
+      city[3] === "home"
+        ? " map-city-reference-home"
+        : "";
+    return `<g class="map-city-reference${modifier}" data-map-x="${point.x.toFixed(1)}" data-map-y="${point.y.toFixed(1)}" transform="translate(${point.x.toFixed(1)} ${point.y.toFixed(1)})"><circle r="2.2"></circle><text x="5" y="-4">${city[0]}</text></g>`;
   }).join("");
 }
 
@@ -276,12 +283,62 @@ function routeFixPoint(fix) {
 }
 
 function buildActualTrack(flight) {
-  const points = deduplicateRoutePoints(
-    (
-      Array.isArray(flight?.actualTrack)
-        ? flight.actualTrack
-        : []
+  const flightKey = [
+    flight?.flightNumber ?? "",
+    flight?.origin ?? "",
+    flight?.destination ?? ""
+  ]
+    .map((value) =>
+      String(value).toUpperCase()
     )
+    .join("|");
+
+  if (flightKey !== persistedTrackFlightKey) {
+    persistedTrackFlightKey = flightKey;
+    persistedActualTrack = [];
+  }
+
+  const incomingTrack =
+    Array.isArray(flight?.actualTrack)
+      ? flight.actualTrack
+      : [];
+
+  const knownTrackPoints = new Set(
+    persistedActualTrack.map((point) =>
+      `${point.latitude.toFixed(4)}|${point.longitude.toFixed(4)}`
+    )
+  );
+
+  incomingTrack.forEach((point) => {
+    const latitude = Number(point?.latitude);
+    const longitude = Number(point?.longitude);
+    const pointKey =
+      Number.isFinite(latitude) &&
+      Number.isFinite(longitude)
+        ? `${latitude.toFixed(4)}|${longitude.toFixed(4)}`
+        : null;
+
+    if (
+      Number.isFinite(latitude) &&
+      Number.isFinite(longitude) &&
+      pointKey &&
+      !knownTrackPoints.has(pointKey)
+    ) {
+      persistedActualTrack.push({
+        latitude,
+        longitude
+      });
+      knownTrackPoints.add(pointKey);
+    }
+  });
+
+  if (persistedActualTrack.length > 180) {
+    persistedActualTrack =
+      persistedActualTrack.slice(-180);
+  }
+
+  const points = deduplicateRoutePoints(
+    persistedActualTrack
       .slice(-180)
       .map(routeFixPoint)
       .filter(Boolean)
@@ -1125,7 +1182,7 @@ function positionAirportMarker(
     placard.setAttribute(
       "transform",
       `translate(${(placement.x - 66).toFixed(1)} ` +
-      `${(placement.y - 31).toFixed(1)})`
+      `${(placement.y - 36).toFixed(1)})`
     );
   }
 }

@@ -40,6 +40,11 @@ assert.match(mapSource, /id="land-paper"/);
 assert.match(mapSource, /id="land-clip"/);
 assert.match(mapSource, /data:image\/png;base64,/);
 assert.match(mapSource, /class="state-boundary"/);
+assert.match(
+  mapSource,
+  /class="great-lakes"/,
+  "The Great Lakes should use the map's muted water treatment."
+);
 assert.ok(
   (mapSource.match(/data-fips=/g) ?? []).length >= 49,
   "The expanded map should contain the contiguous states and D.C."
@@ -47,7 +52,7 @@ assert.ok(
 assert.doesNotMatch(mapSource, /stroke-dasharray/);
 assert.match(
   dashboardSource,
-  /north-america-caribbean-vintage\.svg\?v=natural-earth-5/
+  /north-america-caribbean-vintage\.svg\?v=natural-earth-6/
 );
 assert.doesNotMatch(dashboardSource, /map-us-detail/);
 

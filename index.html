@@ -28,18 +28,18 @@
 
   <link
     rel="stylesheet"
-    href="./UI/styles.css?v=ipad-es5-13"
+    href="./UI/styles.css?v=ipad-es5-14"
   >
 
   <link
     rel="stylesheet"
-    href="./UI/map.css?v=ipad-es5-13"
+    href="./UI/map.css?v=ipad-es5-14"
   >
 
   <!-- Loads last and owns the new three-column layout. -->
   <link
     rel="stylesheet"
-    href="./UI/layout-side-rail.css?v=ipad-es5-13"
+    href="./UI/layout-side-rail.css?v=ipad-es5-14"
   >
 </head>
 
@@ -496,7 +496,7 @@
 
                     <image
                       class="map-vector-geography"
-                      href="./assets/maps/north-america-caribbean-vintage.svg?v=natural-earth-5"
+                      href="./assets/maps/north-america-caribbean-vintage.svg?v=natural-earth-6"
                       x="0"
                       y="0"
                       width="1200"
@@ -592,12 +592,12 @@
                         y2="0"
                       ></line>
 
-                      <g class="airport-placard">
+                      <g class="airport-placard airport-placard-origin">
 
                         <rect
                           class="airport-placard-body"
                           width="132"
-                          height="62"
+                          height="72"
                           rx="2"
                         ></rect>
 
@@ -605,7 +605,7 @@
                           class="airport-code"
                           id="map-origin"
                           x="66"
-                          y="29"
+                          y="35"
                           text-anchor="middle"
                         >
                           ORD
@@ -615,11 +615,27 @@
                           class="airport-city"
                           id="map-origin-city"
                           x="66"
-                          y="49"
+                          y="57"
                           text-anchor="middle"
                         >
                           CHICAGO
                         </text>
+
+                        <text
+                          class="airport-placard-role"
+                          x="66"
+                          y="13"
+                          text-anchor="middle"
+                        >FROM</text>
+
+                        <rect
+                          class="airport-placard-inner-border"
+                          x="4"
+                          y="4"
+                          width="124"
+                          height="64"
+                          rx="1"
+                        ></rect>
 
                       </g>
 
@@ -670,12 +686,12 @@
                         y2="0"
                       ></line>
 
-                      <g class="airport-placard">
+                      <g class="airport-placard airport-placard-destination">
 
                         <rect
                           class="airport-placard-body"
                           width="132"
-                          height="62"
+                          height="72"
                           rx="2"
                         ></rect>
 
@@ -683,7 +699,7 @@
                           class="airport-code"
                           id="map-destination"
                           x="66"
-                          y="29"
+                          y="35"
                           text-anchor="middle"
                         >
                           AVL
@@ -693,11 +709,27 @@
                           class="airport-city"
                           id="map-destination-city"
                           x="66"
-                          y="49"
+                          y="57"
                           text-anchor="middle"
                         >
                           ASHEVILLE
                         </text>
+
+                        <text
+                          class="airport-placard-role"
+                          x="66"
+                          y="13"
+                          text-anchor="middle"
+                        >TO</text>
+
+                        <rect
+                          class="airport-placard-inner-border"
+                          x="4"
+                          y="4"
+                          width="124"
+                          height="64"
+                          rx="1"
+                        ></rect>
 
                       </g>
 

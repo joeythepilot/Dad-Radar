@@ -244,6 +244,27 @@
   filter: url("#route-map-aircraft-shadow");
 }
 
+.airport-placard-inner-border {
+  fill: none;
+  stroke: rgba(105, 69, 40, 0.62);
+  stroke-width: 0.8;
+  pointer-events: none;
+}
+
+.airport-placard-destination .airport-placard-body {
+  fill: #dfc58d;
+  stroke: #8b552e;
+  stroke-width: 2.8;
+}
+
+.airport-placard-role {
+  fill: #7a3d2e;
+  font-family: "Courier New", monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
 .airport-code {
   fill: #4e3524;
   font-family: Georgia, "Times New Roman", serif;

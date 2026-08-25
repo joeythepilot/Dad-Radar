@@ -209,6 +209,14 @@ function testReferenceCitiesStayReadableWhileZoomed() {
   );
 }
 
+function testAshevilleIsPermanentHomeReference() {
+  assert.match(
+    ROUTE_MAP_SOURCE,
+    /\["ASHEVILLE",\s*35\.6,\s*-82\.55,\s*"home"\]/,
+    "Asheville should remain visible as Dad Radar's home reference city."
+  );
+}
+
 function testTelemetryMapRenderingIsThrottled() {
   assert.match(
     ROUTE_MAP_SOURCE,
@@ -685,6 +693,50 @@ function testVisualStateDrivesAircraftMotion() {
   );
 }
 
+function testActualTrackSurvivesTransientHistoryGap() {
+  const flight = {
+    flightNumber: "3941",
+    origin: "ORD",
+    destination: "XNA",
+    latitude: 38.8,
+    longitude: -90.2,
+    heading: 220,
+    progress: 55,
+    actualTrack: [
+      { latitude: 41.97, longitude: -87.9 },
+      { latitude: 40.2, longitude: -89.1 },
+      { latitude: 38.8, longitude: -90.2 }
+    ]
+  };
+
+  const { elements, listeners } =
+    createHarness(flight);
+
+  const retainedPath =
+    elements["map-route-progress"]
+      .attributes.d;
+
+  listeners[
+    "dad-radar:visual-state-change"
+  ]({
+    detail: {
+      state: {
+        flight: {
+          ...flight,
+          actualTrack: []
+        }
+      }
+    }
+  });
+
+  assert.equal(
+    elements["map-route-progress"]
+      .attributes.d,
+    retainedPath,
+    "A temporary snapshot without track history must not erase the accumulated solid track."
+  );
+}
+
 function testSurfaceZoomIsContinuous() {
   const highCamera =
     viewBox(
@@ -797,6 +849,7 @@ function runTests() {
   testDetailedMapAsset();
   testGroundLocationUsesDomesticOverview();
   testReferenceCitiesStayReadableWhileZoomed();
+  testAshevilleIsPermanentHomeReference();
   testTelemetryMapRenderingIsThrottled();
   testRouteAutoFitAndPlacards();
   testAirportEndpointIcons();
@@ -806,6 +859,7 @@ function runTests() {
   testUnknownAirportLiveFallback();
   testObservedTrackReplacesEstimatedProgress();
   testVisualStateDrivesAircraftMotion();
+  testActualTrackSurvivesTransientHistoryGap();
   testSurfaceZoomIsContinuous();
   testSurfaceZoomAtBothRouteEnds();
 

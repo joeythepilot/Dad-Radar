@@ -63,7 +63,7 @@ for (const stylesheetPath of [
       `\\.\\/UI\\/${stylesheetPath.replace(
         ".",
         "\\."
-      )}\\?v=ipad-es5-13`
+      )}\\?v=ipad-es5-14`
     ),
     `${stylesheetPath} should bypass the old iPad cache.`
   );

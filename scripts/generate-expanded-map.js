@@ -96,6 +96,20 @@ function reliefPath(points, close = false) {
   }).join("") + (close ? "Z" : "");
 }
 
+const greatLakes = [
+  [[-92.1, 46.5], [-90.2, 48.0], [-87.2, 48.7], [-84.7, 47.9], [-86.5, 46.5], [-89.2, 46.0]],
+  [[-88.1, 45.9], [-86.8, 45.9], [-86.0, 44.8], [-86.1, 42.2], [-87.0, 41.7], [-87.7, 43.5]],
+  [[-84.9, 46.2], [-83.2, 46.1], [-82.2, 44.8], [-83.0, 43.0], [-84.4, 44.0], [-84.8, 45.1]],
+  [[-83.3, 42.2], [-81.0, 41.6], [-78.8, 42.1], [-79.7, 42.8], [-82.0, 42.8]],
+  [[-79.8, 43.3], [-77.8, 43.2], [-76.0, 44.0], [-77.4, 44.2], [-79.2, 43.9]]
+];
+
+const greatLakePaths = greatLakes
+  .map((lake) =>
+    `<path d="${reliefPath(lake, true)}"/>`
+  )
+  .join("\n    ");
+
 const features = topojson
   .feature(world, world.objects.countries)
   .features
@@ -139,12 +153,16 @@ const svg = `<?xml version="1.0" encoding="UTF-8"?>
   <g class="terrain-relief" clip-path="url(#land-clip)">
     <image href="${reliefDataUrl}" x="315" y="45" width="570" height="560" preserveAspectRatio="none"/>
   </g>
+  <g class="great-lakes">
+    ${greatLakePaths}
+  </g>
   <g class="state-boundaries" fill="none">
     ${statePaths}
   </g>
   <style>
     .country{fill:url(#land-paper);stroke:#6a583d;stroke-width:1.25;vector-effect:non-scaling-stroke}
     .terrain-relief{opacity:.42;mix-blend-mode:multiply}
+    .great-lakes{fill:#71827b;stroke:#5f6254;stroke-width:1.2;opacity:.96}
     .state-boundary{stroke:#665438;stroke-width:.82;opacity:.82;vector-effect:non-scaling-stroke}
   </style>
 </svg>\n`;
