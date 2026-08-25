@@ -1,9 +1,16 @@
 const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const {
   createPosterImageLoader,
   posterAssetUrl
 } = require("./poster-image-loader");
+
+const MAIN_SOURCE = fs.readFileSync(
+  path.join(__dirname, "main.js"),
+  "utf8"
+);
 
 function testPosterAssetUrl() {
   assert.equal(
@@ -205,12 +212,27 @@ function testFinalFailureUsesFallback() {
   );
 }
 
+function testPosterUsesBothRenderingPaths() {
+  assert.match(
+    MAIN_SOURCE,
+    /showDestinationPosterBackground\([\s\S]*?loadVisibleDestinationPoster\(/,
+    "Approved posters should retain the Safari background while loading the real image for Chromium."
+  );
+
+  assert.match(
+    MAIN_SOURCE,
+    /showDestinationPosterBackground\(\s*poster,\s*posterIdentity,\s*flight,\s*airportCode\s*\)/,
+    "Poster rendering should receive the identity and flight context needed by both paths."
+  );
+}
+
 function runTests() {
   testPosterAssetUrl();
   testFailedPosterRetriesWithFreshUrls();
   testHungPosterRetriesAfterTimeout();
   testNewPosterCancelsOldRequest();
   testFinalFailureUsesFallback();
+  testPosterUsesBothRenderingPaths();
 
   console.log(
     "Poster image loader tests passed."

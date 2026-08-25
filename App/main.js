@@ -1037,7 +1037,10 @@ function loadVisibleDestinationPoster(
 }
 
 function showDestinationPosterBackground(
-  poster
+  poster,
+  posterIdentity,
+  flight,
+  airportCode
 ) {
   const source =
     globalThis.dadRadarPosterImages
@@ -1076,6 +1079,17 @@ function showDestinationPosterBackground(
     destinationPosterFallback.style.display =
       "none";
   }
+
+  // Keep the CSS background as a legacy-Safari safety
+  // net, while also loading the real image element for
+  // Chromium and other browsers. Either rendering path
+  // can display the same approved poster independently.
+  loadVisibleDestinationPoster(
+    poster,
+    posterIdentity,
+    flight,
+    airportCode
+  );
 }
 
 function updateDestinationPoster(flight) {
@@ -1127,7 +1141,10 @@ function updateDestinationPoster(flight) {
 
   if (poster && destinationPoster) {
     showDestinationPosterBackground(
-      poster
+      poster,
+      posterIdentity,
+      flight,
+      airportCode
     );
     return;
   }
