@@ -1244,12 +1244,12 @@
    overlay keeps its inset origin while being stretched to 100%, shifting the
    apparent lamp down and right. */
 .instrument-slot .instrument-internal-light {
-  top: 13% !important;
+  top: 6% !important;
   right: auto !important;
   bottom: auto !important;
-  left: 13% !important;
-  width: 74% !important;
-  height: 74% !important;
+  left: 6% !important;
+  width: 88% !important;
+  height: 88% !important;
   object-fit: contain !important;
 }
 
@@ -1409,12 +1409,12 @@ html[data-dad-radar-legacy="true"]
 
 html[data-dad-radar-legacy="true"]
   .instrument-slot .instrument-internal-light {
-  top: 17px !important;
+  top: 8px !important;
   right: auto !important;
   bottom: auto !important;
-  left: 17px !important;
-  width: 98px !important;
-  height: 98px !important;
+  left: 8px !important;
+  width: 116px !important;
+  height: 116px !important;
   opacity: 0.19 !important;
 }
 
