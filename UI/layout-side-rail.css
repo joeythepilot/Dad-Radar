@@ -1239,6 +1239,20 @@
   object-fit: contain !important;
 }
 
+/* The generated lamp artwork occupies only the glass opening. This rule must
+   follow the generic full-size instrument-layer rule above; otherwise the
+   overlay keeps its inset origin while being stretched to 100%, shifting the
+   apparent lamp down and right. */
+.instrument-slot .instrument-internal-light {
+  top: 13% !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: 13% !important;
+  width: 74% !important;
+  height: 74% !important;
+  object-fit: contain !important;
+}
+
 
 .instrument-slot .gauge-readout {
   right: 26%;
@@ -1391,6 +1405,17 @@ html[data-dad-radar-legacy="true"]
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
+}
+
+html[data-dad-radar-legacy="true"]
+  .instrument-slot .instrument-internal-light {
+  top: 17px !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: 17px !important;
+  width: 98px !important;
+  height: 98px !important;
+  opacity: 0.19 !important;
 }
 
 
