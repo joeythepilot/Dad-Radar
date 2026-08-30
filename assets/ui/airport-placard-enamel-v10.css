@@ -1,0 +1,33 @@
+/* Dad Radar v10: dark enamel inserts inside the existing brass map hardware. */
+
+.airport-placard-body {
+  fill: #102a37 !important;
+  stroke: #c8a45d !important;
+  stroke-width: 2.6 !important;
+  filter:
+    drop-shadow(0 1px 0 rgba(255, 229, 165, 0.28))
+    drop-shadow(0 3px 4px rgba(19, 11, 7, 0.72)) !important;
+}
+
+#map-destination-marker .airport-placard-body {
+  fill: #31181c !important;
+  stroke: #d2aa5d !important;
+}
+
+.airport-code {
+  fill: #fff0c9 !important;
+  paint-order: stroke fill;
+  stroke: rgba(7, 12, 13, 0.72);
+  stroke-width: 0.75px;
+  text-shadow:
+    0 0 4px rgba(238, 181, 89, 0.38),
+    0 1px 1px rgba(0, 0, 0, 0.9);
+}
+
+.airport-city {
+  fill: #d8b86f !important;
+  paint-order: stroke fill;
+  stroke: rgba(7, 12, 13, 0.78);
+  stroke-width: 0.45px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9);
+}

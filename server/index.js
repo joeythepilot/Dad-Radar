@@ -1,23 +1,18 @@
+const fs = require("fs");
 const path = require("path");
 const express = require("express");
 
 require("dotenv").config({ quiet: true });
 
 const {
-  getUpcomingEvents,
-  isCalendarAuthorizationError
+  getUpcomingEvents
 } = require("./calendar-service");
 
 const {
+  Flightradar24ConfigurationError,
+  Flightradar24RequestError,
   getLiveFlightSnapshot
-} = require("./live-flight-provider-service");
-const {
-  addDiagnostic,
-  recentDiagnostics
-} = require("./diagnostic-log");
-const {
-  getRadarImage
-} = require("./weather-radar-service");
+} = require("./flightradar24-service");
 
 const app = express();
 const port = Number(process.env.PORT) || 4173;
@@ -27,6 +22,22 @@ const projectRoot = path.join(
   __dirname,
   ".."
 );
+
+const displayHtml = fs
+  .readFileSync(
+    path.join(projectRoot, "index.html"),
+    "utf8"
+  )
+  .replace(
+    "</head>",
+    [
+      "  <link",
+      "    rel=\"stylesheet\"",
+      "    href=\"./assets/ui/airport-placard-enamel-v10.css?v=10.0\"",
+      "  >",
+      "</head>"
+    ].join("\n")
+  );
 
 const PUBLIC_DIRECTORIES = [
   "App",
@@ -47,21 +58,10 @@ app.get("/api/health", (request, response) => {
     ok: true,
     service: "Dad Radar",
     flightData: {
-      primaryProvider: "adsb.lol",
-      providers: {
-        "adsb.lol": { configured: true },
-        flightradar24: {
-          configured: Boolean(process.env.FR24_API_TOKEN)
-        }
-      },
-      filedRoute: {
-        provider: "flightaware",
-        configured: Boolean(process.env.FLIGHTAWARE_AEROAPI_KEY)
-      },
-      weatherRadar: {
-        provider: "NOAA NWS",
-        configured: true
-      }
+      provider: "flightradar24",
+      configured: Boolean(
+        process.env.FR24_API_TOKEN
+      )
     }
   });
 });
@@ -93,24 +93,10 @@ app.get(
         error
       );
 
-      const authorizationRequired =
-        isCalendarAuthorizationError(
-          error
-        );
-
-      response.status(
-        authorizationRequired
-          ? 401
-          : 500
-      ).json({
+      response.status(500).json({
         ok: false,
-        code: authorizationRequired
-          ? "calendar-authorization-required"
-          : "calendar-unavailable",
         error:
-          authorizationRequired
-            ? "Google Calendar authorization must be renewed."
-            : "Unable to load the Pilot Schedule calendar."
+          "Unable to load the Pilot Schedule calendar."
       });
     }
   }
@@ -120,42 +106,53 @@ app.post(
   "/api/flights/lookup",
   async (request, response) => {
     try {
-      const result =
+      const liveFlight =
         await getLiveFlightSnapshot(
-          request.body,
-          {
-            onProviderError(provider, error) {
-              addDiagnostic("provider-error", {
-                provider,
-                message: error.message
-              });
-            }
-          }
+          request.body
         );
-
-      const liveFlight = result.snapshot;
-
-      for (const attempt of result.attempts) {
-        addDiagnostic("provider-attempt", attempt);
-      }
 
       response.json({
         ok: true,
-        provider: liveFlight?.provider ?? null,
+        provider: "flightradar24",
         retrievedAt:
           liveFlight?.retrievedAt ??
           new Date().toISOString(),
-        liveFlight,
-        filedRoute:
-          result.filedRoute ??
-          liveFlight?.filedRoute ??
-          null
+        liveFlight
       });
     } catch (error) {
+      if (
+        error instanceof
+        Flightradar24ConfigurationError
+      ) {
+        response.status(503).json({
+          ok: false,
+          error:
+            "Flightradar24 is not configured."
+        });
+        return;
+      }
+
       if (error instanceof TypeError) {
         response.status(400).json({
           ok: false,
           error: error.message
+        });
+        return;
+      }
+
+      if (
+        error instanceof
+        Flightradar24RequestError
+      ) {
+        console.error(
+          "Flightradar24 request failed:",
+          error.message
+        );
+
+        response.status(502).json({
+          ok: false,
+          error:
+            "Unable to load live flight data."
         });
         return;
       }
@@ -173,42 +170,6 @@ app.post(
     }
   }
 );
-
-app.get("/api/diagnostics/recent", (request, response) => {
-  response.json({
-    ok: true,
-    entries: recentDiagnostics(request.query.limit)
-  });
-});
-
-app.post("/api/diagnostics/event", (request, response) => {
-  const allowed = new Set([
-    "altitude-chime-crossing",
-    "altitude-chime-test"
-  ]);
-  const type = String(request.body?.type ?? "");
-  if (!allowed.has(type)) {
-    response.status(400).json({ ok: false, error: "Unsupported diagnostic event." });
-    return;
-  }
-  addDiagnostic(type, request.body);
-  response.json({ ok: true });
-});
-
-app.get("/api/weather/radar", async (request, response) => {
-  try {
-    const radar = await getRadarImage(request.query);
-    response.set({
-      "Content-Type": radar.contentType,
-      "Cache-Control": "public, max-age=300",
-      "X-Dad-Radar-Cache": radar.cached ? "HIT" : "MISS"
-    });
-    response.send(radar.buffer);
-  } catch (error) {
-    addDiagnostic("weather-error", { message: error.message });
-    response.status(error instanceof TypeError ? 400 : 204).end();
-  }
-});
 
 for (const directory of
   PUBLIC_DIRECTORIES) {
@@ -229,17 +190,13 @@ for (const directory of
 }
 
 app.get("/", (_request, response) => {
-  response.sendFile(
-    path.join(projectRoot, "index.html")
-  );
+  response.type("html").send(displayHtml);
 });
 
 app.get(
   ["/index.html", "/display"],
   (_request, response) => {
-    response.sendFile(
-      path.join(projectRoot, "index.html")
-    );
+    response.type("html").send(displayHtml);
   }
 );
 
@@ -258,6 +215,7 @@ function startServer(options = {}) {
         server.address();
 
       const displayedPort =
+        address &&
         typeof address === "object"
           ? address.port
           : listenPort;
@@ -273,6 +231,23 @@ function startServer(options = {}) {
       );
     }
   );
+
+  server.on("error", (error) => {
+    if (error.code === "EADDRINUSE") {
+      console.error(
+        `Dad Radar is already running on port ${listenPort}.`
+      );
+      console.error(
+        `Open http://127.0.0.1:${listenPort} or stop the existing service before starting another copy.`
+      );
+      return;
+    }
+
+    console.error(
+      "Dad Radar could not start:",
+      error
+    );
+  });
 
   return server;
 }

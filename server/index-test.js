@@ -1,6 +1,9 @@
 const assert = require("node:assert/strict");
 
-const { app } = require("./index");
+const {
+  app,
+  startServer
+} = require("./index");
 
 async function runTests() {
   const server = app.listen(
@@ -26,8 +29,8 @@ async function runTests() {
       "/App/main.js",
       "/UI/styles.css",
       "/config/settings.js",
-      "/assets/destinations/asheville-poster-7x8-baseline.png",
-      "/assets/destinations/ord-poster-7x8-candidate-v2.png?v=ipad-poster-2"
+      "/assets/ui/airport-placard-enamel-v10.css",
+      "/assets/destinations/asheville-poster-7x8-baseline.png"
     ]) {
       const response = await fetch(
         `${baseUrl}${publicPath}`
@@ -58,6 +61,37 @@ async function runTests() {
         `${privatePath} must not be exposed on the home network.`
       );
     }
+
+    const displayResponse = await fetch(
+      `${baseUrl}/display`
+    );
+    const displayHtml =
+      await displayResponse.text();
+
+    assert.match(
+      displayHtml,
+      /airport-placard-enamel-v10\.css\?v=10\.0/,
+      "The display should load the dark enamel airport placards."
+    );
+
+    const collisionServer = startServer({
+      port: address.port,
+      host: "127.0.0.1"
+    });
+
+    const collisionError =
+      await new Promise((resolve) => {
+        collisionServer.once(
+          "error",
+          resolve
+        );
+      });
+
+    assert.equal(
+      collisionError.code,
+      "EADDRINUSE",
+      "A duplicate start should report that Dad Radar is already running."
+    );
   } finally {
     await new Promise((resolve, reject) => {
       server.close((error) => {

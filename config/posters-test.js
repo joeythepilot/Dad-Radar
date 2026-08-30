@@ -25,12 +25,20 @@ function runTests() {
     "La Crosse, Wisconsin"
   );
   assert.equal(
-    getPoster("grb").title,
-    "GREEN BAY"
+    getPoster("ABE").title,
+    "LEHIGH VALLEY"
   );
   assert.equal(
-    getPoster("sgf").location,
-    "Springfield, Missouri"
+    getPoster("MSN").location,
+    "Madison, Wisconsin"
+  );
+  assert.equal(
+    getPoster("TPA").title,
+    "TAMPA"
+  );
+  assert.equal(
+    Object.keys(posterByAirport).length,
+    32
   );
 
   for (const [code, poster] of
