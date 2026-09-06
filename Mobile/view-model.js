@@ -44,7 +44,7 @@
     else if (scheduleMs && now - scheduleMs > 10 * 60 * 1000) updated += ' · schedule may be outdated';
     const pickup = Boolean(flight?.isCommute && code === homeAirport);
     const message = state.message || (flight ? `Daddy is ${flight.isCommute ? 'traveling' : 'flying'} to ${airport?.city || flight.destinationCity || code}` : 'Waiting for Daddy’s next adventure');
-    return { pickup, code: code || '—', city: airport?.city || flight?.destinationCity || '', message,
+    return { pickup, hasFlight: Boolean(flight), code: code || '—', city: airport?.city || flight?.destinationCity || '', message,
       phase: state.status || mode || 'Connecting',
       flightNumber: flight?.number ? (/^\d+$/.test(String(flight.number)) && flight.carrierCode ? `${flight.carrierCode} ${flight.number}` : flight.number) : '—', route: flight ? `${flight.origin} → ${flight.destination}` : 'ON THE GROUND',
       arrivalLabel: flight ? arrivalLabel : 'NEXT ARRIVAL',
@@ -52,7 +52,7 @@
       timeZone: flight && arrival ? new Intl.DateTimeFormat('en-US', { timeZone:zone, weekday:'short', month:'short', day:'numeric', timeZoneName:'short' }).format(arrival) : '',
       freshness: updated, stale: stale || Boolean(reported && now - reported > STALE_MS),
       position: !flight && state.locationAirport ? 'Location from schedule' : positionFresh ? `Position ${age(positionAt, now)}` : positionAt ? `Last position ${age(positionAt, now)}` : 'Position not yet confirmed',
-      entries: state.dailySchedule?.entries || [], dayZone: state.dailySchedule?.timeZoneLabel || '' };
+      entries: (state.dailySchedule?.entries || []).filter((entry, index, entries) => entry.time !== 'ALL DAY' || entries.findIndex(other => other.time === entry.time && other.label === entry.label && other.tag === entry.tag) === index), dayZone: state.dailySchedule?.timeZoneLabel || '' };
   }
   function age(at, now) {
     const seconds = Math.max(0, Math.floor((now - at)/1000));

@@ -19,3 +19,7 @@ m=viewModel({...base,event:{origin:'ORD',destination:'PHX',times:{endUtc:'2026-0
 assert.equal(m.time,'11:30 PM');assert.match(m.timeZone,/Sep 4/);assert.match(m.timeZone,/MST/);assert.equal(m.pickup,false);
 m=viewModel({...base,state:{status:'HOME',locationAirport:'AVL'},event:null,snapshot:null});assert.equal(m.time,'—');assert.equal(m.code,'AVL');
 console.log('Mobile arrival and freshness tests passed.');
+const day={time:'ALL DAY',label:'HOME · DAY OFF',tag:'OFF DUTY'};
+m=viewModel({...base,state:{locationAirport:'AVL',dailySchedule:{entries:[day,{...day},{time:'8:00 AM',label:'AVL → ORD',tag:'COMMUTE'}]}},event:null,snapshot:null});
+assert.equal(m.hasFlight,false);assert.equal(m.entries.length,2);
+assert.equal(viewModel(base).hasFlight,true);
