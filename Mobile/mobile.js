@@ -11,15 +11,16 @@
     document.body.classList.toggle('pickup',model.pickup);
     document.body.classList.toggle('on-ground',!model.hasFlight);
     $('arrival').hidden=!model.hasFlight;
-    document.querySelector('.flight-card').hidden=!model.hasFlight;
     document.body.classList.toggle('stale',model.stale);
-    for (const [id,value] of Object.entries({'story':model.message,'phase':model.phase,'flight-number':model.flightNumber,
-      'route':model.hasFlight ? model.route : model.code,'arrival-label':model.arrivalLabel,'arrival-time':model.time,'arrival-zone':model.timeZone,
+    for (const [id,value] of Object.entries({'story':model.message,'phase':model.phase,'flight-number':model.hasFlight ? model.flightNumber : '',
+      'flight-origin':model.hasFlight ? state.flight.origin : '',
+      'flight-destination':model.hasFlight ? state.flight.destination : (model.code==='—' ? '' : model.code),
+      'arrival-label':model.arrivalLabel,'arrival-time':model.time,'arrival-zone':model.timeZone,
       'airport-city':model.city,'freshness':model.freshness,'map-position':model.position})) text(id,value);
-    for (const id of ['flight-number','route']) {
+    for (const id of ['flight-number','flight-origin','flight-destination','phase']) {
       const node=$(id), value=node.textContent;
       node.setAttribute('aria-label',value);
-      node.replaceChildren(...Array.from(value,character=>{const tile=document.createElement('span');tile.className=character===' ' ? 'flap-gap' : 'flap-tile';tile.setAttribute('aria-hidden','true');tile.textContent=character;return tile;}));
+      node.replaceChildren(...Array.from(value || '   ',character=>{const tile=document.createElement('span');tile.className='flap-tile';tile.setAttribute('aria-hidden','true');tile.textContent=character;return tile;}));
     }
   }
   function resolved(detail) {
