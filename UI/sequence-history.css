@@ -1,0 +1,88 @@
+/* Dad Radar active-sequence trail and mileage */
+
+.map-sequence-history-layer {
+  pointer-events: none;
+}
+
+.map-sequence-history-leg {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.map-sequence-history-leg.is-observed {
+  stroke: rgba(76, 48, 32, 0.72);
+  stroke-width: 4.2;
+}
+
+.map-sequence-history-leg.is-fallback {
+  stroke: rgba(96, 66, 42, 0.58);
+  stroke-width: 3.2;
+  stroke-dasharray: 8 7;
+}
+
+.sequence-mileage-badge {
+  position: absolute;
+  z-index: 45;
+  left: 18px;
+  bottom: 18px;
+  min-width: 150px;
+  padding: 8px 11px 9px;
+  border: 1px solid rgba(91, 64, 36, 0.68);
+  border-radius: 3px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(220, 197, 148, 0.94),
+      rgba(194, 162, 106, 0.9)
+    );
+  color: #493222;
+  box-shadow:
+    0 3px 9px rgba(53, 32, 17, 0.35),
+    inset 0 1px 0 rgba(255, 246, 215, 0.55);
+  font-family: "Courier New", monospace;
+  pointer-events: none;
+}
+
+.sequence-mileage-badge[hidden] {
+  display: none;
+}
+
+.sequence-mileage-label,
+.sequence-mileage-detail {
+  display: block;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+
+.sequence-mileage-label {
+  color: #71392d;
+}
+
+.sequence-mileage-value {
+  display: block;
+  margin-top: 2px;
+  font-size: 21px;
+  line-height: 1.05;
+  letter-spacing: 0.5px;
+}
+
+.sequence-mileage-detail {
+  margin-top: 3px;
+  color: #7a4a2c;
+}
+
+@media (max-width: 900px) {
+  .sequence-mileage-badge {
+    left: 12px;
+    bottom: 12px;
+    min-width: 132px;
+    padding: 7px 9px 8px;
+  }
+
+  .sequence-mileage-value {
+    font-size: 18px;
+  }
+}

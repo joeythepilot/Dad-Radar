@@ -12,17 +12,21 @@ const browserSources = [
   "config/posters.js",
   "models/states.js",
   "models/schedule-state.js",
+  "models/sequence-history.js",
   "models/live-flight-state.js",
   "App/state-engine.js",
   "App/visual-state-controller.js",
   "services/mock-flight-service.js",
   "services/calendar-api-service.js",
   "services/live-flight-api-service.js",
+  "services/sequence-history-api-service.js",
   "services/calendar-state-controller.js",
+  "services/sequence-history-controller.js",
   "App/instrument-math.js",
   "App/split-flap-audio.js",
   "App/split-flap-state.js",
   "App/daily-schedule-layout.js",
+  "App/sequence-history-display.js",
   "App/main.js"
 ];
 
@@ -70,7 +74,8 @@ const combinedSource = [
     (relativePath) =>
       `\n/* Source: ${relativePath} */\n${readSource(relativePath)}`
   ),
-  `\n/* Source: App/route-map.js (module scope preserved) */\n(function initializeDadRadarRouteMap() {\n${readSource("App/route-map.js")}\n})();`
+  `\n/* Source: App/route-map.js (module scope preserved) */\n(function initializeDadRadarRouteMap() {\n${readSource("App/route-map.js")}\n})();`,
+  `\n/* Source: App/sequence-history-map.js */\n${readSource("App/sequence-history-map.js")}`
 ].join("\n");
 
 const result = babel.transformSync(
@@ -110,5 +115,5 @@ fs.writeFileSync(
 );
 
 console.log(
-  `Built ${path.relative(projectRoot, outputPath)} in legacy Safari-compatible ES5.`
+  `Built ${path.relative(projectRoot, outputPath)} with the current family-beta browser pipeline.`
 );
