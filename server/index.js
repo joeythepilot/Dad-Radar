@@ -13,6 +13,17 @@ const {
   getLiveFlightSnapshot
 } = require("./flightradar24-service");
 
+const {
+  getFlightTrack
+} = require("./fr24-flight-track-service");
+
+const {
+  getCurrentSequenceHistory,
+  needsTrackSeed,
+  recordLiveSnapshot,
+  registerWorkFlight
+} = require("./sequence-history-store");
+
 const app = express();
 const port = Number(process.env.PORT) || 4173;
 const host =
@@ -33,7 +44,7 @@ const PUBLIC_DIRECTORIES = [
 ];
 
 app.use(
-  express.json({ limit: "16kb" })
+  express.json({ limit: "64kb" })
 );
 
 app.get("/api/health", (request, response) => {
@@ -154,6 +165,124 @@ app.post(
   }
 );
 
+app.get(
+  "/api/sequence-history/current",
+  (_request, response) => {
+    try {
+      response.json({
+        ok: true,
+        sequenceHistory:
+          getCurrentSequenceHistory()
+      });
+    } catch (error) {
+      console.error(
+        "Sequence history read failed:",
+        error
+      );
+
+      response.status(500).json({
+        ok: false,
+        error:
+          "Unable to load Dad Radar sequence history."
+      });
+    }
+  }
+);
+
+app.post(
+  "/api/sequence-history/register",
+  (request, response) => {
+    try {
+      const event = request.body?.event;
+
+      response.json({
+        ok: true,
+        sequenceHistory:
+          registerWorkFlight(event)
+      });
+    } catch (error) {
+      console.error(
+        "Sequence history registration failed:",
+        error
+      );
+
+      response.status(500).json({
+        ok: false,
+        error:
+          "Unable to register the current work flight."
+      });
+    }
+  }
+);
+
+app.post(
+  "/api/sequence-history/record",
+  async (request, response) => {
+    try {
+      const event = request.body?.event;
+      const liveFlight =
+        request.body?.liveFlight;
+
+      if (!event || !liveFlight) {
+        response.status(400).json({
+          ok: false,
+          error:
+            "A work-flight event and live snapshot are required."
+        });
+        return;
+      }
+
+      const providerFlightId =
+        liveFlight.providerFlightId ?? null;
+
+      const shouldSeed =
+        needsTrackSeed(
+          event,
+          providerFlightId
+        );
+
+      let seedTrack = [];
+
+      if (shouldSeed) {
+        try {
+          seedTrack = await getFlightTrack(
+            providerFlightId
+          );
+        } catch (error) {
+          console.warn(
+            "Dad Radar could not recover the provider breadcrumb track; live points will continue building it:",
+            error.message
+          );
+        }
+      }
+
+      response.json({
+        ok: true,
+        sequenceHistory:
+          recordLiveSnapshot(
+            event,
+            liveFlight,
+            {
+              seedTrack,
+              seedAttempted: shouldSeed
+            }
+          )
+      });
+    } catch (error) {
+      console.error(
+        "Sequence history update failed:",
+        error
+      );
+
+      response.status(500).json({
+        ok: false,
+        error:
+          "Unable to update Dad Radar sequence history."
+      });
+    }
+  }
+);
+
 for (const directory of
   PUBLIC_DIRECTORIES) {
   app.use(
@@ -213,7 +342,7 @@ function startServer(options = {}) {
         `This PC: http://127.0.0.1:${displayedPort}`
       );
       console.log(
-        "Family display: run npm.cmd run beta:address for the iPad address."
+        "Family display: run npm.cmd run beta:address for the local family address."
       );
     }
   );
