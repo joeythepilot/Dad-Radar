@@ -24,6 +24,10 @@ async function runTests() {
     for (const publicPath of [
       "/",
       "/display",
+      "/mobile",
+      "/Mobile/mobile.js",
+      "/Mobile/manifest.webmanifest",
+      "/Mobile/icon.png",
       "/api/health",
       "/App/dad-radar-browser.js",
       "/App/main.js",
@@ -73,6 +77,14 @@ async function runTests() {
       /airport-placard-enamel-v10\.css\?v=10\.0/,
       "The display should load the dark enamel airport placards."
     );
+
+    const mobile = await (await fetch(`${baseUrl}/mobile`)).text();
+    assert.match(mobile, /id="arrival-time"/);
+    assert.match(mobile, /id="route-map-svg"/);
+    const worker = await fetch(`${baseUrl}/Mobile/sw.js`);
+    assert.equal(worker.headers.get("service-worker-allowed"), "/mobile");
+    const api = await fetch(`${baseUrl}/api/health`);
+    assert.match(api.headers.get("cache-control"), /no-store/);
 
     const collisionServer = startServer({
       port: address.port,

@@ -65,3 +65,12 @@ git push -u origin HEAD:refs/heads/agent/recovered-family-beta
 ```
 
 Do not force-push. If rejected because another session advanced the branch, inspect and reconcile first. After synchronization, use that branch and this handoff for continued development; verify actual remote HEAD before changing it.
+
+
+## Mobile companion continuation (v11)
+
+The repaired `cb3d4dc` baseline was subsequently confirmed on GitHub and Joey confirmed weather works after installation. The mobile-first follow-up is on `agent/mobile-companion`; inspect its actual HEAD before continuing.
+
+Implemented: dedicated `/mobile` view using the existing Calendar/live controller, vintage map and posters; commute-home arrival emphasis; destination-local absolute arrival timestamps and stale-data labels; foreground refresh and installable metadata; no offline private-data caching; separate loopback-only Cloudflare Access gateway; guided `mobile:setup`; full setup instructions in `Docs/Mobile-family-setup.md`. The candidate same-event route-edit test was ported and the provider-match identity now includes route, flight and start time independently of the Calendar lock identity.
+
+No remote deployment is complete until the user's Cloudflare DNS, family policy, AUD/team settings, and Windows tunnel are configured and cellular-tested. This is a mobile-first release; sequence history/mileage remains authorized and unfinished. The remaining timezone/calendar-notes investigation is not represented as solved by formatting the mobile arrival time correctly. Browser visual verification and real-device tests remain unperformed; automated server/model/security tests passed.

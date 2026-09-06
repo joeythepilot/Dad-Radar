@@ -134,6 +134,13 @@
     );
   }
 
+  function liveEventKey(event) {
+    if (!event) return null;
+    return [eventKey(event), event.origin, event.destination,
+      event.carrierCode, event.flightNumber, event.liveLookupCandidates?.join(","),
+      event.times?.startUtc ?? event.startUtc].join("|");
+  }
+
   function desiredLiveRefreshInterval(
     settings
   ) {
@@ -596,7 +603,7 @@
           }
         );
 
-    const nextEventKey = eventKey(
+    const nextEventKey = liveEventKey(
       calendarResolved.event
     );
 
@@ -755,7 +762,7 @@
       currentCalendarResolved.event;
 
     const requestedEventKey =
-      eventKey(requestedEvent);
+      liveEventKey(requestedEvent);
 
     liveRequestPromise =
       (async () => {

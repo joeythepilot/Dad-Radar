@@ -46,6 +46,7 @@ const displayHtml = fs
   );
 
 const PUBLIC_DIRECTORIES = [
+  "Mobile",
   "App",
   "UI",
   "assets",
@@ -54,6 +55,15 @@ const PUBLIC_DIRECTORIES = [
   "models",
   "services"
 ];
+
+app.use("/api", (_request, response, next) => {
+  response.set("Cache-Control", "private, no-store");
+  next();
+});
+app.get("/Mobile/sw.js", (_request, response) => {
+  response.set({"Service-Worker-Allowed": "/mobile", "Cache-Control": "no-cache"});
+  response.sendFile(path.join(projectRoot, "Mobile", "sw.js"));
+});
 
 app.use(
   express.json({ limit: "16kb" })
@@ -227,6 +237,11 @@ app.get("/api/weather/radar", async (request, response) => {
   }
 });
 
+app.get(["/mobile", "/mobile/"], (_request, response) => {
+  response.set("Cache-Control", "private, no-store");
+  response.sendFile(path.join(projectRoot, "Mobile", "index.html"));
+});
+
 for (const directory of
   PUBLIC_DIRECTORIES) {
   app.use(
@@ -309,7 +324,11 @@ function startServer(options = {}) {
 }
 
 if (require.main === module) {
-  startServer();
+  const server = startServer();
+  server.once("listening", () => {
+    const gateway = require("./mobile-access").startMobileGateway(app);
+    if (gateway) server.once("close", () => gateway.close());
+  });
 }
 
 module.exports = {
