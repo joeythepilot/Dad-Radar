@@ -61,6 +61,7 @@ function createBrowserContext() {
     "config/settings.js",
     "models/states.js",
     "models/schedule-state.js",
+    "models/sequence-history.js",
     "models/live-flight-state.js",
     "App/state-engine.js",
     "services/calendar-state-controller.js"
@@ -626,6 +627,138 @@ async function testAirborneLegStaysLockedDuringCalendarOverlap() {
   assert.equal(locked.mode, "EN_ROUTE");
 }
 
+async function testEditedLockedEventStartsFreshProviderMatch() {
+  const { context } =
+    createBrowserContext();
+
+  const event = activeFlightEvent();
+  event.id = "editable-flight";
+  event.origin = "PHX";
+  event.destination = "TUL";
+  event.flightNumber = "4334";
+  event.liveLookupCandidates = [
+    "ENY4334",
+    "MQ4334"
+  ];
+
+  context.dadRadarCalendarApi = {
+    async getUpcomingEvents() {
+      return {
+        retrievedAt:
+          new Date().toISOString(),
+        events: [event]
+      };
+    }
+  };
+
+  const calls = [];
+
+  context.dadRadarLiveFlightApi = {
+    async getFlightSnapshot(
+      requestedEvent,
+      options
+    ) {
+      calls.push({
+        destination:
+          requestedEvent.destination,
+        providerFlightId:
+          options.providerFlightId
+      });
+
+      return {
+        provider: "flightradar24",
+        providerFlightId:
+          requestedEvent.destination === "TUL"
+            ? "old-provider-flight"
+            : "new-provider-flight",
+        retrievedAt:
+          new Date().toISOString(),
+        displayIdent: "MQ4334",
+        phase: "EN_ROUTE",
+        status: "En Route",
+        origin: requestedEvent.origin,
+        destination:
+          requestedEvent.destination,
+        progressPercent: 40,
+        position: {
+          latitude:
+            requestedEvent.destination === "TUL"
+              ? 34.9
+              : 34.6,
+          longitude:
+            requestedEvent.destination === "TUL"
+              ? -109.5
+              : -108.8,
+          altitudeFeet: 26000,
+          groundSpeedKnots: 410,
+          headingDegrees: 85,
+          recordedAt:
+            new Date().toISOString()
+        }
+      };
+    }
+  };
+
+  await context.refreshCalendarState();
+  const firstLive =
+    await context.refreshLiveFlightState();
+
+  assert.equal(
+    firstLive.state.flight.destination,
+    "TUL"
+  );
+  assert.equal(
+    firstLive.state.flight.actualTrack.length,
+    1
+  );
+
+  event.destination = "CLT";
+  event.liveLookupCandidates = [
+    "ENY4334",
+    "MQ4334"
+  ];
+
+  const reassignedCalendar =
+    await context.refreshCalendarState();
+
+  assert.equal(
+    reassignedCalendar.event.id,
+    "editable-flight",
+    "The Calendar lock should keep the edited Google event selected."
+  );
+  assert.equal(
+    reassignedCalendar.state.flight.destination,
+    "CLT"
+  );
+  assert.equal(
+    reassignedCalendar.state.source,
+    "calendar",
+    "Editing the locked leg must discard the stale live-provider match immediately."
+  );
+
+  const reassignedLive =
+    await context.refreshLiveFlightState();
+
+  assert.equal(
+    calls[0].providerFlightId,
+    null
+  );
+  assert.equal(
+    calls[1].destination,
+    "CLT"
+  );
+  assert.equal(
+    calls[1].providerFlightId,
+    null,
+    "A route edit on the same Google event must force a fresh FR24 acquisition."
+  );
+  assert.equal(
+    reassignedLive.state.flight.actualTrack.length,
+    1,
+    "The old leg breadcrumb must not leak into the reassigned leg."
+  );
+}
+
 async function runTests() {
   await testCalendarPublishesState();
   await testLiveFlightRefinesCalendarState();
@@ -633,6 +766,7 @@ async function runTests() {
   await testApproachPersistsAcrossProviderRegression();
   await testPollingStopsAfterArrival();
   await testAirborneLegStaysLockedDuringCalendarOverlap();
+  await testEditedLockedEventStartsFreshProviderMatch();
 
   console.log(
     "Calendar state controller tests passed."

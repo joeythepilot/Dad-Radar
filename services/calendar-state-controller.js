@@ -13,7 +13,7 @@
   let liveRequestPromise = null;
   let liveProviderUnavailable = false;
   let hasLoadedSchedule = false;
-  let lockedFlightEventKey = null;
+  let lockedFlightEventId = null;
 
   const TRACKABLE_MODES = new Set([
     "BOARDING",
@@ -86,7 +86,7 @@
     };
   }
 
-  function eventKey(event) {
+  function scheduleEventIdentity(event) {
     if (!event) {
       return null;
     }
@@ -94,12 +94,31 @@
     return String(
       event.id ??
       [
-        event.origin,
+        event.kind,
+        event.origin ?? event.airport,
         event.destination,
         event.times?.startUtc ??
           event.startUtc
       ].join("|")
     );
+  }
+
+  function eventKey(event) {
+    if (!event) {
+      return null;
+    }
+
+    if (
+      event.kind === "flight" &&
+      global.dadRadarSequenceHistory
+        ?.eventFingerprint
+    ) {
+      return global
+        .dadRadarSequenceHistory
+        .eventFingerprint(event);
+    }
+
+    return scheduleEventIdentity(event);
   }
 
   function finiteCoordinate(value) {
@@ -238,7 +257,7 @@
           {
             ...settings,
             preferredEventId:
-              lockedFlightEventKey
+              lockedFlightEventId
           }
         );
 
@@ -299,8 +318,10 @@
         ].includes(resolvedPhase)
       )
     ) {
-      lockedFlightEventKey =
-        eventKey(resolved.event);
+      lockedFlightEventId =
+        scheduleEventIdentity(
+          resolved.event
+        );
     }
 
     if (
@@ -308,7 +329,7 @@
         resolvedPhase
       )
     ) {
-      lockedFlightEventKey = null;
+      lockedFlightEventId = null;
     }
 
     if (resolved?.state?.liveData) {
