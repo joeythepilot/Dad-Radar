@@ -6,13 +6,12 @@
 <meta name="robots" content="noindex,nofollow"><title>Dad Radar · Family</title>
 <link rel="manifest" href="/Mobile/manifest.webmanifest"><link rel="apple-touch-icon" href="/Mobile/icon.png">
 <link rel="stylesheet" href="/UI/map.css"><link rel="stylesheet" href="/assets/ui/airport-placard-enamel-v10.css?v=10.0">
-<link rel="stylesheet" href="/Mobile/mobile.css?v=11.2"></head>
-<body><header><div><span class="eyebrow">FAMILY FLIGHT TRACKER</span><a class="brand" href="/mobile">DAD RADAR</a></div><nav aria-label="Display"><button id="view-toggle" type="button" aria-pressed="false">Today</button><button id="refresh" type="button">Refresh</button></nav></header>
-<main><section class="flight-card" aria-labelledby="story"><div class="status-row"><span class="eyebrow" id="journey">TODAY’S ADVENTURE</span><span id="phase">CONNECTING</span></div>
-<h1 id="story">Finding Daddy’s schedule…</h1><div class="route-board" id="route-board"><div class="board-field"><span class="eyebrow">FLIGHT</span><strong id="flight-number">—</strong></div><div class="board-field"><span class="eyebrow" id="route-label">FROM / TO</span><span id="route">—</span></div></div>
-<div class="arrival" id="arrival"><div><span class="eyebrow" id="arrival-label">ARRIVAL</span><strong id="arrival-time">—</strong><span id="arrival-zone"></span></div><div class="airport"><strong id="airport-code">—</strong><span id="airport-city"></span></div></div>
-<p id="freshness" role="status">Connecting to the home display’s server…</p></section>
-<section class="map-card vintage-map-panel" aria-label="Flight map"><div class="map-heading"><h2>Flight map</h2><span id="map-position">Awaiting position</span></div><div id="route-map-shell" class="route-map-shell"><svg
+<link rel="stylesheet" href="/Mobile/mobile.css?v=11.3"></head>
+<body><header><a class="brand" href="/mobile">DAD RADAR</a><h1 id="story">Finding Daddy’s schedule…</h1><button id="refresh" type="button">Refresh</button></header>
+<main><section class="flight-card" aria-label="Current flight" hidden><span id="phase">CONNECTING</span><div class="route-board"><strong id="flight-number">—</strong><span id="route">—</span></div></section>
+<section class="arrival" id="arrival" aria-label="Arrival information" hidden><span class="eyebrow" id="arrival-label">ARRIVAL</span><strong id="arrival-time">—</strong><span id="airport-city"></span><span id="arrival-zone"></span></section>
+<div class="freshness"><span id="freshness" role="status">Connecting…</span><span id="map-position">Awaiting position</span></div>
+<section class="map-card vintage-map-panel" aria-label="Flight map"><div id="route-map-shell" class="route-map-shell"><svg
                   class="route-map-svg"
                   id="route-map-svg"
                   viewBox="0 0 1200 650"
@@ -588,10 +587,8 @@
                   </g>
 
                 </svg><div id="map-loading-message" class="map-loading-message">Awaiting flight data</div></div><p id="map-route-status" class="map-caption">Planned route · actual track</p></section>
-<section class="day-card"><div class="section-heading"><h2>Today’s duty</h2><span id="day-zone"></span></div><div class="duty-controls"><button id="duty-prev" aria-label="Previous duty" type="button">‹</button><span id="duty-count"></span><button id="duty-next" aria-label="Next duty" type="button">›</button></div><ol id="itinerary"><li>Waiting for the schedule…</li></ol></section>
-<section class="poster-card" aria-label="Destination poster"><img id="poster" alt="" hidden><div id="poster-empty"><span class="eyebrow">DAD RADAR DESTINATIONS</span><h2 id="poster-city">The next adventure awaits</h2></div></section>
 </main>
-<script src="/data/airport-catalog.js"></script><script src="/config/settings.js"></script><script src="/config/posters.js"></script>
+<script src="/data/airport-catalog.js"></script><script src="/config/settings.js"></script>
 <script src="/models/states.js"></script><script src="/models/schedule-state.js"></script><script src="/models/live-flight-state.js"></script><script src="/App/state-engine.js"></script>
 <script src="/services/calendar-api-service.js"></script><script src="/services/live-flight-api-service.js"></script><script src="/services/live-refresh-schedule.js"></script><script src="/services/calendar-state-controller.js"></script>
-<script src="/Mobile/view-model.js?v=11.2"></script><script type="module" src="/App/route-map.js"></script><script defer src="/Mobile/mobile.js?v=11.2"></script></body></html>
+<script src="/Mobile/view-model.js?v=11.3"></script><script type="module" src="/App/route-map.js"></script><script defer src="/Mobile/mobile.js?v=11.3"></script></body></html>
