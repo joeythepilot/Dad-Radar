@@ -3,6 +3,7 @@
 const FLIGHTAWARE_AEROAPI_BASE_URL =
   "https://aeroapi.flightaware.com/aeroapi";
 const CACHE_LIMIT = 128;
+const NO_ROUTE_RETRY_MS = 5 * 60 * 1000;
 const routeCache = new Map();
 
 class FlightAwareRouteError extends Error {
@@ -152,8 +153,12 @@ async function getFiledRoute(snapshot, lookup, providedOptions = {}) {
     identCandidates.join(",")
   ].join("|");
 
+  const now = providedOptions.now ?? Date.now();
   if (options.cache.has(key)) {
-    return options.cache.get(key);
+    const cached = options.cache.get(key);
+    if (cached?.route) return cached.route;
+    if (cached && now < cached.retryAfter) return null;
+    options.cache.delete(key);
   }
 
   if (identCandidates.length === 0) {
@@ -191,17 +196,20 @@ async function getFiledRoute(snapshot, lookup, providedOptions = {}) {
     const route = normalizeFiledRoute(routePayload);
 
     if (route) {
-      cacheSet(options.cache, key, route);
+      cacheSet(options.cache, key, { route });
       return route;
     }
   }
 
-  cacheSet(options.cache, key, null);
+  // A flight plan may be filed after our first preflight lookup. Suppress
+  // repeated paid lookups briefly, then let normal polling acquire it.
+  cacheSet(options.cache, key, { route: null, retryAfter: now + NO_ROUTE_RETRY_MS });
   return null;
 }
 
 module.exports = {
   FLIGHTAWARE_AEROAPI_BASE_URL,
+  NO_ROUTE_RETRY_MS,
   FlightAwareRouteError,
   getFiledRoute,
   matchingFlight,

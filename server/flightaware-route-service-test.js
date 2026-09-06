@@ -3,6 +3,7 @@
 const assert = require("node:assert/strict");
 const {
   getFiledRoute,
+  NO_ROUTE_RETRY_MS,
   matchingFlight,
   normalizeFiledRoute,
   routeIdentCandidates
@@ -165,6 +166,37 @@ assert.deepEqual(normalizeFiledRoute({
     preflightRoute.fixes[0].name,
     "BDF"
   );
+  // Plans can become available after a negative preflight result. Retry via
+  // normal polling without a server restart, while bounding paid API calls.
+  for (const initialResult of ["no-flight", "no-fixes"]) {
+    const cache = new Map();
+    let available = false;
+    let calls = 0;
+    const lookup = { origin: "PHX", destination: "CLT",
+      startUtc: "2026-09-04T12:00:00Z", liveLookupCandidates: ["AA3009"] };
+    const options = { apiKey: "fixture", cache, now: 1000,
+      async fetchImpl(url) {
+        calls++;
+        const routeRequest = String(url).endsWith("/route");
+        const data = routeRequest
+          ? { fixes: available ? [{ name: "TEST", latitude: 34, longitude: -100 }] : [] }
+          : { flights: available || initialResult === "no-fixes"
+              ? [{ fa_flight_id: "fixture-id", origin: { code_iata: "PHX" },
+                  destination: { code_iata: "CLT" }, scheduled_out: lookup.startUtc }] : [] };
+        return { ok: true, json: async () => data };
+      }
+    };
+    assert.equal(await getFiledRoute(null, lookup, options), null);
+    const initialCalls = calls;
+    available = true;
+    assert.equal(await getFiledRoute(null, lookup, { ...options, now: 1001 }), null);
+    assert.equal(calls, initialCalls, "Do not retry on every display poll.");
+    const recovered = await getFiledRoute(null, lookup, { ...options, now: 1000 + NO_ROUTE_RETRY_MS });
+    assert.equal(recovered.fixes[0].name, "TEST");
+    const recoveredCalls = calls;
+    assert.deepEqual(await getFiledRoute(null, lookup, { ...options, now: 2000 + NO_ROUTE_RETRY_MS }), recovered);
+    assert.equal(calls, recoveredCalls, "Keep caching a successfully acquired route.");
+  }
   console.log("FlightAware filed-route service tests passed.");
 })().catch((error) => {
   console.error(error);
