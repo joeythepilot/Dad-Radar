@@ -1,18 +1,111 @@
-:root{color-scheme:dark;--cream:#f0e3c7;--gold:#c3a16d;--muted:#d1c5ad;background:#171411;color:var(--cream);font-family:Georgia,'Times New Roman',serif}*{box-sizing:border-box}html{height:100%;overflow:hidden}body{margin:0;height:100vh;height:100dvh;overflow:hidden;display:flex;flex-direction:column;background:#211b15;padding:env(safe-area-inset-top) max(6px,env(safe-area-inset-right)) env(safe-area-inset-bottom) max(6px,env(safe-area-inset-left))}header{display:flex;align-items:center;gap:14px;flex:none;min-height:44px;padding:0 4px}.brand{color:var(--cream);font-size:.875rem;font-weight:bold;letter-spacing:.1em;text-decoration:none;white-space:nowrap}h1{flex:1;min-width:0;margin:0;font-size:.875rem;font-weight:400;line-height:1.2}button{min-height:44px;min-width:44px;border:0;padding:5px 10px;background:transparent;color:var(--cream);font:600 .875rem system-ui;cursor:pointer}button:disabled{opacity:.5}button:focus-visible{outline:2px solid #f5d29b;outline-offset:-2px}main{position:relative;flex:1;min-height:0;width:100%;margin-bottom:5px;isolation:isolate}
-/* The map is the permanent surface, including HOME and OFFLINE states. */
-main .map-card.vintage-map-panel{position:absolute;inset:0;display:block;padding:0;border:2px solid #a58a5e;overflow:hidden;background:#c3b58d}main .map-card.vintage-map-panel .route-map-shell{position:absolute;inset:0;width:100%;height:100%;min-height:0;margin:0;overflow:hidden}main .map-card .route-map-svg{display:block;width:100%;height:100%}.map-caption{display:none}.map-weather-image{opacity:.72;mix-blend-mode:multiply}.map-city-reference circle{fill:#4c3925;stroke:#ead8a8;stroke-width:.8;vector-effect:non-scaling-stroke}.map-city-reference text{fill:#4c3925;font:bold 11px Georgia;paint-order:stroke;stroke:#ead8a8;stroke-width:2.5;vector-effect:non-scaling-stroke}
-.flight-card,.arrival,.freshness{position:absolute;z-index:50;color:var(--cream);background:#211b15ed;border:1px solid #a58a5e;box-shadow:0 2px 5px #0005}.flight-card{top:8px;left:8px;padding:6px 9px}#phase{display:block;font:700 .75rem/1.3 ui-monospace,monospace;color:#edcca0;margin-bottom:3px}.route-board{display:flex;align-items:center;gap:12px}#flight-number,#route{display:flex;align-items:center;gap:2px;font:700 1.2rem/1 ui-monospace,monospace;white-space:nowrap}.flap-tile{display:grid;place-items:center;width:1.05em;height:1.6em;background:url('/assets/split-flap/split-flap-tile-lit-v1.png') center/100% 100% no-repeat;color:#fff6df;text-shadow:0 2px 2px #000}.flap-gap{width:.2em}.arrival{right:8px;bottom:8px;padding:7px 11px;text-align:right;max-width:48%}.eyebrow{display:block;font:700 .75rem/1.2 ui-monospace,monospace;letter-spacing:.05em;color:var(--gold)}#arrival-time{display:block;font:700 1.75rem/1.2 ui-monospace,monospace;font-variant-numeric:tabular-nums}body.pickup #arrival-time{color:#ffe1a3;font-size:2rem}#airport-city{display:block;font:.875rem/1.3 Georgia}#arrival-zone{display:block;font:.75rem/1.3 system-ui;color:var(--muted)}.freshness{left:8px;bottom:8px;max-width:45%;padding:5px 7px;font:.75rem/1.25 system-ui;color:var(--muted)}.freshness span{display:block}body.stale .freshness{color:#ffd29b}body.on-ground .freshness{max-width:80%}[hidden]{display:none!important}@media(max-width:500px){header{gap:8px}.brand{font-size:.75rem}h1{font-size:.8125rem}.arrival{max-width:55%;bottom:60px}#flight-number,#route{font-size:1rem}.freshness{max-width:calc(100% - 16px)}}@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
-
-/* Four stacked split-flap fields occupy one quarter of the landscape. */
-main{--board-width:25%}
-main .map-card.vintage-map-panel{left:calc(var(--board-width) + 6px)}
-.flight-card{position:absolute;inset:0 auto 0 0;width:var(--board-width);padding:8px;display:grid;grid-template-rows:repeat(4,minmax(0,1fr));gap:5px;background:linear-gradient(110deg,#382c22,#17130f);box-shadow:inset 0 0 0 3px #100e0c,inset 0 0 0 5px #695139}
-.board-field{display:flex;flex-direction:column;justify-content:center;min-width:0;min-height:0;gap:4px}.board-field>.eyebrow{font-size:.75rem;line-height:1.1}
-.flap-row,#flight-number,#phase{display:flex;align-items:center;gap:1px;margin:0;white-space:nowrap;font:700 clamp(.8rem,1.9vw,1.15rem)/1 ui-monospace,monospace;color:var(--cream)}
-#flight-origin,#flight-destination{font-size:clamp(1.1rem,3vw,1.8rem)}
-#phase{font-size:clamp(.7rem,1.65vw,1rem)}
-.flap-tile{width:1.05em;height:1.6em;flex:0 1 1.05em;min-width:0}
-.freshness,body.on-ground .freshness{left:calc(var(--board-width) + 14px);max-width:34%}
-.arrival{max-width:36%}
-@media(max-width:500px){main{--board-width:32%}.flight-card{padding:6px}.flap-row,#flight-number,#phase{font-size:.7rem}#flight-origin,#flight-destination{font-size:1.25rem}.arrival{max-width:60%;bottom:64px}.freshness,body.on-ground .freshness{max-width:calc(68% - 22px)}}
-@media(orientation:landscape) and (max-height:360px){.flight-card{padding:6px;gap:2px}.board-field{gap:2px}.flap-row,#flight-number{font-size:.85rem}#flight-origin,#flight-destination{font-size:1.2rem}#phase{font-size:.75rem}}
+:root {
+  color-scheme: dark;
+  --cream: #f0e3c7;
+  --gold: #c3a16d;
+  --muted: #d1c5ad;
+  background: #171411;
+  color: var(--cream);
+  font-family: Georgia, 'Times New Roman', serif;
+}
+* { box-sizing: border-box; }
+html { height: 100%; overflow: hidden; }
+body {
+  margin: 0; height: 100vh; height: 100dvh; overflow: hidden;
+  display: flex; flex-direction: column; background: #211b15;
+  padding: env(safe-area-inset-top) max(6px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(6px, env(safe-area-inset-left));
+}
+header { display: flex; align-items: center; gap: 14px; flex: none; min-height: 44px; padding: 0 4px; }
+.brand { color: var(--cream); font-size: .875rem; font-weight: bold; letter-spacing: .1em; text-decoration: none; white-space: nowrap; }
+h1 { flex: 1; min-width: 0; margin: 0; font-size: .875rem; font-weight: 400; line-height: 1.2; }
+button { min-height: 44px; min-width: 44px; border: 0; padding: 5px 10px; background: transparent; color: var(--cream); font: 600 .875rem system-ui; cursor: pointer; }
+button:disabled { opacity: .5; }
+button:focus-visible { outline: 2px solid #f5d29b; outline-offset: -2px; }
+main { --board-width: 25%; position: relative; flex: 1; min-height: 0; width: 100%; margin-bottom: 5px; isolation: isolate; }
+/* The map keeps its accepted width in every flight, HOME and OFFLINE state. */
+main .map-card.vintage-map-panel {
+  position: absolute; inset: 0 0 0 calc(var(--board-width) + 6px); display: block;
+  padding: 0; border: 2px solid #a58a5e; overflow: hidden; background: #c3b58d;
+}
+main .map-card.vintage-map-panel .route-map-shell { position: absolute; inset: 0; width: 100%; height: 100%; min-height: 0; margin: 0; overflow: hidden; }
+main .map-card .route-map-svg { display: block; width: 100%; height: 100%; }
+.map-caption { display: none; }
+.map-weather-image { opacity: .72; mix-blend-mode: multiply; }
+.map-city-reference circle { fill: #4c3925; stroke: #ead8a8; stroke-width: .8; vector-effect: non-scaling-stroke; }
+.map-city-reference text { fill: #4c3925; font: bold 11px Georgia; paint-order: stroke; stroke: #ead8a8; stroke-width: 2.5; vector-effect: non-scaling-stroke; }
+.flight-rail { position: absolute; inset: 0 auto 0 0; width: var(--board-width); display: flex; flex-direction: column; gap: 6px; }
+.flight-card, .duty-panel, .arrival, .freshness { color: var(--cream); background: #211b15ed; border: 1px solid #a58a5e; box-shadow: 0 2px 5px #0005; }
+.flight-card {
+  flex: none; padding: 8px; display: grid; grid-template-rows: repeat(4, auto); gap: 5px;
+  background: linear-gradient(110deg, #382c22, #17130f);
+  box-shadow: inset 0 0 0 3px #100e0c, inset 0 0 0 5px #695139;
+}
+.board-field { display: flex; flex-direction: column; min-width: 0; min-height: 0; gap: 2px; }
+.eyebrow { display: block; font: 700 .75rem/1.2 ui-monospace, monospace; letter-spacing: .05em; color: var(--gold); }
+.board-field > .eyebrow { font-size: .625rem; line-height: 1.1; }
+.flap-row { display: flex; align-items: center; gap: 1px; margin: 0; white-space: nowrap; font: 700 clamp(.8rem, 1.8vw, 1rem)/1 ui-monospace, monospace; color: var(--cream); }
+#flight-origin, #flight-destination { font-size: clamp(1rem, 2.4vw, 1.35rem); }
+#phase { font-size: clamp(.6875rem, 1.5vw, .9rem); }
+.flap-tile {
+  display: grid; place-items: center; width: 1.05em; height: 1.6em; flex: 0 1 1.05em; min-width: 0;
+  background: url('/assets/split-flap/split-flap-tile-lit-v1.png') center/100% 100% no-repeat;
+  color: #fff6df; text-shadow: 0 2px 2px #000;
+}
+.duty-panel { flex: 1; min-height: 0; padding: 7px 6px 5px; display: flex; flex-direction: column; overflow: hidden; background: linear-gradient(110deg, #30271e, #191511); }
+.duty-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 3px; flex: none; padding-bottom: 4px; border-bottom: 1px solid #695139; }
+.duty-heading h2 { margin: 0; font: bold .75rem/1.2 Georgia, serif; color: var(--cream); white-space: nowrap; }
+#duty-zone { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font: .5625rem/1.2 ui-monospace, monospace; color: var(--gold); }
+#duty-entries { --duty-row-height: 23px; flex: 1; min-height: 0; margin: 3px 0 0; padding: 0; list-style: none; overflow: hidden; }
+.duty-entry { height: var(--duty-row-height); display: grid; grid-template-columns: max-content minmax(0, 1fr); align-items: center; gap: 5px; padding: 0 3px; border-left: 2px solid transparent; font: .6875rem/1.2 ui-monospace, monospace; }
+.duty-time { white-space: nowrap; color: var(--muted); font-variant-numeric: tabular-nums; }
+.duty-route { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: bold; }
+.duty-entry.current { background: #b5935429; border-left-color: #efd099; color: #fff2d2; }
+.duty-entry.current .duty-time { color: inherit; }
+.duty-entry.completed { opacity: .65; }
+.duty-empty { padding: 4px 2px; font: .6875rem/1.3 Georgia, serif; color: var(--muted); }
+.duty-overflow { flex: none; min-height: 12px; margin: 2px 0 0; font: .5625rem/12px ui-monospace, monospace; color: var(--gold); }
+.arrival, .freshness { position: absolute; z-index: 50; }
+.arrival { right: 8px; bottom: 8px; padding: 7px 11px; text-align: right; max-width: 36%; }
+#arrival-time { display: block; font: 700 1.75rem/1.2 ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+body.pickup #arrival-time { color: #ffe1a3; font-size: 2rem; }
+#airport-city { display: block; font: .875rem/1.3 Georgia; }
+#arrival-zone { display: block; font: .75rem/1.3 system-ui; color: var(--muted); }
+.freshness { left: calc(var(--board-width) + 14px); bottom: 8px; max-width: 34%; padding: 5px 7px; font: .6875rem/1.25 system-ui; color: var(--muted); }
+#freshness, #map-position { display: block; }
+body.stale .freshness { color: #ffd29b; }
+.telemetry { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; margin-bottom: 4px; color: var(--cream); }
+.reading { display: flex; align-items: baseline; gap: 3px; white-space: nowrap; }
+.reading abbr { border: 0; text-decoration: none; color: var(--gold); font: bold .625rem/1 ui-monospace, monospace; }
+.reading strong { font: bold 1rem/1.2 ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+.reading small { font: .625rem/1 ui-monospace, monospace; color: var(--muted); }
+.telemetry-note { flex-basis: 100%; color: #ffd29b; font: bold .5625rem/1.2 ui-monospace, monospace; letter-spacing: .04em; }
+.telemetry-stale .reading strong { color: #d6b587; }
+[hidden] { display: none !important; }
+@media (max-width: 700px) {
+  header { gap: 8px; }
+  .brand { font-size: .75rem; }
+  h1 { font-size: .8125rem; }
+  .duty-entry { font-size: .625rem; gap: 3px; }
+  .reading strong { font-size: .875rem; }
+  .telemetry { column-gap: 8px; }
+}
+@media (max-width: 500px) {
+  main { --board-width: 32%; }
+  .flight-card { padding: 6px; }
+  .flap-row, #phase { font-size: .7rem; }
+  #flight-origin, #flight-destination { font-size: 1.1rem; }
+  .arrival { max-width: 60%; bottom: 106px; }
+  .freshness { max-width: calc(68% - 22px); }
+  .duty-heading { flex-wrap: wrap; }
+}
+@media (orientation: landscape) and (max-height: 360px) {
+  .flight-card { padding: 6px; gap: 3px; }
+  .board-field { gap: 1px; }
+  .flap-row { font-size: .75rem; }
+  #flight-origin, #flight-destination { font-size: 1rem; }
+  #phase { font-size: .6875rem; }
+  .duty-panel { padding: 5px 5px 3px; }
+  .duty-heading { padding-bottom: 2px; }
+  .duty-heading h2 { font-size: .6875rem; }
+  #duty-entries { --duty-row-height: 21px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }

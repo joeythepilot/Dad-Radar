@@ -7,16 +7,25 @@
 <meta name="robots" content="noindex,nofollow"><title>Dad Radar · Family</title>
 <link rel="manifest" href="/Mobile/manifest.webmanifest"><link rel="apple-touch-icon" href="/Mobile/icon.png">
 <link rel="stylesheet" href="/UI/map.css?v=airport-surface-1"><link rel="stylesheet" href="/assets/ui/airport-placard-enamel-v10.css?v=10.0">
-<link rel="stylesheet" href="/Mobile/mobile.css?v=11.4"></head>
+<link rel="stylesheet" href="/Mobile/mobile.css?v=11.5"></head>
 <body><header><a class="brand" href="/mobile">DAD RADAR</a><h1 id="story">Finding Daddy’s schedule…</h1><button id="refresh" type="button">Refresh</button></header>
-<main><section class="flight-card" aria-label="Flight board">
+<main><aside class="flight-rail" aria-label="Flight and duty day"><section class="flight-card" aria-label="Flight board">
 <div class="board-field"><span class="eyebrow">FLIGHT</span><strong id="flight-number" class="flap-row"> </strong></div>
 <div class="board-field"><span class="eyebrow">FROM</span><strong id="flight-origin" class="flap-row"> </strong></div>
 <div class="board-field"><span class="eyebrow">TO</span><strong id="flight-destination" class="flap-row"> </strong></div>
 <div class="board-field"><span class="eyebrow">STATUS</span><strong id="phase" class="flap-row">CONNECTING</strong></div>
 </section>
+<section class="duty-panel" aria-labelledby="duty-title">
+<div class="duty-heading"><h2 id="duty-title">Today’s Duty</h2><span id="duty-zone"></span></div>
+<ol id="duty-entries" aria-label="Today's schedule"></ol>
+<p id="duty-overflow" class="duty-overflow"></p>
+</section></aside>
 <section class="arrival" id="arrival" aria-label="Arrival information" hidden><span class="eyebrow" id="arrival-label">ARRIVAL</span><strong id="arrival-time">—</strong><span id="airport-city"></span><span id="arrival-zone"></span></section>
-<div class="freshness"><span id="freshness" role="status">Connecting…</span><span id="map-position">Awaiting position</span></div>
+<div class="freshness"><div class="telemetry" id="telemetry" aria-label="Flight telemetry" hidden>
+<span class="reading"><abbr title="Ground speed">GS</abbr> <strong id="ground-speed">—</strong><small>kt</small></span>
+<span class="reading"><abbr title="Altitude">ALT</abbr> <strong id="altitude">—</strong><small>ft</small></span>
+<span id="telemetry-note" class="telemetry-note" hidden></span></div>
+<span id="freshness" role="status">Connecting…</span><span id="map-position">Awaiting position</span></div>
 <section class="map-card vintage-map-panel" aria-label="Flight map"><div id="route-map-shell" class="route-map-shell"><svg
                   class="route-map-svg"
                   id="route-map-svg"
@@ -597,4 +606,4 @@
 <script src="/data/airport-catalog.js"></script><script src="/config/settings.js"></script>
 <script src="/models/states.js"></script><script src="/models/schedule-state.js?v=ground-telemetry-2"></script><script src="/models/live-flight-state.js?v=ground-telemetry-2"></script><script src="/App/state-engine.js"></script>
 <script src="/services/calendar-api-service.js"></script><script src="/services/live-flight-api-service.js?v=airport-surface-1"></script><script src="/services/live-refresh-schedule.js"></script><script src="/services/calendar-state-controller.js?v=ground-telemetry-2"></script>
-<script src="/Mobile/view-model.js?v=11.4"></script><script src="/App/airport-surface-map.js?v=2"></script><script type="module" src="/App/route-map.js?v=airport-surface-1"></script><script defer src="/Mobile/mobile.js?v=11.4"></script></body></html>
+<script src="/Mobile/view-model.js?v=11.5"></script><script src="/App/airport-surface-map.js?v=2"></script><script type="module" src="/App/route-map.js?v=airport-surface-1"></script><script defer src="/Mobile/mobile.js?v=11.5"></script></body></html>

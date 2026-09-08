@@ -1,6 +1,6 @@
 'use strict';
 const assert=require('node:assert/strict');
-const {viewModel}=require('./view-model');
+const {viewModel,dutyWindow}=require('./view-model');
 const airports=require('../data/airport-catalog');
 const now=Date.parse('2026-09-04T16:00:00Z');
 const event={origin:'ORD',destination:'AVL',times:{endUtc:'2026-09-04T17:30:00Z'}};
@@ -23,3 +23,29 @@ const day={time:'ALL DAY',label:'HOME · DAY OFF',tag:'OFF DUTY'};
 m=viewModel({...base,state:{locationAirport:'AVL',dailySchedule:{entries:[day,{...day},{time:'8:00 AM',label:'AVL → ORD',tag:'COMMUTE'}]}},event:null,snapshot:null});
 assert.equal(m.hasFlight,false);assert.equal(m.entries.length,2);
 assert.equal(viewModel(base).hasFlight,true);
+
+const instruments={...base,state:{...state,flight:{...state.flight,groundSpeed:391,altitude:25475}}};
+assert.deepEqual(viewModel(instruments).telemetry,{speed:'391',altitude:'25,475',stale:false,note:''});
+assert.deepEqual(viewModel({...instruments,state:{...state,flight:{...state.flight,groundSpeed:0,altitude:0}}}).telemetry,
+  {speed:'0',altitude:'0',stale:false,note:''},'Taxi readings at zero must remain visible.');
+assert.equal(viewModel({...instruments,now:now+5*60000}).telemetry.note,'STALE');
+assert.equal(viewModel({...instruments,failed:true}).telemetry.note,'STALE');
+assert.equal(viewModel({...instruments,state:{...instruments.state,liveData:false}}).telemetry.note,'STALE');
+assert.equal(viewModel({...instruments,snapshot:null,state:{...instruments.state,flight:{...instruments.state.flight,lastPositionAt:null}}}).telemetry.note,'AGE UNKNOWN');
+for(const value of [null,undefined,NaN,Infinity,'']) {
+  const telemetry=viewModel({...base,state:{...state,flight:{...state.flight,groundSpeed:value,altitude:value}}}).telemetry;
+  assert.equal(telemetry.speed,'—');assert.equal(telemetry.altitude,'—');
+}
+assert.equal(viewModel({...base,state:{...state,flight:{...state.flight,groundSpeed:-10,altitude:-50}}}).telemetry.speed,'—');
+assert.equal(viewModel({...base,state:{...state,flight:{...state.flight,groundSpeed:-10,altitude:-50}}}).telemetry.altitude,'-50');
+assert.equal(viewModel({...base,state:{flight:{origin:'PHX',destination:'CLT'}},snapshot:{...snapshot,position:{groundSpeedKnots:420,altitudeFeet:35000}}}).telemetry.speed,'—',
+  'A replacement flight must not inherit the old snapshot’s instruments.');
+const legs=Array.from({length:6},(_,i)=>({id:String(i),kind:'flight',time:`${i+8}:00 AM`,label:'AVL → ORD',status:i<2?'completed':i===2?'current':'upcoming'}));
+let duty=dutyWindow([day,...legs],3);
+assert.deepEqual(duty.entries.map(e=>e.id),['2','3','4']);assert.equal(duty.summary,'2 earlier · 1 later');
+duty=dutyWindow(legs,1);assert.equal(duty.entries[0].status,'current');
+duty=dutyWindow(legs.map(e=>({...e,status:'completed'})),2);assert.deepEqual(duty.entries.map(e=>e.id),['4','5']);
+duty=dutyWindow(legs.map(e=>({...e,status:'upcoming'})),2);assert.deepEqual(duty.entries.map(e=>e.id),['0','1']);
+duty=dutyWindow([day],3);assert.equal(duty.entries[0].label,'HOME · DAY OFF');
+assert.equal(dutyWindow([],2).entries.length,0);
+console.log('Mobile duty selection and numerical telemetry tests passed.');
