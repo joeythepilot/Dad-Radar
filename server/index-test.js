@@ -31,6 +31,7 @@ async function runTests() {
       "/api/health",
       "/App/dad-radar-browser.js",
       "/App/main.js",
+      "/App/airport-surface-map.js",
       "/UI/styles.css",
       "/config/settings.js",
       "/assets/ui/airport-placard-enamel-v10.css",
@@ -53,6 +54,7 @@ async function runTests() {
       "/credentials.json",
       "/package.json",
       "/server/index.js",
+      "/runtime/airport-maps/AVL.json",
       "/Docs/Project-decisions.md"
     ]) {
       const response = await fetch(

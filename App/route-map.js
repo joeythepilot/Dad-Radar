@@ -59,7 +59,8 @@ function airportForMap(value) {
       String(airport.city ?? "")
         .toUpperCase(),
     latitude: airport.latitude,
-    longitude: airport.longitude
+    longitude: airport.longitude,
+    elevationFeet: airport.elevationFeet
   };
 }
 
@@ -867,6 +868,7 @@ function cameraForSurfaceProximity(
 
   if (
     !aircraftPoint ||
+    rawAltitude === null || rawAltitude === undefined || rawAltitude === "" ||
     !Number.isFinite(altitude) ||
     altitude >=
       SURFACE_FOCUS_ALTITUDE
@@ -1390,7 +1392,7 @@ function renderLivePositionOnly(flight) {
     cameraForSurfaceProximity(
       routeCamera,
       livePosition,
-      flight.altitude
+      regionalAltitude(flight)
     );
 
   applyCamera(camera);
@@ -1467,7 +1469,36 @@ function renderGroundLocation(state) {
   return true;
 }
 
+const surfaceApi = globalThis.dadRadarAirportSurface;
+const surfaceMap = surfaceApi && elements.shell ? surfaceApi.createController({
+  document, shell: elements.shell, lookup: airportForMap,
+  load: (code, done) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", `/api/airports/${code}/surface`);
+    xhr.timeout = 10000;
+    xhr.onload = () => {
+      if (xhr.status !== 200) return done(new Error("Airport detail unavailable"));
+      try { done(null, JSON.parse(xhr.responseText)); } catch (error) { done(error); }
+    };
+    xhr.onerror = xhr.ontimeout = () => done(new Error("Airport detail unavailable"));
+    xhr.send();
+  },
+  onChange: () => { if (lastRenderedState) renderRouteMap(lastRenderedState); }
+}) : null;
+
+function regionalAltitude(flight) {
+  return surfaceApi ? surfaceApi.fieldAltitude(flight, [airportForMap(flight.origin), airportForMap(flight.destination)]) : flight.altitude;
+}
+
 function renderRouteMap(state) {
+  // Continue accumulating the actual track underneath the airport view.
+  renderRegionalRouteMap(state);
+  const active = surfaceMap && surfaceMap.render(state);
+  if (elements.svg) elements.svg.style.visibility = active ? "hidden" : "visible";
+  if (active) setMessage("", false);
+}
+
+function renderRegionalRouteMap(state) {
   lastRenderedState = state ?? null;
 
   const flight = state?.flight;
@@ -1567,8 +1598,8 @@ function renderRouteMap(state) {
   const camera =
     cameraForSurfaceProximity(
       routeCamera,
-      aircraftPoint,
-      flight.altitude
+      livePosition,
+      regionalAltitude(flight)
     );
 
   applyCamera(camera);
@@ -1762,6 +1793,9 @@ if (typeof window.setInterval === "function") {
     refreshWeatherRadar,
     300000
   );
+  if (surfaceMap) window.setInterval(() => {
+    if (lastRenderedState) renderRouteMap(lastRenderedState);
+  }, 5000);
 }
 
 try {

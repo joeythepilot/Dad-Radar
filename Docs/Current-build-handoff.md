@@ -74,3 +74,11 @@ The repaired `cb3d4dc` baseline was subsequently confirmed on GitHub and Joey co
 Implemented: dedicated `/mobile` view using the existing Calendar/live controller, vintage map and posters; commute-home arrival emphasis; destination-local absolute arrival timestamps and stale-data labels; foreground refresh and installable metadata; no offline private-data caching; separate loopback-only Cloudflare Access gateway; guided `mobile:setup`; full setup instructions in `Docs/Mobile-family-setup.md`. The candidate same-event route-edit test was ported and the provider-match identity now includes route, flight and start time independently of the Calendar lock identity.
 
 No remote deployment is complete until the user's Cloudflare DNS, family policy, AUD/team settings, and Windows tunnel are configured and cellular-tested. This is a mobile-first release; sequence history/mileage remains authorized and unfinished. The remaining timezone/calendar-notes investigation is not represented as solved by formatting the mobile arrival time correctly. Browser visual verification and real-device tests remain unperformed; automated server/model/security tests passed.
+
+## Current continuation: airport ground view (September 8, 2026)
+
+The accepted mobile layout at `7c74fd5` is four stacked split-flap rows at left and a permanent map at right, with arrival time on the map. Posters and Today/Live switching were removed from mobile. Preserve this layout; the earlier v11 description above is historical.
+
+The airport-ground follow-up continues directly from that commit on `agent/mobile-companion`. See `Docs/Airport-surface-view.md` for behavior, validation and installation. It adds automatic cached OSM airport geometry, equal-scale ground projection, raw ADS-B position rendering, field-elevation-aware regional zoom, and stationary Taxi-Out handling. Fresh ground ADS-B at departure means Taxi-Out under Joey's transponder practice; movement is not required. Destination ground follow-up is adsb.lol-only and ends after five minutes without new ground reports.
+
+Trip breadcrumbs/mileage and the Cloudflare account/domain setup remain unfinished. No remote tunnel has been configured by this change. Do not return to the old `agent/mobile-reliability-update` branch or replace the recovered server wiring.

@@ -55,7 +55,7 @@ function createMobileGateway(app, config, options = {}) {
     catch {response.status(401).type('text').send('Family sign-in required. Open the Dad Radar family address and sign in again.');return;}
     if (!['GET','HEAD'].includes(request.method) && request.get('Origin')!==config.origin) {response.status(403).end();return;}
     // The remote companion needs viewing and lookup only, not diagnostics.
-    if(request.path.startsWith('/api/') && !['/api/calendar/upcoming','/api/flights/lookup','/api/weather/radar'].includes(request.path)) {response.status(404).end();return;}
+    if(request.path.startsWith('/api/') && !/^\/api\/airports\/[A-Z0-9]{3,4}\/surface$/.test(request.path) && !['/api/calendar/upcoming','/api/flights/lookup','/api/weather/radar'].includes(request.path)) {response.status(404).end();return;}
     if(request.path==='/') {response.redirect('/mobile');return;}
     next();
   });

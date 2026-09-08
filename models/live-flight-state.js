@@ -679,11 +679,17 @@
           options.previousResolved
         );
 
-      const mode = liveMode(
+      let mode = liveMode(
         calendarResolved,
         phase,
         options.previousResolved
       );
+
+      if (phase === "TAXI_OUT" && snapshot.provider === "adsb.lol" && position.onGround === true &&
+          position.recordedAt &&
+          Math.abs((toDate(options.now) ?? new Date()).getTime() - Date.parse(position.recordedAt)) <= 90000) {
+        mode = "TAXI_OUT";
+      }
 
       const origin =
         normalizeAirport(snapshot.origin) ??
@@ -809,6 +815,17 @@
           position.altitudeFeet
         ),
         altitudeAgl,
+        onGround: position.onGround ?? null,
+        // Raw received coordinates stay separate from animated/interpolated flight values.
+        surfacePosition: provider === "adsb.lol" ? {
+          latitude, longitude, onGround: position.onGround ?? null,
+          recordedAt: position.recordedAt ?? null,
+          heading: finiteNumber(position.headingDegrees),
+          speed: finiteNumber(position.groundSpeedKnots),
+          source: position.updateType ?? null,
+          accuracy: position.positionAccuracy ?? null,
+          containment: position.containmentRadiusMeters ?? null
+        } : null,
         progress:
           liveProgress ??
           calendarFlight.progress,

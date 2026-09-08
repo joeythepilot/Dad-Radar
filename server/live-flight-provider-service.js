@@ -25,6 +25,20 @@ function providerOrder(hint) {
 
 async function getLiveFlightSnapshot(lookup, options = {}) {
   const attempts = [];
+  if (lookup?.surfaceOnly === true) {
+    // Arrival follow-up must never invoke paid telemetry or filed-route providers.
+    if (adsbLolIsCoolingDown(options.now?.() ?? Date.now())) {
+      return {snapshot: null, filedRoute: null, attempts: [{provider: "adsb.lol", outcome: "cooldown"}]};
+    }
+    try {
+      const snapshot = await (options.adsbLookup ?? adsbLol.getLiveFlightSnapshot)(lookup, options.adsbOptions);
+      return {snapshot, filedRoute: null, attempts: [{provider: "adsb.lol", outcome: snapshot ? "matched" : "no-match"}]};
+    } catch (error) {
+      if (error.status === 403) adsbLolCooldownUntil = (options.now?.() ?? Date.now()) + ADSB_LOL_FORBIDDEN_COOLDOWN_MS;
+      options.onProviderError?.("adsb.lol", error);
+      return {snapshot: null, filedRoute: null, attempts: [{provider: "adsb.lol", outcome: "error"}]};
+    }
+  }
   const routeLookup =
     options.routeLookup ??
     flightaware.getFiledRoute;

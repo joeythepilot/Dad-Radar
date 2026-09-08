@@ -26,6 +26,7 @@ const browserSources = [
   "App/split-flap-state.js",
   "App/daily-schedule-layout.js",
   "App/poster-image-loader.js",
+  "App/airport-surface-map.js",
   "App/main.js"
 ];
 

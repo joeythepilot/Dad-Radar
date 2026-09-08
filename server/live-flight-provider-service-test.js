@@ -142,6 +142,17 @@ assert.deepEqual(providerOrder("flightradar24"), ["flightradar24", "adsb.lol"]);
     )
   );
   resetProviderCooldowns();
+  for (const outcome of ["match", "missing", "error"]) {
+    let calls = 0, paidCalls = 0;
+    const only = await getLiveFlightSnapshot({surfaceOnly: true, provider: "flightradar24"}, {
+      adsbLookup: async () => {calls++; if (outcome === "error") throw new Error("offline"); return outcome === "match" ? {provider: "adsb.lol"} : null;},
+      fr24Lookup: async () => {paidCalls++; throw new Error("Paid lookup forbidden");},
+      routeLookup: async () => {paidCalls++; throw new Error("Paid lookup forbidden");}
+    });
+    assert.equal(calls, 1);
+    assert.equal(paidCalls, 0, "Ground follow-up never consults paid providers, even on failure or a FR24 provider hint.");
+    assert.equal(only.filedRoute, null);
+  }
   console.log("Live-flight provider fallback tests passed.");
 })().catch((error) => {
   console.error(error);

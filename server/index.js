@@ -20,6 +20,9 @@ const {
   getRadarImage
 } = require("./weather-radar-service");
 
+const {createAirportSurfaceService} = require("./airport-surface-service");
+const airportSurface = createAirportSurfaceService({report: addDiagnostic});
+
 const app = express();
 const port = Number(process.env.PORT) || 4173;
 const host =
@@ -68,6 +71,12 @@ app.get("/Mobile/sw.js", (_request, response) => {
 app.use(
   express.json({ limit: "16kb" })
 );
+
+app.get("/api/airports/:code/surface", async (request, response) => {
+  const result = await airportSurface.get(request.params.code);
+  if (!result) return response.status(404).json({ok: false, error: "Unknown airport"});
+  response.json(result);
+});
 
 app.get("/api/health", (request, response) => {
   response.json({

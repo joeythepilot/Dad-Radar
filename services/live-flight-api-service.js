@@ -44,6 +44,8 @@
         providedOptions.provider ?? null
     };
 
+    if (providedOptions.surfaceOnly === true) body.surfaceOnly = true;
+
     try {
       const response = await global.fetch(
         "/api/flights/lookup",

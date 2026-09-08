@@ -650,6 +650,48 @@ async function testPollingStopsAfterArrival() {
   );
 }
 
+async function testAdsbGroundArrivalContinuesWithoutPaidFallback() {
+  const {context} = createBrowserContext();
+  let clock = Date.now();
+  context.Date = class extends Date {
+    constructor(...args) {super(...(args.length ? args : [clock]));}
+    static now() {return clock;}
+  };
+  const flight = activeFlightEvent();
+  flight.times.endUtc = new Date(clock + 60000).toISOString();
+  context.dadRadarCalendarApi = {getUpcomingEvents: async () => ({retrievedAt: new Date(clock).toISOString(), events: [flight]})};
+  const requests = [];
+  let available = true;
+  context.dadRadarLiveFlightApi = {getFlightSnapshot: async (_event, options) => {
+    requests.push(options);
+    if (!available) return null;
+    return {provider: "adsb.lol", phase: "ARRIVED", origin: "ORD", destination: "AVL", ident: "ENY4140", progressPercent: 100,
+      retrievedAt: new Date(clock).toISOString(), position: {latitude: 35.44, longitude: -82.54, onGround: true,
+        groundSpeedKnots: 0, headingDegrees: 170, recordedAt: new Date(clock).toISOString(), updateType: "adsb_icao"}};
+  }};
+  await context.refreshCalendarState();
+  const first = await context.refreshLiveFlightState();
+  assert.equal(first.mode, "ARRIVED");
+  for (let minute = 0; minute < 4; minute++) {
+    clock += 60000;
+    const next = await context.refreshLiveFlightState();
+    assert.equal(next.mode, "ARRIVED", "The landing flight stays selected throughout taxi-in, past scheduled arrival.");
+    assert.equal(next.state.flight.surfacePosition.recordedAt, new Date(clock).toISOString());
+  }
+  assert.equal(requests.length, 5);
+  assert(requests.slice(1).every(r => r.surfaceOnly === true), "After touchdown, requests explicitly prohibit FR24/filed-route fallback.");
+  available = false;
+  clock += 181000;
+  const held = await context.refreshLiveFlightState();
+  assert.equal(held.mode, "ARRIVED", "A brief taxi-in coverage gap cannot fall back to Delayed.");
+  clock += 120000;
+  const count = requests.length;
+  await context.refreshLiveFlightState();
+  assert.equal(requests.length, count, "Follow-up polling ends after five minutes without a ground report.");
+  const complete = await context.refreshCalendarState();
+  assert(complete.mode === "ARRIVED" || !complete.state.flight, "The completed leg cannot rewind to departure after transponder shutdown.");
+}
+
 async function testConfirmedArrivalDoesNotRewindToDeparture() {
   const storage = createMemoryStorage();
   const { context } =
@@ -1256,6 +1298,7 @@ async function runTests() {
   await testLiveFailureRetainsCalendarState();
   await testApproachPersistsAcrossProviderRegression();
   await testPollingStopsAfterArrival();
+  await testAdsbGroundArrivalContinuesWithoutPaidFallback();
   await testConfirmedArrivalDoesNotRewindToDeparture();
   await testPreflightFiledRoutePublishesWithoutLiveMatch();
   await testAirborneLegStaysLockedDuringCalendarOverlap();

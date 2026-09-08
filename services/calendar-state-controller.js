@@ -574,6 +574,17 @@
     );
   }
 
+  function isAdsbGroundArrival() {
+    return currentLiveFlight?.provider === "adsb.lol" &&
+      currentLiveFlight.phase === "ARRIVED" && currentLiveFlight.position?.onGround === true;
+  }
+
+  function followingGroundArrival() {
+    const recordedAt = Date.parse(currentLiveFlight?.position?.recordedAt ?? "");
+    const age = Date.now() - recordedAt;
+    return isAdsbGroundArrival() && Number.isFinite(age) && age >= -5000 && age < 300000;
+  }
+
   function publishResolvedState() {
     if (!currentSchedule) {
       return null;
@@ -586,6 +597,11 @@
       currentSchedule,
       settings
     );
+
+    if (isAdsbGroundArrival() && !followingGroundArrival()) {
+      recordConfirmedArrival(currentCalendarResolved?.event);
+      lockedFlightEventKey = null;
+    }
 
     const effectiveSchedule =
       scheduleWithConfirmedArrivals(
@@ -652,9 +668,9 @@
                 displayTimeZone:
                   settings
                     .displayTimeZone,
-                staleAfterMs:
-                  settings
-                    .liveStaleAfterMs,
+                staleAfterMs: followingGroundArrival()
+                  ? 300000
+                  : settings.liveStaleAfterMs,
                 previousResolved:
                   previousLiveResolved
               }
@@ -687,10 +703,12 @@
         resolvedPhase
       )
     ) {
-      recordConfirmedArrival(
-        resolved.event
-      );
-      lockedFlightEventKey = null;
+      if (followingGroundArrival()) {
+        lockedFlightEventKey = eventKey(resolved.event);
+      } else {
+        recordConfirmedArrival(resolved.event);
+        lockedFlightEventKey = null;
+      }
     }
 
     if (resolved?.state?.liveData) {
@@ -740,11 +758,9 @@
     if (
       !settings.liveFlightEnabled ||
       liveProviderUnavailable ||
-      ["ARRIVED", "LANDED"].includes(
-        String(
-          currentLiveFlight?.phase ?? ""
-        ).toUpperCase()
-      ) ||
+      (["ARRIVED", "LANDED"].includes(
+        String(currentLiveFlight?.phase ?? "").toUpperCase()
+      ) && !followingGroundArrival()) ||
       !global.dadRadarLiveFlightApi ||
       !global.dadRadarLiveFlightState ||
       !isTrackableResolved(
@@ -773,6 +789,7 @@
               .getFlightSnapshot(
                 requestedEvent,
                 {
+                  surfaceOnly: followingGroundArrival(),
                   providerFlightId:
                     currentLiveFlight
                       ?.providerFlightId ??

@@ -39,6 +39,11 @@ calendar.getUpcomingEvents = async () => {
   });
   return { events: [] };
 };
+let surfaceCalls = 0;
+require("./airport-surface-service").createAirportSurfaceService = () => ({get: async code => {
+  surfaceCalls++;
+  return code === "AVL" ? {ok: true, map: {code: "AVL", features: []}, pending: false} : null;
+}});
 const { app } = require("./index");
 
 (async () => {
@@ -63,6 +68,15 @@ const { app } = require("./index");
     assert.equal(health.flightData.primaryProvider, "adsb.lol");
     assert.equal(health.flightData.filedRoute.provider, "flightaware");
     assert.equal(health.flightData.weatherRadar.provider, "NOAA NWS");
+
+    const surface = await fetch(`${base}/api/airports/AVL/surface`);
+    assert.equal(surface.status, 200);
+    assert.equal((await surface.json()).map.code, "AVL");
+    assert.match(surface.headers.get("cache-control"), /no-store/);
+    assert.equal((await fetch(`${base}/api/airports/ZZZZ/surface`)).status, 404);
+    assert.equal(surfaceCalls, 2);
+    assert.equal(adsbCalls, 0);
+    assert.equal(fr24Calls, 0, "Airport geometry does not trigger a telemetry or paid-provider request.");
 
     let result = await lookup();
     assert.equal(result.provider, "adsb.lol");

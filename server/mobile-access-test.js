@@ -27,12 +27,14 @@ function token(changes={},secret=privateKey) {
   const other=crypto.generateKeyPairSync('rsa',{modulusLength:2048});await assert.rejects(verify(token({},other.privateKey)));
   await assert.rejects(createVerifier(config,{fetchImpl:async()=>{throw new Error('offline');}})(token()));
   const app=express();app.get('/mobile',(_q,r)=>r.send('family page'));app.post('/api/flights/lookup',(_q,r)=>r.json({ok:true}));
+  app.get('/api/airports/AVL/surface',(_q,r)=>r.json({ok:true}));
   const server=createMobileGateway(app,config,options).listen(0,'127.0.0.1');
   await new Promise(r=>server.once('listening',r));const base=`http://127.0.0.1:${server.address().port}`;
   try {
-    for(const path of ['/mobile','/Mobile/icon.png','/api/calendar/upcoming','/api/weather/radar']) assert.equal((await fetch(base+path)).status,401);
+    for(const path of ['/mobile','/Mobile/icon.png','/api/calendar/upcoming','/api/weather/radar','/api/airports/AVL/surface']) assert.equal((await fetch(base+path)).status,401);
     const headers={'Cf-Access-Jwt-Assertion':token()};
     const allowed=await fetch(base+'/mobile',{headers});assert.equal(allowed.status,200);assert.match(allowed.headers.get('cache-control'),/no-store/);
+    assert.equal((await fetch(base+'/api/airports/AVL/surface',{headers})).status,200);
     assert.equal((await fetch(base+'/api/diagnostics/recent',{headers})).status,404);
     assert.equal((await fetch(base+'/api/flights/lookup',{method:'POST',headers:{...headers,Origin:'https://evil.test'}})).status,403);
     assert.equal((await fetch(base+'/api/flights/lookup',{method:'POST',headers:{...headers,Origin:config.origin}})).status,200);

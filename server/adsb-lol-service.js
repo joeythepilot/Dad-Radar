@@ -43,26 +43,46 @@ function titleCasePhase(phase) {
 }
 
 function normalizePosition(record, retrievedAt) {
-  const seenSeconds = finiteNumber(record.seen_pos ?? record.seen) ?? 0;
-  const recordedAt = new Date(
+  const seenSeconds = finiteNumber(record.seen_pos);
+  const recordedAt = seenSeconds === null ? null : new Date(
     new Date(retrievedAt).getTime() - Math.max(0, seenSeconds) * 1000
   ).toISOString();
-
+  const onGround = record.alt_baro === "ground";
+  const altitude = finiteNumber(record.alt_baro) ?? finiteNumber(record.alt_geom);
+  const speed = finiteNumber(record.gs);
+  const heading = onGround
+    ? finiteNumber(record.true_heading) ?? finiteNumber(record.track)
+    : finiteNumber(record.track) ?? finiteNumber(record.true_heading);
+  const rate = finiteNumber(record.baro_rate) ?? finiteNumber(record.geom_rate);
   return {
     recordedAt,
-    latitude: finiteNumber(record.lat),
-    longitude: finiteNumber(record.lon),
-    altitude: finiteNumber(record.alt_baro) ?? finiteNumber(record.alt_geom),
-    groundSpeed: finiteNumber(record.gs),
-    heading: finiteNumber(record.track) ?? finiteNumber(record.true_heading),
-    verticalRate: finiteNumber(record.baro_rate) ?? finiteNumber(record.geom_rate)
+    latitude: finiteNumber(record.lat), longitude: finiteNumber(record.lon),
+    altitude, groundSpeed: speed, heading, verticalRate: rate,
+    altitudeFeet: altitude, groundSpeedKnots: speed, headingDegrees: heading,
+    verticalSpeedFeetPerMinute: rate,
+    altitudeTrend: rate >= 100 ? "C" : rate <= -100 ? "D" : "",
+    onGround: onGround ? true : finiteNumber(record.alt_baro) !== null ? false : null,
+    updateType: record.type ?? null,
+    positionAccuracy: finiteNumber(record.nac_p),
+    containmentRadiusMeters: finiteNumber(record.rc)
   };
 }
 
 function normalizeAdsbSnapshot(record, lookup, retrievedAt = new Date().toISOString()) {
   const position = normalizePosition(record, retrievedAt);
   const metrics = routeMetrics(position, lookup.origin, lookup.destination);
-  const phase = determinePhase(position, metrics);
+  const recent = position.recordedAt && Date.parse(retrievedAt) - Date.parse(position.recordedAt) <= 90000;
+  let phase = determinePhase(position, metrics);
+  if (position.onGround === true) {
+    phase = "UNKNOWN";
+    if (recent && metrics.distanceToDestination !== null && metrics.distanceToDestination < 4 && metrics.progressPercent > 80) phase = "ARRIVED";
+    else if (recent && metrics.distanceFromOrigin !== null && metrics.distanceFromOrigin < 4) {
+      // The family unit treats a broadcasting ground aircraft as ready for pushback, including taxi holds.
+      phase = "TAXI_OUT";
+    }
+  } else if (position.onGround === false && ["ARRIVED", "TAXI_OUT", "BOARDING"].includes(phase)) {
+    phase = "EN_ROUTE";
+  }
   const ident = normalizeCallsign(record.flight) || lookup.callsigns[0] || null;
 
   return {
@@ -114,8 +134,8 @@ function selectAircraft(records, callsign) {
   return (Array.isArray(records) ? records : [])
     .filter((record) =>
       normalizeCallsign(record.flight) === expected &&
-      Number.isFinite(Number(record.lat)) &&
-      Number.isFinite(Number(record.lon))
+      finiteNumber(record.lat) !== null &&
+      finiteNumber(record.lon) !== null
     )
     .sort((left, right) =>
       (finiteNumber(left.seen_pos) ?? 999) -

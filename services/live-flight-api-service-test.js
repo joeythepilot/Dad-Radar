@@ -36,6 +36,16 @@ function createContext(fetchImpl) {
   return context;
 }
 
+async function testGroundOnlyLookupFlag() {
+  let body;
+  const context = createContext(async (_url, options) => {
+    body = JSON.parse(options.body);
+    return {ok: true, json: async () => ({ok: true, liveFlight: null})};
+  });
+  await context.dadRadarLiveFlightApi.getFlightSnapshot({origin: "AVL", destination: "ORD"}, {surfaceOnly: true});
+  assert.equal(body.surfaceOnly, true);
+}
+
 async function testPostsProviderNeutralLookup() {
   let request = null;
 
@@ -224,6 +234,7 @@ async function testConfigurationErrorIsTagged() {
 
 async function runTests() {
   await testPostsProviderNeutralLookup();
+  await testGroundOnlyLookupFlag();
   await testNoMatchReturnsNull();
   await testPreflightRouteReturnsRouteOnlySnapshot();
   await testConfigurationErrorIsTagged();

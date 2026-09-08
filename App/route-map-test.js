@@ -107,7 +107,7 @@ class FakeElement {
   }
 }
 
-function createHarness(flight, state = null) {
+function createHarness(flight, state = null, surfaceApi = null) {
   const ids = [
     "route-map-svg",
     "map-route-shadow",
@@ -142,6 +142,7 @@ function createHarness(flight, state = null) {
     console,
     dadRadarAirports:
       airportCatalog,
+    dadRadarAirportSurface: surfaceApi,
     document: {
       getElementById: (id) =>
         elements[id] ?? null
@@ -845,7 +846,20 @@ function testSurfaceZoomAtBothRouteEnds() {
     });
 }
 
+function testAirportCameraIntegration() {
+  const realApi = require("./airport-surface-map");
+  const surfaceApi = {...realApi, createController: () => ({render: () => false})};
+  const den = airportCatalog.lookupAirport("DEN");
+  const flight = flightAtAltitude(null, {origin: "DEN", destination: "ORD", latitude: den.latitude, longitude: den.longitude});
+  const missing = viewBox(createHarness(flight, null, surfaceApi).elements["route-map-svg"]);
+  const high = viewBox(createHarness({...flight, altitude: den.elevationFeet + 11000}, null, surfaceApi).elements["route-map-svg"]);
+  const low = viewBox(createHarness({...flight, altitude: den.elevationFeet + 1000}, null, surfaceApi).elements["route-map-svg"]);
+  assert.deepEqual(missing, high, "Missing altitude must retain the route camera rather than becoming zero feet.");
+  assert(low[2] < high[2], "The integrated low-airport camera uses height above DEN, not sea level.");
+}
+
 function runTests() {
+  testAirportCameraIntegration();
   testDetailedMapAsset();
   testGroundLocationUsesDomesticOverview();
   testReferenceCitiesStayReadableWhileZoomed();
