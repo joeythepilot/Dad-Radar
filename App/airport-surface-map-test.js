@@ -20,6 +20,16 @@ const north = api.project({latitude: den.latitude + 0.01, longitude: den.longitu
 assert(Math.abs(east.x + north.y) < 0.01, "Equal ground distances keep equal scale in both axes.");
 const b = api.fitBounds([{x: -1000, y: -2000}, {x: 1000, y: 2000}], 2.4);
 assert(Math.abs(b.width / b.height - 2.4) < 1e-10);
+assert(Math.abs(b.x + b.width / 2) < 1e-10);
+assert(Math.abs(b.y + b.height / 2) < 1e-10);
+const avlExtent = [{x: -455, y: -1172}, {x: 522, y: 1184}];
+for (const aspect of [1.25, 2.3]) {
+  const frame = api.fitBounds(avlExtent, aspect);
+  assert(2356 / frame.height > 0.8, "AVL should occupy over 80% of map height on primary and landscape mobile.");
+  assert(Math.abs(frame.x + frame.width / 2 - 33.5) < 1e-8, "Center on field geometry.");
+  assert(Math.abs(frame.y + frame.height / 2 - 6) < 1e-8);
+  assert(frame.x < -455 && frame.x + frame.width > 522 && frame.y < -1172 && frame.y + frame.height > 1184);
+}
 assert.equal(api.fieldAltitude({latitude: den.latitude, longitude: den.longitude, altitude: den.elevationFeet + 1000}, [den, avl]), 1000);
 assert.equal(api.fieldAltitude({latitude: den.latitude, longitude: den.longitude, altitude: null}, [den]), null);
 
@@ -50,6 +60,9 @@ assert.equal(controller.render(state), false, "Regional map stays available whil
 maps.AVL = mapFor(avl); maps.ORD = mapFor(ord); clock += 10001;
 assert.equal(controller.render(state), true);
 assert.equal(requests, 4);
+clock += 10001;
+assert.equal(controller.refresh(), true);
+assert.equal(requests, 6, "A usable cached map with a pending server refresh is rechecked promptly.");
 const layer = shell.lastChild, svg = layer.firstChild, plane = svg.lastChild;
 assert.equal(svg.firstChild.attributes.class, "airport-surface-terminal");
 assert.match(svg.children.find(e => e.attributes.class === "airport-surface-runway").attributes.d, /^M/);

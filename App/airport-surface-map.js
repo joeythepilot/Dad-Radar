@@ -39,8 +39,10 @@
   function fitBounds(points, aspect) {
     let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
     points.forEach(p => {minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x); minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y);});
-    let width = Math.max(1500, maxX - minX) * 1.22;
-    let height = Math.max(1500, maxY - minY) * 1.38;
+    // Fit the actual field tightly, reserving space for labels and the time
+    // plates. Preserve north-up and equal ground scale on either screen.
+    let width = Math.max(600, maxX - minX) * 1.12;
+    let height = Math.max(600, maxY - minY) * 1.18;
     const ratio = finite(aspect) && aspect > 0 ? aspect : 1.4;
     if (width / height < ratio) width = height * ratio; else height = width / ratio;
     return {x: (minX + maxX - width) / 2, y: (minY + maxY - height) / 2, width, height};
@@ -71,7 +73,9 @@
         item.next = now() + (error ? 60000 : Math.max(10000, data.retryAfterMs || 60000));
         if (!error && data.map && data.map.code === code && Array.isArray(data.map.features)) {
           item.map = data.map;
-          item.next = now() + 3600000;
+          // A usable old chart may be returned while the server refreshes its
+          // airport boundary. Pick up that result promptly, not an hour later.
+          item.next = now() + (data.pending ? Math.max(10000, data.retryAfterMs || 10000) : 3600000);
         }
         if (options.onChange) options.onChange();
       });
@@ -90,7 +94,7 @@
     }
     function draw(map, airport) {
       while (svg.firstChild) svg.removeChild(svg.firstChild);
-      const allPoints = [project(airport, airport)];
+      const allPoints = [];
       const order = {apron: 0, terminal: 1, taxiway: 2, runway: 3};
       const labels = [], seenLabels = {};
       map.features.slice().sort((a, b) => order[a.kind] - order[b.kind]).forEach(feature => {

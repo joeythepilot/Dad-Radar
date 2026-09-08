@@ -36,7 +36,7 @@ const layoutStyles = fs.readFileSync(
 
 assert.match(
   html,
-  /<script[\s\S]*?src="\.\/App\/dad-radar-browser\.js\?v=ground-telemetry-2"[\s\S]*?><\/script>/,
+  /<script[\s\S]*?src="\.\/App\/dad-radar-browser\.js\?v=airport-framing-3"[\s\S]*?><\/script>/,
   "The display should load the compatibility bundle."
 );
 

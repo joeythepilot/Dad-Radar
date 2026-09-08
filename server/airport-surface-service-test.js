@@ -3,7 +3,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const os = require("node:os");
 const path = require("node:path");
-const {createAirportSurfaceService, airportForCode, normalizeGeometry} = require("./airport-surface-service");
+const {createAirportSurfaceService, airportForCode, queryForAirport, normalizeGeometry} = require("./airport-surface-service");
 const {normalizeAdsbSnapshot, selectAircraft} = require("./adsb-lol-service");
 const {normalizeLookup, normalizeFlightSnapshot} = require("./flightradar24-service");
 const {reconcileScheduleWithLive} = require("../models/live-flight-state");
@@ -13,6 +13,22 @@ const NOW = "2026-09-08T13:00:00.000Z";
 const airport = airportForCode("AVL");
 const fixture = {elements: [{type: "way", tags: {aeroway: "runway", ref: "17/35", width: "45"}, geometry: [
   {lat: airport.latitude - 0.01, lon: airport.longitude}, {lat: airport.latitude + 0.01, lon: airport.longitude}]}]};
+const nearbyRunway = {...fixture.elements[0], tags: {aeroway: "runway", ref: "04/22"},
+  geometry: fixture.elements[0].geometry.map(p => ({...p, lon: p.lon + 0.06}))};
+const legacyFixture = {elements: [...fixture.elements, nearbyRunway]};
+assert.deepEqual(normalizeGeometry(legacyFixture, airport, NOW).features.map(f => f.label), ["17/35"],
+  "A disconnected runway five kilometres east must not pull AVL's camera sideways.");
+const parallel = {...fixture.elements[0], tags: {aeroway: "runway", ref: "18/36"},
+  geometry: fixture.elements[0].geometry.map(p => ({...p, lon: p.lon + 0.02}))};
+const link = {type: "way", tags: {aeroway: "taxiway"}, geometry: [
+  {lat: airport.latitude, lon: airport.longitude}, {lat: airport.latitude, lon: airport.longitude + 0.02}]};
+assert.equal(normalizeGeometry({elements: [...fixture.elements, parallel, link, nearbyRunway]}, airport, NOW).features.length, 3,
+  "The local network retains a distant parallel runway connected by taxiways.");
+const scopedFixture = {elements: [{type: "relation", tags: {aeroway: "aerodrome", icao: "KAVL"}}, ...fixture.elements, parallel]};
+assert.equal(normalizeGeometry(scopedFixture, airport, NOW).features.length, 2,
+  "An identified boundary retains all of its runways even when connecting taxiways are unmapped.");
+assert.match(queryForAirport(airport), /\["icao"="KAVL"\]/);
+assert.match(queryForAirport(airport), /way\(area\.field\)/);
 const lookup = normalizeLookup({origin: "AVL", destination: "ORD", liveLookupCandidates: ["ENY1234"], startUtc: "2026-09-08T12:30:00Z"});
 const record = {flight: "ENY1234", hex: "a12345", type: "adsb_icao", lat: airport.latitude, lon: airport.longitude,
   alt_baro: "ground", gs: 0, track: 179, seen_pos: 2};
@@ -116,6 +132,24 @@ assert.equal(selectAirport(fr24Arrival.resolved.state.flight.surfacePosition, [d
     await restarted.get("AVL"); await restarted.idle();
     assert.equal((await restarted.get("AVL")).stale, false);
     assert.equal(requests, 3);
+    // An installed v1 chart is repaired on read, even if its automatic boundary
+    // refresh is temporarily unavailable; no manual cache deletion is needed.
+    await fs.writeFile(path.join(cacheDir, "AVL.json"), JSON.stringify({version: 1, code: "AVL", fetchedAt: new Date(time).toISOString(),
+      features: legacyFixture.elements.map(e => ({kind: "runway", label: e.tags.ref, width: 45, points: e.geometry.map(p => [p.lon, p.lat])}))}));
+    fail = true;
+    const legacyService = createAirportSurfaceService(options);
+    const repaired = await legacyService.get("AVL");
+    assert.equal(repaired.pending, true);
+    assert.equal(repaired.stale, true);
+    assert.deepEqual(repaired.map.features.map(f => f.label), ["17/35"]);
+    await legacyService.idle();
+    assert.deepEqual((await legacyService.get("AVL")).map.features.map(f => f.label), ["17/35"]);
+    const scoped = normalizeGeometry(scopedFixture, airport, new Date(time).toISOString());
+    await fs.writeFile(path.join(cacheDir, "AVL.json"), JSON.stringify(scoped));
+    const savedScoped = await createAirportSurfaceService(options).get("AVL");
+    assert.equal(savedScoped.pending, false);
+    assert.equal(savedScoped.map.selection, "airport-boundary");
+    assert.equal(savedScoped.map.features.length, 2, "Restart must not apply the fallback filter to a scoped airport map.");
     assert.throws(() => normalizeGeometry({elements: [], remark: "timeout"}, airport, NOW));
     assert.throws(() => normalizeGeometry({elements: [{...fixture.elements[0], geometry: [{lat: 0, lon: 0}, {lat: 1, lon: 1}]}]}, airport, NOW));
     assert.throws(() => normalizeGeometry({elements: []}, airport, NOW));
