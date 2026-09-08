@@ -1,6 +1,7 @@
 node_modules/
 App/dad-radar-browser.js
 .env
+.env.tmp
 credentials.json
 token.json
 runtime/

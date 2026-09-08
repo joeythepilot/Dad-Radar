@@ -1,95 +1,87 @@
-# Dad Radar Mobile: family setup
+# Dad Radar Mobile: family-password setup
 
-The v11 mobile companion adds `/mobile` to the existing Windows server. It uses the recovered map, approved destination posters, Calendar controller, and live-flight reconciliation. The home console stays at `/display` or `/`.
+The current companion is one landscape screen: four split-flap rows and Today's Duty at left, a permanent map at right, arrival time on the map, and numerical speed/altitude. It uses the same Calendar and flight data as the home display. Mobile has no posters or Today/Live switch.
 
-## What this update provides
+Family members enter one shared password. There are no email accounts or emailed codes. “Remember this device” keeps a sign-in for 30 days; unchecked sign-ins have a server-side maximum of 12 hours and a browser-session cookie. Clearing browser data or changing the family password requires signing in again. Remembered sessions survive normal PC/service restarts.
 
-- Arrival airport/city, flight number, current status, live map and destination poster.
-- Today's itinerary, with its time zone labeled.
-- Commutes to the configured home airport automatically emphasize arrival time and airport.
-- Arrival times formatted from absolute timestamps in the destination airport's IANA time zone, with the calendar date visible. They are labeled Scheduled, Expected, Last reported, Landed or Arrived according to available evidence.
-- Position timestamp and flight/schedule freshness. No calculated curbside-ready time or terminal/gate fields.
-- Refresh after foregrounding or restoring connectivity. The existing controller suspends polling while the mobile page is hidden.
-- Installable app metadata/icon and an offline navigation page. No schedule, position, ETA, token or API response is cached by the service worker.
-- A separate loopback-only remote gateway on port 4174. All requests must have a valid Cloudflare Access signature, application audience, issuer, expiration, and an email on the configured family allowlist. Invalid/missing configuration leaves it disabled.
-- Same Google event id with changed flight identity now clears the previous live match and current track. The Calendar lock still uses the schedule event identity.
+## 1. Install the update and choose the password
 
-Sequence history/mileage and push notifications are not in this mobile-first package; the authorized sequence work remains pending integration from the older branch. No cloud account, DNS record, tunnel or Access policy was created by this code update.
-
-## 1. Install and try it at home
-
-Apply the accompanying Git bundle from the repaired cb3d4dc baseline, run `npm.cmd test`, and restart `npm.cmd run beta:autostart:restart`.
-
-On the PC, open `http://127.0.0.1:4173/mobile`. For a phone on the same home Wi-Fi, run `npm.cmd run beta:address` on the PC, then append `/mobile` to the displayed home-network address. Local-network access does not require Cloudflare. Home Screen app/service-worker features are intended for the HTTPS address configured below.
-
-## 2. Prepare Cloudflare and the domain
-
-Use a Cloudflare account you control. Add `joeymaxwell.com` on its Free DNS plan. If DNS is still hosted at Wix, first copy/export and compare every existing DNS record: website records, the `dadradar` GitHub Pages CNAME, Google mail MX records, SPF, DKIM, DMARC, and verification records. Cloudflare's automatic scan is not proof that every record was copied.
-
-Only after that comparison, update the domain's nameservers at the registrar to the two Cloudflare nameservers assigned to the zone. This changes DNS hosting, not domain ownership or your email provider. Keep mail-related hosts DNS-only. Preserve the GitHub Pages mapping and verify your existing email and public Dad Radar information page afterward. Do not delete or replace those services.
-
-Use `family.joeymaxwell.com` for the private companion; leave `dadradar.joeymaxwell.com` serving the existing public information page. If the free plan cannot be activated without resolving DNS ownership, stop there and resolve the account access rather than publishing an unprotected substitute URL.
-
-## 3. Create the family sign-in application
-
-In Cloudflare Zero Trust, enable a suitable sign-in method, such as email one-time PIN. Under Access controls → Applications, add a Self-hosted application named Dad Radar Family for the entire hostname `family.joeymaxwell.com`, not only `/mobile`. APIs and artwork must be protected too.
-
-Add an Allow policy for the exact family email addresses you choose. Do not use Everyone or Bypass. An adult can sign in on Delaney's iPad; a new child email account is not required. Choose the session duration appropriate for the family devices; sign-in will occasionally need renewal.
-
-Record your Access team domain (`your-team.cloudflareaccess.com`) and the application's Audience (AUD) tag from its settings. The team domain is not the family website address. The audience is not a tunnel token.
-
-## 4. Configure Dad Radar
-
-On the PC in Command Prompt:
+Run in Windows Command Prompt:
 
 ```bat
 cd /d C:\Users\cfijo\Dad-Radar
+git fetch origin agent/mobile-companion
+git merge --ff-only FETCH_HEAD
+npm.cmd test
 npm.cmd run mobile:setup
 ```
 
-Enter the team domain, AUD tag, `https://family.joeymaxwell.com`, and the allowed sign-in emails. The command updates only the mobile settings in the local `.env`; existing Calendar/flight-provider settings are preserved. Do not upload `.env`.
+Keep the suggested address `https://family.joeymaxwell.com`. Enter a family password of 12–128 characters, then confirm it. A few memorable words work well. The terminal deliberately hides the password while you type. Choose it on the PC; do not send it in chat.
 
-Then restart:
+Setup saves a salted scrypt hash in the local `.env`, selects password authentication, clears the old email-login settings, and preserves Calendar/provider settings. The plaintext password is not saved. Setup can be run again to change the password; this invalidates all prior sessions after restarting.
 
 ```bat
 npm.cmd run beta:autostart:restart
 ```
 
-Accept the Windows elevation prompt if shown. Port 4174 is restricted to loopback and requires Access even from the same PC. A plain request returning 401 is expected until it comes through authenticated Cloudflare Access.
+The mobile gateway listens only on `127.0.0.1:4174`. To check that the login page is available before connecting the tunnel:
 
-## 5. Install the tunnel on the PC
+```bat
+curl.exe -I -H "Host: family.joeymaxwell.com" http://127.0.0.1:4174/family/login
+```
 
-Create a named Cloudflare Tunnel for the Dad Radar PC using Cloudflare's Windows instructions. Install `cloudflared` and run the service-install command provided by that dashboard in an Administrator terminal. The command contains a private tunnel token: do not paste that token into chat or put it in Git.
+Expect `200 OK`. A request using a different Host is rejected intentionally. Password cookies require HTTPS, so actual sign-in is tested at the family address through the tunnel.
+
+## 2. Finish Cloudflare Tunnel
+
+The domain is now active on Cloudflare with nameservers `lorna.ns.cloudflare.com` and `max.ns.cloudflare.com`. The public `dadradar` CNAME continues to point to `joeythepilot.github.io`; leave that public information site in place. Use the separate hostname `family.joeymaxwell.com` for this app.
+
+After the password gateway is installed, restarted and checked, remove the **Dad Radar Family** application under **Zero Trust → Access controls → Applications** for `family.joeymaxwell.com`. This removes Cloudflare's email/identity-provider prompt; DadRadar's password gateway now protects every remote page, asset and data request. Leave any unrelated Access applications in place. There is no need to add a broad Bypass policy.
+
+In **Zero Trust → Networks → Connectors → Cloudflare Tunnels**, create a named tunnel called `Dad Radar` using the cloudflared connector. Select Windows and follow Cloudflare's installation instructions. Run the dashboard's service-install command in an Administrator terminal on the DadRadar PC. That command includes a private tunnel token: keep it on the PC, out of chat and Git.
 
 Add a published application route:
 
 | Field | Value |
 | --- | --- |
-| Hostname | `family.joeymaxwell.com` |
+| Subdomain | `family` |
+| Domain | `joeymaxwell.com` |
+| Path | Leave blank |
 | Service type | HTTP |
 | Service URL | `127.0.0.1:4174` |
 
-**Use 4174, not the unprotected local-display port 4173.** The tunnel encrypts the external transport; HTTP here is only the same-machine hop. Do not forward router ports. Do not use a temporary public quick-tunnel URL. Exclude the family hostname from any broad Cache Everything rules; private API responses must not be edge-cached.
+Use **4174**. Port 4173 serves the local home display and does not have remote password protection. Keep the original public Host header; do not override it with localhost in the tunnel's HTTP settings. The tunnel handles external HTTPS; the HTTP hop stays on the PC. No router port forwarding is needed. Exclude the family hostname from any broad caching rules; the gateway sends `private, no-store` on all responses.
 
-The home PC, Dad Radar background service, and tunnel must stay running. Configure Windows to avoid sleeping while it is serving the family display.
+The home PC, DadRadar service and cloudflared service must stay running. Configure the PC to avoid sleeping while it serves the display.
 
-## 6. Verify and add the Home Screen icon
+## 3. Test and add the Home Screen icon
 
-1. Turn off Wi-Fi on Allison's phone to test cellular access.
-2. Visit `https://family.joeymaxwell.com`. Sign in with an allowed address; it opens `/mobile`.
-3. Verify the current flight number, arrival airport and time against the home display/provider information. Note that the mobile arrival time is destination-local; the home console uses Eastern time.
-4. Try a private browser window without signing in. Neither schedule nor position should be visible. An address outside the allowlist must be denied.
-5. On iPhone/iPad Safari, Share → Add to Home Screen. Choose Open as Web App if offered. Use the resulting Dad Radar icon.
-6. Close/reopen it and test after screen lock. Confirm updates resume and the freshness text advances honestly. Briefly disconnect the phone; the page should show interrupted/stale information or the explicit offline screen, never claim a cached ETA is live.
+1. Turn off Wi-Fi on a phone to test cellular access.
+2. Open `https://family.joeymaxwell.com`. The DadRadar password page should appear with no Cloudflare email prompt.
+3. Enter the family password and keep “Remember this device” selected on a family-owned device.
+4. Confirm flight number, arrival airport/time and position against the home display. Arrival is destination-local; duty times are Eastern.
+5. In Safari, use **Share → Add to Home Screen**, and enable **Open as Web App** if offered. Open the new icon; if Safari asks for the password again in its separate app session, enter it there once.
+6. Close and reopen the app, lock/unlock the phone, and confirm updates resume. A private browser window should still require the password. APIs must not show schedule or position without a valid session.
 
-If login has expired while the page is open, reopen the family address to renew it. The Refresh button reloads data; it cannot override Cloudflare's sign-in policy.
+Delaney can use the same password on her iPad. Share it directly with Allison, Mom and your sister. They do not need Cloudflare accounts. An expired session returns the mobile app to its login page on the next protected data request. Offline mode displays an explicit offline screen; it does not save private flight data for offline use.
 
-## Verification performed before delivery
+## Sign out or change the password
 
-The full Node regression suite passes, including tests for destination-local timestamps (Phoenix overnight/MST and Asheville/EDT), stale/failed data, incorrect endpoint matches, actual landing versus gate arrival, same-event route reassignment, mobile route/static assets, worker scope headers, and signed Access tokens/allowlisting/cross-origin POST rejection. No real family credentials, live tunnel, cellular device, or browser-rendered visual verification was available in the build session. Those deployment/device checks remain step 6 above.
+Visit `https://family.joeymaxwell.com/family/login` on a signed-in device and choose **Sign out of this device**. This revokes that session on the server, including after a restart.
 
-## Official setup references
+To reset a forgotten password or revoke every device, run `npm.cmd run mobile:setup` on the PC and restart the service. There is no public password-reset endpoint or email dependency. Setting the same password again also creates a new salt and revokes old sessions after restart.
+
+The server stores only hashes of random session tokens in the ignored `runtime/family-sessions.json` file. Deleting this file while DadRadar is stopped signs all devices out. A damaged/unreadable session file disables the remote gateway rather than opening access. Routine updates do not delete it.
+
+## Validation and limits
+
+Automated tests cover correct/incorrect passwords, cookie protection, remembered and short session expiry, restart persistence, logout replay, password rotation, origin/host checks, private APIs/artwork, diagnostic blocking, login rate limits and failure to write session storage. Existing Cloudflare JWT mode remains supported explicitly for other installations; password mode does not accept a Cloudflare token as a substitute for the password.
+
+The shared password intentionally grants the same viewing access to each family member. Removing one person's access requires changing the shared password. Authentication grants viewing/flight lookup, not remote diagnostics or configuration. No additional flight-provider requests are introduced.
+
+Physical iPhone/Home Screen and live tunnel validation are the final installation checks above; a browser preview cannot prove them.
+
+## References
 
 - [Cloudflare Tunnel setup](https://developers.cloudflare.com/tunnel/setup/)
-- [Self-hosted Access application](https://developers.cloudflare.com/cloudflare-one/access-controls/applications/http-apps/self-hosted-public-app/)
-- [Access JWT validation and audience](https://developers.cloudflare.com/cloudflare-one/access-controls/applications/http-apps/authorization-cookie/validating-json/)
+- [OWASP password storage](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)

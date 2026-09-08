@@ -1,13 +1,24 @@
 'use strict';
 const crypto = require('node:crypto');
 const express = require('express');
+const {passwordMiddleware, HASH} = require('./family-password');
 
 function accessConfiguration(env = process.env) {
+  const mode = String(env.DAD_RADAR_MOBILE_AUTH || '').trim();
+  const passwordHash = String(env.DAD_RADAR_FAMILY_PASSWORD_HASH || '').trim();
+  if (mode && !['password', 'cloudflare'].includes(mode)) throw new Error('Unknown mobile sign-in mode.');
   const team = String(env.DAD_RADAR_ACCESS_TEAM || '').trim();
   const audience = String(env.DAD_RADAR_ACCESS_AUD || '').trim();
   const origin = String(env.DAD_RADAR_MOBILE_ORIGIN || '').trim();
   const emails = String(env.DAD_RADAR_FAMILY_EMAILS || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
-  if (!team && !audience && !origin && !emails.length) return null;
+  if (mode === 'password') {
+    if (!HASH.test(passwordHash)) throw new Error('Run mobile:setup to set the family password.');
+    const url = new URL(origin);
+    if (url.protocol !== 'https:' || url.origin !== origin || url.username || url.password) throw new Error('Mobile origin must be an HTTPS origin without a path.');
+    return {mode, passwordHash, origin};
+  }
+  if (!mode && passwordHash) throw new Error('Family password requires password sign-in mode.');
+  if (!mode && !team && !audience && !origin && !emails.length) return null;
   if (!/^[a-z0-9-]+\.cloudflareaccess\.com$/.test(team) || !audience || !emails.length) throw new Error('Mobile access needs an Access team domain, audience, and family email list.');
   const url = new URL(origin);
   if (url.protocol !== 'https:' || url.origin !== origin || url.username || url.password) throw new Error('Mobile origin must be an HTTPS origin without a path.');
@@ -47,15 +58,33 @@ function createVerifier(config, options = {}) {
 }
 function createMobileGateway(app, config, options = {}) {
   const gateway=express();
-  const verify=createVerifier(config,options);
   gateway.disable('x-powered-by');
+  gateway.use((request,response,next)=> {
+    // Static-file middleware must not replace the private gateway's no-store.
+    const setHeader=response.setHeader;
+    response.setHeader=function(name,value) {return setHeader.call(this,name,String(name).toLowerCase()==='cache-control' ? 'private, no-store' : value);};
+    // Preserve Origin on same-site password form submissions; no-referrer
+    // makes browsers send Origin:null, which our CSRF check correctly rejects.
+    response.set({'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':config.mode==='password' ? 'same-origin' : 'no-referrer','X-Frame-Options':'DENY'});
+    next();
+  });
+  if (config.mode === 'password') gateway.use(passwordMiddleware(config,options));
+  else {
+    const verify=createVerifier(config,options);
+    gateway.use(async (request,response,next)=> {
+      try {await verify(request.get('Cf-Access-Jwt-Assertion'));next();}
+      catch {response.status(401).type('text').send('Family sign-in required. Open the Dad Radar family address and sign in again.');}
+    });
+  }
   gateway.use(async (request,response,next)=> {
-    response.set({'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer'});
-    try {await verify(request.get('Cf-Access-Jwt-Assertion'));}
-    catch {response.status(401).type('text').send('Family sign-in required. Open the Dad Radar family address and sign in again.');return;}
     if (!['GET','HEAD'].includes(request.method) && request.get('Origin')!==config.origin) {response.status(403).end();return;}
     // The remote companion needs viewing and lookup only, not diagnostics.
-    if(request.path.startsWith('/api/') && !/^\/api\/airports\/[A-Z0-9]{3,4}\/surface$/.test(request.path) && !['/api/calendar/upcoming','/api/flights/lookup','/api/weather/radar'].includes(request.path)) {response.status(404).end();return;}
+    const pathname=request.path.toLowerCase();
+    if(pathname==='/api' || pathname.startsWith('/api/')) {
+      const allowed = pathname==='/api/flights/lookup' ? request.method==='POST' :
+        ['GET','HEAD'].includes(request.method) && (/^\/api\/airports\/[a-z0-9]{3,4}\/surface$/.test(pathname) || ['/api/calendar/upcoming','/api/weather/radar'].includes(pathname));
+      if(!allowed) {response.status(404).end();return;}
+    }
     if(request.path==='/') {response.redirect('/mobile');return;}
     next();
   });
@@ -69,7 +98,9 @@ function startMobileGateway(app, options = {}) {
   if(!config) return null;
   const port=Number(env.DAD_RADAR_MOBILE_PORT || 4174);
   if(!Number.isInteger(port) || port<1 || port>65535) {console.error('Dad Radar mobile access disabled: invalid port');return null;}
-  const server=createMobileGateway(app,config).listen(port,'127.0.0.1',()=>console.log(`Protected Dad Radar mobile gateway listening on loopback port ${port}.`));
+  let gateway;
+  try {gateway=createMobileGateway(app,config);} catch {console.error('Dad Radar mobile access disabled: could not initialize sign-in storage.');return null;}
+  const server=gateway.listen(port,'127.0.0.1',()=>console.log(`Protected Dad Radar mobile gateway listening on loopback port ${port}.`));
   server.on('error',error=>console.error(`Mobile gateway could not start: ${error.code || 'unknown error'}`));
   return server;
 }
