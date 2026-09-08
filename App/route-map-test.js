@@ -781,8 +781,8 @@ function testSurfaceZoomIsContinuous() {
 
   assert.equal(
     surfaceCamera[2],
-    200,
-    "The closest surface view should use the configured 6x zoom."
+    50,
+    "Low-altitude regional focus should use the tighter 24x limit."
   );
 
   const expectedAircraftX =
@@ -858,7 +858,19 @@ function testAirportCameraIntegration() {
   assert(low[2] < high[2], "The integrated low-airport camera uses height above DEN, not sea level.");
 }
 
+function testShortFlightFraming() {
+  const flight = {origin: "ORD", destination: "MSN", latitude: 42.45, longitude: -88.6,
+    altitude: 12225, heading: 320, progress: 45};
+  const high = viewBox(createHarness(flight).elements["route-map-svg"]);
+  assert(high[2] < 90, "ORD–MSN should fill a regional frame, not the old 353-unit national view");
+  const low = viewBox(createHarness({...flight, altitude: 3000}).elements["route-map-svg"]);
+  assert(low[2] <= high[2], "Descending cannot widen a tightly framed short route");
+  const unknown = viewBox(createHarness({...flight, altitude: null}).elements["route-map-svg"]);
+  assert.deepEqual(unknown, high, "Missing altitude keeps the route fit");
+}
+
 function runTests() {
+  testShortFlightFraming();
   testAirportCameraIntegration();
   testDetailedMapAsset();
   testGroundLocationUsesDomesticOverview();

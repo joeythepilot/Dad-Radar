@@ -78,12 +78,12 @@ const BASE_VIEW_BOX = {
   height: 650
 };
 
-const MAX_CAMERA_ZOOM = 3.4;
+const MAX_CAMERA_ZOOM = 24;
 
 const SURFACE_FOCUS_ALTITUDE =
   10000;
 
-const SURFACE_CAMERA_ZOOM = 6;
+const SURFACE_CAMERA_ZOOM = 24;
 
 const AIRPORT_PLACARD_CITY_WIDTH =
   114;
@@ -234,14 +234,8 @@ function buildCurve(origin, destination) {
     y: dx / distance
   };
 
-  const arcHeight =
-    Math.min(
-      115,
-      Math.max(
-        45,
-        distance * 0.22
-      )
-    );
+  // Keep the decorative direct-route bend proportional on short sectors.
+  const arcHeight = Math.min(115, distance * 0.22);
 
   const control = {
     x: midpoint.x + normal.x * arcHeight,
@@ -797,13 +791,13 @@ function fitCameraToPoints(points) {
 
   const horizontalPadding =
     Math.max(
-      92,
+      8,
       routeWidth * 0.24
     );
 
   const verticalPadding =
     Math.max(
-      82,
+      8,
       routeHeight * 0.3
     );
 
@@ -888,9 +882,12 @@ function cameraForSurfaceProximity(
   const aspectRatio =
     viewportAspectRatio();
 
-  const surfaceWidth =
-    BASE_VIEW_BOX.width /
-    SURFACE_CAMERA_ZOOM;
+  // A short route may already be tighter than the regional airport focus.
+  // Descending must never zoom back out just to meet a fixed target.
+  const surfaceWidth = Math.min(
+    routeCamera.width,
+    BASE_VIEW_BOX.width / SURFACE_CAMERA_ZOOM
+  );
 
   const width =
     routeCamera.width +
