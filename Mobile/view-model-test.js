@@ -16,7 +16,7 @@ m=viewModel({...base,snapshot:{...snapshot,destination:'TUL'}});assert.equal(m.t
 m=viewModel({...base,snapshot:{...snapshot,arrival:{actualRunway:'2026-09-04T16:00:00Z'}}});assert.equal(m.arrivalLabel,'Landed');
 m=viewModel({...base,snapshot:{...snapshot,arrival:{actualGate:'2026-09-04T16:00:00Z'}}});assert.equal(m.arrivalLabel,'Arrived');
 m=viewModel({...base,event:{origin:'ORD',destination:'PHX',times:{endUtc:'2026-09-05T06:30:00Z'}},state:{flight:{origin:'ORD',destination:'PHX'}},snapshot:null});
-assert.equal(m.time,'11:30 PM');assert.match(m.timeZone,/Sep 4/);assert.match(m.timeZone,/MST/);assert.equal(m.pickup,false);
+assert.equal(m.time,'2:30 AM');assert.match(m.timeZone,/Sep 5/);assert.match(m.timeZone,/EDT/);assert.equal(m.pickup,false);
 m=viewModel({...base,state:{status:'HOME',locationAirport:'AVL'},event:null,snapshot:null});assert.equal(m.time,'—');assert.equal(m.code,'AVL');
 console.log('Mobile arrival and freshness tests passed.');
 const day={time:'ALL DAY',label:'HOME · DAY OFF',tag:'OFF DUTY'};

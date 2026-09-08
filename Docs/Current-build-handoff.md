@@ -161,3 +161,9 @@ A per-browser Taxi-In checkpoint preserves the phase and last position through r
 Validation: full npm test passed, followed by focused controller/API/provider checks for the final outage guard. Replays cover zero-speed taxi, destination airport selection, missing reports, outage recovery, a five-minute healthy grace, stopped polling after completion, reload continuity and no time-only completion. This verifies the flow with fixtures; the original ORD map failure still lacks a captured ground payload, so a live arrival remains the installation check.
 
 Install from agent/mobile-companion, run npm.cmd test to rebuild the primary bundle, restart the background host/display, and reload mobile. Mobile script versions are bumped for the shared state, API and polling changes. Password and tunnel configuration are unchanged.
+
+### Mobile arrival time in Eastern
+
+Joey confirmed the live ORD–MSN 4038 taxi-out map works. He requested Eastern arrival times on mobile instead of destination local time. Mobile now formats all arrival times and their date/zone labels using America/New_York, automatically showing EDT or EST. This supersedes the earlier destination-local display decision. The mobile script URL is bumped to 11.6, and setup instructions reflect the change.
+
+Validated with existing mobile tests (including the updated midnight date rollover expectation), plus summer/winter MSN arrival checks. Only mobile formatting and documentation change. Fetch/fast-forward and reload the mobile page; no server or primary-display restart is needed, so the ongoing arrival test can continue.

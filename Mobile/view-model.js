@@ -41,7 +41,7 @@
     const flight = state.flight;
     const code = flight?.destination || state.locationAirport || '';
     const airport = airports.lookupAirport(code);
-    const zone = airport?.timeZone || 'UTC';
+    const zone = 'America/New_York';
     // Never re-label the desktop's Eastern-time string as destination-local.
     // Arrival display is formatted only from absolute timestamps.
     const matching = flight && sameLeg(event, snapshot) && event.origin === flight.origin && event.destination === flight.destination;

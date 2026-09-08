@@ -59,7 +59,7 @@ The home PC, DadRadar service and cloudflared service must stay running. Configu
 1. Turn off Wi-Fi on a phone to test cellular access.
 2. Open `https://family.joeymaxwell.com`. The DadRadar password page should appear with no Cloudflare email prompt.
 3. Enter the family password and keep “Remember this device” selected on a family-owned device.
-4. Confirm flight number, arrival airport/time and position against the home display. Arrival is destination-local; duty times are Eastern.
+4. Confirm flight number, arrival airport/time and position against the home display. Arrival and duty times are Eastern, with daylight saving time handled automatically.
 5. In Safari, use **Share → Add to Home Screen**, and enable **Open as Web App** if offered. Open the new icon; if Safari asks for the password again in its separate app session, enter it there once.
 6. Close and reopen the app, lock/unlock the phone, and confirm updates resume. A private browser window should still require the password. APIs must not show schedule or position without a valid session.
 
