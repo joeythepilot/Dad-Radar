@@ -18,8 +18,12 @@
   let lockedFlightEventKey = null;
   let taxiSilenceSince = null;
   let lastTaxiCheckAt = null;
+  let landingCandidate = false;
+  let landingSilenceSince = null;
+  let lastLandingCheckAt = null;
   let taxiResumeChecked = false;
   const TAXI_STORAGE_KEY = "dad-radar.taxi-in.v1";
+  const ESTIMATED_ARRIVAL_SILENCE_MS = 10 * 60 * 1000;
 
   const CONFIRMED_ARRIVALS_STORAGE_KEY =
     "dad-radar.confirmed-arrivals.v1";
@@ -78,10 +82,6 @@
         settings.schedule
           .legLockTimeoutMinutes ??
         8 * 60,
-      staleLandingHoldMinutes:
-        settings.schedule
-          .staleLandingHoldMinutes ??
-        15,
       staleFlightHandoffMinutes:
         settings.schedule
           .staleFlightHandoffMinutes ??
@@ -450,11 +450,6 @@
       lockedEvent?.startUtc
     );
 
-    const lockedEnd = validDate(
-      lockedEvent?.times?.endUtc ??
-      lockedEvent?.endUtc
-    );
-
     const newerStartedFlight =
       schedule.events
         .filter((event) => {
@@ -498,36 +493,14 @@
           )
         : Infinity;
 
-    const previousPhase = String(
-      previousLiveResolved?.state
-        ?.livePhase ?? ""
-    ).toUpperCase();
-
-    const staleLandingCanComplete =
-      previousPhase === "LANDING" &&
-      lockedEnd &&
-      now >= lockedEnd &&
-      evidenceAgeMinutes >=
-        settings
-          .staleLandingHoldMinutes;
-
     const staleLegCanHandoff =
       Boolean(newerStartedFlight) &&
       evidenceAgeMinutes >=
         settings
           .staleFlightHandoffMinutes;
 
-    if (
-      !staleLandingCanComplete &&
-      !staleLegCanHandoff
-    ) {
+    if (!staleLegCanHandoff) {
       return false;
-    }
-
-    if (staleLandingCanComplete) {
-      recordConfirmedArrival(
-        lockedEvent
-      );
     }
 
     lockedFlightEventKey = null;
@@ -583,11 +556,15 @@
     return currentLiveFlight?.phase === "TAXI_IN";
   }
 
+  function followingArrivalEvidence() {
+    return followingGroundArrival() || landingCandidate;
+  }
+
   function saveTaxiCheckpoint() {
     try {
-      if (!followingGroundArrival()) { global.localStorage?.removeItem(TAXI_STORAGE_KEY); return; }
+      if (!followingArrivalEvidence()) { global.localStorage?.removeItem(TAXI_STORAGE_KEY); return; }
       global.localStorage?.setItem(TAXI_STORAGE_KEY, JSON.stringify({
-        at: Date.now(), key: liveFlightEventKey, lock: lockedFlightEventKey,
+        at: Date.now(), key: liveFlightEventKey, lock: lockedFlightEventKey, landingCandidate,
         snapshot: {...currentLiveFlight, actualTrack: [], filedRoute: null},
         resolved: previousLiveResolved ? {...previousLiveResolved, liveFlight: null,
           state: {...previousLiveResolved.state, flight: {...previousLiveResolved.state.flight, actualTrack: [], filedRoute: null}}} : null
@@ -600,13 +577,18 @@
     taxiResumeChecked = true;
     try {
       const saved = JSON.parse(global.localStorage?.getItem(TAXI_STORAGE_KEY) || "null");
+      const taxiCheckpoint = saved?.snapshot?.phase === "TAXI_IN" && saved?.resolved?.state?.livePhase === "TAXI_IN";
+      const landingCheckpoint = saved?.landingCandidate === true &&
+        ["APPROACH", "LANDING"].includes(saved?.snapshot?.phase) &&
+        (saved?.resolved?.state?.livePhase === "LANDING" || saved?.resolved?.state?.flight?.arrivalEstimated === true);
       if (!saved || Date.now() - saved.at < 0 || Date.now() - saved.at > 86400000 ||
-          saved.snapshot?.phase !== "TAXI_IN" || saved.resolved?.state?.livePhase !== "TAXI_IN" ||
+          (!taxiCheckpoint && !landingCheckpoint) ||
           !currentSchedule.events.some(event => event.status !== "cancelled" && liveEventKey(event) === saved.key)) return;
       currentLiveFlight = saved.snapshot;
       previousLiveResolved = saved.resolved;
       liveFlightEventKey = saved.key;
       lockedFlightEventKey = saved.lock;
+      landingCandidate = landingCheckpoint;
     } catch (_) { /* Ignore invalid or unavailable storage. */ }
   }
 
@@ -651,6 +633,9 @@
       currentLiveFlight = null;
       taxiSilenceSince = null;
       lastTaxiCheckAt = null;
+      landingCandidate = false;
+      landingSilenceSince = null;
+      lastLandingCheckAt = null;
       currentFiledRoute = null;
       previousLiveResolved = null;
       liveTrackPoints = [];
@@ -722,7 +707,9 @@
         eventKey(resolved.event);
     }
 
-    if (
+    if (resolved?.state?.flight?.arrivalEstimated) {
+      lockedFlightEventKey = eventKey(resolved.event);
+    } else if (
       ["TAXI_IN", "ARRIVED", "LANDED"].includes(
         resolvedPhase
       )
@@ -736,7 +723,7 @@
       }
     }
 
-    if (resolved?.state?.liveData) {
+    if (resolved?.state?.liveData || resolved?.state?.flight?.arrivalEstimated) {
       previousLiveResolved =
         resolved;
     }
@@ -790,7 +777,7 @@
       ) && !followingGroundArrival()) ||
       !global.dadRadarLiveFlightApi ||
       !global.dadRadarLiveFlightState ||
-      (!followingGroundArrival() && !isTrackableResolved(
+      (!followingArrivalEvidence() && !isTrackableResolved(
         currentCalendarResolved
       ))
     ) {
@@ -816,7 +803,7 @@
               .getFlightSnapshot(
                 requestedEvent,
                 {
-                  surfaceOnly: followingGroundArrival(),
+                  surfaceOnly: followingArrivalEvidence(),
                   providerFlightId:
                     currentLiveFlight
                       ?.providerFlightId ??
@@ -843,6 +830,19 @@
           const reportAt = Date.parse(liveFlight?.position?.recordedAt ?? "");
           const freshReport = Number.isFinite(reportAt) && Date.now() - reportAt <= 90000 &&
             Date.now() - reportAt >= -5000;
+          if (landingCandidate) {
+            if (lastLandingCheckAt === null || Date.now() - lastLandingCheckAt > 120000) landingSilenceSince = null;
+            lastLandingCheckAt = Date.now();
+            if (freshReport) {
+              landingSilenceSince = null;
+              landingCandidate = false;
+            } else {
+              landingSilenceSince ??= Date.now();
+              if (Date.now() - landingSilenceSince >= ESTIMATED_ARRIVAL_SILENCE_MS) {
+                currentLiveFlight = {...currentLiveFlight, arrivalEstimated: true};
+              }
+            }
+          }
           if (taxiFollowup) {
             if (lastTaxiCheckAt === null || Date.now() - lastTaxiCheckAt > 120000) taxiSilenceSince = null;
             lastTaxiCheckAt = Date.now();
@@ -885,7 +885,7 @@
             return resolved;
           }
 
-          if (liveFlight && (!taxiFollowup || freshReport)) {
+          if (liveFlight && (!(taxiFollowup || landingCandidate) || freshReport)) {
             const landed = ["ARRIVED", "LANDED"].includes(String(liveFlight.phase).toUpperCase());
             currentLiveFlight = {
               ...liveFlight,
@@ -899,6 +899,12 @@
 
           const resolved =
             publishResolvedState();
+
+          if (freshReport) {
+            landingCandidate = global.dadRadarLiveFlightState.isArrivalFallbackCandidate(
+              currentCalendarResolved, currentLiveFlight, resolved, Date.now());
+            saveTaxiCheckpoint();
+          }
 
           global.dispatchEvent(
             new CustomEvent(
@@ -923,8 +929,10 @@
           // An outage or rate limit is not evidence of transponder shutdown.
           taxiSilenceSince = null;
           lastTaxiCheckAt = null;
+          landingSilenceSince = null;
+          lastLandingCheckAt = null;
           if (
-            error?.code === "not-configured" && !followingGroundArrival()
+            error?.code === "not-configured" && !followingArrivalEvidence()
           ) {
             liveProviderUnavailable =
               true;

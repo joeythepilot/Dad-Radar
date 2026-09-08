@@ -49,3 +49,11 @@ duty=dutyWindow(legs.map(e=>({...e,status:'upcoming'})),2);assert.deepEqual(duty
 duty=dutyWindow([day],3);assert.equal(duty.entries[0].label,'HOME · DAY OFF');
 assert.equal(dutyWindow([],2).entries.length,0);
 console.log('Mobile duty selection and numerical telemetry tests passed.');
+
+const inferred = viewModel({...base, state: {...state, status: 'ARRIVED', liveData: false,
+  flight: {...state.flight, arrivalEstimated: true}}});
+assert.equal(inferred.phase, 'ARRIVED');
+assert.equal(inferred.arrivalLabel, 'Arrival estimated');
+assert.equal(inferred.time, '—', 'Do not present an old ETA as an observed landing time.');
+assert.match(inferred.timeZone, /unconfirmed/);
+assert.match(inferred.message, /likely arrived/);

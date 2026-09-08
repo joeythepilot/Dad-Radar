@@ -2,6 +2,7 @@ const assert = require("node:assert/strict");
 
 const {
   isLiveSnapshotFresh,
+  isArrivalFallbackCandidate,
   reconcileScheduleWithLive
 } = require("./live-flight-state");
 
@@ -992,7 +993,31 @@ function testApproachLatchDoesNotCrossFlights() {
   assert.equal(resolved.mode, "EN_ROUTE");
 }
 
+function testArrivalFallbackNeedsFinalApproachEvidence() {
+  const airport = require("../data/airport-catalog").lookupAirport("MSN");
+  const calendar = calendarResolved("EN_ROUTE", {event: {destination: "MSN"}});
+  const snapshot = liveSnapshot({phase: "APPROACH", destination: "MSN", progressPercent: 99,
+    position: {latitude: airport.latitude, longitude: airport.longitude, altitudeFeet: airport.elevationFeet + 800,
+      groundSpeedKnots: 140, altitudeTrend: "D", verticalSpeedFeetPerMinute: -600, recordedAt: NOW}});
+  const landing = reconcileScheduleWithLive(calendar, snapshot, {now: NOW});
+  assert.equal(landing.mode, "LANDING");
+  const qualifies = patch => isArrivalFallbackCandidate(calendar, {...snapshot,
+    position: {...snapshot.position, ...patch}}, landing, Date.parse(NOW));
+  assert.equal(qualifies({}), true);
+  for (const patch of [
+    {latitude: airport.latitude + .2}, {altitudeFeet: airport.elevationFeet + 2000},
+    {altitudeFeet: null}, {latitude: null}, {recordedAt: "invalid"},
+    {recordedAt: "2026-08-04T17:57:00Z"}, {groundSpeedKnots: 250},
+    {altitudeTrend: "C"}, {verticalSpeedFeetPerMinute: 1200},
+    {positionAccuracy: 5}, {containmentRadiusMeters: 500}, {altitudeFeet: 0, onGround: false}
+  ]) assert.equal(qualifies(patch), false, JSON.stringify(patch));
+  assert.equal(qualifies({altitudeFeet: 0, onGround: true, groundSpeedKnots: 20}), true);
+  assert.equal(isArrivalFallbackCandidate(calendar, {...snapshot, destination: "ORD"}, landing, Date.parse(NOW)), false);
+  assert.equal(isArrivalFallbackCandidate(calendar, snapshot, {...landing, state: {...landing.state, livePhase: "EN_ROUTE"}}, Date.parse(NOW)), false);
+}
+
 function runTests() {
+  testArrivalFallbackNeedsFinalApproachEvidence();
   testFreshLiveFlightWins();
   testLiveGsoDestinationCity();
   testStaleLiveFlightFallsBack();

@@ -39,6 +39,7 @@
   }
   function viewModel({ state = {}, mode = '', event = null, snapshot = null, calendarAt = null, failed = false, now = Date.now(), airports, homeAirport = 'AVL' }) {
     const flight = state.flight;
+    const arrivalEstimated = flight?.arrivalEstimated === true;
     const code = flight?.destination || state.locationAirport || '';
     const airport = airports.lookupAirport(code);
     const zone = 'America/New_York';
@@ -57,6 +58,7 @@
     const stale = failed || (liveArrival && (!reported || now - reported > STALE_MS));
     let arrivalLabel = gate ? 'Arrived' : runway ? 'Landed' : estimate ? 'Expected arrival' : 'Scheduled arrival';
     if (stale && liveArrival) arrivalLabel = gate ? 'Reported arrival' : runway ? 'Reported landing' : 'Last reported arrival';
+    if (arrivalEstimated) arrivalLabel = 'Arrival estimated';
     const positionAt = validTime(flight?.lastPositionAt || live?.position?.recordedAt);
     const positionFresh = Boolean(positionAt && now - positionAt >= -5000 && now - positionAt <= STALE_MS && !failed && state.liveData);
     let updated = 'Waiting for schedule';
@@ -67,14 +69,15 @@
     else if (reported && now - reported > STALE_MS) updated += ' · updates are behind';
     else if (scheduleMs && now - scheduleMs > 10 * 60 * 1000) updated += ' · schedule may be outdated';
     const pickup = Boolean(flight?.isCommute && code === homeAirport);
-    const message = state.message || (flight ? `Daddy is ${flight.isCommute ? 'traveling' : 'flying'} to ${airport?.city || flight.destinationCity || code}` : 'Waiting for Daddy’s next adventure');
+    const message = arrivalEstimated ? `Daddy has likely arrived in ${airport?.city || flight.destinationCity || code}` :
+      state.message || (flight ? `Daddy is ${flight.isCommute ? 'traveling' : 'flying'} to ${airport?.city || flight.destinationCity || code}` : 'Waiting for Daddy’s next adventure');
     return { pickup, hasFlight: Boolean(flight), code: code || '—', city: airport?.city || flight?.destinationCity || '', message,
       telemetry: telemetry(flight, positionAt, positionFresh),
       phase: state.status || mode || 'Connecting',
       flightNumber: flight?.number ? (/^\d+$/.test(String(flight.number)) && flight.carrierCode ? `${flight.carrierCode} ${flight.number}` : flight.number) : '—', route: flight ? `${flight.origin} → ${flight.destination}` : 'ON THE GROUND',
       arrivalLabel: flight ? arrivalLabel : 'NEXT ARRIVAL',
-      time: flight && arrival ? new Intl.DateTimeFormat('en-US', { timeZone: zone, hour:'numeric', minute:'2-digit' }).format(arrival) : '—',
-      timeZone: flight && arrival ? new Intl.DateTimeFormat('en-US', { timeZone:zone, weekday:'short', month:'short', day:'numeric', timeZoneName:'short' }).format(arrival) : '',
+      time: !arrivalEstimated && flight && arrival ? new Intl.DateTimeFormat('en-US', { timeZone: zone, hour:'numeric', minute:'2-digit' }).format(arrival) : '—',
+      timeZone: arrivalEstimated ? 'Ground position unconfirmed' : flight && arrival ? new Intl.DateTimeFormat('en-US', { timeZone:zone, weekday:'short', month:'short', day:'numeric', timeZoneName:'short' }).format(arrival) : '',
       freshness: updated, stale: stale || Boolean(reported && now - reported > STALE_MS),
       position: !flight && state.locationAirport ? 'Location from schedule' : positionFresh ? `Position ${age(positionAt, now)}` : positionAt ? `Last position ${age(positionAt, now)}` : 'Position not yet confirmed',
       entries: (state.dailySchedule?.entries || []).filter((entry, index, entries) => entry.time !== 'ALL DAY' || entries.findIndex(other => other.time === entry.time && other.label === entry.label && other.tag === entry.tag) === index), dayZone: state.dailySchedule?.timeZoneLabel || '' };

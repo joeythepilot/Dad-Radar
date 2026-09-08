@@ -187,3 +187,23 @@ Visual inspection also exposed the fallback route's fixed minimum decorative ben
 Validation: route regression tests cover tight ORD–MSN framing, unknown altitude and non-widening descent, alongside existing filed-route/track/airport tests. Chromium rendered mobile 844×390, tablet 1024×768 and primary 1920×1080 with an ORD–MSN fixture. Airport placards remained inside each map; the compact view was visually checked with the full arrival plate. Full npm test also passes. The screenshot's Approach state cannot be attributed conclusively without the triggering telemetry: altitude, progress/proximity and motion inputs all contributed to the older rule, and a previous Approach label could remain during climb. The prior 78ab3fe approach guard is included.
 
 Install with fetch/fast-forward, npm.cmd test, background/display restart and mobile reload. Primary bundle and mobile map script versions are bumped to regional-zoom-1.
+
+### Release Landing when taxi-in is recognized
+
+Joey's later ORD–MSN screenshot showed LANDING, GS 20 kt, altitude 0 ft, a position five minutes old and "Connection interrupted". Position age alone cannot confirm parking; errors reset the healthy tracking-silence timer. The screenshot does not establish which provider failed or prove transponder shutdown.
+
+Inspection found a separate transition defect: the existing Landing latch returned LANDING even when the controller had converted a provider arrival to TAXI_IN. TAXI_IN now takes priority over that latch. A regression replay first reproduced LANDING instead of TAXI_IN, then passed with the change, following the same leg through Landing, stationary Taxi-In, outage recovery and five minutes of healthy absence to Arrived. This is a proven code defect, not a conclusive reconstruction of the live report.
+
+With observed taxi-in, completion still requires five continuous minutes of successful checks without a fresh report. Fresh reports, provider errors and polling gaps over two minutes reset that grace.
+
+### Estimated arrival when ground coverage is missing
+
+Joey also requested arrival handling at airports where ADS-B reception stops at landing. A fresh, route-matched Landing report qualifies for a fallback only within 3 NM of the destination, at most 1,500 feet above known field elevation, at 0–200 knots, with no climb indication and no known poor position accuracy. Unknown coordinates, altitude, speed or report age do not qualify. An explicit on-ground altitude of zero is accepted; a materially below-field airborne altitude is rejected.
+
+After that evidence, follow-up uses the existing ADS-B-only lookup and its explicit provider-health check. Ten continuous minutes of successful absence/stale-report checks produce ARRIVED with an estimated-arrival flag. Fresh reports, errors and polling gaps over two minutes reset the window. Reload restores the pending evidence or existing estimate, but restarts any pending silence window; closed-app time does not count. No paid fallback is added.
+
+The estimate is labeled in the mobile arrival panel/story and primary duty context/ETA plate. No touchdown/gate timestamp or live instrument reading is fabricated. The previous position retains its original timestamp. Estimated arrivals keep polling and yield to fresh taxi, airborne or go-around reports. They are not saved as confirmed arrivals. Existing same-leg checkpoint validation and later-leg handoff remain in force. Removed the older clock-only Landing completion path, which could previously mark a scheduled-overdue flight confirmed during an outage.
+
+Validation: full npm test passed. The Landing-to-Taxi-In regression first failed and then passed. Model tests cover distance, altitude, climb, age and accuracy exclusions. Controller replays cover missing ground reports, rate-limit errors, sleep/reopen, estimated-arrival persistence, continuing ADS-B-only checks, go-around recovery, normal Taxi-In completion and later-flight handoff. Mobile view-model tests check the explicit estimate label and absence of a fabricated arrival time. Chromium checks at compact 844×390, tablet 1024×768 and primary 1920×1080 verified visible estimate labels with no page overflow; compact and primary screenshots were visually inspected. Physical Safari remains an installation check.
+
+Primary bundle and changed mobile script versions are bumped to arrival-fallback-1. Install this cumulative branch update with the same fetch/fast-forward, test, background/display restart and mobile reload commands. These are fixture-based checks; the installed flight's missing raw reports cannot be reconstructed from its screenshot, and any coverage-based arrival remains an estimate.

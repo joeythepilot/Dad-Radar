@@ -93,6 +93,9 @@ function createMemoryStorage() {
     },
     setItem(key, value) {
       values.set(key, String(value));
+    },
+    removeItem(key) {
+      values.delete(key);
     }
   };
 }
@@ -650,7 +653,7 @@ async function testPollingContinuesAfterTouchdown() {
   );
 }
 
-async function testAdsbGroundArrivalContinuesWithoutPaidFallback(firstProvider = "adsb.lol") {
+async function testAdsbGroundArrivalContinuesWithoutPaidFallback(firstProvider = "adsb.lol", startWithLanding = false) {
   const {context} = createBrowserContext();
   let clock = Date.now();
   context.Date = class extends Date {
@@ -668,11 +671,17 @@ async function testAdsbGroundArrivalContinuesWithoutPaidFallback(firstProvider =
     if (outage) throw Object.assign(new Error("tracking-unavailable"), {code: "not-configured"});
     if (!available) return null;
     const provider = requests.length === 1 ? firstProvider : "adsb.lol";
-    return {provider, phase: "ARRIVED", origin: "ORD", destination: "AVL", ident: "ENY4140", progressPercent: 100,
-      retrievedAt: new Date(clock).toISOString(), position: {latitude: 35.44, longitude: -82.54, onGround: true,
+    const landingReport = startWithLanding && requests.length === 1;
+    return {provider, phase: landingReport ? "APPROACH" : "ARRIVED", origin: "ORD", destination: "AVL", ident: "ENY4140", progressPercent: 100,
+      retrievedAt: new Date(clock).toISOString(), position: {latitude: 35.44, longitude: -82.54, onGround: !landingReport,
+        altitudeFeet: landingReport ? 2500 : 2200,
         groundSpeedKnots: 0, headingDegrees: 170, recordedAt: new Date(clock).toISOString(), updateType: provider === "flightradar24" ? "ADSB" : "adsb_icao"}};
   }};
   await context.refreshCalendarState();
+  if (startWithLanding) {
+    assert.equal((await context.refreshLiveFlightState()).mode, "LANDING");
+    clock += 15000;
+  }
   const first = await context.refreshLiveFlightState();
   assert.equal(first.mode, "TAXI_IN");
   assert.equal(first.state.status, "TAXI IN");
@@ -685,8 +694,8 @@ async function testAdsbGroundArrivalContinuesWithoutPaidFallback(firstProvider =
     assert.equal(next.mode, "TAXI_IN", "The landing flight stays selected throughout taxi-in, past scheduled arrival.");
     assert.equal(next.state.flight.surfacePosition.recordedAt, new Date(clock).toISOString());
   }
-  assert.equal(requests.length, 5);
-  assert(requests.slice(1).every(r => r.surfaceOnly === true), "After touchdown, requests explicitly prohibit FR24/filed-route fallback.");
+  assert.equal(requests.length, startWithLanding ? 6 : 5);
+  assert(requests.slice(startWithLanding ? 2 : 1).every(r => r.surfaceOnly === true), "After touchdown, requests explicitly prohibit FR24/filed-route fallback.");
   available = false;
   clock += 181000;
   const held = await context.refreshLiveFlightState();
@@ -1303,7 +1312,102 @@ async function testEditedLockedEventStartsFreshProviderMatch() {
   );
 }
 
+async function testArrivalWithoutGroundCoverage() {
+  const storage = createMemoryStorage();
+  let {context} = createBrowserContext({localStorage: storage});
+  let clock = Date.now();
+  const started = clock;
+  const airport = airportCatalog.lookupAirport("MSN");
+  const flight = {...activeFlightEvent(), destination: "MSN"};
+  flight.times.endUtc = new Date(clock + 120000).toISOString();
+  let reply = "final";
+  let recordedAt = clock;
+  const requests = [];
+  function configure() {
+    context.Date = class extends Date {
+      constructor(...args) {super(...(args.length ? args : [clock]));}
+      static now() {return clock;}
+    };
+    context.dadRadarCalendarApi = {getUpcomingEvents: async () => ({events: [flight], retrievedAt: new Date(clock).toISOString()})};
+    context.dadRadarLiveFlightApi = {getFlightSnapshot: async (_event, options) => {
+      requests.push(options);
+      if (reply === "error") throw new Error("Provider rate limited");
+      if (reply === "missing") return null;
+      const climb = reply === "climb";
+      const ground = reply === "ground";
+      return {provider: "adsb.lol", phase: climb ? "EN_ROUTE" : ground ? "ARRIVED" : "APPROACH",
+        origin: "ORD", destination: "MSN", progressPercent: 99, retrievedAt: new Date(clock).toISOString(),
+        position: {latitude: airport.latitude, longitude: airport.longitude,
+          altitudeFeet: airport.elevationFeet + (climb ? 2500 : ground ? 0 : 800), onGround: ground,
+          groundSpeedKnots: ground ? 0 : 140, altitudeTrend: climb ? "C" : "D",
+          verticalSpeedFeetPerMinute: climb ? 1400 : -600, updateType: "adsb_icao",
+          recordedAt: new Date(recordedAt).toISOString()}};
+    }};
+  }
+  configure();
+  await context.refreshCalendarState();
+  assert.equal((await context.refreshLiveFlightState()).mode, "LANDING");
+  reply = "missing";
+  clock += 91000;
+  await context.refreshLiveFlightState();
+  for (let i = 0; i < 9; i++) {
+    clock += 60000;
+    assert.equal((await context.refreshLiveFlightState()).mode, "LANDING");
+  }
+  clock += 20 * 60000; // Closed/suspended time must not count as successful tracking checks.
+  ({context} = createBrowserContext({localStorage: storage}));
+  configure();
+  assert.equal((await context.refreshCalendarState()).mode, "LANDING");
+  assert.equal((await context.refreshLiveFlightState()).mode, "LANDING");
+  reply = "error";
+  clock += 60000;
+  assert.equal((await context.refreshLiveFlightState()).mode, "LANDING", "Errors cannot finish the arrival estimate");
+  reply = "missing";
+  await context.refreshLiveFlightState();
+  for (let i = 0; i < 9; i++) {
+    clock += 60000;
+    assert.equal((await context.refreshLiveFlightState()).mode, "LANDING", "Clock-only completion must not bypass outage recovery");
+  }
+  clock += 60000;
+  const estimated = await context.refreshLiveFlightState();
+  assert.equal(estimated.mode, "ARRIVED");
+  assert.equal(estimated.state.flight.arrivalEstimated, true);
+  assert.equal(estimated.state.liveData, false);
+  assert.equal(estimated.state.flight.lastPositionAt, new Date(started).toISOString());
+  assert.equal(estimated.state.flight.groundSpeed, null);
+  assert.match(estimated.state.dailySchedule.context, /IS ESTIMATED/);
+  assert(requests.slice(1).every(request => request.surfaceOnly), "Coverage follow-up uses ADS-B only");
+  assert.equal(storage.getItem("dad-radar.confirmed-arrivals.v1"), null, "An estimate is not stored as a confirmed arrival");
+
+  // An installed mobile app can reopen without upgrading the estimate to confirmation.
+  ({context} = createBrowserContext({localStorage: storage}));
+  configure();
+  const reopened = await context.refreshCalendarState();
+  assert.equal(reopened.mode, "ARRIVED");
+  assert.equal(reopened.state.flight.arrivalEstimated, true);
+  await context.refreshLiveFlightState(); // Finish the lookup started by calendar refresh.
+  const count = requests.length;
+  await context.refreshLiveFlightState();
+  assert.equal(requests.length, count + 1, "Estimated arrivals continue checking for a later report");
+
+  reply = "climb";
+  recordedAt = clock += 60000;
+  const recovered = await context.refreshLiveFlightState();
+  assert.equal(recovered.mode, "EN_ROUTE", "A later go-around report supersedes estimated arrival");
+  assert.notEqual(recovered.state.flight.arrivalEstimated, true);
+  assert.equal(storage.getItem("dad-radar.taxi-in.v1"), null, "Recovered tracking clears the estimate checkpoint");
+  reply = "missing";
+  for (let i = 0; i < 12; i++) {
+    clock += 60000;
+    assert.notEqual((await context.refreshLiveFlightState())?.state?.flight?.arrivalEstimated, true);
+  }
+  reply = "ground";
+  recordedAt = clock;
+  assert.equal((await context.refreshLiveFlightState()).mode, "TAXI_IN");
+}
+
 async function runTests() {
+  await testArrivalWithoutGroundCoverage();
   await testCalendarPublishesState();
   await testExpiredCalendarShowsAuthorizationState();
   await testLiveFlightRefinesCalendarState();
@@ -1313,6 +1417,7 @@ async function runTests() {
   await testPollingContinuesAfterTouchdown();
   await testAdsbGroundArrivalContinuesWithoutPaidFallback();
   await testAdsbGroundArrivalContinuesWithoutPaidFallback("flightradar24");
+  await testAdsbGroundArrivalContinuesWithoutPaidFallback("adsb.lol", true);
   await testConfirmedArrivalDoesNotRewindToDeparture();
   await testPreflightFiledRoutePublishesWithoutLiveMatch();
   await testAirborneLegStaysLockedDuringCalendarOverlap();

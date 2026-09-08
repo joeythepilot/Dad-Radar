@@ -22,7 +22,6 @@ const dadRadarSettings = {
     boardingLeadMinutes: 30,
     delayGraceMinutes: 5,
     legLockTimeoutMinutes: 8 * 60,
-    staleLandingHoldMinutes: 15,
     staleFlightHandoffMinutes: 30,
     unconfirmedArrivalMinutes: 45,
     arrivedHoldMinutes: 45

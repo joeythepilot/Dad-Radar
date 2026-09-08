@@ -348,6 +348,8 @@
       calendarResolved,
       previousResolved
     ) {
+      // A coverage-based estimate must yield to a later live report, including a go-around.
+      if (previousResolved?.state?.flight?.arrivalEstimated) return false;
       if (
         !isSameResolvedFlight(
           calendarResolved,
@@ -510,6 +512,36 @@
       );
     }
 
+    function isArrivalFallbackCandidate(calendarResolved, snapshot, resolved, now = Date.now()) {
+      if (resolved?.state?.livePhase !== "LANDING" || !routeMatches(calendarResolved?.event, snapshot) ||
+          snapshot?.cancelled || snapshot?.diverted ||
+          !["APPROACH", "LANDING"].includes(String(snapshot?.phase).toUpperCase())) return false;
+      const position = snapshot?.position;
+      const airport = airportCatalog?.lookupAirport?.(snapshot.destination);
+      const latitude = finiteNumber(position?.latitude);
+      const longitude = finiteNumber(position?.longitude);
+      const speed = finiteNumber(position?.groundSpeedKnots);
+      const altitude = finiteNumber(position?.altitudeFeet);
+      const elevation = finiteNumber(airport?.elevationFeet);
+      const rate = finiteNumber(position?.verticalSpeedFeetPerMinute);
+      const age = Number(now) - Date.parse(position?.recordedAt ?? "");
+      if (!airport || latitude === null || longitude === null || Math.abs(latitude) > 90 || Math.abs(longitude) > 180 ||
+          speed === null || speed < 0 || speed > 200 || altitude === null || elevation === null ||
+          !Number.isFinite(age) || age < -5000 || age > 90000 || isClimbingSnapshot(snapshot) || (rate !== null && rate >= 100)) return false;
+      const agl = position.onGround === true ? 0 : altitude - elevation;
+      if (agl < -500 || agl > 1500) return false;
+      const accuracy = finiteNumber(position.positionAccuracy);
+      const containment = finiteNumber(position.containmentRadiusMeters);
+      if ((accuracy !== null && accuracy < 7) || (containment !== null && containment > 200)) return false;
+      const radians = value => value * Math.PI / 180;
+      const dLat = radians(latitude - airport.latitude);
+      const dLon = radians(longitude - airport.longitude);
+      const haversine = Math.sin(dLat / 2) ** 2 + Math.cos(radians(latitude)) *
+        Math.cos(radians(airport.latitude)) * Math.sin(dLon / 2) ** 2;
+      const distanceNm = 3440.065 * 2 * Math.asin(Math.sqrt(Math.min(1, haversine)));
+      return Number.isFinite(distanceNm) && distanceNm <= 3;
+    }
+
     function stabilizedLivePhase(
       calendarResolved,
       snapshot,
@@ -545,6 +577,7 @@
 
       if (
         [
+          "TAXI_IN",
           "LANDED",
           "ARRIVED",
           "DIVERTED",
@@ -647,6 +680,14 @@
           calendarResolved,
           options.previousResolved
         );
+
+      if (snapshot?.arrivalEstimated && routeMatches(calendarResolved.event, snapshot) &&
+          isSameResolvedFlight(calendarResolved, options.previousResolved)) {
+        const held = clampedLiveState(calendarResolved, options.previousResolved);
+        return {...held, mode: "ARRIVED", state: {...held.state, status: "ARRIVED", livePhase: "ARRIVED",
+          flight: {...held.state.flight, arrivalEstimated: true, eta: "ESTIMATED",
+            groundSpeed: null, airspeed: null, altitude: null, surfacePosition: null}}};
+      }
 
       if (options.taxiComplete && preserveConfirmedLiveState &&
           options.previousResolved?.state?.livePhase === "TAXI_IN") {
@@ -943,6 +984,7 @@
 
     return Object.freeze({
       isLiveSnapshotFresh,
+      isArrivalFallbackCandidate,
       reconcileScheduleWithLive
     });
   }

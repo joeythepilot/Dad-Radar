@@ -369,6 +369,10 @@
             ?.isDeadhead
         );
 
+      if (resolved?.state?.flight?.arrivalEstimated) {
+        return `DADDY'S ARRIVAL${destination ? ` IN ${destination}` : ""} IS ESTIMATED`;
+      }
+
       const delayMinutes = Math.max(
         0,
         Math.floor(
