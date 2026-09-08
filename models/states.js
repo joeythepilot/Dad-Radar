@@ -136,6 +136,8 @@ const dadRadarModes = {
     }
   },
 
+  TAXI_IN: {status: "TAXI IN", flight: {airspeed: 0, altitude: 0, progress: 100}},
+
   ARRIVED: {
     status: "ARRIVED",
     flight: {

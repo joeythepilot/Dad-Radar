@@ -149,3 +149,15 @@ Family tunnel and password access are confirmed working on the home PC and mobil
 This bounded repair preserves the same flight's confirmed arrival through missing/stale data and fresh regressed departure phases, and saves confirmed arrival immediately during ground follow-up. ADS-B 429 responses now trigger a shared one-minute provider cooldown for normal and surface-only requests; the existing 403 cooldown and prohibition on paid surface follow-up remain. This is not a request-coalescing implementation. Arrival phase and provider regression tests cover these paths. Browser script versions are bumped for both displays.
 
 The taxi-in map issue remains open pending raw ground source, freshness and accuracy evidence; this change does not relax position-quality checks or claim that issue fixed. Install with fetch/fast-forward, npm.cmd test (rebuilds browser), background service restart and display/mobile reload.
+
+### Taxi-in through transponder shutdown
+
+Joey's rule: arrival ground telemetry means Taxi-In even at zero speed; Arrived is reserved for reports stopping after parking. Provider ARRIVED/LANDED snapshots now enter an internal TAXI_IN phase. It stays selected and uses ADS-B-only surface follow-up without the former five-minute hard polling cutoff. Valid ground coordinates continue into the shared airport renderer. Position-quality and freshness requirements remain in force.
+
+Completion requires five minutes of successful absence/stale-report checks, with no polling gap greater than two minutes. Fresh reports reset the grace timer. Errors, rate-limit cooldowns, malformed surface responses and HTTP failures reset it too and retain Taxi-In. The HTTP response distinguishes provider unavailability from a healthy no-match, and the browser treats unavailable surface tracking as an error. No paid surface fallback is added.
+
+A per-browser Taxi-In checkpoint preserves the phase and last position through reload for the same event/route/start/candidates, up to 24 hours. Parking grace restarts after reload; it cannot be earned while the page was closed. Removed/reassigned events cannot adopt that checkpoint. It does not reconstruct the earlier failed test or share history between newly opened devices.
+
+Validation: full npm test passed, followed by focused controller/API/provider checks for the final outage guard. Replays cover zero-speed taxi, destination airport selection, missing reports, outage recovery, a five-minute healthy grace, stopped polling after completion, reload continuity and no time-only completion. This verifies the flow with fixtures; the original ORD map failure still lacks a captured ground payload, so a live arrival remains the installation check.
+
+Install from agent/mobile-companion, run npm.cmd test to rebuild the primary bundle, restart the background host/display, and reload mobile. Mobile script versions are bumped for the shared state, API and polling changes. Password and tunnel configuration are unchanged.

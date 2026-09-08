@@ -3,6 +3,7 @@
 
   const ACTIVE_PHASES = Object.freeze([
     "TAXI_OUT",
+    "TAXI_IN",
     "EN_ROUTE",
     "APPROACH",
     "LANDING"

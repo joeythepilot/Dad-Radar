@@ -86,6 +86,12 @@
         throw requestError;
       }
 
+      if (providedOptions.surfaceOnly && !data?.liveFlight && data?.trackingUnavailable !== false) {
+        const error = new Error("Ground tracking temporarily unavailable.");
+        error.code = "tracking-unavailable";
+        throw error;
+      }
+
       if (data?.liveFlight) {
         return data.liveFlight;
       }

@@ -413,6 +413,7 @@
             destination
               ? `DADDY'S RIDE IS LANDING IN ${destination}`
               : "DADDY'S RIDE IS LANDING",
+          TAXI_IN: destination ? `DADDY'S RIDE IS TAXIING IN AT ${destination}` : "DADDY'S RIDE IS TAXIING IN",
           ARRIVED:
             destination
               ? `DADDY'S RIDE HAS ARRIVED IN ${destination}`
@@ -455,6 +456,7 @@
           destination
             ? `DADDY'S FLIGHT DIVERTED TO ${destination}`
             : "DADDY'S FLIGHT HAS DIVERTED",
+        TAXI_IN: destination ? `DADDY IS TAXIING IN AT ${destination}` : "DADDY IS TAXIING IN",
         ARRIVED:
           destination
             ? `DADDY HAS ARRIVED IN ${destination}`

@@ -40,7 +40,7 @@ async function testGroundOnlyLookupFlag() {
   let body;
   const context = createContext(async (_url, options) => {
     body = JSON.parse(options.body);
-    return {ok: true, json: async () => ({ok: true, liveFlight: null})};
+    return {ok: true, json: async () => ({ok: true, liveFlight: null, trackingUnavailable: false})};
   });
   await context.dadRadarLiveFlightApi.getFlightSnapshot({origin: "AVL", destination: "ORD"}, {surfaceOnly: true});
   assert.equal(body.surfaceOnly, true);
@@ -232,7 +232,15 @@ async function testConfigurationErrorIsTagged() {
   );
 }
 
+async function testGroundOutageIsNotAbsence() {
+  const context = createContext(async () => ({ok: true, status: 200,
+    json: async () => ({ok: true, liveFlight: null, trackingUnavailable: true})}));
+  await assert.rejects(context.dadRadarLiveFlightApi.getFlightSnapshot({liveLookupCandidates: ["ENY4140"]},
+    {surfaceOnly: true}), error => error.code === "tracking-unavailable");
+}
+
 async function runTests() {
+  await testGroundOutageIsNotAbsence();
   await testPostsProviderNeutralLookup();
   await testGroundOnlyLookupFlag();
   await testNoMatchReturnsNull();

@@ -182,6 +182,8 @@ app.post(
           liveFlight?.retrievedAt ??
           new Date().toISOString(),
         liveFlight,
+        trackingUnavailable: !liveFlight && result.attempts.some(attempt =>
+          ["error", "cooldown"].includes(attempt.outcome) && attempt.provider !== "flightaware-route"),
         filedRoute:
           result.filedRoute ??
           liveFlight?.filedRoute ??

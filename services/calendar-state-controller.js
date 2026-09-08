@@ -16,6 +16,10 @@
   let liveProviderUnavailable = false;
   let hasLoadedSchedule = false;
   let lockedFlightEventKey = null;
+  let taxiSilenceSince = null;
+  let lastTaxiCheckAt = null;
+  let taxiResumeChecked = false;
+  const TAXI_STORAGE_KEY = "dad-radar.taxi-in.v1";
 
   const CONFIRMED_ARRIVALS_STORAGE_KEY =
     "dad-radar.confirmed-arrivals.v1";
@@ -30,6 +34,7 @@
     "BOARDING",
     "DELAYED",
     "TAXI_OUT",
+    "TAXI_IN",
     "EN_ROUTE",
     "APPROACH",
     "LANDING",
@@ -574,18 +579,35 @@
     );
   }
 
-  function isAdsbGroundArrival() {
-    const provider = currentLiveFlight?.provider;
-    const adsbProvider = provider === "adsb.lol" ||
-      (provider === "flightradar24" && /^ADSB$/i.test(currentLiveFlight.position?.updateType ?? ""));
-    return adsbProvider &&
-      currentLiveFlight.phase === "ARRIVED" && currentLiveFlight.position?.onGround === true;
+  function followingGroundArrival() {
+    return currentLiveFlight?.phase === "TAXI_IN";
   }
 
-  function followingGroundArrival() {
-    const recordedAt = Date.parse(currentLiveFlight?.position?.recordedAt ?? "");
-    const age = Date.now() - recordedAt;
-    return isAdsbGroundArrival() && Number.isFinite(age) && age >= -5000 && age < 300000;
+  function saveTaxiCheckpoint() {
+    try {
+      if (!followingGroundArrival()) { global.localStorage?.removeItem(TAXI_STORAGE_KEY); return; }
+      global.localStorage?.setItem(TAXI_STORAGE_KEY, JSON.stringify({
+        at: Date.now(), key: liveFlightEventKey, lock: lockedFlightEventKey,
+        snapshot: {...currentLiveFlight, actualTrack: [], filedRoute: null},
+        resolved: previousLiveResolved ? {...previousLiveResolved, liveFlight: null,
+          state: {...previousLiveResolved.state, flight: {...previousLiveResolved.state.flight, actualTrack: [], filedRoute: null}}} : null
+      }));
+    } catch (_) { /* Memory continuity remains available without browser storage. */ }
+  }
+
+  function resumeTaxiCheckpoint() {
+    if (taxiResumeChecked) return;
+    taxiResumeChecked = true;
+    try {
+      const saved = JSON.parse(global.localStorage?.getItem(TAXI_STORAGE_KEY) || "null");
+      if (!saved || Date.now() - saved.at < 0 || Date.now() - saved.at > 86400000 ||
+          saved.snapshot?.phase !== "TAXI_IN" || saved.resolved?.state?.livePhase !== "TAXI_IN" ||
+          !currentSchedule.events.some(event => event.status !== "cancelled" && liveEventKey(event) === saved.key)) return;
+      currentLiveFlight = saved.snapshot;
+      previousLiveResolved = saved.resolved;
+      liveFlightEventKey = saved.key;
+      lockedFlightEventKey = saved.lock;
+    } catch (_) { /* Ignore invalid or unavailable storage. */ }
   }
 
   function publishResolvedState() {
@@ -595,16 +617,12 @@
 
     const settings =
       controllerSettings();
+    resumeTaxiCheckpoint();
 
     releaseStaleFlightLock(
       currentSchedule,
       settings
     );
-
-    if (isAdsbGroundArrival() && !followingGroundArrival()) {
-      recordConfirmedArrival(currentCalendarResolved?.event);
-      lockedFlightEventKey = null;
-    }
 
     const effectiveSchedule =
       scheduleWithConfirmedArrivals(
@@ -631,6 +649,8 @@
       liveFlightEventKey
     ) {
       currentLiveFlight = null;
+      taxiSilenceSince = null;
+      lastTaxiCheckAt = null;
       currentFiledRoute = null;
       previousLiveResolved = null;
       liveTrackPoints = [];
@@ -674,6 +694,7 @@
                 staleAfterMs: followingGroundArrival()
                   ? 300000
                   : settings.liveStaleAfterMs,
+                taxiComplete: currentLiveFlight.taxiComplete === true,
                 previousResolved:
                   previousLiveResolved
               }
@@ -702,7 +723,7 @@
     }
 
     if (
-      ["ARRIVED", "LANDED"].includes(
+      ["TAXI_IN", "ARRIVED", "LANDED"].includes(
         resolvedPhase
       )
     ) {
@@ -719,6 +740,8 @@
       previousLiveResolved =
         resolved;
     }
+
+    saveTaxiCheckpoint();
 
     const dailySchedule =
       global.dadRadarScheduleState
@@ -767,9 +790,9 @@
       ) && !followingGroundArrival()) ||
       !global.dadRadarLiveFlightApi ||
       !global.dadRadarLiveFlightState ||
-      !isTrackableResolved(
+      (!followingGroundArrival() && !isTrackableResolved(
         currentCalendarResolved
-      )
+      ))
     ) {
       return null;
     }
@@ -811,6 +834,29 @@
             return null;
           }
 
+          if (liveFlight && !liveFlight.routeOnly &&
+              ((liveFlight.origin && liveFlight.origin !== requestedEvent.origin) ||
+               (liveFlight.destination && liveFlight.destination !== requestedEvent.destination))) {
+            throw new Error("Tracking report belongs to a different route.");
+          }
+          const taxiFollowup = followingGroundArrival();
+          const reportAt = Date.parse(liveFlight?.position?.recordedAt ?? "");
+          const freshReport = Number.isFinite(reportAt) && Date.now() - reportAt <= 90000 &&
+            Date.now() - reportAt >= -5000;
+          if (taxiFollowup) {
+            if (lastTaxiCheckAt === null || Date.now() - lastTaxiCheckAt > 120000) taxiSilenceSince = null;
+            lastTaxiCheckAt = Date.now();
+            if (freshReport) taxiSilenceSince = null;
+            else {
+              taxiSilenceSince ??= Date.now();
+              if (Date.now() - taxiSilenceSince >= 300000) {
+                currentLiveFlight = {...currentLiveFlight, phase: "ARRIVED", taxiComplete: true};
+                lockedFlightEventKey = null;
+                return publishResolvedState();
+              }
+            }
+          }
+
           if (liveFlight?.filedRoute) {
             currentFiledRoute =
               liveFlight.filedRoute;
@@ -839,9 +885,11 @@
             return resolved;
           }
 
-          if (liveFlight) {
+          if (liveFlight && (!taxiFollowup || freshReport)) {
+            const landed = ["ARRIVED", "LANDED"].includes(String(liveFlight.phase).toUpperCase());
             currentLiveFlight = {
               ...liveFlight,
+              phase: landed || taxiFollowup ? "TAXI_IN" : liveFlight.phase,
               actualTrack:
                 appendLiveTrackPoint(
                   liveFlight
@@ -872,9 +920,11 @@
 
           return resolved;
         } catch (error) {
+          // An outage or rate limit is not evidence of transponder shutdown.
+          taxiSilenceSince = null;
+          lastTaxiCheckAt = null;
           if (
-            error?.code ===
-            "not-configured"
+            error?.code === "not-configured" && !followingGroundArrival()
           ) {
             liveProviderUnavailable =
               true;

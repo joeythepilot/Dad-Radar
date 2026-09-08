@@ -584,7 +584,7 @@ async function testApproachPersistsAcrossProviderRegression() {
   );
 }
 
-async function testPollingStopsAfterArrival() {
+async function testPollingContinuesAfterTouchdown() {
   const { context } =
     createBrowserContext();
 
@@ -635,18 +635,18 @@ async function testPollingStopsAfterArrival() {
     await context
       .refreshLiveFlightState();
 
-  assert.equal(arrived.mode, "ARRIVED");
+  assert.equal(arrived.mode, "TAXI_IN");
   assert.equal(requestCount, 1);
 
   const nextRefresh =
     await context
       .refreshLiveFlightState();
 
-  assert.equal(nextRefresh, null);
+  assert.equal(nextRefresh.mode, "TAXI_IN");
   assert.equal(
     requestCount,
-    1,
-    "FR24 polling should stop after Arrived is confirmed."
+    2,
+    "Ground follow-up continues after provider reports arrival."
   );
 }
 
@@ -662,8 +662,10 @@ async function testAdsbGroundArrivalContinuesWithoutPaidFallback(firstProvider =
   context.dadRadarCalendarApi = {getUpcomingEvents: async () => ({retrievedAt: new Date(clock).toISOString(), events: [flight]})};
   const requests = [];
   let available = true;
+  let outage = false;
   context.dadRadarLiveFlightApi = {getFlightSnapshot: async (_event, options) => {
     requests.push(options);
+    if (outage) throw Object.assign(new Error("tracking-unavailable"), {code: "not-configured"});
     if (!available) return null;
     const provider = requests.length === 1 ? firstProvider : "adsb.lol";
     return {provider, phase: "ARRIVED", origin: "ORD", destination: "AVL", ident: "ENY4140", progressPercent: 100,
@@ -672,11 +674,15 @@ async function testAdsbGroundArrivalContinuesWithoutPaidFallback(firstProvider =
   }};
   await context.refreshCalendarState();
   const first = await context.refreshLiveFlightState();
-  assert.equal(first.mode, "ARRIVED");
+  assert.equal(first.mode, "TAXI_IN");
+  assert.equal(first.state.status, "TAXI IN");
+  assert.equal(require("../App/airport-surface-map").selectAirport(first.state.flight.surfacePosition,
+    [airportCatalog.lookupAirport("ORD"), airportCatalog.lookupAirport("AVL")], clock, null).airport.code,
+    "AVL", "Taxi-in supplies valid destination ground coordinates to both maps");
   for (let minute = 0; minute < 4; minute++) {
     clock += 60000;
     const next = await context.refreshLiveFlightState();
-    assert.equal(next.mode, "ARRIVED", "The landing flight stays selected throughout taxi-in, past scheduled arrival.");
+    assert.equal(next.mode, "TAXI_IN", "The landing flight stays selected throughout taxi-in, past scheduled arrival.");
     assert.equal(next.state.flight.surfacePosition.recordedAt, new Date(clock).toISOString());
   }
   assert.equal(requests.length, 5);
@@ -684,13 +690,22 @@ async function testAdsbGroundArrivalContinuesWithoutPaidFallback(firstProvider =
   available = false;
   clock += 181000;
   const held = await context.refreshLiveFlightState();
-  assert.equal(held.mode, "ARRIVED", "A brief taxi-in coverage gap cannot fall back to Delayed.");
-  clock += 120000;
+  assert.equal(held.mode, "TAXI_IN", "A brief taxi-in coverage gap cannot fall back to Delayed.");
+  outage = true;
+  clock += 360000;
+  assert.equal((await context.refreshLiveFlightState()).mode, "TAXI_IN", "An outage cannot confirm parking");
+  outage = false;
+  assert.equal((await context.refreshLiveFlightState()).mode, "TAXI_IN");
+  for (let i = 0; i < 4; i++) {
+    clock += 60000;
+    assert.equal((await context.refreshLiveFlightState()).mode, "TAXI_IN");
+  }
+  clock += 60001;
+  const parked = await context.refreshLiveFlightState();
+  assert.equal(parked.mode, "ARRIVED", "Five minutes of healthy absence completes taxi-in");
   const count = requests.length;
   await context.refreshLiveFlightState();
-  assert.equal(requests.length, count, "Follow-up polling ends after five minutes without a ground report.");
-  const complete = await context.refreshCalendarState();
-  assert(complete.mode === "ARRIVED" || !complete.state.flight, "The completed leg cannot rewind to departure after transponder shutdown.");
+  assert.equal(requests.length, count, "Polling stops only after parking grace completes");
 }
 
 async function testConfirmedArrivalDoesNotRewindToDeparture() {
@@ -763,7 +778,7 @@ async function testConfirmedArrivalDoesNotRewindToDeparture() {
   const arrived =
     await context.refreshLiveFlightState();
 
-  assert.equal(arrived.mode, "ARRIVED");
+  assert.equal(arrived.mode, "TAXI_IN");
   assert.equal(
     arrived.state.flight.destination,
     "HPN"
@@ -790,7 +805,7 @@ async function testConfirmedArrivalDoesNotRewindToDeparture() {
   const retained =
     await context.refreshCalendarState();
 
-  assert.equal(retained.mode, "ARRIVED");
+  assert.equal(retained.mode, "TAXI_IN");
   assert.equal(
     retained.event.id,
     "ord-hpn-arrival"
@@ -822,6 +837,7 @@ async function testConfirmedArrivalDoesNotRewindToDeparture() {
       localStorage: storage
     }).context;
 
+  reloaded.Date = context.Date;
   reloaded.dadRadarCalendarApi = {
     async getUpcomingEvents() {
       return schedule;
@@ -833,7 +849,7 @@ async function testConfirmedArrivalDoesNotRewindToDeparture() {
 
   assert.equal(
     afterReload.mode,
-    "ARRIVED"
+    "TAXI_IN"
   );
   assert.equal(
     afterReload.state.flight.progress,
@@ -860,11 +876,7 @@ async function testConfirmedArrivalDoesNotRewindToDeparture() {
   const layover =
     await reloaded.refreshCalendarState();
 
-  assert.equal(layover.mode, "LAYOVER");
-  assert.equal(
-    layover.state.locationAirport,
-    "HPN"
-  );
+  assert.equal(layover.mode, "TAXI_IN", "A clock jump without successful tracking checks cannot establish parking");
 }
 
 async function testAirborneLegStaysLockedDuringCalendarOverlap() {
@@ -1298,7 +1310,7 @@ async function runTests() {
   await testTaxiOutDoesNotRegressToCalendarDelay();
   await testLiveFailureRetainsCalendarState();
   await testApproachPersistsAcrossProviderRegression();
-  await testPollingStopsAfterArrival();
+  await testPollingContinuesAfterTouchdown();
   await testAdsbGroundArrivalContinuesWithoutPaidFallback();
   await testAdsbGroundArrivalContinuesWithoutPaidFallback("flightradar24");
   await testConfirmedArrivalDoesNotRewindToDeparture();

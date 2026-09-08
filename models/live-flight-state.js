@@ -46,6 +46,7 @@
     const STATUS_LABELS = Object.freeze({
       BOARDING: "BOARDING",
       TAXI_OUT: "TAXI OUT",
+      TAXI_IN: "TAXI IN",
       EN_ROUTE: "EN ROUTE",
       APPROACH: "APPROACH",
       LANDING: "LANDING",
@@ -244,6 +245,7 @@
       const phaseModes = {
         BOARDING: "BOARDING",
         TAXI_OUT: "TAXI_OUT",
+        TAXI_IN: "TAXI_IN",
         EN_ROUTE: "EN_ROUTE",
         APPROACH: "APPROACH",
         LANDING: "LANDING",
@@ -355,7 +357,7 @@
         return false;
       }
 
-      if (["ARRIVED", "LANDED"].includes(previousResolved?.state?.livePhase)) {
+      if (["TAXI_IN", "ARRIVED", "LANDED"].includes(previousResolved?.state?.livePhase)) {
         return true;
       }
 
@@ -640,10 +642,16 @@
           options.previousResolved
         );
 
+      if (options.taxiComplete && preserveConfirmedLiveState &&
+          options.previousResolved?.state?.livePhase === "TAXI_IN") {
+        const parked = clampedLiveState(calendarResolved, options.previousResolved);
+        return {...parked, mode: "ARRIVED", state: {...parked.state, status: "ARRIVED", livePhase: "ARRIVED"}};
+      }
+
       // A later departure report must not move a landed flight back to origin.
       if (preserveConfirmedLiveState &&
-          ["ARRIVED", "LANDED"].includes(options.previousResolved?.state?.livePhase) &&
-          !["ARRIVED", "LANDED"].includes(String(snapshot?.phase ?? "").toUpperCase())) {
+          ["TAXI_IN", "ARRIVED", "LANDED"].includes(options.previousResolved?.state?.livePhase) &&
+          !["TAXI_IN", "ARRIVED", "LANDED"].includes(String(snapshot?.phase ?? "").toUpperCase())) {
         return clampedLiveState(calendarResolved, options.previousResolved);
       }
 

@@ -94,6 +94,7 @@ const { app } = require("./index");
     fr24Available = false;
     result = await lookup();
     assert.equal(result.liveFlight, null);
+    assert.equal(result.trackingUnavailable, false, "Healthy no-match is distinct from provider outage");
     assert.deepEqual(result.filedRoute, filedRoute,
       "The filed plan must reach the display before telemetry is available.");
 
