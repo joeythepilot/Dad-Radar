@@ -690,6 +690,14 @@ function testArrivalClampPreservesDestinationPosition() {
     stale.state.flight.longitude,
     -73.708
   );
+  for (const snapshot of [null, liveSnapshot({phase: "BOARDING"}), liveSnapshot({phase: "DELAYED"})]) {
+    const retained = reconcileScheduleWithLive(calendarResolved("DELAYED"), snapshot,
+      {now: NOW, previousResolved: confirmedArrival});
+    assert.equal(retained.mode, "ARRIVED", "A confirmed arrival survives missing or regressed departure reports");
+    assert.equal(retained.state.flight.latitude, 41.067);
+    assert.equal(retained.state.flight.longitude, -73.708);
+  }
+
 }
 
 function testCancellationOverridesCalendarDelay() {

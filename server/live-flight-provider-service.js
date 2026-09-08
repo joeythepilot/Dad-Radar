@@ -7,7 +7,13 @@ const flightaware = require("./flightaware-route-service");
 const ADSB_LOL_FORBIDDEN_COOLDOWN_MS =
   15 * 60 * 1000;
 
+const ADSB_LOL_RATE_LIMIT_COOLDOWN_MS = 60000;
 let adsbLolCooldownUntil = 0;
+function noteAdsbFailure(error, now) {
+  const delay = error?.status === 403 ? ADSB_LOL_FORBIDDEN_COOLDOWN_MS :
+    error?.status === 429 ? ADSB_LOL_RATE_LIMIT_COOLDOWN_MS : 0;
+  if (delay) adsbLolCooldownUntil = Math.max(adsbLolCooldownUntil, now + delay);
+}
 
 function adsbLolIsCoolingDown(now = Date.now()) {
   return now < adsbLolCooldownUntil;
@@ -34,7 +40,7 @@ async function getLiveFlightSnapshot(lookup, options = {}) {
       const snapshot = await (options.adsbLookup ?? adsbLol.getLiveFlightSnapshot)(lookup, options.adsbOptions);
       return {snapshot, filedRoute: null, attempts: [{provider: "adsb.lol", outcome: snapshot ? "matched" : "no-match"}]};
     } catch (error) {
-      if (error.status === 403) adsbLolCooldownUntil = (options.now?.() ?? Date.now()) + ADSB_LOL_FORBIDDEN_COOLDOWN_MS;
+      noteAdsbFailure(error, options.now?.() ?? Date.now());
       options.onProviderError?.("adsb.lol", error);
       return {snapshot: null, filedRoute: null, attempts: [{provider: "adsb.lol", outcome: "error"}]};
     }
@@ -150,14 +156,7 @@ async function getLiveFlightSnapshot(lookup, options = {}) {
     } catch (error) {
       attempts.push({ provider, outcome: "error", error: error.message });
 
-      if (
-        provider === "adsb.lol" &&
-        error?.status === 403
-      ) {
-        adsbLolCooldownUntil =
-          (options.now?.() ?? Date.now()) +
-          ADSB_LOL_FORBIDDEN_COOLDOWN_MS;
-      }
+      if (provider === "adsb.lol") noteAdsbFailure(error, options.now?.() ?? Date.now());
 
       const isFr24NotConfigured =
         error instanceof flightradar24.Flightradar24ConfigurationError;

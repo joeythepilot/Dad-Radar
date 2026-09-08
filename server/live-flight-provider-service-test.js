@@ -153,6 +153,18 @@ assert.deepEqual(providerOrder("flightradar24"), ["flightradar24", "adsb.lol"]);
     assert.equal(paidCalls, 0, "Ground follow-up never consults paid providers, even on failure or a FR24 provider hint.");
     assert.equal(only.filedRoute, null);
   }
+  for (const surfaceOnly of [false, true]) {
+    resetProviderCooldowns();
+    let calls = 0;
+    const options = {now: () => 1000, routeLookup: async () => null, fr24Lookup: async () => null,
+      adsbLookup: async () => {calls++; const error = new Error("rate limited"); error.status = 429; throw error;}};
+    await getLiveFlightSnapshot({surfaceOnly}, options);
+    await getLiveFlightSnapshot({surfaceOnly}, {...options, now: () => 2000});
+    assert.equal(calls, 1, "429 pauses subsequent ADS-B requests across displays");
+    await getLiveFlightSnapshot({surfaceOnly}, {...options, now: () => 61001});
+    assert.equal(calls, 2, "Rate-limit cooldown eventually permits a retry");
+  }
+  resetProviderCooldowns();
   console.log("Live-flight provider fallback tests passed.");
 })().catch((error) => {
   console.error(error);

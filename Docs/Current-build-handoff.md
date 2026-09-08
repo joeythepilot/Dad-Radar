@@ -141,3 +141,11 @@ Install and run `npm.cmd run mobile:setup`, then restart the background service.
 The first family-password installation exposed a startup bug: the Windows background host imports `startServer()`, while gateway startup was only in the CLI entry point. The primary display could run with port 4174 closed. Gateway startup and shutdown now belong to `startServer()` so both launch paths use them. Existing password configuration is preserved.
 
 A regression test starts the real imported entry point, verifies the login endpoint returns HTTP 200 with the configured Host header on loopback, and verifies primary shutdown also closes the gateway. Run the full npm test suite before installation. Fetch and fast-forward `agent/mobile-companion`, then restart the background host and repeat the port 4174 login probe before continuing tunnel setup.
+
+### Arrival retention and ADS-B rate-limit repair
+
+Family tunnel and password access are confirmed working on the home PC and mobile. Joey's AVL–ORD test later showed Arrived, Delayed, Arrived, then No Track on both screens; taxi-in airport mapping was absent despite telemetry. The supplied recent diagnostics show repeated adsb.lol HTTP 429 responses and no-match responses from both live providers. They do not include the earlier ground-position payload, and cannot establish why the airport chart was rejected.
+
+This bounded repair preserves the same flight's confirmed arrival through missing/stale data and fresh regressed departure phases, and saves confirmed arrival immediately during ground follow-up. ADS-B 429 responses now trigger a shared one-minute provider cooldown for normal and surface-only requests; the existing 403 cooldown and prohibition on paid surface follow-up remain. This is not a request-coalescing implementation. Arrival phase and provider regression tests cover these paths. Browser script versions are bumped for both displays.
+
+The taxi-in map issue remains open pending raw ground source, freshness and accuracy evidence; this change does not relax position-quality checks or claim that issue fixed. Install with fetch/fast-forward, npm.cmd test (rebuilds browser), background service restart and display/mobile reload.

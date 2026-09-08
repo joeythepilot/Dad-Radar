@@ -706,6 +706,7 @@
         resolvedPhase
       )
     ) {
+      recordConfirmedArrival(resolved.event);
       if (followingGroundArrival()) {
         lockedFlightEventKey = eventKey(resolved.event);
       } else {

@@ -355,6 +355,10 @@
         return false;
       }
 
+      if (["ARRIVED", "LANDED"].includes(previousResolved?.state?.livePhase)) {
+        return true;
+      }
+
       if (
         calendarResolved.mode ===
           "ARRIVED"
@@ -635,6 +639,13 @@
           calendarResolved,
           options.previousResolved
         );
+
+      // A later departure report must not move a landed flight back to origin.
+      if (preserveConfirmedLiveState &&
+          ["ARRIVED", "LANDED"].includes(options.previousResolved?.state?.livePhase) &&
+          !["ARRIVED", "LANDED"].includes(String(snapshot?.phase ?? "").toUpperCase())) {
+        return clampedLiveState(calendarResolved, options.previousResolved);
+      }
 
       if (
         !isLiveSnapshotFresh(
