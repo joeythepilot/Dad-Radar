@@ -312,6 +312,14 @@ function startServer(options = {}) {
     }
   );
 
+  // The Windows background host imports startServer instead of running this file.
+  // Keep both listeners in the shared startup and shutdown lifecycle.
+  server.once("listening", () => {
+    const gateway = require("./mobile-access").startMobileGateway(app, options.mobileOptions);
+    server.mobileGateway = gateway;
+    if (gateway) server.once("close", () => gateway.close());
+  });
+
   server.on("error", (error) => {
     if (error.code === "EADDRINUSE") {
       console.error(
@@ -333,11 +341,7 @@ function startServer(options = {}) {
 }
 
 if (require.main === module) {
-  const server = startServer();
-  server.once("listening", () => {
-    const gateway = require("./mobile-access").startMobileGateway(app);
-    if (gateway) server.once("close", () => gateway.close());
-  });
+  startServer();
 }
 
 module.exports = {
