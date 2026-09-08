@@ -870,8 +870,8 @@ function testApproachLabelCannotCreateDepartureLanding() {
 
   assert.equal(
     departure.mode,
-    "APPROACH",
-    "A provider Approach label may be retained, but must not become Landing near departure."
+    "EN_ROUTE",
+    "An Approach label near departure must return to En Route."
   );
 }
 

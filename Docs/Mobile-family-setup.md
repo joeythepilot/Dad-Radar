@@ -85,3 +85,9 @@ Physical iPhone/Home Screen and live tunnel validation are the final installatio
 
 - [Cloudflare Tunnel setup](https://developers.cloudflare.com/tunnel/setup/)
 - [OWASP password storage](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
+
+## Tablet and phone layouts
+
+The same family address automatically opens the full DadRadar console on landscape tablets with enough screen space. Phones and portrait tablets open the compact view. Use the small Layout selector to choose Automatic, Full or Compact. Each device remembers its choice. Full view includes the primary split-flap, destination poster, map, instruments and duty panel, scaled to fit without page scrolling. It keeps the same family password and Home Screen app.
+
+The full family route is `/mobile/full`, inside the existing app scope. It uses the same protected data endpoints and sign-in expiry handling. The home-PC console remains independent of this selector.

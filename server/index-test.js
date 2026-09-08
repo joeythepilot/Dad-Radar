@@ -83,6 +83,15 @@ async function runTests() {
     const mobile = await (await fetch(`${baseUrl}/mobile`)).text();
     assert.match(mobile, /id="arrival-time"/);
     assert.match(mobile, /id="route-map-svg"/);
+    const fullResponse = await fetch(`${baseUrl}/mobile/full`);
+    const full = await fullResponse.text();
+    assert.match(full, /data-family-full/);
+    assert.match(full, /<base href="\/">/);
+    assert.match(full, /id="dashboard"/);
+    assert.match(full, /Mobile\/family-auth.js/);
+    assert.match(full, /Mobile\/layout.js/);
+    assert.match(fullResponse.headers.get("cache-control"), /no-store/);
+    assert(!displayHtml.includes('data-family-full'), 'Home console stays independent of family layout choice');
     const worker = await fetch(`${baseUrl}/Mobile/sw.js`);
     assert.equal(worker.headers.get("service-worker-allowed"), "/mobile");
     const api = await fetch(`${baseUrl}/api/health`);

@@ -137,7 +137,7 @@ function passwordMiddleware(config, options = {}) {
   router.use((request, response, next) => {
     if (store.valid(cookieToken(request))) return next();
     response.set('X-Dad-Radar-Login', '/family/login');
-    if (['GET', 'HEAD'].includes(request.method) && (['/', '/mobile', '/mobile/'].includes(request.path) || request.get('Sec-Fetch-Dest') === 'document')) return response.redirect(303, '/family/login');
+    if (['GET', 'HEAD'].includes(request.method) && (['/', '/mobile', '/mobile/', '/mobile/full', '/mobile/full/'].includes(request.path) || request.get('Sec-Fetch-Dest') === 'document')) return response.redirect(303, '/family/login');
     response.status(401).json({ok: false, code: 'family-sign-in-required', error: 'Please sign in to Dad Radar.'});
   });
   router.use((error, request, response, next) => {

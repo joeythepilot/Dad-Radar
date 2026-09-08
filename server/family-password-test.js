@@ -56,6 +56,7 @@ const {updateSettings} = require('../scripts/mobile-setup');
   try {
     await start();
     assert.equal((await request('/mobile')).headers.get('location'), '/family/login');
+    assert.equal((await request('/mobile/full')).headers.get('location'), '/family/login');
     for (const url of ['/api/calendar/upcoming', '/api/weather/radar', '/Mobile/test.js']) {
       const r = await request(url, {headers: {'Cf-Access-Jwt-Assertion': 'forged'}});
       assert.equal(r.status, 401); assert.equal(r.headers.get('X-Dad-Radar-Login'), '/family/login');

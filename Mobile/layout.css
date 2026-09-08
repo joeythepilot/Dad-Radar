@@ -1,0 +1,11 @@
+.family-layout-control { display: inline-flex; align-items: center; gap: 5px; flex: none; color: #e7d4af; font: 12px system-ui, sans-serif; white-space: nowrap; }
+.family-layout-control select { min-height: 44px; max-width: 112px; padding: 4px; border: 1px solid #887047; border-radius: 4px; background: #211b15; color: #f0e3c7; font: inherit; }
+.family-layout-control select:focus { outline: 2px solid #e9bf75; outline-offset: 1px; }
+html[data-family-full] { height: 100%; overflow: hidden; }
+html[data-family-full] body { margin: 0; height: 100vh; height: 100dvh; width: 100%; box-sizing: border-box; overflow: hidden; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+.family-layout-bar { flex: 0 0 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 10px; background: #171411; position: relative; z-index: 2000; }
+.family-layout-brand { font: bold 13px Georgia, serif; color: #f0e3c7; letter-spacing: 2px; }
+html[data-family-full] .display-viewer { flex: 1; min-height: 0; min-width: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+html[data-family-full] .dashboard { flex: none; max-width: 100%; max-height: 100%; }
+html[data-family-full] .diagnostic-chime-button { display: none !important; }
+@media (max-width: 600px) { .family-layout-control { gap: 2px; font-size: 11px; } .family-layout-control select { max-width: 90px; } }

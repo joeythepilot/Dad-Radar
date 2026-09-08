@@ -477,8 +477,8 @@ function determinePhase(
     verticalSpeed <= -100;
 
   const isClimbing =
-    verticalSpeed !== null &&
-    verticalSpeed >= 100;
+    (verticalSpeed !== null && verticalSpeed >= 100) ||
+    ["C", "U", "UP", "CLIMBING"].includes(String(position?.altitudeTrend ?? "").toUpperCase());
 
   const hasArrivalProgress =
     progressPercent !== null &&
@@ -488,6 +488,12 @@ function determinePhase(
     distanceToDestination !== null &&
     distanceToDestination <=
       APPROACH_DISTANCE_NM;
+
+  // On short sectors the departure airport is already inside the 90 NM
+  // arrival radius. Require progress toward the destination as well.
+  const arrivalSide = hasArrivalProgress || (isNearDestination &&
+    distanceFromOrigin !== null && distanceToDestination !== null &&
+    distanceFromOrigin > distanceToDestination);
 
   const isApproachSpeed =
     groundSpeedKnots !== null &&
@@ -500,8 +506,7 @@ function determinePhase(
       APPROACH_ALTITUDE_FEET &&
     !isClimbing &&
     (
-      hasArrivalProgress ||
-      isNearDestination
+      arrivalSide
     ) &&
     (
       isDescending ||
@@ -512,10 +517,9 @@ function determinePhase(
     altitudeFeet !== null &&
     altitudeFeet <=
       APPROACH_CAPTURE_ALTITUDE_FEET &&
-    isDescending &&
+    isDescending && !isClimbing &&
     (
-      hasArrivalProgress ||
-      isNearDestination
+      arrivalSide
     );
 
   return isLowArrival ||

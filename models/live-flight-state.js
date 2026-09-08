@@ -567,6 +567,12 @@
         return "TAXI_OUT";
       }
 
+      const progress = finiteNumber(snapshot?.progressPercent);
+      if (progress !== null && progress < 50 &&
+          ["EN_ROUTE", "APPROACH"].includes(phase)) {
+        return "EN_ROUTE";
+      }
+
       const altitudeAgl =
         altitudeAboveDestinationFeet(
           calendarResolved,

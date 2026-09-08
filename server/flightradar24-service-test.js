@@ -144,6 +144,12 @@ function testSnapshotNormalizesFullRecord() {
 }
 
 function testTelemetryDrivesSurfacePhases() {
+  for (const rate of [null, 0, 1600]) {
+    assert.equal(determinePhase({altitudeFeet: 6500, groundSpeedKnots: 220,
+      verticalSpeedFeetPerMinute: rate}, {progressPercent: 18, distanceFromOrigin: 15, distanceToDestination: 75}),
+      "EN_ROUTE", "ORD–MSN departure must not approach just because MSN is within 90 NM");
+  }
+
   assert.equal(
     determinePhase(
       {
