@@ -254,12 +254,12 @@ app.get(["/mobile/full", "/mobile/full/"], (_request, response) => {
     .replace('<html lang="en">', '<html lang="en" data-family-full>')
     .replace('<head>', `<head><base href="/">
 <script src="/Mobile/family-auth.js?v=1"></script>
-<script src="/Mobile/layout.js?v=1"></script>
+<script src="/Mobile/layout.js?v=2"></script>
 <link rel="manifest" href="/Mobile/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/Mobile/icon.png">
 <meta name="apple-mobile-web-app-title" content="Dad Radar">
 <meta name="robots" content="noindex,nofollow">`)
-    .replace('</head>', '<link rel="stylesheet" href="/Mobile/layout.css?v=1"></head>');
+    .replace('</head>', '<link rel="stylesheet" href="/Mobile/layout.css?v=2"></head>');
   response.set("Cache-Control", "private, no-store").type("html").send(familyHtml);
 });
 

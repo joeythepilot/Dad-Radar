@@ -8,4 +8,23 @@ html[data-family-full] body { margin: 0; height: 100vh; height: 100dvh; width: 1
 html[data-family-full] .display-viewer { flex: 1; min-height: 0; min-width: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 html[data-family-full] .dashboard { flex: none; max-width: 100%; max-height: 100%; }
 html[data-family-full] .diagnostic-chime-button { display: none !important; }
+/* Full mode sizes the mechanical board from its actual available space, including Safari chrome. */
+html[data-family-full] .flight-board { min-width: 0; min-height: 0; padding: 3px var(--family-board-padding, 6px) !important; }
+html[data-family-full] .flight-board-row { display: flex !important; align-items: center !important; justify-content: space-between; gap: 0 !important; transform: none !important; }
+html[data-family-full] #flight-number { width: var(--flight-flap-group-width) !important; min-width: 0 !important; max-width: none !important; flex: 0 0 var(--flight-flap-group-width) !important; }
+html[data-family-full] #status-value { width: var(--status-flap-group-width) !important; min-width: 0 !important; max-width: none !important; flex: 0 0 var(--status-flap-group-width) !important; }
+html[data-family-full] .flap-route-section { width: var(--family-route-width); flex: 0 0 var(--family-route-width) !important; display: flex !important; align-items: center; justify-content: center; gap: 0 !important; }
+html[data-family-full] .flap-route-section > .flap-cell { width: var(--airport-flap-group-width) !important; min-width: 0 !important; max-width: none !important; flex: 0 0 var(--airport-flap-group-width) !important; }
+html[data-family-full] .flap-route-section > .flap-cell + .flap-cell { margin-left: var(--route-section-gap) !important; }
+html[data-family-full] .flap-character { width: var(--flap-width) !important; min-width: var(--flap-width) !important; max-width: var(--flap-width) !important; height: var(--flap-height) !important; min-height: var(--flap-height) !important; max-height: var(--flap-height) !important; flex: 0 0 var(--flap-width) !important; font-size: var(--family-flap-font-size) !important; border-radius: var(--family-flap-radius) !important; }
+html[data-family-full] .flap-character + .flap-character { margin-left: var(--flap-gap) !important; }
+html[data-family-full] .vintage-map-panel .map-information { right: var(--family-clock-inset) !important; left: var(--family-clock-inset) !important; bottom: var(--family-clock-bottom) !important; gap: var(--family-clock-gap) !important; }
+html[data-family-full] .vintage-map-panel .clock-block,
+html[data-family-full] .vintage-map-panel .eta-block { padding: var(--family-clock-pad-y) var(--family-clock-pad-x) !important; letter-spacing: var(--family-clock-spacing) !important; }
+html[data-family-full] .vintage-map-panel .clock-value,
+html[data-family-full] .vintage-map-panel .eta-value { font-size: var(--family-clock-font) !important; }
+html[data-family-full] .vintage-map-panel .clock-block .small-label,
+html[data-family-full] .vintage-map-panel .eta-block .small-label { font-size: var(--family-clock-label) !important; letter-spacing: var(--family-clock-spacing) !important; }
+html[data-family-full] .vintage-map-panel .clock-zone,
+html[data-family-full] .vintage-map-panel .eta-zone { font-size: var(--family-clock-zone) !important; letter-spacing: var(--family-clock-spacing) !important; }
 @media (max-width: 600px) { .family-layout-control { gap: 2px; font-size: 11px; } .family-layout-control select { max-width: 90px; } }
