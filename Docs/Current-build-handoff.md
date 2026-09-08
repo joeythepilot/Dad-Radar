@@ -82,3 +82,18 @@ The accepted mobile layout at `7c74fd5` is four stacked split-flap rows at left 
 The airport-ground follow-up continues directly from that commit on `agent/mobile-companion`. See `Docs/Airport-surface-view.md` for behavior, validation and installation. It adds automatic cached OSM airport geometry, equal-scale ground projection, raw ADS-B position rendering, field-elevation-aware regional zoom, and stationary Taxi-Out handling. Fresh ground ADS-B at departure means Taxi-Out under Joey's transponder practice; movement is not required. Destination ground follow-up is adsb.lol-only and ends after five minutes without new ground reports.
 
 Trip breadcrumbs/mileage and the Cloudflare account/domain setup remain unfinished. No remote tunnel has been configured by this change. Do not return to the old `agent/mobile-reliability-update` branch or replace the recovered server wiring.
+
+
+### Boarding overlap correction
+
+Joey's September 8 test showed flight 3498 ORD–BIL in Today's Duty at 10:39 Eastern, with a 10:40 departure, while overlapping HOME entries kept the main display at HOME. Calendar retrieval was successful. The resolver returned an active ground event before considering the upcoming boarding window.
+
+Upcoming flights now take priority over day-off/layover entries within the configured boarding lead time. Active flights and explicitly locked delayed flights retain priority over later flights. Cancelled flights remain excluded. This change is a small follow-up to `2efda56`, with regression cases for the observed overlap, the boarding boundary, cancellations, and active/locked legs. Primary bundle and mobile model cache versions are advanced.
+
+### FR24 ground telemetry correction
+
+The next test showed ORD–BIL 3498 as BOARDING with speed/heading displayed; FR24's app showed ENY3498/N311VE at 2 knots and zero reported altitude. This establishes what the screens displayed, not which provider the PC selected or its installed commit. Code review found that the generic FR24 phase resolver retains BOARDING below three knots, while the new close-up and late-departure override accepted only adsb.lol.
+
+The follow-up uses already-received, fresh FR24 ADSB fallback records as ground evidence when altitude is zero, speed is known and low, vertical movement is absent, and the aircraft is at a route endpoint. This is explicitly an inference, unlike adsb.lol's ground flag. Those records now feed the raw ground map and stationary Taxi-Out override. Other current provider reports also replace the raw surface candidate, so airborne/unknown reports cannot accidentally preserve the prior provider's ground flag. No FR24 polling interval or provider order was changed. Any continuing ground-arrival polls remain adsb.lol-only, including when FR24 first reported touchdown.
+
+Regression tests reproduce the zero/two-knot fallback case through the provider adapter, reconciler and camera selector, reject stale/missing/estimated evidence, and cover free-only arrival follow-up after an FR24 report. Primary and mobile script versions advance together. Actual PC provider diagnostics and live installation remain the final on-device check; the screenshot alone cannot prove the selected feed.

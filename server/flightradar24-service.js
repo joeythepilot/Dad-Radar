@@ -555,10 +555,36 @@ function normalizeFlightSnapshot(
     destination
   );
 
-  const phase = determinePhase(
+  let phase = determinePhase(
     position,
     metrics
   );
+
+  // FR24's live-position response has no explicit surface flag. Infer surface
+  // evidence only from a current ADSB report at a route endpoint, zero reported
+  // altitude, low speed and no climb/descent. Never use heading/speed alone.
+  const recordedAt = toDate(position.recordedAt);
+  const receivedAt = toDate(retrievedAt);
+  const positionAge = recordedAt && receivedAt
+    ? receivedAt.getTime() - recordedAt.getTime() : NaN;
+  const nearOrigin = metrics.distanceFromOrigin !== null &&
+    metrics.distanceFromOrigin <= AIRPORT_PROXIMITY_NM;
+  const nearDestination = metrics.distanceToDestination !== null &&
+    metrics.distanceToDestination <= AIRPORT_PROXIMITY_NM;
+  const surfaceReport = /^ADSB$/i.test(position.updateType ?? "") &&
+    position.latitude !== null && position.longitude !== null &&
+    positionAge >= -5000 && positionAge <= 90000 &&
+    position.altitudeFeet === 0 &&
+    position.groundSpeedKnots !== null && position.groundSpeedKnots >= 0 &&
+    position.groundSpeedKnots <= GROUND_SPEED_KNOTS &&
+    (position.verticalSpeedFeetPerMinute === null ||
+      Math.abs(position.verticalSpeedFeetPerMinute) < 100) &&
+    (nearOrigin || nearDestination);
+  position.onGround = surfaceReport ? true : null;
+  position.groundEvidence = surfaceReport ? "fr24-adsb-zero-altitude" : null;
+  if (surfaceReport) {
+    phase = nearDestination && metrics.progressPercent > 80 ? "ARRIVED" : "TAXI_OUT";
+  }
 
   return {
     provider: "flightradar24",

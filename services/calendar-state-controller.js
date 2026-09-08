@@ -575,7 +575,10 @@
   }
 
   function isAdsbGroundArrival() {
-    return currentLiveFlight?.provider === "adsb.lol" &&
+    const provider = currentLiveFlight?.provider;
+    const adsbProvider = provider === "adsb.lol" ||
+      (provider === "flightradar24" && /^ADSB$/i.test(currentLiveFlight.position?.updateType ?? ""));
+    return adsbProvider &&
       currentLiveFlight.phase === "ARRIVED" && currentLiveFlight.position?.onGround === true;
   }
 

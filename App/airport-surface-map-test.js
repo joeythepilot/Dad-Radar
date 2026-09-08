@@ -7,6 +7,7 @@ const now = Date.parse("2026-09-08T13:00:00Z");
 const position = {latitude: avl.latitude, longitude: avl.longitude, recordedAt: new Date(now - 2000).toISOString(),
   onGround: true, source: "adsb_icao", speed: 0, heading: 178};
 assert.equal(api.selectAirport(position, [avl, ord], now, null).airport.code, "AVL");
+assert.equal(api.selectAirport({...position, source: "ADSB"}, [avl, ord], now, null).airport.code, "AVL");
 for (const change of [{onGround: false}, {onGround: null}, {recordedAt: null}, {source: "mlat"}, {containment: 500},
   {accuracy: 3}, {latitude: null}, {longitude: -120}, {recordedAt: new Date(now + 10000).toISOString()}]) {
   assert.equal(api.selectAirport({...position, ...change}, [avl, ord], now, null), null);
@@ -67,6 +68,8 @@ assert.equal(controller.render(state), false);
 assert.equal(layer.hidden, true);
 clock = now;
 assert.equal(controller.render(state), true);
+assert.equal(controller.render({...state, flight: {...state.flight, surfacePosition: {...position, source: "ADSB", speed: 2}}}), true,
+  "A provider switch to current FR24 ADSB keeps the airport chart available.");
 assert.equal(controller.render({...state, flight: {...state.flight, surfacePosition: {...position, onGround: false}}}), false, "Takeoff returns to regional view immediately.");
 const arrival = {...state, flight: {...state.flight, surfacePosition: {...position, latitude: ord.latitude, longitude: ord.longitude}}};
 assert.equal(controller.render(arrival), true, "The same flight can enter destination airport view after landing.");

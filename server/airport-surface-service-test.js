@@ -5,8 +5,9 @@ const os = require("node:os");
 const path = require("node:path");
 const {createAirportSurfaceService, airportForCode, normalizeGeometry} = require("./airport-surface-service");
 const {normalizeAdsbSnapshot, selectAircraft} = require("./adsb-lol-service");
-const {normalizeLookup} = require("./flightradar24-service");
+const {normalizeLookup, normalizeFlightSnapshot} = require("./flightradar24-service");
 const {reconcileScheduleWithLive} = require("../models/live-flight-state");
+const {selectAirport} = require("../App/airport-surface-map");
 
 const NOW = "2026-09-08T13:00:00.000Z";
 const airport = airportForCode("AVL");
@@ -43,6 +44,42 @@ assert.equal(airborne.position.verticalSpeedFeetPerMinute, 1800);
 assert.equal(airborne.phase, "EN_ROUTE");
 const destination = airportForCode("ORD");
 assert.equal(normalizeAdsbSnapshot({...record, lat: destination.latitude, lon: destination.longitude}, lookup, NOW).phase, "ARRIVED");
+
+// Replay the ORD–BIL report: existing FR24 ADSB fallback telemetry must reach
+// both the status board and the airport camera, even below the old 3-knot cutoff.
+const bil = airportForCode("BIL");
+const fr24Lookup = normalizeLookup({origin: "ORD", destination: "BIL", liveLookupCandidates: ["AA3498", "ENY3498"], startUtc: "2026-09-08T12:30:00Z"});
+const fr24Record = {flight: "AA3498", callsign: "ENY3498", reg: "N311VE", lat: destination.latitude, lon: destination.longitude,
+  alt: 0, gspeed: 2, track: 53, vspeed: 0, timestamp: NOW, source: "ADSB", orig_iata: "ORD", dest_iata: "BIL"};
+const fr24Calendar = {...calendar, event: {...calendar.event, origin: "ORD", destination: "BIL", liveLookupCandidates: ["AA3498", "ENY3498"]},
+  state: {...calendar.state, flight: {...calendar.state.flight, number: "3498", origin: "ORD", destination: "BIL"}}};
+function resolveFr24(change) {
+  const snapshot = normalizeFlightSnapshot({...fr24Record, ...change}, fr24Lookup, NOW);
+  return {snapshot, resolved: reconcileScheduleWithLive(fr24Calendar, snapshot, {now: NOW})};
+}
+for (const speed of [0, 2, 15]) {
+  const {snapshot, resolved} = resolveFr24({gspeed: speed});
+  assert.equal(snapshot.phase, "TAXI_OUT");
+  assert.equal(snapshot.position.groundEvidence, "fr24-adsb-zero-altitude");
+  assert.equal(resolved.mode, "TAXI_OUT", "Fresh ground fallback telemetry also overrides schedule lateness.");
+  assert.equal(resolved.state.flight.groundSpeed, speed);
+  assert.equal(resolved.state.flight.heading, 53);
+  assert.equal(resolved.state.flight.surfacePosition.source, "ADSB", "Keep the actual provider source.");
+  assert.equal(selectAirport(resolved.state.flight.surfacePosition, [destination, bil], Date.parse(NOW), null).airport.code, "ORD");
+}
+for (const change of [{timestamp: null}, {timestamp: "2026-09-08T12:58:00Z"}, {timestamp: "2026-09-08T13:01:00Z"},
+  {source: "MLAT"}, {source: "ESTIMATED"}, {source: null}, {alt: null}, {alt: 3000}, {gspeed: null},
+  {gspeed: 140}, {vspeed: 1200}, {lat: null}, {lat: 35, lon: -100}]) {
+  const {snapshot, resolved} = resolveFr24(change);
+  assert.notEqual(snapshot.position.onGround, true, "Do not infer surface evidence from missing/stale/airborne/estimated reports.");
+  assert.equal(selectAirport(resolved.state.flight.surfacePosition, [destination, bil], Date.parse(NOW), null), null);
+}
+const fr24Airborne = resolveFr24({alt: 5000, gspeed: 170, vspeed: 1800});
+assert.equal(fr24Airborne.snapshot.phase, "EN_ROUTE");
+assert.notEqual(fr24Airborne.resolved.state.flight.surfacePosition.onGround, true, "A provider change or takeoff clears ground evidence.");
+const fr24Arrival = resolveFr24({lat: bil.latitude, lon: bil.longitude});
+assert.equal(fr24Arrival.resolved.mode, "ARRIVED");
+assert.equal(selectAirport(fr24Arrival.resolved.state.flight.surfacePosition, [destination, bil], Date.parse(NOW), null).airport.code, "BIL");
 
 (async () => {
   const cacheDir = await fs.mkdtemp(path.join(os.tmpdir(), "dad-radar-airports-"));

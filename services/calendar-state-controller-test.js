@@ -650,7 +650,7 @@ async function testPollingStopsAfterArrival() {
   );
 }
 
-async function testAdsbGroundArrivalContinuesWithoutPaidFallback() {
+async function testAdsbGroundArrivalContinuesWithoutPaidFallback(firstProvider = "adsb.lol") {
   const {context} = createBrowserContext();
   let clock = Date.now();
   context.Date = class extends Date {
@@ -665,9 +665,10 @@ async function testAdsbGroundArrivalContinuesWithoutPaidFallback() {
   context.dadRadarLiveFlightApi = {getFlightSnapshot: async (_event, options) => {
     requests.push(options);
     if (!available) return null;
-    return {provider: "adsb.lol", phase: "ARRIVED", origin: "ORD", destination: "AVL", ident: "ENY4140", progressPercent: 100,
+    const provider = requests.length === 1 ? firstProvider : "adsb.lol";
+    return {provider, phase: "ARRIVED", origin: "ORD", destination: "AVL", ident: "ENY4140", progressPercent: 100,
       retrievedAt: new Date(clock).toISOString(), position: {latitude: 35.44, longitude: -82.54, onGround: true,
-        groundSpeedKnots: 0, headingDegrees: 170, recordedAt: new Date(clock).toISOString(), updateType: "adsb_icao"}};
+        groundSpeedKnots: 0, headingDegrees: 170, recordedAt: new Date(clock).toISOString(), updateType: provider === "flightradar24" ? "ADSB" : "adsb_icao"}};
   }};
   await context.refreshCalendarState();
   const first = await context.refreshLiveFlightState();
@@ -1299,6 +1300,7 @@ async function runTests() {
   await testApproachPersistsAcrossProviderRegression();
   await testPollingStopsAfterArrival();
   await testAdsbGroundArrivalContinuesWithoutPaidFallback();
+  await testAdsbGroundArrivalContinuesWithoutPaidFallback("flightradar24");
   await testConfirmedArrivalDoesNotRewindToDeparture();
   await testPreflightFiledRoutePublishesWithoutLiveMatch();
   await testAirborneLegStaysLockedDuringCalendarOverlap();

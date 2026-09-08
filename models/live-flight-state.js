@@ -685,9 +685,11 @@
         options.previousResolved
       );
 
-      if (phase === "TAXI_OUT" && snapshot.provider === "adsb.lol" && position.onGround === true &&
-          position.recordedAt &&
-          Math.abs((toDate(options.now) ?? new Date()).getTime() - Date.parse(position.recordedAt)) <= 90000) {
+      const surfaceAge = (toDate(options.now) ?? new Date()).getTime() - Date.parse(position.recordedAt ?? "");
+      const groundTelemetryProvider = snapshot.provider === "adsb.lol" ||
+        (snapshot.provider === "flightradar24" && /^ADSB$/i.test(position.updateType ?? ""));
+      if (phase === "TAXI_OUT" && groundTelemetryProvider && hasLivePosition && position.onGround === true &&
+          surfaceAge >= -5000 && surfaceAge <= 90000) {
         mode = "TAXI_OUT";
       }
 
@@ -817,7 +819,7 @@
         altitudeAgl,
         onGround: position.onGround ?? null,
         // Raw received coordinates stay separate from animated/interpolated flight values.
-        surfacePosition: provider === "adsb.lol" ? {
+        surfacePosition: {
           latitude, longitude, onGround: position.onGround ?? null,
           recordedAt: position.recordedAt ?? null,
           heading: finiteNumber(position.headingDegrees),
@@ -825,7 +827,7 @@
           source: position.updateType ?? null,
           accuracy: position.positionAccuracy ?? null,
           containment: position.containmentRadiusMeters ?? null
-        } : null,
+        },
         progress:
           liveProgress ??
           calendarFlight.progress,

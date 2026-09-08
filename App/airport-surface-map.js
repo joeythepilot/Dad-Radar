@@ -19,7 +19,7 @@
   }
   function selectAirport(position, airports, now, holdingCode) {
     if (!position || position.onGround !== true || !finite(position.latitude) || !finite(position.longitude) ||
-      !position.recordedAt || !/^adsb_/.test(position.source || "") ||
+      !position.recordedAt || !/^(adsb_.+|ADSB)$/i.test(position.source || "") ||
       (finite(position.containment) && position.containment > 200) ||
       (finite(position.accuracy) && position.accuracy < 7)) return null;
     const age = now - Date.parse(position.recordedAt);

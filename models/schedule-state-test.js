@@ -226,6 +226,31 @@ function testBoardingWindow() {
   );
 }
 
+function testBoardingOverridesGroundCalendarOverlap() {
+  const now = "2026-09-08T14:39:00.000Z";
+  const flight = createFlight({id: "test-3498", flightNumber: "3498", origin: "ORD", destination: "BIL",
+    times: {startUtc: "2026-09-08T14:40:00.000Z", endUtc: "2026-09-08T17:40:00.000Z"}});
+  const home = {id: "day-off", kind: "duty-free", summary: "HOME - DAY OFF", status: "confirmed",
+    times: {startUtc: "2026-09-08T04:00:00.000Z", endUtc: "2026-09-09T04:00:00.000Z"}};
+  for (const kind of ["duty-free", "layover"]) {
+    const ground = {...home, kind, airport: "ORD"};
+    const schedule = createSchedule([ground, {...ground, id: "duplicate-ground"}, flight]);
+    for (const time of ["2026-09-08T14:10:00Z", now, "2026-09-08T14:40:00Z"]) {
+      const result = resolveScheduleState(schedule, {now: time, boardingLeadMinutes: 30});
+      assert.equal(result.mode, "BOARDING");
+      assert.equal(result.event.id, flight.id, "A day-off or layover cannot hide an imminent added flight.");
+    }
+    assert.notEqual(resolveScheduleState(schedule, {now: "2026-09-08T14:09:59Z"}).mode, "BOARDING", "Ground context remains until boarding begins.");
+    const cancelled = createSchedule([ground, {...flight, status: "cancelled"}]);
+    assert.notEqual(resolveScheduleState(cancelled, {now}).event.id, flight.id);
+  }
+  const active = createFlight({id: "still-flying", times: {startUtc: "2026-09-08T12:00:00Z", endUtc: "2026-09-08T15:00:00Z"}});
+  const schedule = createSchedule([home, active, flight]);
+  assert.equal(resolveScheduleState(schedule, {now}).event.id, active.id, "Boarding for the next flight cannot replace an active flight.");
+  active.times.endUtc = "2026-09-08T14:00:00Z";
+  assert.equal(resolveScheduleState(schedule, {now, preferredEventId: active.id}).event.id, active.id, "An explicitly locked delayed flight keeps priority.");
+}
+
 function testClockAloneCannotConfirmArrival() {
   const result = resolveScheduleState(
     createSchedule([
@@ -886,6 +911,7 @@ function runTests() {
   testCalendarProgress();
   testCommuteModes();
   testBoardingWindow();
+  testBoardingOverridesGroundCalendarOverlap();
   testCalendarOnlyFlightBecomesDelayed();
   testPreferredFlightWinsCalendarOverlap();
   testEarlierFlightWinsColdStartOverlap();

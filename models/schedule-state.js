@@ -1087,6 +1087,35 @@
           options.legLockTimeoutMinutes
         );
 
+      const nextFlight =
+        events.find(
+          (event) =>
+            event.kind === "flight" &&
+            eventStart(event) > now
+        ) ?? null;
+
+      // An upcoming leg takes precedence over ground calendar entries during boarding.
+      // Keep an active/locked flight selected until its normal handoff.
+      if (nextFlight && activeEvent?.kind !== "flight") {
+        const minutesUntilDeparture =
+          (
+            eventStart(nextFlight) -
+            now
+          ) / 60000;
+
+        if (
+          minutesUntilDeparture <=
+          options.boardingLeadMinutes
+        ) {
+          return createFlightState(
+            nextFlight,
+            "BOARDING",
+            now,
+            options
+          );
+        }
+      }
+
       if (activeEvent) {
         if (
           activeEvent.kind ===
@@ -1111,33 +1140,6 @@
 
         if (activeState) {
           return activeState;
-        }
-      }
-
-      const nextFlight =
-        events.find(
-          (event) =>
-            event.kind === "flight" &&
-            eventStart(event) > now
-        ) ?? null;
-
-      if (nextFlight) {
-        const minutesUntilDeparture =
-          (
-            eventStart(nextFlight) -
-            now
-          ) / 60000;
-
-        if (
-          minutesUntilDeparture <=
-          options.boardingLeadMinutes
-        ) {
-          return createFlightState(
-            nextFlight,
-            "BOARDING",
-            now,
-            options
-          );
         }
       }
 
