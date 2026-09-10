@@ -22,6 +22,9 @@ const {
 
 const {createAirportSurfaceService} = require("./airport-surface-service");
 const airportSurface = createAirportSurfaceService({report: addDiagnostic});
+const masterState = require("./master-state-service").createMasterStateService({
+  getCalendar: getUpcomingEvents, getFlight: getLiveFlightSnapshot, report: addDiagnostic
+});
 
 const app = express();
 const port = Number(process.env.PORT) || 4173;
@@ -102,115 +105,18 @@ app.get("/api/health", (request, response) => {
   });
 });
 
-app.get(
-  "/api/calendar/upcoming",
-  async (request, response) => {
-    try {
-      const requestedDays = Number(
-        request.query.days ?? 14
-      );
-
-      const days =
-        Number.isFinite(requestedDays) &&
-        requestedDays > 0
-          ? Math.min(requestedDays, 60)
-          : 14;
-
-      const calendarData =
-        await getUpcomingEvents({ days });
-
-      response.json({
-        ok: true,
-        ...calendarData
-      });
-    } catch (error) {
-      console.error(
-        "Calendar request failed:",
-        error
-      );
-
-      const authorizationRequired =
-        isCalendarAuthorizationError(
-          error
-        );
-
-      response.status(
-        authorizationRequired
-          ? 401
-          : 500
-      ).json({
-        ok: false,
-        code: authorizationRequired
-          ? "calendar-authorization-required"
-          : "calendar-unavailable",
-        error:
-          authorizationRequired
-            ? "Google Calendar authorization must be renewed."
-            : "Unable to load the Pilot Schedule calendar."
-      });
-    }
-  }
-);
-
-app.post(
-  "/api/flights/lookup",
-  async (request, response) => {
-    try {
-      const result =
-        await getLiveFlightSnapshot(
-          request.body,
-          {
-            onProviderError(provider, error) {
-              addDiagnostic("provider-error", {
-                provider,
-                message: error.message
-              });
-            }
-          }
-        );
-
-      const liveFlight = result.snapshot;
-
-      for (const attempt of result.attempts) {
-        addDiagnostic("provider-attempt", attempt);
-      }
-
-      response.json({
-        ok: true,
-        provider: liveFlight?.provider ?? null,
-        retrievedAt:
-          liveFlight?.retrievedAt ??
-          new Date().toISOString(),
-        liveFlight,
-        trackingUnavailable: !liveFlight && result.attempts.some(attempt =>
-          ["error", "cooldown"].includes(attempt.outcome) && attempt.provider !== "flightaware-route"),
-        filedRoute:
-          result.filedRoute ??
-          liveFlight?.filedRoute ??
-          null
-      });
-    } catch (error) {
-      if (error instanceof TypeError) {
-        response.status(400).json({
-          ok: false,
-          error: error.message
-        });
-        return;
-      }
-
-      console.error(
-        "Live flight lookup failed:",
-        error
-      );
-
-      response.status(500).json({
-        ok: false,
-        error:
-          "Unable to resolve live flight data."
-      });
-    }
-  }
-);
+// Display reads never trigger upstream requests.
+app.get("/api/state", (_request, response) => {
+  const state = masterState.read();
+  response.status(state.ok ? 200 : 503).json(state);
+});
+app.get("/api/calendar/upcoming", (_request, response) => {
+  const calendar = masterState.readCalendar();
+  response.status(calendar ? 200 : 503).json(calendar ? {ok: true, ...calendar} : {ok: false, error: "Schedule not ready."});
+});
+app.post("/api/flights/lookup", (_request, response) => {
+  response.status(410).json({ok: false, error: "Refresh Dad Radar to use the shared home-server state."});
+});
 
 app.get("/api/diagnostics/recent", (request, response) => {
   response.json({
@@ -332,6 +238,8 @@ function startServer(options = {}) {
   // The Windows background host imports startServer instead of running this file.
   // Keep both listeners in the shared startup and shutdown lifecycle.
   server.once("listening", () => {
+    if (options.master !== false) masterState.start();
+    server.once("close", () => masterState.stop());
     const gateway = require("./mobile-access").startMobileGateway(app, options.mobileOptions);
     server.mobileGateway = gateway;
     if (gateway) server.once("close", () => gateway.close());
@@ -364,5 +272,6 @@ if (require.main === module) {
 module.exports = {
   app,
   startServer,
-  PUBLIC_DIRECTORIES
+  PUBLIC_DIRECTORIES,
+  masterState
 };

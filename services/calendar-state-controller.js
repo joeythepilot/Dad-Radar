@@ -24,6 +24,43 @@
   let taxiResumeChecked = false;
   const TAXI_STORAGE_KEY = "dad-radar.taxi-in.v1";
   const ESTIMATED_ARRIVAL_SILENCE_MS = 10 * 60 * 1000;
+  const useMaster = !global.dadRadarServerMode &&
+    /^https?:$/.test(global.location?.protocol ?? "");
+  let masterRequest = null;
+  let masterRevision = null;
+
+  function readMasterState() {
+    if (masterRequest) return masterRequest;
+    masterRequest = (async () => {
+      const abort = typeof global.AbortController === "function" ? new global.AbortController() : null;
+      const timeout = abort ? global.setTimeout(() => abort.abort(), 10000) : null;
+      try {
+        const response = await global.fetch("/api/state", {cache: "no-store", signal: abort?.signal});
+        const data = await response.json();
+        if (!response.ok || !data.ok || !data.resolved?.state) throw new Error("Home server state unavailable.");
+        const revision = `${data.publishedAt}|${data.revision}`;
+        if (revision !== masterRevision) {
+          setDadRadarState(data.resolved.state, data.resolved.mode);
+          masterRevision = revision;
+        }
+        global.dispatchEvent(new CustomEvent("dad-radar:calendar-sync", {detail: {
+          ok: data.calendarOk, retrievedAt: data.calendarAt, resolved: data.resolved
+        }}));
+        global.dispatchEvent(new CustomEvent("dad-radar:live-flight-sync", {detail: {
+          ok: data.liveOk, retrievedAt: data.liveAt, liveFlight: data.resolved.liveFlight ?? null,
+          resolved: data.resolved
+        }}));
+        return data.resolved;
+      } catch (error) {
+        // Preserve the server's last state. A disconnected viewer cannot infer an arrival.
+        global.dispatchEvent(new CustomEvent("dad-radar:live-flight-sync", {detail: {ok: false, error}}));
+        return null;
+      } finally {
+        if (timeout !== null) global.clearTimeout(timeout);
+      }
+    })();
+    return masterRequest.finally(() => {masterRequest = null;});
+  }
 
   const CONFIRMED_ARRIVALS_STORAGE_KEY =
     "dad-radar.confirmed-arrivals.v1";
@@ -412,9 +449,9 @@
     if (!isDuplicate) {
       liveTrackPoints.push(point);
 
-      if (liveTrackPoints.length > 180) {
+      if (liveTrackPoints.length > 12000) {
         liveTrackPoints =
-          liveTrackPoints.slice(-180);
+          liveTrackPoints.slice(-12000);
       }
     }
 
@@ -562,12 +599,12 @@
 
   function saveTaxiCheckpoint() {
     try {
-      if (!followingArrivalEvidence()) { global.localStorage?.removeItem(TAXI_STORAGE_KEY); return; }
+      if (!currentLiveFlight || !previousLiveResolved) { global.localStorage?.removeItem(TAXI_STORAGE_KEY); return; }
       global.localStorage?.setItem(TAXI_STORAGE_KEY, JSON.stringify({
         at: Date.now(), key: liveFlightEventKey, lock: lockedFlightEventKey, landingCandidate,
-        snapshot: {...currentLiveFlight, actualTrack: [], filedRoute: null},
+        snapshot: {...currentLiveFlight, filedRoute: null},
         resolved: previousLiveResolved ? {...previousLiveResolved, liveFlight: null,
-          state: {...previousLiveResolved.state, flight: {...previousLiveResolved.state.flight, actualTrack: [], filedRoute: null}}} : null
+          state: {...previousLiveResolved.state, flight: {...previousLiveResolved.state.flight, filedRoute: null}}} : null
       }));
     } catch (_) { /* Memory continuity remains available without browser storage. */ }
   }
@@ -581,14 +618,17 @@
       const landingCheckpoint = saved?.landingCandidate === true &&
         ["APPROACH", "LANDING"].includes(saved?.snapshot?.phase) &&
         (saved?.resolved?.state?.livePhase === "LANDING" || saved?.resolved?.state?.flight?.arrivalEstimated === true);
+      const flightCheckpoint = ["TAXI_OUT", "EN_ROUTE", "APPROACH", "LANDING", "TAXI_IN", "ARRIVED", "LANDED"]
+        .includes(saved?.resolved?.state?.livePhase);
       if (!saved || Date.now() - saved.at < 0 || Date.now() - saved.at > 86400000 ||
-          (!taxiCheckpoint && !landingCheckpoint) ||
+          (!taxiCheckpoint && !landingCheckpoint && !flightCheckpoint) ||
           !currentSchedule.events.some(event => event.status !== "cancelled" && liveEventKey(event) === saved.key)) return;
       currentLiveFlight = saved.snapshot;
       previousLiveResolved = saved.resolved;
       liveFlightEventKey = saved.key;
       lockedFlightEventKey = saved.lock;
       landingCandidate = landingCheckpoint;
+      liveTrackPoints = Array.isArray(saved.snapshot.actualTrack) ? saved.snapshot.actualTrack : [];
     } catch (_) { /* Ignore invalid or unavailable storage. */ }
   }
 
@@ -760,11 +800,13 @@
       resolvedWithSchedule.state,
       resolvedWithSchedule.mode
     );
+    global.dadRadarPublishResolved?.(resolvedWithSchedule);
 
     return resolvedWithSchedule;
   }
 
   async function refreshLiveFlightState() {
+    if (useMaster) return readMasterState();
     lastLiveRefreshAt = Date.now();
     const settings =
       controllerSettings();
@@ -971,6 +1013,7 @@
   }
 
   async function refreshCalendarState() {
+    if (useMaster) return readMasterState();
     try {
       currentSchedule =
         await global.dadRadarCalendarApi
@@ -1066,6 +1109,10 @@
 
   function startCalendarStateController() {
     stopCalendarStateController();
+    if (useMaster) {
+      refreshTimerId = global.setInterval(readMasterState, 5000);
+      return readMasterState();
+    }
 
     if (
       !global.dadRadarCalendarApi ||
@@ -1082,7 +1129,7 @@
     const settings =
       controllerSettings();
 
-    refreshCalendarState();
+    const initialRefresh = refreshCalendarState();
 
     refreshTimerId =
       global.setInterval(
@@ -1109,6 +1156,7 @@
           )
         );
     }
+    return initialRefresh;
   }
 
   global.refreshCalendarState =

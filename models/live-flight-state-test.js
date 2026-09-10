@@ -1001,17 +1001,24 @@ function testArrivalFallbackNeedsFinalApproachEvidence() {
       groundSpeedKnots: 140, altitudeTrend: "D", verticalSpeedFeetPerMinute: -600, recordedAt: NOW}});
   const landing = reconcileScheduleWithLive(calendar, snapshot, {now: NOW});
   assert.equal(landing.mode, "LANDING");
+  const trackingLost = {...calendar, mode: "TRACKING_LOST", state: {...calendar.state, status: "NO TRACK"}};
+  const retained = reconcileScheduleWithLive(trackingLost, snapshot,
+    {now: "2026-08-04T18:20:00Z", previousResolved: landing});
+  assert.equal(retained.mode, "LANDING", "A calendar fallback cannot erase observed landing evidence");
+  assert.equal(retained.state.liveData, false);
   const qualifies = patch => isArrivalFallbackCandidate(calendar, {...snapshot,
     position: {...snapshot.position, ...patch}}, landing, Date.parse(NOW));
   assert.equal(qualifies({}), true);
   for (const patch of [
-    {latitude: airport.latitude + .2}, {altitudeFeet: airport.elevationFeet + 2000},
+    {latitude: airport.latitude + .2}, {altitudeFeet: airport.elevationFeet + 3000},
     {altitudeFeet: null}, {latitude: null}, {recordedAt: "invalid"},
     {recordedAt: "2026-08-04T17:57:00Z"}, {groundSpeedKnots: 250},
     {altitudeTrend: "C"}, {verticalSpeedFeetPerMinute: 1200},
     {positionAccuracy: 5}, {containmentRadiusMeters: 500}, {altitudeFeet: 0, onGround: false}
   ]) assert.equal(qualifies(patch), false, JSON.stringify(patch));
   assert.equal(qualifies({altitudeFeet: 0, onGround: true, groundSpeedKnots: 20}), true);
+  assert.equal(qualifies({latitude: airport.latitude + .067, altitudeFeet: airport.elevationFeet + 2000}), true);
+  assert.equal(qualifies({latitude: airport.latitude + .067, altitudeTrend: "", verticalSpeedFeetPerMinute: 0}), false);
   assert.equal(isArrivalFallbackCandidate(calendar, {...snapshot, destination: "ORD"}, landing, Date.parse(NOW)), false);
   assert.equal(isArrivalFallbackCandidate(calendar, snapshot, {...landing, state: {...landing.state, livePhase: "EN_ROUTE"}}, Date.parse(NOW)), false);
 }

@@ -1395,7 +1395,7 @@ async function testArrivalWithoutGroundCoverage() {
   const recovered = await context.refreshLiveFlightState();
   assert.equal(recovered.mode, "EN_ROUTE", "A later go-around report supersedes estimated arrival");
   assert.notEqual(recovered.state.flight.arrivalEstimated, true);
-  assert.equal(storage.getItem("dad-radar.taxi-in.v1"), null, "Recovered tracking clears the estimate checkpoint");
+  assert.equal(JSON.parse(storage.getItem("dad-radar.taxi-in.v1")).landingCandidate, false, "Recovered tracking clears arrival candidacy while preserving flight continuity");
   reply = "missing";
   for (let i = 0; i < 12; i++) {
     clock += 60000;

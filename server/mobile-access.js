@@ -82,7 +82,7 @@ function createMobileGateway(app, config, options = {}) {
     const pathname=request.path.toLowerCase();
     if(pathname==='/api' || pathname.startsWith('/api/')) {
       const allowed = pathname==='/api/flights/lookup' ? request.method==='POST' :
-        ['GET','HEAD'].includes(request.method) && (/^\/api\/airports\/[a-z0-9]{3,4}\/surface$/.test(pathname) || ['/api/calendar/upcoming','/api/weather/radar'].includes(pathname));
+        ['GET','HEAD'].includes(request.method) && (/^\/api\/airports\/[a-z0-9]{3,4}\/surface$/.test(pathname) || ['/api/state','/api/calendar/upcoming','/api/weather/radar'].includes(pathname));
       if(!allowed) {response.status(404).end();return;}
     }
     if(request.path==='/') {response.redirect('/mobile');return;}

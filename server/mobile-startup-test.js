@@ -16,7 +16,7 @@ async function run() {
     DAD_RADAR_FAMILY_PASSWORD_HASH: `scrypt-v1:${'00'.repeat(16)}:${'00'.repeat(32)}`
   };
   // Exercise the imported entry point used by the Windows background host.
-  const server = startServer({ port: 0, host: '127.0.0.1', mobileOptions: { env } });
+  const server = startServer({ port: 0, host: '127.0.0.1', master: false, mobileOptions: { env } });
   try {
     await once(server, 'listening');
     const gateway = server.mobileGateway;

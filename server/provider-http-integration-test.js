@@ -1,130 +1,73 @@
 "use strict";
-
-// Exercise the real HTTP routes and provider orchestrator. Only external
-// Calendar, telemetry, filed-route and radar calls are replaced with fixtures.
+// Real HTTP readers and server controller; only external sources use fixtures.
 const assert = require("node:assert/strict");
-const adsb = require("./adsb-lol-service");
-const fr24 = require("./flightradar24-service");
-const flightaware = require("./flightaware-route-service");
-const weather = require("./weather-radar-service");
-const calendar = require("./calendar-service");
-let adsbAvailable = true;
-let fr24Available = false;
-let radarError = false;
-let calendarError = false;
-let adsbCalls = 0;
-let fr24Calls = 0;
-const filedRoute = {
-  provider: "flightaware",
-  routeText: "PHX TEST CLT",
-  fixes: [{ name: "TEST", latitude: 34, longitude: -100 }]
+const fs = require("node:fs");
+const path = require("node:path");
+const os = require("node:os");
+const dir = fs.mkdtempSync(path.join(os.tmpdir(), "dad-http-master-"));
+const factory = require("./master-state-service");
+const create = factory.createMasterStateService;
+factory.createMasterStateService = options => create({...options, file: path.join(dir, "state.json")});
+let aircraftCalls = 0, calendarCalls = 0, calendarError = false, radarError = false;
+const airport = require("../data/airport-catalog").lookupAirport("MSN");
+require("./calendar-service").getUpcomingEvents = async () => {
+  calendarCalls++;
+  if (calendarError) throw new Error("Fixture Calendar outage");
+  return {retrievedAt: new Date().toISOString(), events: [{id: "test-1", kind: "flight", status: "confirmed",
+    origin: "ORD", destination: "MSN", carrierCode: "MQ", flightNumber: "4038", liveLookupCandidates: ["ENY4038"],
+    times: {startUtc: new Date(Date.now() - 3600000).toISOString(), endUtc: new Date(Date.now() + 600000).toISOString()}}]};
 };
-const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=", "base64");
-adsb.getLiveFlightSnapshot = async () => {
-  adsbCalls++;
-  return adsbAvailable ? { provider: "adsb.lol", ident: "AAL3009" } : null;
+require("./adsb-lol-service").getLiveFlightSnapshot = async () => {
+  aircraftCalls++;
+  return {provider: "adsb.lol", ident: "ENY4038", phase: "APPROACH", origin: "ORD", destination: "MSN", progressPercent: 99,
+    retrievedAt: new Date().toISOString(), position: {latitude: airport.latitude, longitude: airport.longitude,
+      altitudeFeet: airport.elevationFeet + 800, groundSpeedKnots: 140, altitudeTrend: "D", recordedAt: new Date().toISOString()}};
 };
-fr24.getLiveFlightSnapshot = async () => {
-  fr24Calls++;
-  return fr24Available ? { provider: "flightradar24", ident: "AAL3009" } : null;
-};
-flightaware.getFiledRoute = async () => filedRoute;
-weather.getRadarImage = async () => {
+require("./flightradar24-service").getLiveFlightSnapshot = async () => {throw new Error("Paid fallback should not be needed");};
+require("./flightaware-route-service").getFiledRoute = async () => null;
+require("./weather-radar-service").getRadarImage = async () => {
   if (radarError) throw new Error("Fixture radar outage");
-  return { buffer: png, contentType: "image/png", cached: false };
+  return {buffer: Buffer.from("fixture"), contentType: "image/png", cached: false};
 };
-calendar.getUpcomingEvents = async () => {
-  if (calendarError) throw Object.assign(new Error("invalid_grant"), {
-    code: 400, response: { data: { error: "invalid_grant" } }
-  });
-  return { events: [] };
-};
-let surfaceCalls = 0;
-require("./airport-surface-service").createAirportSurfaceService = () => ({get: async code => {
-  surfaceCalls++;
-  return code === "AVL" ? {ok: true, map: {code: "AVL", features: []}, pending: false} : null;
-}});
-const { app } = require("./index");
-
+const {app, masterState} = require("./index");
 (async () => {
   const server = app.listen(0, "127.0.0.1");
-  await new Promise((resolve, reject) => {
-    server.once("listening", resolve);
-    server.once("error", reject);
-  });
+  await new Promise(resolve => server.once("listening", resolve));
   const base = `http://127.0.0.1:${server.address().port}`;
-  const lookup = async () => {
-    const response = await fetch(`${base}/api/flights/lookup`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ origin: "PHX", destination: "CLT",
-        startUtc: "2026-09-04T12:00:00Z", liveLookupCandidates: ["AA3009"] })
-    });
-    assert.equal(response.status, 200);
-    return response.json();
-  };
   try {
-    const health = await (await fetch(`${base}/api/health`)).json();
-    assert.equal(health.flightData.primaryProvider, "adsb.lol");
-    assert.equal(health.flightData.filedRoute.provider, "flightaware");
-    assert.equal(health.flightData.weatherRadar.provider, "NOAA NWS");
-
-    const surface = await fetch(`${base}/api/airports/AVL/surface`);
-    assert.equal(surface.status, 200);
-    assert.equal((await surface.json()).map.code, "AVL");
-    assert.match(surface.headers.get("cache-control"), /no-store/);
-    assert.equal((await fetch(`${base}/api/airports/ZZZZ/surface`)).status, 404);
-    assert.equal(surfaceCalls, 2);
-    assert.equal(adsbCalls, 0);
-    assert.equal(fr24Calls, 0, "Airport geometry does not trigger a telemetry or paid-provider request.");
-
-    let result = await lookup();
-    assert.equal(result.provider, "adsb.lol");
-    assert.equal(adsbCalls, 1);
-    assert.equal(fr24Calls, 0, "FR24 should not run when adsb.lol matches.");
-    assert.deepEqual(result.filedRoute, filedRoute);
-    assert.deepEqual(result.liveFlight.filedRoute, filedRoute);
-
-    adsbAvailable = false;
-    fr24Available = true;
-    result = await lookup();
-    assert.equal(result.provider, "flightradar24");
-    assert.deepEqual(result.filedRoute, filedRoute);
-
-    fr24Available = false;
-    result = await lookup();
-    assert.equal(result.liveFlight, null);
-    assert.equal(result.trackingUnavailable, false, "Healthy no-match is distinct from provider outage");
-    assert.deepEqual(result.filedRoute, filedRoute,
-      "The filed plan must reach the display before telemetry is available.");
-
-    let radar = await fetch(`${base}/api/weather/radar`);
-    assert.equal(radar.status, 200);
-    assert.equal(radar.headers.get("content-type"), "image/png");
-    assert.deepEqual(Buffer.from(await radar.arrayBuffer()), png);
+    assert.equal((await fetch(base + "/api/state")).status, 503);
+    assert.equal(aircraftCalls, 0);
+    await masterState.start(); await masterState.poll();
+    const count = aircraftCalls, schedules = calendarCalls;
+    const screens = await Promise.all(Array.from({length: 30}, async () => {
+      const response = await fetch(base + "/api/state");
+      assert.equal(response.status, 200);
+      assert.match(response.headers.get("cache-control"), /no-store/);
+      return response.json();
+    }));
+    assert(screens.every(screen => screen.resolved.mode === "LANDING"));
+    assert(screens.every(screen => screen.revision === screens[0].revision));
+    await fetch(base + "/api/calendar/upcoming?days=60");
+    const legacy = await fetch(base + "/api/flights/lookup", {method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({origin: "PHX", destination: "CLT", liveLookupCandidates: ["AA3009"]})});
+    assert.equal(legacy.status, 410, "Old clients cannot multiply provider calls or change the tracked flight");
+    assert.equal(aircraftCalls, count);
+    assert.equal(calendarCalls, schedules);
+    assert.equal((await fetch(base + "/api/weather/radar")).status, 200);
     radarError = true;
-    radar = await fetch(`${base}/api/weather/radar`);
-    assert.equal(radar.status, 204);
-    assert.equal((await lookup()).ok, true, "Weather outage must not stop tracking.");
-
-    const diagnosticResponse = await fetch(`${base}/api/diagnostics/recent`);
-    assert.equal(diagnosticResponse.status, 200);
-    const diagnostics = await diagnosticResponse.json();
-    assert(diagnostics.entries.some(e => e.type === "provider-attempt" && e.provider === "adsb.lol"));
-    assert(diagnostics.entries.some(e => e.type === "provider-attempt" && e.provider === "flightaware-route"));
-    assert(diagnostics.entries.some(e => e.type === "weather-error"));
-
-    const chime = await fetch(`${base}/api/diagnostics/event`, {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "altitude-chime-test" })
-    });
-    assert.equal(chime.status, 200);
+    assert.equal((await fetch(base + "/api/weather/radar")).status, 204);
+    assert.equal((await (await fetch(base + "/api/state")).json()).resolved.mode, "LANDING");
     calendarError = true;
-    const schedule = await fetch(`${base}/api/calendar/upcoming`);
-    assert.equal(schedule.status, 401);
-    assert.equal((await schedule.json()).code, "calendar-authorization-required");
+    await masterState.refreshCalendar();
+    const held = await (await fetch(base + "/api/state")).json();
+    assert.equal(held.calendarOk, false);
+    assert.equal(held.resolved.mode, "LANDING");
+    for (const privatePath of ["/runtime/master-state.json", "/server/master-state-service.js"]) {
+      assert.equal((await fetch(base + privatePath)).status, 404);
+    }
   } finally {
-    await new Promise(resolve => server.close(resolve));
+    masterState.stop(); await new Promise(resolve => server.close(resolve));
+    fs.rmSync(dir, {recursive: true, force: true});
   }
-  console.log("Provider HTTP integration tests passed.");
-})().catch(error => { console.error(error); process.exitCode = 1; });
+  console.log("Provider HTTP integration tests passed: read-only state and no per-device lookups.");
+})().catch(error => {console.error(error); process.exitCode = 1;});

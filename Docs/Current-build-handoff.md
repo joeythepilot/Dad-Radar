@@ -1,5 +1,11 @@
 # Dad Radar authoritative build handoff
 
+Latest September 10 checkpoint: read `Docs/Server-master-update.md` first. The
+home server now owns polling, flight decisions, current-track persistence and
+arrival continuity; all display layouts consume read-only shared state. This
+supersedes historical descriptions below of per-browser controllers. Work-trip
+totals/history, generated shutter assets, and the new descent zoom remain pending.
+
 Updated September 6, 2026. Read this before choosing a development baseline.
 
 ## Recovered installed baseline

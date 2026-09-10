@@ -385,6 +385,7 @@
         "EN_ROUTE",
         "APPROACH",
         "LANDING",
+        "TRACKING_LOST",
         "COMMUTING_TO_BASE",
         "COMMUTING_HOME"
       ].includes(calendarResolved.mode) &&
@@ -529,7 +530,7 @@
           speed === null || speed < 0 || speed > 200 || altitude === null || elevation === null ||
           !Number.isFinite(age) || age < -5000 || age > 90000 || isClimbingSnapshot(snapshot) || (rate !== null && rate >= 100)) return false;
       const agl = position.onGround === true ? 0 : altitude - elevation;
-      if (agl < -500 || agl > 1500) return false;
+      if (agl < -500 || agl > 2500) return false;
       const accuracy = finiteNumber(position.positionAccuracy);
       const containment = finiteNumber(position.containmentRadiusMeters);
       if ((accuracy !== null && accuracy < 7) || (containment !== null && containment > 200)) return false;
@@ -539,7 +540,11 @@
       const haversine = Math.sin(dLat / 2) ** 2 + Math.cos(radians(latitude)) *
         Math.cos(radians(airport.latitude)) * Math.sin(dLon / 2) ** 2;
       const distanceNm = 3440.065 * 2 * Math.asin(Math.sqrt(Math.min(1, haversine)));
-      return Number.isFinite(distanceNm) && distanceNm <= 3;
+      const descending = (rate !== null && rate <= -100) ||
+        /^(D|DOWN|DESCENDING)$/.test(String(position.altitudeTrend ?? "").toUpperCase());
+      // Early terminal coverage loss is still an estimate, never a gate report.
+      return Number.isFinite(distanceNm) &&
+        ((distanceNm <= 3 && agl <= 1500) || (distanceNm <= 6 && descending));
     }
 
     function stabilizedLivePhase(
