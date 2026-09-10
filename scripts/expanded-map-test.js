@@ -45,14 +45,17 @@ assert.match(
   /class="great-lakes"/,
   "The Great Lakes should use the map's muted water treatment."
 );
-assert.ok(
-  (mapSource.match(/data-fips=/g) ?? []).length >= 49,
-  "The expanded map should contain the contiguous states and D.C."
-);
+assert.match(mapSource, /data-boundaries="interior"/,
+  "State edges must not redraw a second set of lake shorelines.");
+for (const name of ["Superior", "Michigan", "Huron", "Erie", "Ontario"]) {
+  assert.match(mapSource, new RegExp(`data-lake="Lake ${name}"`));
+}
+assert(mapSource.indexOf('class="great-lakes"') > mapSource.indexOf('class="state-boundaries"'),
+  "Water must cover administrative edges inside lakes.");
 assert.doesNotMatch(mapSource, /stroke-dasharray/);
 assert.match(
   dashboardSource,
-  /north-america-caribbean-vintage\.svg\?v=natural-earth-7/
+  /north-america-caribbean-vintage\.svg\?v=great-lakes-8/
 );
 assert.doesNotMatch(dashboardSource, /map-us-detail/);
 

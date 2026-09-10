@@ -51,20 +51,20 @@ function project(coordinate) {
   ];
 }
 
-function ringPath(ring) {
+function ringPath(ring, precision = 1) {
   return ring.map((coordinate, index) => {
     const point = project(coordinate);
-    return `${index === 0 ? "M" : "L"}${point[0].toFixed(1)} ${point[1].toFixed(1)}`;
+    return `${index === 0 ? "M" : "L"}${point[0].toFixed(precision)} ${point[1].toFixed(precision)}`;
   }).join("") + "Z";
 }
 
-function geometryPath(geometry) {
+function geometryPath(geometry, precision = 1) {
   if (geometry.type === "Polygon") {
-    return geometry.coordinates.map(ringPath).join("");
+    return geometry.coordinates.map(ring => ringPath(ring, precision)).join("");
   }
   if (geometry.type === "MultiPolygon") {
     return geometry.coordinates
-      .flatMap((polygon) => polygon.map(ringPath))
+      .flatMap((polygon) => polygon.map(ring => ringPath(ring, precision)))
       .join("");
   }
   return "";
@@ -96,42 +96,10 @@ function reliefPath(points, close = false) {
   }).join("") + (close ? "Z" : "");
 }
 
-const greatLakes = [
-  [
-    [-92.1, 46.6], [-91.5, 47.1], [-90.7, 47.6], [-89.8, 47.9],
-    [-88.8, 48.1], [-87.7, 48.0], [-86.8, 47.7], [-85.8, 47.2],
-    [-84.8, 46.9], [-84.7, 46.5], [-85.6, 46.6], [-86.5, 46.8],
-    [-87.4, 46.7], [-88.4, 46.3], [-89.5, 46.2], [-90.5, 46.4],
-    [-91.4, 46.4]
-  ],
-  [
-    [-87.8, 45.9], [-87.1, 45.8], [-86.6, 45.4], [-86.2, 44.8],
-    [-86.1, 44.1], [-86.2, 43.3], [-86.3, 42.6], [-86.7, 42.0],
-    [-87.2, 41.8], [-87.5, 42.3], [-87.7, 43.1], [-87.8, 44.0],
-    [-87.9, 44.8]
-  ],
-  [
-    [-84.9, 46.2], [-84.1, 46.1], [-83.4, 45.9], [-82.8, 45.4],
-    [-82.5, 44.8], [-82.2, 44.3], [-82.4, 43.5], [-82.9, 43.0],
-    [-83.6, 43.4], [-84.1, 44.0], [-84.5, 44.6], [-84.8, 45.3]
-  ],
-  [
-    [-83.4, 42.2], [-82.6, 41.9], [-81.7, 41.7], [-80.8, 41.7],
-    [-79.9, 41.9], [-78.9, 42.2], [-79.4, 42.6], [-80.4, 42.8],
-    [-81.5, 42.7], [-82.5, 42.5]
-  ],
-  [
-    [-79.8, 43.3], [-79.0, 43.2], [-78.2, 43.3], [-77.4, 43.4],
-    [-76.6, 43.7], [-76.1, 44.0], [-76.8, 44.2], [-77.8, 44.1],
-    [-78.8, 43.9], [-79.5, 43.6]
-  ]
-];
-
-const greatLakePaths = greatLakes
-  .map((lake) =>
-    `<path d="${reliefPath(lake, true)}"/>`
-  )
-  .join("\n    ");
+const greatLakes = require("../data/great-lakes-50m.json");
+const greatLakePaths = greatLakes.features.map(lake =>
+  `<path data-lake="${lake.properties.name}" fill-rule="evenodd" d="${geometryPath(lake.geometry, 3)}"/>`
+).join("\n    ");
 
 const features = topojson
   .feature(world, world.objects.countries)
@@ -146,17 +114,11 @@ const landClipPaths = features.map((feature) =>
   `<path d="${geometryPath(feature.geometry)}"/>`
 ).join("");
 
-const statePaths = topojson
-  .feature(
-    unitedStates,
-    unitedStates.objects.states
-  )
-  .features
-  .filter(intersectsMap)
-  .map((feature) =>
-    `<path class="state-boundary" data-fips="${feature.id}" d="${geometryPath(feature.geometry)}"/>`
-  )
-  .join("\n    ");
+// Interior administrative edges only. Per-state outer rings redraw shorelines
+// from a different dataset and create duplicate outlines beside the lake fills.
+const stateMesh = topojson.mesh(unitedStates, unitedStates.objects.states, (a, b) => a !== b);
+const statePaths = `<path class="state-boundary" data-boundaries="interior" d="${stateMesh.coordinates
+  .map(line => reliefPath(line)).join("")}"/>`;
 
 const svg = `<?xml version="1.0" encoding="UTF-8"?>
 <!-- Generated from world-atlas 2.0.2 / Natural Earth 1:50m country boundaries. -->
@@ -176,16 +138,16 @@ const svg = `<?xml version="1.0" encoding="UTF-8"?>
   <g class="terrain-relief" clip-path="url(#land-clip)">
     <image href="${reliefDataUrl}" x="315" y="45" width="570" height="560" preserveAspectRatio="none"/>
   </g>
-  <g class="great-lakes">
-    ${greatLakePaths}
-  </g>
   <g class="state-boundaries" fill="none">
     ${statePaths}
+  </g>
+  <g class="great-lakes">
+    ${greatLakePaths}
   </g>
   <style>
     .country{fill:url(#land-paper);stroke:#6a583d;stroke-width:1.25;vector-effect:non-scaling-stroke}
     .terrain-relief{opacity:.42;mix-blend-mode:multiply}
-    .great-lakes{fill:#71827b;stroke:#5f6254;stroke-width:1.2;opacity:.96}
+    .great-lakes{fill:#71827b;stroke:#5f6254;stroke-width:.3}
     .state-boundary{stroke:#665438;stroke-width:.82;opacity:.82;vector-effect:non-scaling-stroke}
   </style>
 </svg>\n`;
