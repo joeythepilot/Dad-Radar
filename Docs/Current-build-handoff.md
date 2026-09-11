@@ -9,6 +9,9 @@ totals/history, generated shutter assets, and the new descent zoom remain pendin
 The next map repair replaces rough Great Lakes polygons with geographic shoreline
 data and removes duplicate state/coast outlines. See `Docs/Great-Lakes-map-repair.md`.
 
+Weather now requests 1600×1000 regional frames as the camera changes, with a
+shared bounded server cache. See `Docs/Weather-detail-update.md`.
+
 Updated September 6, 2026. Read this before choosing a development baseline.
 
 ## Recovered installed baseline

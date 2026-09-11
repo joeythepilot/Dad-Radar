@@ -196,16 +196,55 @@ function scaleReferenceCities(camera) {
     });
 }
 
+let weatherCamera = {...BASE_VIEW_BOX};
+let weatherTimer = null;
+let weatherPending = false;
+let weatherAttemptAt = -Infinity;
+let weatherLoadedAt = 0;
+let weatherLoadedKey = null;
+
+function radarFrameForCamera(camera) {
+  const longitude = x => MAP_BOUNDS.west + (x - MAP_FRAME.left) /
+    (MAP_FRAME.right - MAP_FRAME.left) * (MAP_BOUNDS.east - MAP_BOUNDS.west);
+  const latitude = y => MAP_BOUNDS.north - (y - MAP_FRAME.top) /
+    (MAP_FRAME.bottom - MAP_FRAME.top) * (MAP_BOUNDS.north - MAP_BOUNDS.south);
+  // Pad and round outward so nearby camera positions share the server's image.
+  const west = Math.max(MAP_BOUNDS.west, Math.floor(longitude(camera.x - camera.width * .2)));
+  const east = Math.min(MAP_BOUNDS.east, Math.ceil(longitude(camera.x + camera.width * 1.2)));
+  const south = Math.max(MAP_BOUNDS.south, Math.floor(latitude(camera.y + camera.height * 1.2)));
+  const north = Math.min(MAP_BOUNDS.north, Math.ceil(latitude(camera.y - camera.height * .2)));
+  if (west >= east || south >= north) return null;
+  const topLeft = project(west, north), bottomRight = project(east, south);
+  return {bbox: [west, south, east, north], x: topLeft.x, y: topLeft.y,
+    width: bottomRight.x - topLeft.x, height: bottomRight.y - topLeft.y};
+}
+
 function refreshWeatherRadar() {
   if (!elements.weatherImage) {
     return;
   }
-
-  const bucket = Math.floor(Date.now() / 300000);
-  elements.weatherImage.setAttribute(
-    "href",
-    `/api/weather/radar?bbox=${MAP_BOUNDS.west},${MAP_BOUNDS.south},${MAP_BOUNDS.east},${MAP_BOUNDS.north}&width=1080&height=560&v=${bucket}`
-  );
+  const now = Date.now();
+  if (weatherLoadedAt && now - weatherLoadedAt > 600000) elements.weatherImage.style.visibility = "hidden";
+  const frame = radarFrameForCamera(weatherCamera);
+  if (!frame || weatherPending || now - weatherAttemptAt < 30000) return;
+  const url = `/api/weather/radar?bbox=${frame.bbox.join(",")}&width=1600&height=1000&v=${Math.floor(now / 300000)}`;
+  if (url === weatherLoadedKey) return;
+  weatherAttemptAt = now;
+  const apply = () => {
+    // Swap geometry and pixels together: never stretch the old image to new bounds.
+    for (const name of ["x", "y", "width", "height"]) elements.weatherImage.setAttribute(name, frame[name]);
+    elements.weatherImage.setAttribute("href", url);
+    elements.weatherImage.style.visibility = "visible";
+    weatherLoadedKey = url;
+    weatherLoadedAt = Date.now();
+    weatherPending = false;
+  };
+  if (typeof window.Image !== "function") {apply(); return;}
+  weatherPending = true;
+  const image = new window.Image();
+  image.onload = apply;
+  image.onerror = () => {weatherPending = false;};
+  image.src = url;
 }
 
 function buildCurve(origin, destination) {
@@ -974,6 +1013,13 @@ function applyCamera(camera) {
 
   positionCompass(camera);
   scaleReferenceCities(camera);
+  weatherCamera = camera;
+  if (elements.weatherImage && weatherTimer === null) {
+    weatherTimer = window.setTimeout(() => {
+      weatherTimer = null;
+      refreshWeatherRadar();
+    }, 250);
+  }
 }
 
 function resetCamera() {
@@ -1784,7 +1830,6 @@ window.addEventListener(
 
 resetCamera();
 renderReferenceCities();
-refreshWeatherRadar();
 if (typeof window.setInterval === "function") {
   window.setInterval(
     refreshWeatherRadar,

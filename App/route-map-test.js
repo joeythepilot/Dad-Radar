@@ -166,7 +166,8 @@ function createHarness(flight, state = null, surfaceApi = null) {
 
   return {
     elements,
-    listeners
+    listeners,
+    context
   };
 }
 
@@ -894,4 +895,19 @@ function runTests() {
   );
 }
 
+function testRadarFollowsViewport() {
+  const {context} = createHarness(null, {locationAirport: "AVL", flight: null});
+  const wide = context.radarFrameForCamera({x: 0, y: 0, width: 1200, height: 650});
+  assert.equal(wide.bbox.join(","), "-135,5,-55,62");
+  const close = context.radarFrameForCamera({x: 640, y: 200, width: 50, height: 30});
+  assert(close.bbox[2] - close.bbox[0] < 12, "Zoomed radar should sample the region, not the continent");
+  assert(close.bbox[3] - close.bbox[1] < 6);
+  const nw = context.project(close.bbox[0], close.bbox[3]);
+  const se = context.project(close.bbox[2], close.bbox[1]);
+  assert.equal(close.x, nw.x); assert.equal(close.y, nw.y);
+  assert.equal(close.width, se.x - nw.x); assert.equal(close.height, se.y - nw.y);
+  const nearby = context.radarFrameForCamera({x: 640.01, y: 200.01, width: 50, height: 30});
+  assert.equal(nearby.bbox.join(","), close.bbox.join(","), "Tiny camera moves share radar images");
+}
+testRadarFollowsViewport();
 runTests();
