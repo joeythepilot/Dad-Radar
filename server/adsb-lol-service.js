@@ -98,6 +98,8 @@ function normalizeAdsbSnapshot(record, lookup, retrievedAt = new Date().toISOStr
     diverted: false,
     origin: lookup.origin,
     destination: lookup.destination,
+    // These airports come from Calendar, not an independently identified leg.
+    routeSource: "schedule",
     progressPercent: metrics.progressPercent,
     aircraft: {
       registration: record.r ?? null,

@@ -1,5 +1,11 @@
 # Dad Radar authoritative build handoff
 
+September 12 association repair: read `Docs/Flight-leg-association-repair.md`.
+The server now guards against reused callsigns attaching a return flight to a
+completed inbound leg, before telemetry or actual-track points are published.
+This extends the server-master checkpoint below and still requires installation
+on the home PC. The screenshot report came from the older, unupdated home build.
+
 Latest September 10 checkpoint: read `Docs/Server-master-update.md` first. The
 home server now owns polling, flight decisions, current-track persistence and
 arrival continuity; all display layouts consume read-only shared state. This

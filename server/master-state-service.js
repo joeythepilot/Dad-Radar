@@ -3,6 +3,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
+const {createFlightLegGuard} = require("./flight-leg-guard");
 
 // One controller per home-server process. HTTP readers never run this controller
 // or initiate a Calendar/provider lookup. Reuse the tested flight state machine.
@@ -14,6 +15,7 @@ function createMasterStateService(options) {
   let saved = {};
   try { saved = JSON.parse(fs.readFileSync(file, "utf8")); } catch (_) { /* First start. */ }
   const storage = saved.storage && typeof saved.storage === "object" ? saved.storage : {};
+  const legGuard = createFlightLegGuard(storage);
   let envelope = {ok: false, resolved: null, calendarAt: null, liveAt: null,
     calendarOk: false, liveOk: true, publishedAt: null};
   let schedule = null;
@@ -37,6 +39,9 @@ function createMasterStateService(options) {
   }
   function publish(resolved) {
     if (stopped) return;
+    if (resolved?.state?.livePhase === "ARRIVED" && !resolved.state.flight?.arrivalEstimated && resolved.event) {
+      legGuard.complete(resolved.event);
+    }
     envelope = {...envelope, ok: true, resolved, revision: ++revision,
       publishedAt: new Date(clock()).toISOString()};
     persist();
@@ -81,7 +86,7 @@ function createMasterStateService(options) {
       return calendarPending;
     }},
     dadRadarLiveFlightApi: {async getFlightSnapshot(event, query) {
-      const key = JSON.stringify([event.origin, event.destination, event.times?.startUtc ?? event.startUtc,
+      const key = JSON.stringify([event.id, event.origin, event.destination, event.times?.startUtc ?? event.startUtc,
         event.liveLookupCandidates, query.surfaceOnly === true]);
       if (key !== flightKey || !flightRequest || clock() - flightAt >= 30000) {
         flightKey = key;
@@ -93,11 +98,18 @@ function createMasterStateService(options) {
         }));
       }
       const result = await flightRequest;
+      if (key !== flightKey) return null;
       for (const attempt of result.attempts || []) options.report?.("provider-attempt", attempt);
       const unavailable = (result.attempts || []).some(attempt =>
         ["error", "cooldown"].includes(attempt.outcome) && attempt.provider !== "flightaware-route");
       if (!result.snapshot && unavailable) throw new Error("Tracking provider unavailable; arrival not inferred from an outage.");
-      if (result.snapshot) return result.snapshot;
+      if (result.snapshot) {
+        const match = legGuard.inspect(event, result.snapshot, clock());
+        if (match.accepted) return result.snapshot;
+        options.report?.("flight-leg-rejected", {provider: result.snapshot.provider, reason: match.reason});
+        // Uncertain association cannot count as healthy silence and infer arrival.
+        if (match.uncertain || unavailable) throw new Error("Flight association uncertain; retaining the last matched leg.");
+      }
       return result.filedRoute ? {routeOnly: true, filedRoute: result.filedRoute,
         retrievedAt: new Date(clock()).toISOString()} : null;
     }}
