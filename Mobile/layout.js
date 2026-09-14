@@ -37,12 +37,17 @@
       '--family-clock-pad-y': Math.max(4, 7 * hardwareScale),
       '--family-clock-pad-x': Math.max(5, 9 * hardwareScale),
       '--family-map-hardware-width': Math.max(118, 184 * hardwareScale),
-      '--family-map-hardware-bottom': Math.max(7, 20 * hardwareScale),
+      '--family-map-hardware-bottom': Math.max(5, 8 * hardwareScale),
       '--family-sequence-width': Math.max(126, 196 * hardwareScale),
       '--family-sequence-font': Math.max(12, 20 * hardwareScale),
       '--family-sequence-label': Math.max(6, 8 * hardwareScale),
       '--family-sequence-pad-y': Math.max(4, 7 * hardwareScale),
-      '--family-sequence-pad-x': Math.max(5, 9 * hardwareScale)
+      '--family-sequence-pad-x': Math.max(5, 9 * hardwareScale),
+      '--family-hardware-rail-height': Math.max(46, 64 * hardwareScale),
+      '--family-hardware-clock-width': Math.max(116, 172 * hardwareScale),
+      '--family-hardware-sequence-width': Math.max(132, 194 * hardwareScale),
+      '--family-hardware-side-inset': Math.max(5, 12 * hardwareScale),
+      '--family-hardware-bottom': Math.max(4, 7 * hardwareScale)
     };
     Object.keys(hardwareSizes).forEach(function (name) { dashboard.style.setProperty(name, hardwareSizes[name] + 'px'); });
 
