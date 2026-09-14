@@ -44,23 +44,12 @@ function resolved(selectedEvent, track, mode = "EN_ROUTE") {
   };
 }
 
-assert.equal(
-  isWorkFlight(event("C", "AVL", "ORD", "commute")),
-  false
-);
+assert.equal(isWorkFlight(event("C", "AVL", "ORD", "commute")), false);
 
 const first = event("101", "ORD", "BMI");
 let summary = service.update(resolved(first, [
-  {
-    latitude: 41.97,
-    longitude: -87.9,
-    recordedAt: new Date(now).toISOString()
-  },
-  {
-    latitude: 41.0,
-    longitude: -88.6,
-    recordedAt: new Date(now + 60000).toISOString()
-  }
+  {latitude: 41.97, longitude: -87.9, recordedAt: new Date(now).toISOString()},
+  {latitude: 41.0, longitude: -88.6, recordedAt: new Date(now + 60000).toISOString()}
 ]));
 assert.equal(summary.legCount, 1);
 assert.equal(summary.currentEventKey, eventKey(first));
@@ -68,35 +57,19 @@ assert.ok(summary.totalDistanceNm > 50);
 
 now += 2 * 3600000;
 summary = service.update(resolved(first, [
-  {
-    latitude: 40.48,
-    longitude: -88.92,
-    recordedAt: new Date(now).toISOString()
-  }
+  {latitude: 40.48, longitude: -88.92, recordedAt: new Date(now).toISOString()}
 ], "ARRIVED"));
 assert.equal(summary.completedLegCount, 1);
 
-summary = service.update({
-  event: {kind: "layover", airport: "BMI"},
-  mode: "LAYOVER",
-  state: {}
-});
+summary = service.update({event: {kind: "layover", airport: "BMI"}, mode: "LAYOVER", state: {}});
 assert.equal(summary.currentEventKey, null);
 assert.equal(summary.legCount, 1, "Layover preserves completed trip history.");
 
 const deadhead = event("202", "BMI", "ORD", "deadhead");
 now += 3 * 3600000;
 summary = service.update(resolved(deadhead, [
-  {
-    latitude: 40.48,
-    longitude: -88.92,
-    recordedAt: new Date(now).toISOString()
-  },
-  {
-    latitude: 41.97,
-    longitude: -87.9,
-    recordedAt: new Date(now + 60000).toISOString()
-  }
+  {latitude: 40.48, longitude: -88.92, recordedAt: new Date(now).toISOString()},
+  {latitude: 41.97, longitude: -87.9, recordedAt: new Date(now + 60000).toISOString()}
 ]));
 assert.equal(summary.legCount, 2);
 assert.equal(summary.legs[1].isDeadhead, true);
@@ -117,11 +90,7 @@ summary = service.update(resolved(cancelled, [
 ]));
 assert.equal(summary.legCount, 2, "Cancelled plans must not become flown history.");
 
-const reassigned = {
-  ...deadhead,
-  origin: "ORD",
-  destination: "MSN"
-};
+const reassigned = {...deadhead, origin: "ORD", destination: "MSN"};
 summary = service.update(resolved(reassigned, [
   {latitude: 41.97, longitude: -87.9},
   {latitude: 43.14, longitude: -89.34}
@@ -130,10 +99,51 @@ assert.equal(summary.legCount, 3);
 
 now += 49 * 3600000;
 summary = service.read();
-assert.equal(
-  summary.legCount,
-  0,
-  "Sequence expires after 48 hours without work-flight activity."
-);
+assert.equal(summary.legCount, 0, "Sequence expires after 48 hours without work-flight activity.");
+
+// A newly installed tracker can recover a just-completed trip from calendar history.
+const recoveryNow = Date.parse("2026-09-14T01:30:00Z");
+const recovered = createSequenceHistoryService({}, {now: () => recoveryNow});
+const recentLeg = {
+  id: "recent-1",
+  kind: "flight",
+  travelRole: "operating",
+  isCommute: false,
+  isDeadhead: false,
+  flightNumber: "4334",
+  origin: "BMI",
+  destination: "ORD",
+  times: {
+    startUtc: "2026-09-13T22:00:00Z",
+    endUtc: "2026-09-13T23:00:00Z"
+  }
+};
+const recentDeadhead = {
+  ...recentLeg,
+  id: "recent-2",
+  travelRole: "deadhead",
+  isDeadhead: true,
+  flightNumber: "999",
+  origin: "ORD",
+  destination: "BMI",
+  times: {
+    startUtc: "2026-09-13T19:00:00Z",
+    endUtc: "2026-09-13T20:00:00Z"
+  }
+};
+const recentCommute = {
+  ...recentLeg,
+  id: "recent-3",
+  travelRole: "commute",
+  isCommute: true,
+  origin: "AVL",
+  destination: "ORD"
+};
+const recoveredSummary = recovered.backfill([recentDeadhead, recentCommute, recentLeg]);
+assert.equal(recoveredSummary.legCount, 2, "Recovery includes operating/deadhead legs but excludes commute.");
+assert.equal(recoveredSummary.completedLegCount, 2);
+assert.equal(recoveredSummary.estimatedLegCount, 2);
+assert.ok(recoveredSummary.totalDistanceNm > 150, "Recovered trip uses great-circle mileage.");
+assert.ok(recoveredSummary.legs.every(leg => leg.estimated));
 
 console.log("Sequence history service tests passed.");
