@@ -109,9 +109,25 @@ app.get("/api/health", (request, response) => {
 // Display reads never trigger upstream requests.
 app.get("/api/state", (_request, response) => {
   const state = masterState.read();
-  const payload = shutterTestToken
-    ? {...state, diagnostics: {...(state.diagnostics || {}), shutterTestToken}}
-    : state;
+  let payload = state;
+
+  if (shutterTestToken && state.resolved?.state) {
+    payload = {
+      ...state,
+      revision: `${state.revision}|shutter:${shutterTestToken}`,
+      resolved: {
+        ...state.resolved,
+        state: {
+          ...state.resolved.state,
+          diagnostics: {
+            ...(state.resolved.state.diagnostics || {}),
+            shutterTestToken
+          }
+        }
+      }
+    };
+  }
+
   response.status(state.ok ? 200 : 503).json(payload);
 });
 app.get("/api/calendar/upcoming", (_request, response) => {
@@ -168,13 +184,7 @@ app.get("/api/weather/radar", async (request, response) => {
 app.get(["/mobile/full", "/mobile/full/"], (_request, response) => {
   const familyHtml = displayHtml
     .replace('<html lang="en">', '<html lang="en" data-family-full>')
-    .replace('<head>', `<head><base href="/">
-<script src="/Mobile/family-auth.js?v=1"></script>
-<script src="/Mobile/layout.js?v=2"></script>
-<link rel="manifest" href="/Mobile/manifest.webmanifest">
-<link rel="apple-touch-icon" href="/Mobile/icon.png">
-<meta name="apple-mobile-web-app-title" content="Dad Radar">
-<meta name="robots" content="noindex,nofollow">`)
+    .replace('<head>', `<head><base href="/">\n<script src="/Mobile/family-auth.js?v=1"></script>\n<script src="/Mobile/layout.js?v=2"></script>\n<link rel="manifest" href="/Mobile/manifest.webmanifest">\n<link rel="apple-touch-icon" href="/Mobile/icon.png">\n<meta name="apple-mobile-web-app-title" content="Dad Radar">\n<meta name="robots" content="noindex,nofollow">`)
     .replace('</head>', '<link rel="stylesheet" href="/Mobile/layout.css?v=2"></head>');
   response.set("Cache-Control", "private, no-store").type("html").send(familyHtml);
 });
