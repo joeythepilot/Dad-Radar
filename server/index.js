@@ -34,6 +34,7 @@ const projectRoot = path.join(
   __dirname,
   ".."
 );
+let shutterTestToken = null;
 
 const displayHtml = fs
   .readFileSync(
@@ -108,7 +109,10 @@ app.get("/api/health", (request, response) => {
 // Display reads never trigger upstream requests.
 app.get("/api/state", (_request, response) => {
   const state = masterState.read();
-  response.status(state.ok ? 200 : 503).json(state);
+  const payload = shutterTestToken
+    ? {...state, diagnostics: {...(state.diagnostics || {}), shutterTestToken}}
+    : state;
+  response.status(state.ok ? 200 : 503).json(payload);
 });
 app.get("/api/calendar/upcoming", (_request, response) => {
   const calendar = masterState.readCalendar();
@@ -123,6 +127,12 @@ app.get("/api/diagnostics/recent", (request, response) => {
     ok: true,
     entries: recentDiagnostics(request.query.limit)
   });
+});
+
+app.post("/api/diagnostics/shutters-test", (_request, response) => {
+  shutterTestToken = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  addDiagnostic("map-shutter-test", {token: shutterTestToken});
+  response.json({ok: true, token: shutterTestToken});
 });
 
 app.post("/api/diagnostics/event", (request, response) => {
