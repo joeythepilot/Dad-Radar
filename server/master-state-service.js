@@ -6,15 +6,13 @@ const vm = require("node:vm");
 const {createFlightLegGuard} = require("./flight-leg-guard");
 const {createSequenceHistoryService} = require("./sequence-history-service");
 
-// One controller per home-server process. HTTP readers never run this controller
-// or initiate a Calendar/provider lookup. Reuse the tested flight state machine.
 function createMasterStateService(options) {
   const root = path.join(__dirname, "..");
   const file = options.file || path.join(root, "runtime", "master-state.json");
   const clock = options.now || Date.now;
   const timers = new Set();
   let saved = {};
-  try { saved = JSON.parse(fs.readFileSync(file, "utf8")); } catch (_) { /* First start. */ }
+  try { saved = JSON.parse(fs.readFileSync(file, "utf8")); } catch (_) {}
   const storage = saved.storage && typeof saved.storage === "object" ? saved.storage : {};
   const legGuard = createFlightLegGuard(storage);
   const sequenceHistory = createSequenceHistoryService(storage, {now: clock});
@@ -39,17 +37,13 @@ function createMasterStateService(options) {
       options.report?.("master-storage-error", {message: error.message});
     }
   }
+
   function publish(resolved) {
     if (stopped) return;
+    sequenceHistory.backfill(schedule?.events);
     const history = sequenceHistory.update(resolved);
     const publishedResolved = resolved
-      ? {
-          ...resolved,
-          state: {
-            ...(resolved.state || {}),
-            sequenceHistory: history
-          }
-        }
+      ? {...resolved, state: {...(resolved.state || {}), sequenceHistory: history}}
       : resolved;
     if (publishedResolved?.state?.livePhase === "ARRIVED" &&
       !publishedResolved.state.flight?.arrivalEstimated && publishedResolved.event) {
@@ -59,6 +53,7 @@ function createMasterStateService(options) {
       publishedAt: new Date(clock()).toISOString()};
     persist();
   }
+
   const context = {
     console: options.console || console,
     dadRadarServerMode: true,
@@ -95,7 +90,12 @@ function createMasterStateService(options) {
     },
     dadRadarCalendarApi: {getUpcomingEvents(args) {
       if (!calendarPending) calendarPending = Promise.resolve().then(() => options.getCalendar(args))
-        .then(value => {schedule = value; return value;}).finally(() => {calendarPending = null;});
+        .then(value => {
+          schedule = value;
+          sequenceHistory.backfill(schedule?.events);
+          persist();
+          return value;
+        }).finally(() => {calendarPending = null;});
       return calendarPending;
     }},
     dadRadarLiveFlightApi: {async getFlightSnapshot(event, query) {
@@ -120,13 +120,13 @@ function createMasterStateService(options) {
         const match = legGuard.inspect(event, result.snapshot, clock());
         if (match.accepted) return result.snapshot;
         options.report?.("flight-leg-rejected", {provider: result.snapshot.provider, reason: match.reason});
-        // Uncertain association cannot count as healthy silence and infer arrival.
         if (match.uncertain || unavailable) throw new Error("Flight association uncertain; retaining the last matched leg.");
       }
       return result.filedRoute ? {routeOnly: true, filedRoute: result.filedRoute,
         retrievedAt: new Date(clock()).toISOString()} : null;
     }}
   };
+
   context.window = context;
   context.globalThis = context;
   vm.createContext(context);
@@ -134,7 +134,6 @@ function createMasterStateService(options) {
     "models/live-flight-state.js", "services/live-refresh-schedule.js", "services/calendar-state-controller.js"]) {
     vm.runInContext(fs.readFileSync(path.join(root, source), "utf8"), context, {filename: source});
   }
-  // Calendar edits are acquired automatically, even when every display is closed.
   vm.runInContext("dadRadarSettings.schedule.refreshIntervalMs = 60000;", context);
 
   return {
@@ -148,7 +147,6 @@ function createMasterStateService(options) {
     stop() {stopped = true; context.stopCalendarStateController(); persist();},
     read() {return JSON.parse(JSON.stringify(envelope));},
     readCalendar() {return schedule ? JSON.parse(JSON.stringify(schedule)) : null;},
-    // Explicit test/host controls, never exposed as a family HTTP mutation.
     refreshCalendar: () => context.refreshCalendarState(),
     poll: () => context.refreshLiveFlightState()
   };
