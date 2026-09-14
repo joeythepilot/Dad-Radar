@@ -47,10 +47,14 @@ async function checkDiagnosticRoundTrip(page) {
     await fetch('/api/diagnostics/shutters-test',{method:'POST'});
     await window.refreshCalendarState();
   });
-  await page.waitForFunction(()=>window.mapProofSounds.some(s=>s.name==='playMotor'),null,{timeout:2000});
+  // These predicates observe recorded events, not geometry. Poll by timer so a
+  // busy WebKit paint does not hide an event already present in the log. The
+  // original deadlines, exact counts and post-settle assertions remain intact;
+  // real transport frame sampling elsewhere is not replaced or accelerated.
+  await page.waitForFunction(()=>window.mapProofSounds.some(s=>s.name==='playMotor'),null,{timeout:2000,polling:20});
   assert.equal(await page.locator('.map-roll-surface-sheet .route-map-svg').count(),1,'New intentional test uses a second chart, not blank paper');
   await page.evaluate(()=>window.refreshCalendarState());
-  await page.waitForFunction(()=>window.mapProofSounds.filter(s=>s.name==='playDetentClack').length===2,null,{timeout:9000});
+  await page.waitForFunction(()=>window.mapProofSounds.filter(s=>s.name==='playDetentClack').length===2,null,{timeout:9000,polling:20});
   await page.waitForTimeout(250);
   const sounds=await page.evaluate(()=>window.mapProofSounds);
   assert.equal(sounds.filter(s=>s.name==='playMotor').length,2,'One deliberate command makes only one round trip');
