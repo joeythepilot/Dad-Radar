@@ -16,6 +16,14 @@
     root.document.head.appendChild(link);
   }
 
+  ["top", "bottom"].forEach(edge => {
+    if (shell.querySelector(`.map-roll-edge-shadow.is-${edge}`)) return;
+    const shadow = root.document.createElement("div");
+    shadow.className = `map-roll-edge-shadow is-${edge}`;
+    shadow.setAttribute("aria-hidden", "true");
+    shell.appendChild(shadow);
+  });
+
   let surfaceLayer = null;
   let surfaceObserver = null;
   let moving = false;
@@ -72,7 +80,6 @@
     setHidden(surfaceLayer, false);
     shell.classList.remove("is-surface-registered");
 
-    // Force layout so the first keyframe is registered before motion begins.
     void shell.offsetHeight;
     shell.classList.add(targetSurface ? "map-roll-to-surface" : "map-roll-to-regional");
 
@@ -108,14 +115,14 @@
     shellObserver.observe(shell, {childList: true, subtree: true});
   }
 
-  // Keep the existing diagnostic command useful while the old name is retired.
   root.addEventListener("dad-radar:visual-state-change", event => {
     const token = event.detail?.state?.diagnostics?.shutterTestToken ?? null;
     if (!token || token === lastTestToken) return;
     lastTestToken = token;
     if (surfaceLayer) {
-      transitionTo(!currentSurface);
-      root.setTimeout(() => transitionTo(currentSurface), api.DURATION_MS + 650);
+      const returnTarget = currentSurface;
+      transitionTo(!returnTarget);
+      root.setTimeout(() => transitionTo(returnTarget), api.DURATION_MS + 650);
     } else {
       clearMotionClasses();
       shell.classList.add("map-roll-demo-out");
