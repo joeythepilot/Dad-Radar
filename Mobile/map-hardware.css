@@ -1,0 +1,30 @@
+/* The compact layout keeps its existing readouts, attached to the chart bezel. */
+.freshness, .arrival {
+  isolation:isolate; overflow:visible; border-color:#72552d; border-radius:3px;
+  background:linear-gradient(180deg,#26231d,#11110f);
+  box-shadow:6px 8px 12px #120b077a,2px 3px 5px #120b0757,inset 0 1px 0 #ffde9a12;
+}
+.freshness::before, .arrival::before {
+  content:"";position:absolute;top:50%;height:14px;margin-top:-7px;width:10px;
+  background:linear-gradient(180deg,#a98245,#6a4a25 45%,#3d2b18);border:1px solid #dab1638f;
+  box-shadow:0 4px 5px #0007;z-index:-1;
+}
+.freshness::before { right:100%; }
+.arrival::before { left:100%; }
+.freshness > span, .arrival > span, .arrival > strong { max-width:100%; overflow-wrap:break-word; }
+.sequence-mobile-mileage { white-space:normal; }
+@media (orientation:portrait) {
+  body > header { flex-wrap:wrap; gap:0 8px; }
+  body > header h1 { order:4; flex-basis:100%; padding-bottom:5px; }
+  body > header .family-layout-control { margin-left:auto; }
+  main { --board-width:0%; }
+  main .map-card.vintage-map-panel { inset:0 0 176px 0; }
+  .flight-rail { inset:auto 0 0; width:100%; height:168px; flex-direction:row; }
+  .flight-card { width:42%; min-width:0; padding:6px; gap:2px; }
+  .duty-panel { flex:1; min-width:0; }
+  .board-field { gap:0; }
+  .flap-row, #phase { font-size:.7rem; }
+  #flight-origin, #flight-destination { font-size:1rem; }
+  .freshness { left:10px; bottom:186px; max-width:calc(100% - 20px); }
+  .arrival { right:8px; bottom:300px; max-width:calc(100% - 20px); }
+}

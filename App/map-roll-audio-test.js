@@ -56,7 +56,22 @@ function makeAudio() {
     assert.equal(created[0].paused, true);
     controller.destroy();
     assert.equal(audioApi.MOTOR_CUTOFF_MS, 2480);
-    console.log("Map roll audio tests passed.");
+    // A slow first download must not start the motor after visual registration.
+    const pendingFetches = [];
+    const before = created.length;
+    const delayed = audioApi.createController({
+      audioFactory: makeAudio,
+      fetch: () => new Promise(resolve => pendingFetches.push(resolve)),
+      atob: () => "\0", Blob: class {},
+      URL: {createObjectURL: () => "blob:delayed", revokeObjectURL() {}}
+    });
+    const pendingMotor = delayed.playMotor();
+    delayed.stopMotor();
+    pendingFetches.forEach(resolve => resolve({ok:true,text:async()=>"AA=="}));
+    assert.equal(await pendingMotor, false, "stopped transport cancels pending motor load");
+    assert(created.slice(before).every(audio => audio.plays === 0));
+    delayed.destroy();
+    console.log("Map roll audio tests passed, including delayed-load cancellation.");
   } finally {
     root.setTimeout = originalSetTimeout;
     root.clearTimeout = originalClearTimeout;

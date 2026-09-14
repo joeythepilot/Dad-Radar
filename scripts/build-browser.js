@@ -121,3 +121,11 @@ fs.writeFileSync(
 console.log(
   `Built ${path.relative(projectRoot, outputPath)} in legacy Safari-compatible ES5.`
 );
+
+// Compact viewers use the identical transport/audio controller, including on old Safari.
+const rollBundle = babel.transformSync(compatibilityBootstrap + "\n" +
+  readSource("App/map-roll-audio.js") + "\n" + readSource("App/map-roll-transition.js"), {
+  babelrc:false, configFile:false, comments:false, presets:[[require.resolve("@babel/preset-env"),
+    {bugfixes:true,forceAllTransforms:true,modules:false,targets:{ios:"9"}}]], sourceType:"script"
+});
+fs.writeFileSync(path.join(projectRoot,"App/map-roll-browser.js"),rollBundle.code + "\n","utf8");

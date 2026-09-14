@@ -80,11 +80,12 @@
     }
 
     async function playMotor() {
-      const instance = await ensure("motor");
-      if (!instance) return false;
       stopMotor();
-      token += 1;
+      reset(cache.register?.audio);
+      reset(cache.detent?.audio);
       const current = token;
+      const instance = await ensure("motor");
+      if (!instance || current !== token) return false;
       try {
         const result = instance.play();
         if (result && typeof result.then === "function") await result;
@@ -101,8 +102,9 @@
     }
 
     async function playOne(name, gain = 1) {
+      const current = token;
       const instance = await ensure(name);
-      if (!instance) return false;
+      if (!instance || current !== token) return false;
       reset(instance);
       instance.volume = Math.max(0, Math.min(1, volume * gain));
       try {

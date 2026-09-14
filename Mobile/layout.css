@@ -18,50 +18,18 @@ html[data-family-full] .flap-route-section > .flap-cell + .flap-cell { margin-le
 html[data-family-full] .flap-character { width: var(--flap-width) !important; min-width: var(--flap-width) !important; max-width: var(--flap-width) !important; height: var(--flap-height) !important; min-height: var(--flap-height) !important; max-height: var(--flap-height) !important; flex: 0 0 var(--flap-width) !important; font-size: var(--family-flap-font-size) !important; border-radius: var(--family-flap-radius) !important; }
 html[data-family-full] .flap-character + .flap-character { margin-left: var(--flap-gap) !important; }
 
-/* Full-family mode keeps the exact same physical bezel mounts as Unit 001. */
-html[data-family-full] .vintage-map-panel .map-information { inset: 0 !important; }
-html[data-family-full] .vintage-map-panel .clock-block,
-html[data-family-full] .vintage-map-panel .eta-block {
-  width: var(--family-map-hardware-width, 154px) !important;
-  max-width: 31% !important;
-  bottom: var(--family-map-hardware-bottom, 12px) !important;
-  padding: var(--family-clock-pad-y, 6px) var(--family-clock-pad-x, 8px) !important;
-  letter-spacing: var(--family-clock-spacing, .5px) !important;
+/* Portrait Full keeps every module at a readable size, with vertical scrolling
+   instead of shrinking the entire cabinet into a 16:9 postage stamp. */
+html.family-full-portrait .display-viewer { display:block; overflow-x:hidden; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+html.family-full-portrait .dashboard { max-height:none; }
+html.family-full-portrait .panel-shell { grid-template-rows:88px minmax(0,1fr) !important; }
+html.family-full-portrait .lower-display-grid {
+  grid-template-columns:minmax(0,72fr) minmax(0,28fr) !important;
+  grid-template-rows:minmax(0,1fr) minmax(0,1fr);
+  grid-template-areas:"map map" "poster instruments" !important; row-gap:8px !important;
 }
-html[data-family-full] .vintage-map-panel .clock-block {
-  left: var(--family-hardware-side-inset, 10px) !important;
-  right: auto !important;
-}
-html[data-family-full] .vintage-map-panel .eta-block {
-  right: var(--family-hardware-side-inset, 10px) !important;
-  left: auto !important;
-}
-html[data-family-full] .vintage-map-panel .clock-value,
-html[data-family-full] .vintage-map-panel .eta-value {
-  max-width: 100% !important;
-  overflow: hidden !important;
-  white-space: nowrap !important;
-  text-overflow: clip !important;
-  font-size: var(--family-clock-font, 15px) !important;
-}
-html[data-family-full] .vintage-map-panel .clock-block .small-label,
-html[data-family-full] .vintage-map-panel .eta-block .small-label { font-size: var(--family-clock-label, 8px) !important; letter-spacing: var(--family-clock-spacing, .5px) !important; }
-html[data-family-full] .vintage-map-panel .clock-zone,
-html[data-family-full] .vintage-map-panel .eta-zone { font-size: var(--family-clock-zone, 8px) !important; letter-spacing: var(--family-clock-spacing, .5px) !important; }
-html[data-family-full] .sequence-mileage-badge {
-  width: var(--family-sequence-width, 166px) !important;
-  max-width: 34% !important;
-  bottom: var(--family-hardware-bottom, 8px) !important;
-  padding: var(--family-sequence-pad-y, 6px) var(--family-sequence-pad-x, 8px) !important;
-}
-html[data-family-full] .sequence-mileage-value { font-size: var(--family-sequence-font, 16px) !important; }
-html[data-family-full] .sequence-mileage-label,
-html[data-family-full] .sequence-mileage-detail { font-size: var(--family-sequence-label, 8px) !important; }
-
-@media (max-width: 600px) {
-  .family-layout-control { gap: 2px; font-size: 11px; }
-  .family-layout-control select { max-width: 90px; }
-  html[data-family-full] .vintage-map-panel .clock-block,
-  html[data-family-full] .vintage-map-panel .eta-block { max-width: 30% !important; }
-  html[data-family-full] .sequence-mileage-badge { max-width: 32% !important; }
+html[data-family-full] .daily-schedule-heading > span { min-width:0; overflow:hidden; text-overflow:ellipsis; }
+@media (max-width:600px) {
+  .family-layout-control { gap:2px; font-size:11px; }
+  .family-layout-control select { max-width:90px; }
 }

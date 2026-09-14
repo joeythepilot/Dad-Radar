@@ -97,3 +97,14 @@
   .sequence-mileage-label,
   .sequence-mileage-detail { font-size: 8px; letter-spacing: .65px; }
 }
+
+/* Aperture-based sizing also wins over the full-family viewport overrides. */
+.vintage-map-panel .route-map-shell .sequence-mileage-badge {
+  width: var(--map-sequence-width,196px) !important; max-width: none !important;
+  bottom: 14px !important; padding: 7px 11px 8px !important;
+}
+.vintage-map-panel .route-map-shell .sequence-mileage-badge::before { bottom:-15px; height:16px; width:34px; }
+.vintage-map-panel .route-map-shell .sequence-mileage-value { font-size:20px !important; }
+.vintage-map-panel .route-map-shell .sequence-mileage-label,
+.vintage-map-panel .route-map-shell .sequence-mileage-detail { font-size:9px !important; letter-spacing:.4px; color:#a68d60; }
+.vintage-map-panel .route-map-shell .sequence-mileage-detail { white-space:normal; overflow-wrap:break-word; }

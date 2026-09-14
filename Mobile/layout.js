@@ -24,31 +24,11 @@
     var viewer = document.querySelector('.display-viewer');
     var dashboard = document.getElementById('dashboard');
     if (!viewer || !dashboard) return;
-    var width = Math.min(viewer.clientWidth, viewer.clientHeight * 16 / 9);
+    var portrait = window.innerHeight > window.innerWidth;
+    document.documentElement.classList.toggle('family-full-portrait', portrait);
+    var width = portrait ? viewer.clientWidth : Math.min(viewer.clientWidth, viewer.clientHeight * 16 / 9);
     dashboard.style.width = width + 'px';
-    dashboard.style.height = (width * 9 / 16) + 'px';
-    var hardwareScale = Math.min(1, Math.max(0.58, width / 1100));
-    var hardwareSizes = {
-      '--family-clock-font': Math.max(11, 18 * hardwareScale),
-      '--family-clock-label': Math.max(6, 9 * hardwareScale),
-      '--family-clock-zone': Math.max(6, 8 * hardwareScale),
-      '--family-clock-spacing': Math.max(0.35, 0.8 * hardwareScale),
-      '--family-clock-pad-y': Math.max(4, 7 * hardwareScale),
-      '--family-clock-pad-x': Math.max(5, 9 * hardwareScale),
-      '--family-map-hardware-width': Math.max(118, 184 * hardwareScale),
-      '--family-map-hardware-bottom': Math.max(5, 8 * hardwareScale),
-      '--family-sequence-width': Math.max(126, 196 * hardwareScale),
-      '--family-sequence-font': Math.max(12, 20 * hardwareScale),
-      '--family-sequence-label': Math.max(6, 8 * hardwareScale),
-      '--family-sequence-pad-y': Math.max(4, 7 * hardwareScale),
-      '--family-sequence-pad-x': Math.max(5, 9 * hardwareScale),
-      '--family-hardware-rail-height': Math.max(46, 64 * hardwareScale),
-      '--family-hardware-clock-width': Math.max(116, 172 * hardwareScale),
-      '--family-hardware-sequence-width': Math.max(132, 194 * hardwareScale),
-      '--family-hardware-side-inset': Math.max(5, 12 * hardwareScale),
-      '--family-hardware-bottom': Math.max(4, 7 * hardwareScale)
-    };
-    Object.keys(hardwareSizes).forEach(function (name) { dashboard.style.setProperty(name, hardwareSizes[name] + 'px'); });
+    dashboard.style.height = (portrait ? Math.max(1000, viewer.clientHeight) : width * 9 / 16) + 'px';
     var module = dashboard.querySelector('.flight-strip-module');
     var board = dashboard.querySelector('.flight-board');
     if (!module || !board) return;
@@ -106,7 +86,7 @@
     else bar.appendChild(label);
     if (!full && !document.querySelector('script[data-dad-radar-map-roll-mobile]')) {
       var mapRoll = document.createElement('script');
-      mapRoll.src = '/Mobile/map-roll-legacy.js?v=1';
+      mapRoll.src = '/Mobile/map-roll-legacy.js?v=7';
       mapRoll.setAttribute('data-dad-radar-map-roll-mobile', 'true');
       document.body.appendChild(mapRoll);
     }

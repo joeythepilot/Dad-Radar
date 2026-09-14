@@ -1,25 +1,14 @@
 name: Map hardware beta verification
-
 on:
   push:
     branches: [agent/mobile-companion]
-    paths:
-      - 'App/**'
-      - 'UI/**'
-      - 'Mobile/**'
-      - 'scripts/**'
-      - 'index.html'
-      - 'package*.json'
-      - '.github/workflows/map-hardware-beta.yml'
+    paths: ['App/**', 'UI/**', 'Mobile/**', 'scripts/**', 'index.html', 'package*.json', '.github/workflows/map-hardware-beta.yml']
   workflow_dispatch:
-
 permissions:
   contents: read
-
 concurrency:
   group: map-hardware-beta-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -32,27 +21,21 @@ jobs:
         with:
           node-version: '22'
           cache: npm
-      - name: Save exact source used for beta verification
-        run: |
-          mkdir -p /tmp/dad-radar-proof
-          git rev-parse HEAD > /tmp/dad-radar-proof/commit.txt
-          git archive --format=tar.gz HEAD > /tmp/dad-radar-proof/source.tar.gz
       - run: npm ci
-      - name: Existing regression suite
-        run: npm test 2>&1 | tee /tmp/dad-radar-proof/tests.log
+      - run: npm test
       - name: Browser geometry and transport regression
         run: |
-          if [ -f scripts/map-hardware-browser-test.js ]; then
-            npm install --no-save --package-lock=false playwright@1.51.1
-            npx playwright install --with-deps chromium webkit
-            node scripts/map-hardware-browser-test.js
-          fi
-      - name: Keep verification evidence
+          npm install --no-save --package-lock=false playwright@1.51.1
+          npx playwright install --with-deps chromium webkit
+          node scripts/map-hardware-browser-test.js
+      - name: Keep exact-SHA verification evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        run: |
+          mkdir -p artifacts/map-hardware
+          git rev-parse HEAD > artifacts/map-hardware/commit.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: map-hardware-beta-${{ github.sha }}
-          path: |
-            /tmp/dad-radar-proof/
-            artifacts/map-hardware/
+          path: artifacts/map-hardware/
           retention-days: 7

@@ -5,3 +5,5 @@ App/dad-radar-browser.js
 credentials.json
 token.json
 runtime/
+App/map-roll-browser.js
+artifacts/
