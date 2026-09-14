@@ -21,7 +21,6 @@ button { min-height: 44px; min-width: 44px; border: 0; padding: 5px 10px; backgr
 button:disabled { opacity: .5; }
 button:focus-visible { outline: 2px solid #f5d29b; outline-offset: -2px; }
 main { --board-width: 25%; position: relative; flex: 1; min-height: 0; width: 100%; margin-bottom: 5px; isolation: isolate; }
-/* The map keeps its accepted width in every flight, HOME and OFFLINE state. */
 main .map-card.vintage-map-panel {
   position: absolute; inset: 0 0 0 calc(var(--board-width) + 6px); display: block;
   padding: 0; border: 2px solid #a58a5e; overflow: hidden; background: #c3b58d;
@@ -72,6 +71,8 @@ body.pickup #arrival-time { color: #ffe1a3; font-size: 2rem; }
 .freshness { left: calc(var(--board-width) + 14px); bottom: 8px; max-width: 34%; padding: 5px 7px; font: .6875rem/1.25 system-ui; color: var(--muted); }
 #freshness, #map-position { display: block; }
 .sequence-mobile-mileage { display: block; margin-bottom: 3px; color: #ffe1a3; font: 700 .625rem/1.2 ui-monospace, monospace; letter-spacing: .04em; white-space: nowrap; }
+/* Compact mobile already exposes trip mileage in the freshness block. Do not also mount the desktop hardware badge over the map. */
+.sequence-mileage-badge { display: none !important; }
 body.stale .freshness { color: #ffd29b; }
 .telemetry { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; margin-bottom: 4px; color: var(--cream); }
 .reading { display: flex; align-items: baseline; gap: 3px; white-space: nowrap; }
