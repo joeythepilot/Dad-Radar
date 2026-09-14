@@ -7,20 +7,23 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function createMapRollAudioApi(root) {
   "use strict";
 
-  const DEFAULT_SOURCE = "/assets/audio/dadradar-map-roll-v3-gearmotor.mp3.b64?v=2";
+  const MOTOR_SOURCE = "/assets/audio/dadradar-map-roll-v3-gearmotor.mp3.b64?v=3";
+  const REGISTER_SOURCE = "/assets/audio/dadradar-map-roll-register.mp3.b64?v=1";
+  const DETENT_SOURCE = "/assets/audio/dadradar-map-roll-detent.mp3.b64?v=1";
   const DEFAULT_VOLUME = 0.72;
+  const MOTOR_CUTOFF_MS = 2480;
 
   function createController(options = {}) {
-    const source = options.source || DEFAULT_SOURCE;
     const volume = Math.max(0, Math.min(1, Number.isFinite(Number(options.volume)) ? Number(options.volume) : DEFAULT_VOLUME));
     const audioFactory = options.audioFactory || (typeof root?.Audio === "function" ? (src) => new root.Audio(src) : null);
     const fetchImpl = options.fetch || root?.fetch?.bind(root) || null;
     const atobImpl = options.atob || root?.atob?.bind(root) || null;
     const BlobCtor = options.Blob || root?.Blob || null;
     const urlApi = options.URL || root?.URL || null;
-    let audio = null;
-    let objectUrl = null;
-    let sourcePromise = null;
+    const sources = options.sources || {motor: MOTOR_SOURCE, register: REGISTER_SOURCE, detent: DETENT_SOURCE};
+    const cache = {};
+    const urls = [];
+    let motorTimer = null;
     let token = 0;
 
     function decodeBase64(text) {
@@ -28,34 +31,36 @@
       const binary = atobImpl(String(text).replace(/\s+/g, ""));
       const bytes = new Uint8Array(binary.length);
       for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
-      objectUrl = urlApi.createObjectURL(new BlobCtor([bytes], {type: "audio/mpeg"}));
-      return objectUrl;
+      const url = urlApi.createObjectURL(new BlobCtor([bytes], {type: "audio/mpeg"}));
+      urls.push(url);
+      return url;
     }
 
-    function loadSource() {
-      if (!sourcePromise) {
-        sourcePromise = fetchImpl
-          ? fetchImpl(source, {cache: "force-cache"})
-              .then(response => {
-                if (!response.ok) throw new Error(`Map-roll audio load failed (${response.status}).`);
-                return response.text();
-              })
-              .then(decodeBase64)
-              .catch(() => null)
-          : Promise.resolve(source);
+    async function ensure(name) {
+      if (cache[name]?.audio) return cache[name].audio;
+      if (!cache[name]) {
+        cache[name] = {promise: null, audio: null};
       }
-      return sourcePromise;
-    }
-
-    async function ensure() {
-      if (audio) return audio;
-      if (!audioFactory) return null;
-      const resolved = await loadSource();
-      if (!resolved) return null;
-      audio = audioFactory(resolved);
-      audio.preload = "auto";
-      audio.volume = volume;
-      return audio;
+      if (!cache[name].promise) {
+        cache[name].promise = (async () => {
+          if (!audioFactory) return null;
+          let resolved = sources[name];
+          if (fetchImpl) {
+            try {
+              const response = await fetchImpl(sources[name], {cache: "force-cache"});
+              if (!response.ok) return null;
+              resolved = decodeBase64(await response.text());
+            } catch (_) { return null; }
+          }
+          if (!resolved) return null;
+          const audio = audioFactory(resolved);
+          audio.preload = "auto";
+          audio.volume = volume;
+          cache[name].audio = audio;
+          return audio;
+        })();
+      }
+      return cache[name].promise;
     }
 
     function reset(instance) {
@@ -65,12 +70,21 @@
       instance.volume = volume;
     }
 
-    async function play() {
-      const instance = await ensure();
+    function stopMotor() {
+      if (motorTimer !== null) {
+        root?.clearTimeout?.(motorTimer);
+        motorTimer = null;
+      }
+      token += 1;
+      reset(cache.motor?.audio);
+    }
+
+    async function playMotor() {
+      const instance = await ensure("motor");
       if (!instance) return false;
+      stopMotor();
       token += 1;
       const current = token;
-      reset(instance);
       try {
         const result = instance.play();
         if (result && typeof result.then === "function") await result;
@@ -78,6 +92,7 @@
           reset(instance);
           return false;
         }
+        motorTimer = root?.setTimeout?.(() => stopMotor(), MOTOR_CUTOFF_MS) ?? null;
         return true;
       } catch (_) {
         reset(instance);
@@ -85,16 +100,14 @@
       }
     }
 
-    async function unlock() {
-      const instance = await ensure();
+    async function playOne(name, gain = 1) {
+      const instance = await ensure(name);
       if (!instance) return false;
-      token += 1;
       reset(instance);
-      instance.volume = 0;
+      instance.volume = Math.max(0, Math.min(1, volume * gain));
       try {
         const result = instance.play();
         if (result && typeof result.then === "function") await result;
-        reset(instance);
         return true;
       } catch (_) {
         reset(instance);
@@ -102,22 +115,38 @@
       }
     }
 
-    function stop() {
-      token += 1;
-      reset(audio);
+    function playRegisterClack() { return playOne("register", 0.95); }
+    function playDetentClack() { return playOne("detent", 0.82); }
+
+    async function unlock() {
+      const audios = await Promise.all([ensure("motor"), ensure("register"), ensure("detent")]);
+      let unlocked = false;
+      for (const instance of audios) {
+        if (!instance) continue;
+        reset(instance);
+        instance.volume = 0;
+        try {
+          const result = instance.play();
+          if (result && typeof result.then === "function") await result;
+          unlocked = true;
+        } catch (_) {}
+        reset(instance);
+      }
+      return unlocked;
     }
 
     function destroy() {
-      stop();
-      audio = null;
-      if (objectUrl && urlApi?.revokeObjectURL) urlApi.revokeObjectURL(objectUrl);
-      objectUrl = null;
-      sourcePromise = null;
+      stopMotor();
+      for (const entry of Object.values(cache)) reset(entry?.audio);
+      for (const url of urls) urlApi?.revokeObjectURL?.(url);
+      urls.length = 0;
     }
 
-    void loadSource();
-    return Object.freeze({play, unlock, stop, destroy});
+    void ensure("motor");
+    void ensure("register");
+    void ensure("detent");
+    return Object.freeze({playMotor, unlock, stopMotor, playRegisterClack, playDetentClack, destroy});
   }
 
-  return Object.freeze({DEFAULT_SOURCE, DEFAULT_VOLUME, createController});
+  return Object.freeze({MOTOR_SOURCE, REGISTER_SOURCE, DETENT_SOURCE, DEFAULT_VOLUME, MOTOR_CUTOFF_MS, createController});
 });
