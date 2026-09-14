@@ -1,6 +1,9 @@
 (function initializeSequenceHistoryDisplay(global) {
   "use strict";
 
+  const compactMobile = global.location?.pathname?.replace(/\/$/, "") === "/mobile";
+  if (compactMobile) return;
+
   let badge = null;
   let valueElement = null;
   let detailElement = null;
@@ -9,7 +12,7 @@
     if (document.querySelector("link[data-dad-radar-sequence-history]")) return;
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "./UI/sequence-history.css?v=sequence-v3";
+    link.href = "./UI/sequence-history.css?v=sequence-v4";
     link.dataset.dadRadarSequenceHistory = "true";
     document.head.appendChild(link);
   }
