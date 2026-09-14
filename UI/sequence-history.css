@@ -15,22 +15,43 @@
 
 .sequence-mileage-badge {
   position: absolute;
-  z-index: 45;
+  z-index: 55;
   left: 18px;
   bottom: 18px;
   min-width: 150px;
   padding: 8px 11px 9px;
-  border: 1px solid rgba(91, 64, 36, 0.68);
+  border: 1px solid rgba(91, 64, 36, 0.88);
   border-radius: 3px;
-  background: linear-gradient(180deg, rgba(220, 197, 148, 0.94), rgba(194, 162, 106, 0.9));
+  background: linear-gradient(180deg, rgba(220, 197, 148, 0.98), rgba(188, 153, 94, 0.96));
   color: #493222;
-  box-shadow: 0 3px 9px rgba(53, 32, 17, 0.35), inset 0 1px 0 rgba(255, 246, 215, 0.55);
+  box-shadow:
+    0 8px 12px rgba(40, 24, 14, 0.38),
+    0 2px 2px rgba(40, 24, 14, 0.35),
+    inset 0 1px 0 rgba(255, 246, 215, 0.65);
   font-family: "Courier New", monospace;
   pointer-events: none;
+  isolation: isolate;
 }
 
-.sequence-mileage-badge[hidden] {
-  display: none;
+.sequence-mileage-badge::before,
+.sequence-mileage-badge::after {
+  content: "";
+  position: absolute;
+  bottom: -11px;
+  width: 12px;
+  height: 15px;
+  border: 1px solid #6b4d28;
+  border-radius: 2px 2px 4px 4px;
+  background: linear-gradient(90deg, #6b4a25, #c59c5a 46%, #79552d);
+  box-shadow: 0 4px 5px rgba(35, 21, 12, 0.35);
+  z-index: -1;
+}
+
+.sequence-mileage-badge::before { left: 14px; }
+.sequence-mileage-badge::after { right: 14px; }
+
+.sequence-mileage-badge.is-empty {
+  opacity: 0.88;
 }
 
 .sequence-mileage-label,
@@ -41,9 +62,7 @@
   letter-spacing: 1.2px;
 }
 
-.sequence-mileage-label {
-  color: #71392d;
-}
+.sequence-mileage-label { color: #71392d; }
 
 .sequence-mileage-value {
   display: block;
@@ -66,7 +85,5 @@
     padding: 7px 9px 8px;
   }
 
-  .sequence-mileage-value {
-    font-size: 18px;
-  }
+  .sequence-mileage-value { font-size: 18px; }
 }
