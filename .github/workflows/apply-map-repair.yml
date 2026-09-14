@@ -29,11 +29,10 @@ jobs:
           import hashlib, json
           from pathlib import Path
           root = Path.cwd().resolve()
+          evidence = Path('/tmp/map-repair-proof')
           edits = []
           for i in range(1, 5):
               raw = Path(f'scripts/.map-repair-{i}.json').read_text()
-              # Repair only invalid JSON escaping introduced in text transfer.
-              # Every resulting source file must still match its tested SHA256.
               for attempt in range(20):
                   try:
                       payload = json.loads(raw)
@@ -45,14 +44,18 @@ jobs:
               else:
                   raise RuntimeError('Invalid repair payload')
               edits.extend(payload['edits'])
-          seen = set()
-          pending = []
+          seen, pending, errors = set(), [], []
           for edit in edits:
+              # Workflow maintenance is handled separately through the connector.
+              if edit['path'] == '.github/workflows/map-hardware-check.yml':
+                  continue
               path = (root / edit['path']).resolve()
               assert path.is_relative_to(root) and edit['path'] not in seen, 'Unsafe or duplicate edit path'
               seen.add(edit['path'])
               old = path.read_bytes() if path.exists() else b''
-              assert hashlib.sha256(old).hexdigest() == edit['before'], 'Source changed: ' + edit['path']
+              if hashlib.sha256(old).hexdigest() != edit['before']:
+                  errors.append('Source changed: ' + edit['path'])
+                  continue
               lines = old.decode('utf-8').splitlines(keepends=True)
               for start, end, replacement in reversed(edit['hunks']):
                   assert 0 <= start <= end <= len(lines), 'Invalid edit range'
@@ -62,14 +65,17 @@ jobs:
                   result = result.replace(b'.join("' + bytes([10]) + b'")', b'.join("' + bytes([92, 110]) + b'")')
               digest = hashlib.sha256(result).hexdigest()
               if digest != edit['after']:
-                  Path('/tmp/map-repair-proof/mismatched-source.txt').write_bytes(result)
-                  raise AssertionError('Payload mismatch: ' + edit['path'] + ' got ' + digest)
-              pending.append((path, result))
+                  (evidence / (path.name + '.mismatch')).write_bytes(result)
+                  errors.append('Payload mismatch: ' + edit['path'] + ' got ' + digest)
+              else:
+                  pending.append((path, result))
+          (evidence / 'guard-errors.json').write_text(json.dumps(errors, indent=2))
+          assert not errors, '; '.join(errors)
           for path, result in pending:
               path.parent.mkdir(parents=True, exist_ok=True)
               path.write_bytes(result)
               print('Verified:', path.relative_to(root))
-          Path('/tmp/map-repair-proof/verified-files.json').write_text(json.dumps(sorted(seen), indent=2))
+          (evidence / 'verified-files.json').write_text(json.dumps(sorted(seen), indent=2))
           PY
           git diff --check
       - run: npm ci
@@ -84,8 +90,6 @@ jobs:
       - name: Save tested application code to beta branch
         run: |
           git diff --check
-          cp .github/workflows/map-hardware-check.yml /tmp/map-repair-proof/map-hardware-check.yml
-          git restore .github/workflows/map-hardware-check.yml
           git rm scripts/.map-repair-1.json scripts/.map-repair-2.json scripts/.map-repair-3.json scripts/.map-repair-4.json
           git add App UI Mobile scripts server index.html .gitignore Docs
           git config user.name 'github-actions[bot]'
