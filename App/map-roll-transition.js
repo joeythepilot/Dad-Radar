@@ -67,39 +67,30 @@
 
   function fireRegistrationClacksAfterPaint() {
     audioController?.stopMotor?.();
-    const firstFrame = root.requestAnimationFrame ?? (callback => root.setTimeout(callback, 16));
-    firstFrame(() => {
-      firstFrame(() => {
+    const nextFrame = root.requestAnimationFrame ?? (callback => root.setTimeout(callback, 16));
+    nextFrame(() => {
+      nextFrame(() => {
         void audioController?.playRegisterClack?.();
         root.setTimeout(() => { void audioController?.playDetentClack?.(); }, 135);
       });
     });
   }
 
-  function finish(targetSurface, fromAnimation = false) {
+  function finish(targetSurface) {
     if (!moving) return;
     removeAnimationListener();
     if (finishTimer) root.clearTimeout(finishTimer);
     finishTimer = null;
 
-    /*
-      Commit visibility while the completed animation transforms are still in
-      force. In particular, hide the outgoing airport sheet before removing
-      its downward transform, otherwise it flashes back into the aperture for
-      one frame when the animation class is cleared.
-    */
     if (surfaceLayer && !targetSurface) setHidden(surfaceLayer, true);
     shell.classList.toggle("is-surface-registered", targetSurface);
     clearMotionClasses();
     void shell.offsetHeight;
-
     if (surfaceLayer && targetSurface) setHidden(surfaceLayer, false);
+
     currentSurface = targetSurface;
     moving = false;
-
-    audioController?.stopMotor?.();
-    if (fromAnimation) fireRegistrationClacksAfterPaint();
-    else fireRegistrationClacksAfterPaint();
+    fireRegistrationClacksAfterPaint();
 
     if (queuedTarget !== null && queuedTarget !== currentSurface) {
       const next = queuedTarget;
@@ -115,7 +106,7 @@
     animationTarget = target;
     animationListener = event => {
       if (event.target !== target) return;
-      finish(targetSurface, true);
+      finish(targetSurface);
     };
     target.addEventListener("animationend", animationListener);
   }
@@ -138,7 +129,7 @@
     void audioController?.playMotor?.();
     watchAnimation(targetSurface);
     shell.classList.add(targetSurface ? "map-roll-to-surface" : "map-roll-to-regional");
-    finishTimer = root.setTimeout(() => finish(targetSurface, false), api.DURATION_MS + 500);
+    finishTimer = root.setTimeout(() => finish(targetSurface), api.DURATION_MS + 500);
   }
 
   function attachSurfaceLayer(layer) {
@@ -212,7 +203,7 @@
   const DURATION_MS = 2800;
   const PROFILE = Object.freeze([
     [0, 0], [7, 1.5], [16, 9], [31, 32], [39, 37],
-    [56, 61], [73, 82], [88, 99], [93, 100], [97, 100], [100, 100]
+    [56, 61], [73, 82], [88, 99], [93, 100.4], [97, 99.8], [100, 100]
   ]);
   return {DURATION_MS, PROFILE};
 });
