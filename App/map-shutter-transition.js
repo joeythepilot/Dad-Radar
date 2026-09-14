@@ -11,7 +11,7 @@
   if (!root.document.querySelector("link[data-dad-radar-map-shutter]")) {
     const link = root.document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "/UI/map-shutter-transition.css?v=1";
+    link.href = "/UI/map-shutter-transition.css?v=2";
     link.dataset.dadRadarMapShutter = "true";
     root.document.head.appendChild(link);
   }
@@ -20,43 +20,80 @@
   overlay.className = "map-shutter-transition";
   overlay.setAttribute("aria-hidden", "true");
 
-  const upper = root.document.createElement("div");
-  upper.className = "map-shutter-leaf map-shutter-upper";
-  const lower = root.document.createElement("div");
-  lower.className = "map-shutter-leaf map-shutter-lower";
-  overlay.append(upper, lower);
+  function makeFace(className) {
+    const image = root.document.createElement("img");
+    image.className = `map-shutter-face ${className}`;
+    image.src = "/assets/ui/map-shutter-face-v2.jpg?v=2";
+    image.alt = "";
+    image.draggable = false;
+    image.decoding = "async";
+    return image;
+  }
+
+  overlay.append(
+    makeFace("map-shutter-upper"),
+    makeFace("map-shutter-lower")
+  );
   shell.appendChild(overlay);
 
   let lastIntent = null;
   let lastActual = api.surfaceActive(shell);
   let lastTestToken = null;
   let transitionTimer = null;
-  let revealToken = 0;
+  let motionTimer = null;
+  let motionToken = 0;
+  let lastPulseAt = -Infinity;
 
-  function coverInstantly() {
-    revealToken += 1;
-    overlay.classList.add("no-motion", "is-closed");
-  }
+  const MOTION_MS = 520;
+  const SETTLE_MS = 70;
 
-  function reveal() {
-    const token = ++revealToken;
-    root.requestAnimationFrame(() => {
-      if (token !== revealToken) return;
-      root.requestAnimationFrame(() => {
-        if (token !== revealToken) return;
-        overlay.classList.remove("no-motion");
-        overlay.classList.remove("is-closed");
-      });
-    });
-  }
-
-  function pulse(holdMs = 350) {
-    coverInstantly();
+  function clearTimers() {
     if (transitionTimer) root.clearTimeout(transitionTimer);
-    transitionTimer = root.setTimeout(() => {
-      transitionTimer = null;
-      reveal();
-    }, holdMs);
+    if (motionTimer) root.clearTimeout(motionTimer);
+    transitionTimer = null;
+    motionTimer = null;
+  }
+
+  function openShutters() {
+    const token = ++motionToken;
+    if (motionTimer) root.clearTimeout(motionTimer);
+    overlay.classList.remove("is-closing");
+    overlay.classList.add("is-opening");
+    // Force the closed transform to be committed before beginning the opening travel.
+    overlay.getBoundingClientRect();
+    overlay.classList.remove("is-closed");
+    motionTimer = root.setTimeout(() => {
+      if (token !== motionToken) return;
+      overlay.classList.remove("is-opening");
+      motionTimer = null;
+    }, MOTION_MS + SETTLE_MS);
+  }
+
+  function closeThenOpen(holdMs = 120) {
+    const token = ++motionToken;
+    clearTimers();
+    lastPulseAt = Date.now();
+    overlay.classList.remove("is-opening");
+    overlay.classList.add("is-closing");
+    // Commit the open position, then animate the real shutter image slices to center.
+    overlay.getBoundingClientRect();
+    overlay.classList.add("is-closed");
+
+    motionTimer = root.setTimeout(() => {
+      if (token !== motionToken) return;
+      overlay.classList.remove("is-closing");
+      motionTimer = null;
+      transitionTimer = root.setTimeout(() => {
+        transitionTimer = null;
+        if (token !== motionToken) return;
+        openShutters();
+      }, Math.max(0, holdMs));
+    }, MOTION_MS + SETTLE_MS);
+  }
+
+  function operationalPulse(holdMs = 110) {
+    if (Date.now() - lastPulseAt < MOTION_MS + 250) return;
+    closeThenOpen(holdMs);
   }
 
   root.addEventListener("dad-radar:visual-state-change", event => {
@@ -64,20 +101,19 @@
     const testToken = state?.diagnostics?.shutterTestToken ?? null;
     if (testToken && testToken !== lastTestToken) {
       lastTestToken = testToken;
-      pulse(700);
+      closeThenOpen(700);
+      return;
     }
 
     const intent = api.surfaceIntent(state, Date.now());
-    if (lastIntent !== null && intent !== lastIntent) coverInstantly();
+    if (lastIntent !== null && intent !== lastIntent) operationalPulse(120);
     lastIntent = intent;
+
     root.setTimeout(() => {
       const actual = api.surfaceActive(shell);
-      if (actual !== lastActual) {
-        lastActual = actual;
-        pulse();
-      } else if (overlay.classList.contains("is-closed") && !transitionTimer) {
-        reveal();
-      }
+      if (actual === lastActual) return;
+      lastActual = actual;
+      operationalPulse(90);
     }, 0);
   }, true);
 
@@ -86,7 +122,7 @@
       const actual = api.surfaceActive(shell);
       if (actual === lastActual) return;
       lastActual = actual;
-      pulse();
+      operationalPulse(90);
     });
     observer.observe(shell, {
       childList: true,
