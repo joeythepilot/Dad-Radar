@@ -29,6 +29,7 @@
 
   let lastIntent = null;
   let lastActual = api.surfaceActive(shell);
+  let lastTestToken = null;
   let transitionTimer = null;
   let revealToken = 0;
 
@@ -49,17 +50,24 @@
     });
   }
 
-  function pulse() {
+  function pulse(holdMs = 350) {
     coverInstantly();
     if (transitionTimer) root.clearTimeout(transitionTimer);
     transitionTimer = root.setTimeout(() => {
       transitionTimer = null;
       reveal();
-    }, 85);
+    }, holdMs);
   }
 
   root.addEventListener("dad-radar:visual-state-change", event => {
-    const intent = api.surfaceIntent(event.detail?.state, Date.now());
+    const state = event.detail?.state;
+    const testToken = state?.diagnostics?.shutterTestToken ?? null;
+    if (testToken && testToken !== lastTestToken) {
+      lastTestToken = testToken;
+      pulse(700);
+    }
+
+    const intent = api.surfaceIntent(state, Date.now());
     if (lastIntent !== null && intent !== lastIntent) coverInstantly();
     lastIntent = intent;
     root.setTimeout(() => {
@@ -67,7 +75,7 @@
       if (actual !== lastActual) {
         lastActual = actual;
         pulse();
-      } else if (overlay.classList.contains("is-closed")) {
+      } else if (overlay.classList.contains("is-closed") && !transitionTimer) {
         reveal();
       }
     }, 0);
