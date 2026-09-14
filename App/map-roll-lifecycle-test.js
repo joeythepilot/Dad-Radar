@@ -5,7 +5,7 @@ const vm = require('node:vm');
 const path = require('node:path');
 function fixture() {
   class Element {
-    constructor(name='div') {this.name=name;this.className='';this.children=[];this.events={};this.style={setProperty(){}};this.clientWidth=700;this.hidden=false;
+    constructor(name='div') {this.name=name;this.className='';this.children=[];this.events={};this.style={setProperty(){}};this.clientWidth=700;this.clientHeight=500;this.hidden=false;
       this.classList={contains:c=>this.className.split(' ').includes(c),add:(...v)=>{this.className=[...new Set([...this.className.split(' ').filter(Boolean),...v])].join(' ');},remove:(...v)=>{this.className=this.className.split(' ').filter(c=>!v.includes(c)).join(' ');},toggle:(c,v)=>v?this.classList.add(c):this.classList.remove(c)};
     }
     appendChild(node){if(node.parent)node.parent.children=node.parent.children.filter(n=>n!==node);node.parent=this;this.children.push(node);return node;}
@@ -23,7 +23,7 @@ function fixture() {
     dadRadarMapRollAudio:{createController:()=>Object.fromEntries(['playMotor','stopMotor','playRegisterClack','playDetentClack'].map(name=>[name,()=>sounds.push(name)]))}};
   vm.runInNewContext(fs.readFileSync(path.join(__dirname,'map-roll-transition.js'),'utf8'),{window:root});
   const transport=shell.querySelector('.map-roll-transport');
-  return {root,shell,sounds,api:shell.dadRadarMapRoll,
+  return {root,shell,surface,sounds,api:shell.dadRadarMapRoll,
     finish:()=>transport.events.animationend({target:transport,animationName:shell.classList.contains('map-roll-to-surface')?'map-roll-up':'map-roll-down'}),
     paint:()=>frames.splice(0).forEach(fn=>fn()),
     tick:delay=>{for(const [id,t] of Array.from(timers)){if(t.delay===delay){timers.delete(id);t.fn();}}}};
@@ -42,10 +42,22 @@ const hidden=fixture();hidden.api.setSurfaceVisible(true);hidden.finish();hidden
 hidden.api.setSurfaceVisible(false);hidden.paint();hidden.paint();hidden.tick(135);hidden.tick(220);
 assert(hidden.shell.classList.contains('map-roll-to-regional'),'hidden document must not strand the queued target');
 assert(!hidden.sounds.some(name=>name.includes('Clack')),'registration sounds remain silent in a hidden document');
-const preference=fixture();
-preference.root.matchMedia=()=>({matches:true});
-preference.api.setSurfaceVisible(true);
-assert(preference.shell.classList.contains('is-surface-registered'),'new reduced-motion preference applies after startup');
-assert(!preference.shell.classList.contains('map-roll-to-surface'),'changed preference prevents animation');
-assert.deepEqual(preference.sounds,[],'changed preference prevents motor and registration sound');
-console.log('Map roll lifecycle tests passed: finish-gap reversal, hidden-page queue, and changed motion preference.');
+const preference=fixture();preference.root.matchMedia=()=>({matches:true});preference.api.setSurfaceVisible(true);
+assert(preference.shell.classList.contains('is-surface-registered'));
+assert(!preference.shell.classList.contains('map-roll-to-surface'));
+assert.deepEqual(preference.sounds,[]);
+const latest=fixture();
+latest.api.requestSurface(latest.surface,true);
+latest.api.requestSurface(latest.surface,false);
+latest.api.requestSurface(latest.surface,true);
+latest.finish();latest.paint();latest.paint();latest.tick(135);latest.tick(220);
+assert(latest.shell.classList.contains('is-surface-registered'),'repeated ground report replaces queued departure');
+assert(!latest.shell.classList.contains('map-roll-to-regional'));
+assert.equal(latest.sounds.filter(s=>s==='playMotor').length,1,'no unnecessary reverse roll');
+const resize=fixture();let resizeEvents=0;
+resize.root.Event=class {constructor(type){this.type=type;}};
+resize.root.dispatchEvent=event=>{assert.equal(event.type,'resize');resizeEvents++;};
+resize.shell.clientHeight=600;resize.api.resize();resize.paint();
+assert.equal(resizeEvents,1,'height-only aperture changes refit the camera');
+resize.api.resize();resize.paint();assert.equal(resizeEvents,1,'unchanged size does not create a resize loop');
+console.log('Map roll lifecycle tests passed: registration, preference, explicit requests and aperture refitting.');

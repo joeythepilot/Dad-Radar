@@ -90,3 +90,11 @@ assert.match(layer.children[1].textContent, /^ORD/);
 assert.equal(controller.render({...state, eventId: "two", flight: {...state.flight, surfacePosition: null}}), false, "A replacement flight cannot inherit the last ground location.");
 assert.equal(controller.render({locationAirport: "AVL"}), false, "Home/layover uses the regular map.");
 console.log("Airport map projection, camera and ground-position replay tests passed.");
+
+const requestedViews = [];
+shell.dadRadarMapRoll = {requestSurface(node, visible) { requestedViews.push(visible); node.hidden = false; }};
+controller.render(state);
+controller.render({...state, flight: {...state.flight, surfacePosition: {...position, onGround:false}}});
+controller.render(state);
+assert.deepEqual(requestedViews, [true,false,true], "Every desired view reaches transport, including a no-op hidden=false update");
+console.log("Explicit surface visibility request tests passed.");

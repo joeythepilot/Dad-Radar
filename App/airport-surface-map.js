@@ -84,6 +84,7 @@
       if (layer) return;
       layer = doc.createElement("div");
       layer.className = "airport-surface-layer";
+      layer.hidden = true;
       svg = node("svg", {class: "airport-surface-svg", role: "img", "aria-label": "Airport ground position", preserveAspectRatio: "xMidYMid meet"});
       layer.appendChild(svg);
       caption = doc.createElement("div"); caption.className = "airport-surface-caption"; layer.appendChild(caption);
@@ -123,6 +124,12 @@
       svg.appendChild(plane);
       bounds.unitsPerPixel = unitsPerPixel;
     }
+    function setLayerVisible(visible) {
+      if (!layer) return;
+      const roll = shell && shell.dadRadarMapRoll;
+      if (roll && typeof roll.requestSurface === "function") roll.requestSurface(layer, visible);
+      else layer.hidden = !visible;
+    }
     function render(state) {
       pendingState = state;
       const flight = state && state.flight;
@@ -136,18 +143,18 @@
       const selected = selectAirport(lastPosition, airports, now(), holdingCode);
       const map = selected && cache[selected.airport.code] && cache[selected.airport.code].map;
       if (!selected || !map || !shell) {
-        if (layer) layer.hidden = true;
+        setLayerVisible(false);
         holdingCode = null;
         return false;
       }
-      ensureLayer(); layer.hidden = false;
+      ensureLayer();
       const rect = shell.getBoundingClientRect();
       const nextDrawingKey = [selected.airport.code, map.fetchedAt, rect.width, rect.height].join("|");
       if (nextDrawingKey !== drawingKey) {draw(map, selected.airport); drawingKey = nextDrawingKey;}
       const p = project(lastPosition, selected.airport);
       // An outlying report isn't a reason to zoom the field or invent a taxi path.
       if (p.x < bounds.x || p.x > bounds.x + bounds.width || p.y < bounds.y || p.y > bounds.y + bounds.height) {
-        layer.hidden = true; holdingCode = null; return false;
+        setLayerVisible(false); holdingCode = null; return false;
       }
       holdingCode = selected.airport.code;
       plane.setAttribute("transform", `translate(${p.x} ${p.y}) scale(${bounds.unitsPerPixel}) rotate(${finite(lastPosition.heading) ? lastPosition.heading : 0})`);
@@ -156,6 +163,7 @@
       const seconds = Math.floor(selected.age / 1000);
       caption.textContent = `${holdingCode} · AIRPORT · N ↑ · ${selected.stale ? "LAST POSITION" : "GROUND POSITION"} ${seconds}s AGO`;
       caption.title = `Map updated ${map.fetchedAt.slice(0, 10)}. Family display; not for navigation.`;
+      setLayerVisible(true);
       return true;
     }
     return {render, refresh: () => render(pendingState)};

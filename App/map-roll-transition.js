@@ -21,8 +21,7 @@
     parent.appendChild(node);
     return node;
   }
-  // One HTML transport gives both sheets exactly the same CSS-pixel travel.
-  // SVG percentage transforms otherwise depend on viewBox/aspect-ratio geometry.
+  // Both sheets move on one HTML transport, in the same CSS-pixel coordinate system.
   const transport = element("map-roll-transport", shell);
   const regionalSheet = element("map-roll-regional-sheet", transport);
   const surfaceSheet = element("map-roll-surface-sheet", transport);
@@ -36,17 +35,19 @@
 
   const audio = root.dadRadarMapRollAudio?.createController?.({volume: 0.72});
   root.addEventListener("pointerdown", () => { void audio?.unlock?.(); }, {once: true});
-  // Read the current preference at each request. A retained, unobserved media
-  // query can be stale when WebKit changes the preference after startup.
   const prefersReducedMotion = () => root.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
   const frame = callback => root.requestAnimationFrame(callback);
   let surface = null, observer = null, current = false, moving = false, registering = false;
   let requested = false, target = false, timer = null, restartTimer = null;
   let generation = 0, lastTestToken = null, demoSheet = null;
+  let apertureSize = "";
 
   function sizeHardware() {
     const width = shell.clientWidth;
     if (!width) return;
+    const size = `${width}x${shell.clientHeight}`;
+    if (size === apertureSize) return;
+    apertureSize = size;
     const stacked = width < 560;
     const inset = width < 400 ? 10 : 18;
     const sequenceWidth = Math.min(196, width - inset * 2);
@@ -61,22 +62,21 @@
     };
     Object.keys(values).forEach(key => shell.style.setProperty(key, `${values[key]}px`));
     shell.classList.toggle("map-hardware-stacked", stacked);
+    // Startup and family layout changes resize the aperture without resizing
+    // the window. Reuse the existing camera resize handler once per new size.
+    if (root.dispatchEvent && root.Event) frame(() => root.dispatchEvent(new root.Event("resize")));
   }
   sizeHardware();
   if (root.ResizeObserver) new root.ResizeObserver(sizeHardware).observe(shell);
   else {
     root.addEventListener("resize", sizeHardware);
-    // Safari 12 has no ResizeObserver. The dashboard starts hidden, so measure
-    // again after it opens rather than leaving the default desktop widths.
     const dashboard = root.document.getElementById("dashboard");
     if (dashboard) new root.MutationObserver(() => frame(sizeHardware))
-      .observe(dashboard, {attributes: true, attributeFilter: ["hidden"]});
+      .observe(dashboard, {attributes: true, attributeFilter: ["hidden", "style"]});
   }
 
   function writeHidden(value) {
     if (!surface || surface.hidden === value) return;
-    // Disconnect only for our own synchronous write; never suppress a later
-    // renderer update with a timer/microtask-wide flag.
     observer?.disconnect();
     surface.hidden = value;
     observer?.observe(surface, {attributes: true, attributeFilter: ["hidden"]});
@@ -89,8 +89,7 @@
     if (timer !== null) root.clearTimeout(timer);
     timer = null;
     current = target;
-    // The registered transform equals the animation's last frame. Commit both
-    // states in the same task, with no intermediate layout/paint at transform:0.
+    // Commit the last animation position and its registered state atomically.
     shell.classList.toggle("is-surface-registered", current);
     clearMotion();
     moving = false;
@@ -101,11 +100,10 @@
     const settledGeneration = generation;
     frame(() => frame(() => {
       if (moving || settledGeneration !== generation) return;
-      if (!root.document.hidden) void audio?.playRegisterClack?.();
+      if (!root.document.hidden && !prefersReducedMotion()) void audio?.playRegisterClack?.();
       root.setTimeout(() => {
-        if (!moving && settledGeneration === generation && !root.document.hidden) void audio?.playDetentClack?.();
+        if (!moving && settledGeneration === generation && !root.document.hidden && !prefersReducedMotion()) void audio?.playDetentClack?.();
       }, 135);
-      // A direction change must wait for this registration cycle to finish.
       restartTimer = root.setTimeout(() => { restartTimer = null; registering = false; request(requested); }, 220);
     }));
   }
@@ -134,11 +132,9 @@
     writeHidden(false);
     shell.classList.add(target ? "map-roll-to-surface" : "map-roll-to-regional");
     void audio?.playMotor?.();
-    // Fail safe for removed/disabled animation or background-tab throttling.
     timer = root.setTimeout(finish, api.DURATION_MS + 500);
   }
-  function discover() {
-    const layer = shell.querySelector(".airport-surface-layer");
+  function attachSurface(layer) {
     if (!layer || layer === surface) return;
     observer?.disconnect();
     if (demoSheet) { demoSheet.remove(); demoSheet = null; }
@@ -149,7 +145,14 @@
     observer.observe(surface, {attributes: true, attributeFilter: ["hidden"]});
     request(next);
   }
-  shell.dadRadarMapRoll = Object.freeze({setSurfaceVisible: request, resize: sizeHardware});
+  function discover() { attachSurface(shell.querySelector(".airport-surface-layer")); }
+  function requestSurface(layer, visible) {
+    attachSurface(layer);
+    // Desired view is not the temporary hidden state used to keep both sheets
+    // painted. Repeated ground reports must replace a queued airborne request.
+    request(visible);
+  }
+  shell.dadRadarMapRoll = Object.freeze({setSurfaceVisible: request, requestSurface, resize: sizeHardware});
   discover();
   new root.MutationObserver(discover).observe(shell, {childList: true, subtree: true});
   root.addEventListener("dad-radar:visual-state-change", event => {
@@ -157,9 +160,8 @@
     if (!token || token === lastTestToken) return;
     lastTestToken = token;
     if (moving || registering || demoSheet) return;
-    // At home there may be no airport chart yet. Keep the existing test command
-    // useful with a duplicate regional sheet, never a blank/fabricated airport.
     if (!surface) {
+      // Diagnostic only: duplicate the regional map, never fabricate an airport.
       demoSheet = regional.cloneNode(true);
       const nodes = [demoSheet, ...demoSheet.querySelectorAll("*")];
       const ids = {};
@@ -180,8 +182,7 @@
 })(typeof window !== "undefined" ? window : globalThis, function createMapRollTransitionApi() {
   "use strict";
   const DURATION_MS = 2800;
-  // Motor registration metadata retains mechanical overshoot; the visible
-  // sheets clamp at the aperture boundary while lateral vibration settles.
+  // Motor metadata retains overshoot; CSS clamps the visible sheets at the lip.
   const PROFILE = Object.freeze([
     [0, 0], [7, 1.5], [16, 9], [31, 32], [39, 37],
     [56, 61], [73, 82], [88, 99], [93, 100.4], [97, 99.8], [100, 100]

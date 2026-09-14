@@ -12,7 +12,6 @@ for (const name of ["chromium","webkit"]) {
     const newPage = browser.newPage.bind(browser);
     const close = browser.close.bind(browser);
     browser.close = async () => {
-      // Preserve sampled frames even when an assertion, rather than a wait, fails.
       for (const context of browser.contexts()) for (const page of context.pages()) {
         if (page.isClosed()) continue;
         const evidence = await page.evaluate(() => ({
@@ -31,8 +30,14 @@ for (const name of ["chromium","webkit"]) {
       const screenshot = page.screenshot.bind(page);
       page.screenshot = async options => {
         const defects = await page.evaluate(() => {
-          if (!document.documentElement.classList.contains('family-full-portrait')) return [];
           const defects=[];
+          const map=document.querySelector('.map-roll-regional-sheet .route-map-svg');
+          if (map) {
+            const box=map.viewBox.baseVal,rect=map.getBoundingClientRect();
+            if (rect.height>0 && Math.abs(box.width/box.height-rect.width/rect.height)>.01)
+              defects.push('map camera was not fitted to the visible aperture');
+          }
+          if (!document.documentElement.classList.contains('family-full-portrait')) return defects;
           for (const node of document.querySelectorAll('.instrument-slot .instrument, #destination-poster')) {
             if (node.hidden) continue;
             const a=node.getBoundingClientRect(),b=node.parentElement.getBoundingClientRect();
@@ -40,7 +45,7 @@ for (const name of ["chromium","webkit"]) {
           }
           return defects;
         });
-        assert.deepEqual(defects,[],"portrait poster and round gauges fit their housings");
+        assert.deepEqual(defects,[],"camera, portrait poster and gauges fit their housings");
         return screenshot(options);
       };
       return page;
