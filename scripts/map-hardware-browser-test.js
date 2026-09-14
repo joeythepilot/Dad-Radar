@@ -5,12 +5,14 @@ const fs = require("node:fs");
 const path = require("node:path");
 const http = require("node:http");
 const {chromium, webkit} = require("playwright");
+const {checkInitialReplay,checkFullHardware,checkDiagnosticRoundTrip} = require("./map-startup-mobile-browser-proof");
 const root = path.resolve(__dirname, "..");
 const output = path.join(root, "artifacts/map-hardware");
 fs.mkdirSync(output, {recursive: true});
 const state = {
   status:"HOME", message:"DADDY IS HOME", locationAirport:"AVL", flight:null,
-  sequenceHistory:{totalDistanceNm:1468, completedLegCount:6, legs:Array.from({length:6}, () => ({origin:"ORD",destination:"AVL"}))},
+  diagnostics:{shutterTestToken:"saved-command-before-page-load"},
+  sequenceHistory:{totalDistanceNm:1468, completedLegCount:6, estimatedLegCount:6, legs:Array.from({length:6}, () => ({origin:"ORD",destination:"AVL"}))},
   dailySchedule:{dateLabel:"SUN SEP 13",timeZoneLabel:"EASTERN TIME",context:"DADDY IS HOME TODAY",entries:[
     {time:"7:58 AM",label:"ORD → BWI",tag:"FLT 3761",status:"completed",kind:"flight"},
     {time:"11:23 AM",label:"BWI → ORD",tag:"FLT 3762",status:"completed",kind:"flight"},
@@ -27,6 +29,11 @@ const fullHtml = new Function("displayHtml", `return ${expression};`)(html);
 const types = {".html":"text/html",".js":"application/javascript",".css":"text/css",".svg":"image/svg+xml",".png":"image/png",".json":"application/json",".webmanifest":"application/manifest+json"};
 const server = http.createServer((req,res) => {
   const url = new URL(req.url,"http://localhost");
+  if (url.pathname === "/api/diagnostics/shutters-test" && req.method === "POST") {
+    state.diagnostics.shutterTestToken = `intentional-${++payload.revision}`;
+    res.setHeader("Content-Type","application/json");
+    res.end(JSON.stringify({ok:true,token:state.diagnostics.shutterTestToken}));return;
+  }
   if (url.pathname.startsWith("/api/")) {
     if (url.pathname.startsWith("/api/weather")) {res.writeHead(204);res.end();return;}
     res.setHeader("Content-Type","application/json");
@@ -168,9 +175,10 @@ async function transportProof(page, label) {
         for(const [name,width,height,compact] of [
           ['desktop',1920,1080,false],['full-landscape',844,390,false],['full-tablet',1024,768,false],
           ['full-portrait',390,844,false],['full-tablet-portrait',768,1024,false],
-          ['compact-landscape',844,390,true],['compact-portrait',390,844,true]
+          ['compact-landscape',844,390,true],['compact-portrait',390,844,true],
+          ['full-touch-landscape',880,404,false],['full-touch-small',667,375,false]
         ]) {
-          const page=await browser.newPage({viewport:{width,height},serviceWorkers:'block'});
+          const page=await browser.newPage({viewport:{width,height},serviceWorkers:'block',isMobile:name.includes('touch'),hasTouch:name.includes('touch'),deviceScaleFactor:name.includes('touch')?2:1});
           const errors=[];page.on('pageerror',error=>errors.push(error.message));
           await page.addInitScript(audioProbe);
           await page.route('**/*',route=>route.request().url().startsWith(origin)||route.request().url().startsWith('blob:')?route.continue():route.abort());
@@ -184,12 +192,17 @@ async function transportProof(page, label) {
             return rect.height>0&&Math.abs(box.width/box.height-rect.width/rect.height)<.01;
           },null,{timeout:2000});
           if(!compact)await page.locator('#clock-value').evaluate(n=>n.textContent='12:59:59 PM');
+          await checkInitialReplay(page);
+          const proportions=await checkFullHardware(page);
           const measured=await geometry(page,compact);checkGeometry(measured);
           const label=`${engine}-${name}`;
           await page.screenshot({path:path.join(output,`${label}.png`),fullPage:true});
-          if(name==='desktop'||name==='compact-portrait')await transportProof(page,label);
+          if(name==='desktop'||name==='compact-portrait') {
+            await checkDiagnosticRoundTrip(page);
+            await transportProof(page,label);
+          }
           assert.deepEqual(errors,[],`${label}: browser errors`);
-          report.push({label,passed:true,geometry:measured});
+          report.push({label,passed:true,geometry:measured,proportions});
           await page.close();console.log(`${label}: geometry and ${name==='desktop'||name==='compact-portrait'?'transport':'layout'} passed`);
         }
       } finally {await browser.close();}

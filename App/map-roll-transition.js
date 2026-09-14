@@ -15,6 +15,14 @@
     link.dataset.dadRadarMapRoll = "true";
     root.document.head.appendChild(link);
   }
+  const familyFull = root.document.documentElement?.hasAttribute("data-family-full") === true;
+  if (familyFull && !root.document.querySelector("link[data-dad-radar-family-hardware]")) {
+    const link = root.document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "/UI/family-map-hardware.css?v=1";
+    link.dataset.dadRadarFamilyHardware = "true";
+    root.document.head.appendChild(link);
+  }
   function element(name, parent) {
     const node = root.document.createElement("div");
     node.className = name;
@@ -55,6 +63,15 @@
   let requested = false, target = false, timer = null, restartTimer = null;
   let generation = 0, lastTestToken = null, demoSheet = null;
   let apertureSize = "";
+  // HTTP viewers must first absorb the server's existing diagnostic command.
+  // Startup/mock visual events are not an authoritative server baseline.
+  let diagnosticReady = !/^https?:$/.test(root.location?.protocol ?? "");
+  root.addEventListener("dad-radar:calendar-sync", event => {
+    const initial = event.detail?.resolved?.state;
+    if (diagnosticReady || !initial) return;
+    lastTestToken = initial.diagnostics?.shutterTestToken ?? null;
+    diagnosticReady = true;
+  });
 
   function sizeHardware() {
     const width = shell.clientWidth;
@@ -62,7 +79,7 @@
     const size = `${width}x${shell.clientHeight}`;
     if (size === apertureSize) return;
     apertureSize = size;
-    const stacked = width < 560;
+    const stacked = !familyFull && width < 560;
     const inset = width < 400 ? 10 : 18;
     const sequenceWidth = Math.min(196, width - inset * 2);
     const clockWidth = Math.min(184, stacked ? (width - inset * 2 - 16) / 2 : (width - inset * 2 - sequenceWidth - 24) / 2);
@@ -74,6 +91,20 @@
       "--map-clock-label": Math.max(7, 9 * scale),
       "--map-clock-pad-x": Math.max(5, 10 * scale)
     };
+    if (familyFull) {
+      const full = api.familyHardwareMetrics(width, shell.clientHeight);
+      // These are dimensions of the existing housings, not new metal artwork.
+      // Scale each complete housing plus its raster rod around its lower edge.
+      values["--map-clock-width"] = 184;
+      values["--map-sequence-width"] = 196;
+      values["--map-hardware-inset"] = full.inset;
+      values["--map-clock-bottom"] = full.clockBottom;
+      values["--map-clock-font"] = full.valueFont;
+      values["--map-clock-label"] = full.labelFont;
+      values["--map-clock-pad-x"] = 10;
+      values["--family-sequence-bottom"] = full.sequenceBottom;
+      shell.style.setProperty("--family-hardware-scale", String(full.scale));
+    }
     Object.keys(values).forEach(key => shell.style.setProperty(key, `${values[key]}px`));
     shell.classList.toggle("map-hardware-stacked", stacked);
     // Startup and family layout changes resize the aperture without resizing
@@ -171,7 +202,7 @@
   new root.MutationObserver(discover).observe(shell, {childList: true, subtree: true});
   root.addEventListener("dad-radar:visual-state-change", event => {
     const token = event.detail?.state?.diagnostics?.shutterTestToken;
-    if (!token || token === lastTestToken) return;
+    if (!diagnosticReady || !token || token === lastTestToken) return;
     lastTestToken = token;
     if (moving || registering || demoSheet) return;
     if (!surface) {
@@ -201,5 +232,14 @@
     [0, 0], [7, 1.5], [16, 9], [31, 32], [39, 37],
     [56, 61], [73, 82], [88, 99], [93, 100.4], [97, 99.8], [100, 100]
   ]);
-  return {DURATION_MS, PROFILE};
+  function familyHardwareMetrics(width, height) {
+    // 660px leaves breathing room between all three existing housings.
+    // Height matters too: a short landscape aperture must not become a stack.
+    const scale = Math.min(1, Math.max(0, width) / 660, Math.max(0, height) / 360);
+    const safeScale = scale || 1;
+    return {scale, inset:18 * scale, clockBottom:18 * scale, sequenceBottom:14 * scale,
+      valueFont:Math.max(20, Math.min(26, 12 / safeScale)),
+      labelFont:Math.max(9, Math.min(14, 6.5 / safeScale))};
+  }
+  return {DURATION_MS, PROFILE, familyHardwareMetrics};
 });
