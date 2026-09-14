@@ -30,4 +30,5 @@ html[data-family-full] .daily-schedule-heading > span { min-width:0; overflow:hi
 }
 /* Equal explicit axes prevent portrait gauges spilling across narrow columns. */
 html.family-full-portrait .instrument-slot .instrument { width:24vw !important; height:24vw !important; max-width:130px !important; max-height:130px !important; }
-html.family-full-portrait .destination-poster-image { width:100% !important; height:100% !important; object-fit:contain !important; }
+/* Out-of-flow positioning keeps intrinsic image size from enlarging its grid row. */
+html.family-full-portrait .destination-poster-image { position:absolute; top:0; left:0; width:100% !important; height:100% !important; object-fit:contain !important; }
