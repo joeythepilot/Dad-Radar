@@ -1,9 +1,6 @@
 /* Dad Radar active work-sequence trail and mileage */
 
-.map-sequence-history-layer {
-  pointer-events: none;
-}
-
+.map-sequence-history-layer { pointer-events: none; }
 .map-sequence-history-leg {
   fill: none;
   stroke: rgba(76, 48, 32, 0.72);
@@ -13,81 +10,78 @@
   vector-effect: non-scaling-stroke;
 }
 
-/* Fixed cabinet hardware mounted to the lower map bezel. */
+/* Physical sequence module fixed to the lower bezel, never part of the map roll. */
 .sequence-mileage-badge {
   position: absolute;
   z-index: 56;
   left: 50%;
   bottom: 0;
-  min-width: 184px;
-  max-width: 220px;
-  padding: 7px 12px 9px;
+  width: 196px;
+  max-width: 34%;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: 7px 11px 8px;
   border: 1px solid #72552d;
   border-bottom: 0;
   border-radius: 4px 4px 0 0;
-  background: linear-gradient(180deg, rgba(43,39,32,.98), rgba(21,20,17,.99));
-  color: #d6b474;
-  box-shadow:
-    0 -1px 0 rgba(211,173,100,.18),
-    0 -7px 13px rgba(23,15,9,.26),
-    inset 0 1px 0 rgba(255,222,154,.08),
-    inset 0 0 12px rgba(0,0,0,.55);
+  background: linear-gradient(180deg, rgba(38,35,29,.99), rgba(17,17,15,.995));
+  color: #d2ae6a;
+  box-shadow: 0 -7px 14px rgba(21,13,8,.31), inset 0 1px 0 rgba(255,222,154,.07), inset 0 0 14px rgba(0,0,0,.62);
   font-family: "Courier New", monospace;
   pointer-events: none;
   transform: translateX(-50%);
   isolation: isolate;
 }
 
-/* Brass retaining plates connect the module directly to the bezel. */
-.sequence-mileage-badge::before,
-.sequence-mileage-badge::after {
+/* A single bottom retaining tongue makes the attachment point unambiguous. */
+.sequence-mileage-badge::before {
   content: "";
   position: absolute;
+  left: 50%;
   bottom: 0;
-  width: 18px;
-  height: 5px;
+  width: 42px;
+  height: 6px;
+  transform: translateX(-50%);
   background: linear-gradient(90deg, #5d431f, #b28749 48%, #644822);
-  border-top: 1px solid rgba(218,177,99,.58);
-  box-shadow: 0 -2px 4px rgba(0,0,0,.3);
-  z-index: 2;
+  border-top: 1px solid rgba(218,177,99,.52);
+  box-shadow: 0 -2px 4px rgba(0,0,0,.28);
 }
-.sequence-mileage-badge::before { left: 9px; }
-.sequence-mileage-badge::after { right: 9px; }
+.sequence-mileage-badge::after { content: none; }
 
-.sequence-mileage-badge.is-empty {
-  opacity: 0.9;
-}
-
+.sequence-mileage-badge.is-empty { opacity: .9; }
 .sequence-mileage-label,
 .sequence-mileage-detail {
   display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: clip;
   font-size: 9px;
   font-weight: 700;
-  letter-spacing: 1.2px;
+  letter-spacing: 1px;
 }
-
-.sequence-mileage-label { color: #9d8050; }
-
+.sequence-mileage-label { color: #8f7447; }
 .sequence-mileage-value {
   display: block;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: clip;
   margin-top: 2px;
-  font-size: 21px;
+  font-size: 20px;
   line-height: 1.05;
-  letter-spacing: 0.5px;
-  color: #e1c080;
-  text-shadow: 0 0 4px rgba(213,164,84,.14);
+  letter-spacing: .4px;
+  color: #d6b474;
+  text-shadow: 0 0 3px rgba(213,164,84,.10);
 }
-
-.sequence-mileage-detail {
-  margin-top: 3px;
-  color: #8f7447;
-}
+.sequence-mileage-detail { margin-top: 3px; color: #78623d; }
 
 @media (max-width: 900px) {
   .sequence-mileage-badge {
-    min-width: 160px;
-    padding: 7px 10px 8px;
+    width: 166px;
+    max-width: 36%;
+    padding: 6px 8px 7px;
   }
-
-  .sequence-mileage-value { font-size: 18px; }
+  .sequence-mileage-value { font-size: 16px; }
+  .sequence-mileage-label,
+  .sequence-mileage-detail { font-size: 8px; letter-spacing: .65px; }
 }
