@@ -12,7 +12,7 @@
     if (document.querySelector("link[data-dad-radar-sequence-history]")) return;
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "./UI/sequence-history.css?v=sequence-v6";
+    link.href = "./UI/sequence-history.css?v=sequence-v7";
     link.dataset.dadRadarSequenceHistory = "true";
     document.head.appendChild(link);
   }
@@ -35,7 +35,15 @@
     detailElement = document.createElement("span");
     detailElement.className = "sequence-mileage-detail";
 
-    badge.append(label, valueElement, detailElement);
+    // Exactly the same cropped image used beneath the two clocks.
+    const rod = document.createElement("img");
+    rod.className = "sequence-support-rod";
+    rod.src = "/assets/hardware/brass-clock-rod.png?v=1";
+    rod.alt = "";
+    rod.setAttribute("aria-hidden", "true");
+    rod.setAttribute("draggable", "false");
+
+    badge.append(rod, label, valueElement, detailElement);
     shell.appendChild(badge);
     return badge;
   }

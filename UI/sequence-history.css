@@ -10,7 +10,7 @@
   vector-effect: non-scaling-stroke;
 }
 
-/* Sequence readout stays stationary; its future mounting treatment is deferred. */
+/* Stationary sequence readout with the same small image-based rod as the clocks. */
 .sequence-mileage-badge {
   position: absolute;
   z-index: 56;
@@ -36,7 +36,7 @@
   isolation: isolate;
 }
 
-/* Remove the oversized brass bracket. Do not substitute another mount. */
+/* Keep the rejected oversized bracket disabled. Mount with the raster rod only. */
 .sequence-mileage-badge::before,
 .sequence-mileage-badge::after { content: none; }
 
@@ -45,6 +45,7 @@
 .sequence-mileage-detail,
 .sequence-mileage-value {
   display: block;
+  text-align: center;
   max-width: 100%;
   overflow: hidden;
   white-space: nowrap;
@@ -88,3 +89,14 @@
 .vintage-map-panel .route-map-shell .sequence-mileage-label,
 .vintage-map-panel .route-map-shell .sequence-mileage-detail { font-size:9px !important; letter-spacing:.4px; color:#a68d60; }
 .vintage-map-panel .route-map-shell .sequence-mileage-detail { white-space:normal; overflow-wrap:break-word; }
+
+/* Reuse the clock rod artwork at the same four-pixel width. The 18px image
+   bridges the unchanged 14px gap, with its ends tucked behind housing and bezel. */
+.vintage-map-panel .route-map-shell .sequence-support-rod {
+  position: absolute; z-index: -1; pointer-events: none; user-select: none;
+  left: 50%; top: calc(100% - 1px); transform: translateX(-50%);
+  width: 4px; min-width: 4px; max-width: 4px;
+  height: 18px; max-height: none;
+  display: block; object-fit: fill; padding: 0; margin: 0;
+  border: 0; border-radius: 0; background: none; box-shadow: none;
+}
