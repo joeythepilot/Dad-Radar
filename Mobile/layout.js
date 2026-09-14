@@ -27,7 +27,6 @@
     var width = Math.min(viewer.clientWidth, viewer.clientHeight * 16 / 9);
     dashboard.style.width = width + 'px';
     dashboard.style.height = (width * 9 / 16) + 'px';
-
     var hardwareScale = Math.min(1, Math.max(0.58, width / 1100));
     var hardwareSizes = {
       '--family-clock-font': Math.max(11, 18 * hardwareScale),
@@ -50,7 +49,6 @@
       '--family-hardware-bottom': Math.max(4, 7 * hardwareScale)
     };
     Object.keys(hardwareSizes).forEach(function (name) { dashboard.style.setProperty(name, hardwareSizes[name] + 'px'); });
-
     var module = dashboard.querySelector('.flight-strip-module');
     var board = dashboard.querySelector('.flight-board');
     if (!module || !board) return;
@@ -106,6 +104,12 @@
     label.appendChild(select);
     if (!full && document.getElementById('refresh')) bar.insertBefore(label, document.getElementById('refresh'));
     else bar.appendChild(label);
+    if (!full && !document.querySelector('script[data-dad-radar-map-roll-mobile]')) {
+      var mapRoll = document.createElement('script');
+      mapRoll.src = '/Mobile/map-roll-legacy.js?v=1';
+      mapRoll.setAttribute('data-dad-radar-map-roll-mobile', 'true');
+      document.body.appendChild(mapRoll);
+    }
     fit();
     if (full && 'ResizeObserver' in window) {
       var observer = new ResizeObserver(fit);
