@@ -1,0 +1,38 @@
+"use strict";
+const assert = require("node:assert/strict");
+
+// Run against the real Full-family page, not a replacement test layout.
+async function checkFamilyDuty(page, screenshotPath) {
+  const panel = page.locator('html[data-family-full] .daily-schedule-panel');
+  if (!await panel.count()) return;
+  const data = await panel.evaluate(node => ({
+    width: node.clientWidth, narrow: node.classList.contains('family-duty-narrow'),
+    tabindex: node.getAttribute('tabindex'),
+    text: [...node.querySelectorAll('.daily-schedule-label,.daily-schedule-time,.daily-schedule-tag,#daily-schedule-date,h2')]
+      .map(n => ({text:n.textContent.trim(),width:n.clientWidth,scroll:n.scrollWidth}))
+  }));
+  if (data.width >= 300) return;
+  assert(data.narrow, 'Narrow Full duty panel must use its measured housing width');
+  assert.equal(data.tabindex, '0', 'The scrolling duty housing must be keyboard reachable');
+  assert(data.text.some(x => x.text.includes('→')), 'Proof includes real rendered route labels');
+  for (const text of data.text) assert(text.scroll <= text.width + 1, `Clipped Full duty text: ${JSON.stringify(text)}`);
+  const scroll = await panel.evaluate(node => {
+    const original = node.scrollTop;
+    node.scrollTop = node.scrollHeight;
+    const last = node.querySelector('.daily-schedule-entry:last-child');
+    const bounds = node.getBoundingClientRect(), lastBounds = last?.getBoundingClientRect();
+    return {original,top:node.scrollTop,height:node.clientHeight,total:node.scrollHeight,
+      overflow:getComputedStyle(node).overflowY,
+      lastVisible:!lastBounds || (lastBounds.top >= bounds.top - 1 && lastBounds.bottom <= bounds.bottom + 1)};
+  });
+  try {
+    if (scroll.total > scroll.height + 1) {
+      assert.equal(scroll.overflow, 'auto', 'Duty content must scroll rather than disappear');
+      assert(scroll.top > 0 && scroll.lastVisible, 'Last duty row must be reachable inside its housing');
+    }
+    if (screenshotPath) await panel.screenshot({path:screenshotPath.replace(/\.png$/, '-duty-detail.png')});
+  } finally {
+    await panel.evaluate((node, top) => { node.scrollTop = top; }, scroll.original);
+  }
+}
+module.exports = {checkFamilyDuty};

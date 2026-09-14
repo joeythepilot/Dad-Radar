@@ -3,6 +3,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const engines = require("playwright");
+const {checkFamilyDuty} = require("./family-duty-browser-proof");
 const output = path.resolve(__dirname,"../artifacts/map-hardware");
 fs.mkdirSync(output,{recursive:true});
 for (const name of ["chromium","webkit"]) {
@@ -30,6 +31,7 @@ for (const name of ["chromium","webkit"]) {
       await page.bringToFront();
       const screenshot = page.screenshot.bind(page);
       page.screenshot = async options => {
+        await checkFamilyDuty(page, options?.path);
         const defects = await page.evaluate(() => {
           if (!document.documentElement.classList.contains('family-full-portrait')) return [];
           const defects=[];
