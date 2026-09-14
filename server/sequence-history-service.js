@@ -2,8 +2,8 @@
 
 const STORAGE_KEY = "dadRadar.sequenceHistory.v1";
 const SEQUENCE_GAP_MS = 48 * 60 * 60 * 1000;
-const MAX_LEGS = 32;
-const MAX_TRACK_POINTS_PER_LEG = 12000;
+const MAX_LEGS = 16;
+const MAX_TRACK_POINTS_PER_LEG = 2400;
 const EARTH_RADIUS_NM = 3440.065;
 
 function finiteNumber(value) {
@@ -88,7 +88,6 @@ function trackDistanceNm(track) {
   let total = 0;
   for (let index = 1; index < track.length; index += 1) {
     const segment = distanceNm(track[index - 1], track[index]);
-    // Ignore impossible jumps instead of letting one bad point inflate the odometer.
     if (Number.isFinite(segment) && segment <= 180) total += segment;
   }
   return total;
@@ -99,6 +98,7 @@ function emptyState(now) {
     version: 1,
     startedAt: null,
     lastActivityAt: null,
+    currentEventKey: null,
     updatedAt: new Date(now).toISOString(),
     legs: []
   };
@@ -107,7 +107,18 @@ function emptyState(now) {
 function parseState(storage, now) {
   try {
     const parsed = JSON.parse(storage[STORAGE_KEY] ?? "null");
-    if (parsed?.version === 1 && Array.isArray(parsed.legs)) return parsed;
+    if (parsed?.version === 1 && Array.isArray(parsed.legs)) {
+      return {
+        ...parsed,
+        currentEventKey: parsed.currentEventKey ?? null,
+        legs: parsed.legs.slice(-MAX_LEGS).map(leg => ({
+          ...leg,
+          track: Array.isArray(leg.track)
+            ? leg.track.slice(-MAX_TRACK_POINTS_PER_LEG)
+            : []
+        }))
+      };
+    }
   } catch (_) {
     // A damaged optional history record should not affect live flight tracking.
   }
@@ -133,6 +144,7 @@ function publicSummary(state) {
   return {
     startedAt: state.startedAt,
     lastActivityAt: state.lastActivityAt,
+    currentEventKey: state.currentEventKey ?? null,
     totalDistanceNm:
       Math.round(legs.reduce((sum, leg) => sum + leg.distanceNm, 0) * 10) / 10,
     legCount: legs.length,
@@ -165,12 +177,14 @@ function createSequenceHistoryService(storage, options = {}) {
     const event = resolved?.event;
 
     if (!isWorkFlight(event)) {
+      state.currentEventKey = null;
       state.updatedAt = new Date(now).toISOString();
       save();
       return publicSummary(state);
     }
 
     const key = eventKey(event);
+    state.currentEventKey = key;
     let leg = state.legs.find(candidate => candidate.eventKey === key);
 
     if (!leg) {
@@ -229,6 +243,8 @@ function createSequenceHistoryService(storage, options = {}) {
 module.exports = {
   STORAGE_KEY,
   SEQUENCE_GAP_MS,
+  MAX_LEGS,
+  MAX_TRACK_POINTS_PER_LEG,
   createSequenceHistoryService,
   distanceNm,
   eventKey,
