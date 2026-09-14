@@ -3,50 +3,64 @@
 const assert = require("node:assert/strict");
 const audioApi = require("./map-roll-audio");
 
-let played = 0;
-let paused = 0;
-let currentTime = 99;
-let volume = 0;
-const fakeAudio = {
-  preload: "",
-  paused: true,
-  play() { played += 1; this.paused = false; return Promise.resolve(); },
-  pause() { paused += 1; this.paused = true; },
-  get currentTime() { return currentTime; },
-  set currentTime(value) { currentTime = value; },
-  get volume() { return volume; },
-  set volume(value) { volume = value; }
-};
+const created = [];
+function makeAudio() {
+  let currentTime = 99;
+  let volume = 0;
+  const audio = {
+    preload: "",
+    paused: true,
+    plays: 0,
+    pauses: 0,
+    play() { this.plays += 1; this.paused = false; return Promise.resolve(); },
+    pause() { this.pauses += 1; this.paused = true; },
+    get currentTime() { return currentTime; },
+    set currentTime(value) { currentTime = value; },
+    get volume() { return volume; },
+    set volume(value) { volume = value; }
+  };
+  created.push(audio);
+  return audio;
+}
 
 (async () => {
-  const controller = audioApi.createController({
-    source: "/test.b64",
-    volume: 0.5,
-    audioFactory: () => fakeAudio,
-    fetch: async () => ({ok: true, text: async () => "AA=="}),
-    atob: () => "\0",
-    Blob: class FakeBlob {},
-    URL: {
-      createObjectURL: () => "blob:test",
-      revokeObjectURL() {}
-    },
-    AudioContext: null
-  });
+  const timers = [];
+  const root = globalThis;
+  const originalSetTimeout = root.setTimeout;
+  const originalClearTimeout = root.clearTimeout;
+  root.setTimeout = (fn, delay) => { timers.push({fn, delay}); return timers.length; };
+  root.clearTimeout = () => {};
 
-  assert.equal(await controller.unlock(), true);
-  assert.equal(await controller.playMotor(), true);
-  assert.equal(played, 2);
-  assert.ok(paused >= 2);
-  assert.equal(currentTime, 0);
-  assert.equal(volume, 0.5);
-  assert.equal(controller.playRegisterClack(), false);
-  assert.equal(controller.playDetentClack(), false);
+  try {
+    const controller = audioApi.createController({
+      volume: 0.5,
+      audioFactory: makeAudio,
+      fetch: async () => ({ok: true, text: async () => "AA=="}),
+      atob: () => "\0",
+      Blob: class FakeBlob {},
+      URL: {
+        createObjectURL: () => `blob:test-${created.length}`,
+        revokeObjectURL() {}
+      }
+    });
 
-  controller.stopMotor();
-  assert.equal(fakeAudio.paused, true);
-  controller.destroy();
-  assert.equal(audioApi.MOTOR_CUTOFF_MS, 2480);
-  console.log("Map roll audio tests passed.");
+    assert.equal(await controller.unlock(), true);
+    assert.equal(created.length, 3, "motor/register/detent assets should preload independently");
+    assert.equal(await controller.playMotor(), true);
+    assert.ok(timers.some(timer => timer.delay === audioApi.MOTOR_CUTOFF_MS));
+    assert.equal(await controller.playRegisterClack(), true);
+    assert.equal(await controller.playDetentClack(), true);
+    assert.ok(created.every(audio => audio.plays >= 2));
+
+    controller.stopMotor();
+    assert.equal(created[0].paused, true);
+    controller.destroy();
+    assert.equal(audioApi.MOTOR_CUTOFF_MS, 2480);
+    console.log("Map roll audio tests passed.");
+  } finally {
+    root.setTimeout = originalSetTimeout;
+    root.clearTimeout = originalClearTimeout;
+  }
 })().catch(error => {
   console.error(error);
   process.exitCode = 1;
