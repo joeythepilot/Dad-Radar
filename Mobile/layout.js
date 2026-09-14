@@ -29,6 +29,15 @@
     var width = portrait ? viewer.clientWidth : Math.min(viewer.clientWidth, viewer.clientHeight * 16 / 9);
     dashboard.style.width = width + 'px';
     dashboard.style.height = (portrait ? Math.max(1000, viewer.clientHeight) : width * 9 / 16) + 'px';
+    // Use the housing width, not the screen width: Full landscape can have a
+    // narrow duty panel even on a wide phone. Reflow instead of clipping routes.
+    var duty = dashboard.querySelector('.daily-schedule-panel');
+    if (duty && duty.clientWidth > 0) {
+      var narrowDuty = duty.clientWidth < 300;
+      duty.classList.toggle('family-duty-narrow', narrowDuty);
+      if (narrowDuty) duty.setAttribute('tabindex', '0');
+      else duty.removeAttribute('tabindex');
+    }
     var module = dashboard.querySelector('.flight-strip-module');
     var board = dashboard.querySelector('.flight-board');
     if (!module || !board) return;

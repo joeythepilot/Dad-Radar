@@ -1,30 +1,11 @@
-# Map transport and bezel hardware: family beta repair
+# Final map-framing and transport consolidation
 
-Scope: `agent/mobile-companion`. No home-PC installation, production deployment, release, or production packaging is performed by this repair.
+Family beta only. No production deployment, packaging or home-PC installation.
 
-## Preserved design
+The approved shared 2.8-second roll, uneven speed, hesitation, lateral wander, variable blur, worn splice, V3 gearmotor assets and stationary bezel-mounted hardware are preserved from the successful `f31c38f` baseline. Workflow `34803930859` passed its application regressions and all 14 Chromium/WebKit layout cases.
 
-The regional and airport charts are adjacent sheets on one vertical physical roll. The 2,800 ms uneven transport, hesitation, lateral wander, changing motion blur, worn splice and approved V3 gearmotor assets remain. Current Time mounts to the left bezel, ETA to the right, and Active Sequence to the bottom. Hardware and cast shadows stay stationary over the map. There are no feet or full-width hardware rails.
+This consolidation preserves the subsequent narrow Today's Duty repair, its browser proof and all original checks from `a7ecf6f`. It adds explicit desired-view messages between the airport renderer and roll controller, and refits the regional camera when the actual aperture changes after startup or layout changes. The extra request, registration-gap, reduced-motion and resize-loop unit checks pass locally. The full combined branch must pass both CI jobs before it is considered verified.
 
-## Saved repairs
+The obsolete patch payloads and auto-apply workflow are removed. There is one application implementation and one read-only verification workflow. See `MAP_REPAIR_RECOVERY_2026-09-14.md` for the earlier recovery and Today's Duty details.
 
-- One HTML transport gives both sheets identical pixel travel, instead of mixing SVG and HTML percentage transforms. Extra paper behind the bezel lips prevents fractional-pixel edge gaps.
-- Registration commits the final animation position atomically. Clacks follow two paint opportunities and the reverse request waits through registration. Reduced-motion preference changes are read at request time.
-- Aperture-based hardware sizing, visible metal arms and a lower bracket keep the clock, ETA and sequence inside their housings in both landscape and portrait layouts.
-- Portrait Full scrolls rather than shrinking the entire cabinet to an unreadable landscape thumbnail. Poster and gauges remain contained.
-- Compact uses the same transport/audio source as Full, compiled through the existing legacy-Safari build.
-- The home diagnostic can use a duplicate of the actual regional sheet with remapped SVG IDs. It never fabricates an airport or changes flight telemetry.
-- The camera is refitted when the visible map aperture changes, including when the startup dashboard becomes visible. This fixes initial portrait cropping without waiting for the next periodic refresh.
-- Airport rendering sends an explicit desired view after drawing its chart. Repeated ground reports replace queued takeoff requests even when the sheet is already temporarily visible during transport.
-
-## Reconciliation
-
-The four temporary `.map-repair-*.json` files were alternative patches against an older source snapshot. Their source guards failed before application. They have been removed; useful explicit-view handling is implemented directly in the current shared controller instead. The superseded `apply-map-repair.yml` workflow is to be removed when consolidating the beta branch. Read-only regression and browser verification remain.
-
-## Evidence and boundaries
-
-The recovered baseline `f31c38f706ffc87bb4045fa849ad08c06b3c7bec` passed workflow `34803930859`: full application regressions on Linux and all 14 browser/layout cases on macOS Chromium and WebKit. That result was retrieved and its screenshots reviewed before the final request/initial-framing corrections.
-
-Final code changes must pass the same workflow again. The browser proof checks actual frames, adjacent-sheet coverage, stationary hardware, text containment, no overlapping housings, camera/aperture aspect agreement, repeated reversals, post-settle clack dispatch and reduced motion. The unit suite checks explicit latest-request handling, registration-gap requests, hidden-page handling, preference changes and height-only camera refitting.
-
-All browser data is fictional and no live provider credentials are used. Browser-engine verification is not hands-on testing on the Windows display or the family's iOS 12 iPad, and audio invocation checks do not establish physical-speaker sound balance. The running family server still needs its normal local update and restart after the verified branch is installed.
+Browser tests use fictional data and no live-provider credentials. Automated browser and sound-invocation checks do not replace the owner's visual/audio approval on the Windows display and older iPad. Nothing in these commits restarts or updates the running home server.

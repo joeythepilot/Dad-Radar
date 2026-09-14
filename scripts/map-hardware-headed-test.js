@@ -3,6 +3,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const engines = require("playwright");
+const {checkFamilyDuty} = require("./family-duty-browser-proof");
 const output = path.resolve(__dirname,"../artifacts/map-hardware");
 fs.mkdirSync(output,{recursive:true});
 for (const name of ["chromium","webkit"]) {
@@ -20,7 +21,6 @@ for (const name of ["chromium","webkit"]) {
           transport:document.querySelector('.map-roll-transport')?.outerHTML.slice(0,200)
         })).catch(error=>({error:String(error)}));
         fs.writeFileSync(path.join(output,`${name}-last-page.json`),JSON.stringify(evidence,null,2));
-        console.log(`${name}: retained ${evidence.frames?.length || 0} frames, ${evidence.frames?.filter(f=>f.moving).length || 0} during motion`);
       }
       return close();
     };
@@ -29,13 +29,14 @@ for (const name of ["chromium","webkit"]) {
       await page.bringToFront();
       const screenshot = page.screenshot.bind(page);
       page.screenshot = async options => {
+        await checkFamilyDuty(page, options?.path);
         const defects = await page.evaluate(() => {
           const defects=[];
           const map=document.querySelector('.map-roll-regional-sheet .route-map-svg');
           if (map) {
             const box=map.viewBox.baseVal,rect=map.getBoundingClientRect();
             if (rect.height>0 && Math.abs(box.width/box.height-rect.width/rect.height)>.01)
-              defects.push('map camera was not fitted to the visible aperture');
+              defects.push({issue:'camera/aperture mismatch',viewBox:map.getAttribute('viewBox'),width:rect.width,height:rect.height,classes:document.querySelector('.route-map-shell').className});
           }
           if (!document.documentElement.classList.contains('family-full-portrait')) return defects;
           for (const node of document.querySelectorAll('.instrument-slot .instrument, #destination-poster')) {
@@ -45,8 +46,9 @@ for (const name of ["chromium","webkit"]) {
           }
           return defects;
         });
+        const result=await screenshot(options);
         assert.deepEqual(defects,[],"camera, portrait poster and gauges fit their housings");
-        return screenshot(options);
+        return result;
       };
       return page;
     };
