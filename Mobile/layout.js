@@ -27,19 +27,25 @@
     var width = Math.min(viewer.clientWidth, viewer.clientHeight * 16 / 9);
     dashboard.style.width = width + 'px';
     dashboard.style.height = (width * 9 / 16) + 'px';
-    var clockScale = Math.min(1, width / 1100);
-    var clockSizes = {
-      '--family-clock-font': Math.max(10, 22 * clockScale),
-      '--family-clock-label': Math.max(6, 11 * clockScale),
-      '--family-clock-zone': Math.max(6, 10 * clockScale),
-      '--family-clock-spacing': 1.5 * clockScale,
-      '--family-clock-pad-y': 7 * clockScale,
-      '--family-clock-pad-x': 10 * clockScale,
-      '--family-clock-inset': 22 * clockScale,
-      '--family-clock-bottom': 20 * clockScale,
-      '--family-clock-gap': 24 * clockScale
+
+    var hardwareScale = Math.min(1, Math.max(0.58, width / 1100));
+    var hardwareSizes = {
+      '--family-clock-font': Math.max(11, 18 * hardwareScale),
+      '--family-clock-label': Math.max(6, 9 * hardwareScale),
+      '--family-clock-zone': Math.max(6, 8 * hardwareScale),
+      '--family-clock-spacing': Math.max(0.35, 0.8 * hardwareScale),
+      '--family-clock-pad-y': Math.max(4, 7 * hardwareScale),
+      '--family-clock-pad-x': Math.max(5, 9 * hardwareScale),
+      '--family-map-hardware-width': Math.max(118, 184 * hardwareScale),
+      '--family-map-hardware-bottom': Math.max(7, 20 * hardwareScale),
+      '--family-sequence-width': Math.max(126, 196 * hardwareScale),
+      '--family-sequence-font': Math.max(12, 20 * hardwareScale),
+      '--family-sequence-label': Math.max(6, 8 * hardwareScale),
+      '--family-sequence-pad-y': Math.max(4, 7 * hardwareScale),
+      '--family-sequence-pad-x': Math.max(5, 9 * hardwareScale)
     };
-    Object.keys(clockSizes).forEach(function (name) { dashboard.style.setProperty(name, clockSizes[name] + 'px'); });
+    Object.keys(hardwareSizes).forEach(function (name) { dashboard.style.setProperty(name, hardwareSizes[name] + 'px'); });
+
     var module = dashboard.querySelector('.flight-strip-module');
     var board = dashboard.querySelector('.flight-board');
     if (!module || !board) return;
@@ -48,7 +54,6 @@
     var boardWidth = board.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
     var boardHeight = board.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
     if (boardWidth <= 0 || boardHeight <= 0) return;
-    // 18 tiles, 14 within-field gaps, and three larger gaps between the four fields.
     var tile = Math.min(86, (boardWidth - 2) / (18 + 14 * 0.04 + 3 * 0.65), (boardHeight - 2) / 1.56);
     if (tile <= 0) return;
     var gap = tile * 0.04;
@@ -102,7 +107,6 @@
       observer.observe(document.querySelector('.display-viewer'));
       observer.observe(document.querySelector('.flight-board'));
     } else if (full && 'MutationObserver' in window) {
-      // Older iPads reveal the board after the startup animation.
       new MutationObserver(fit).observe(document.getElementById('dashboard'), {attributes: true, attributeFilter: ['hidden']});
     }
     if ('serviceWorker' in navigator && window.isSecureContext) {
