@@ -72,11 +72,8 @@
   }
 
   function isCurrentLeg(leg, state) {
-    const flight = state?.flight;
-    if (!flight) return false;
-    return String(leg?.eventId ?? "") === String(state?.eventId ?? "") &&
-      String(leg?.origin ?? "").toUpperCase() === String(flight.origin ?? "").toUpperCase() &&
-      String(leg?.destination ?? "").toUpperCase() === String(flight.destination ?? "").toUpperCase();
+    const currentEventKey = state?.sequenceHistory?.currentEventKey;
+    return Boolean(currentEventKey && leg?.eventKey === currentEventKey);
   }
 
   function render(state) {
