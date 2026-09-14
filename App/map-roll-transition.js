@@ -8,6 +8,12 @@
   const shell = root.document.getElementById("route-map-shell");
   if (!shell) return;
 
+  const audioController = root.dadRadarMapRollAudio?.createController?.({volume: 0.72}) ?? null;
+
+  root.addEventListener("pointerdown", () => {
+    void audioController?.unlock?.();
+  }, {once: true});
+
   if (!root.document.querySelector("link[data-dad-radar-map-roll]")) {
     const link = root.document.createElement("link");
     link.rel = "stylesheet";
@@ -53,6 +59,10 @@
     shell.classList.remove("map-roll-to-surface", "map-roll-to-regional", "map-roll-demo-out", "map-roll-demo-in");
   }
 
+  function startMotorSound() {
+    void audioController?.play?.();
+  }
+
   function finish(targetSurface) {
     clearMotionClasses();
     shell.classList.toggle("is-surface-registered", targetSurface);
@@ -88,6 +98,7 @@
     shell.classList.remove("is-surface-registered");
 
     void shell.offsetHeight;
+    startMotorSound();
     shell.classList.add(targetSurface ? "map-roll-to-surface" : "map-roll-to-regional");
 
     if (finishTimer) root.clearTimeout(finishTimer);
@@ -137,9 +148,11 @@
       root.setTimeout(() => transitionTo(returnTarget), api.DURATION_MS + 650);
     } else {
       clearMotionClasses();
+      startMotorSound();
       shell.classList.add("map-roll-demo-out");
       root.setTimeout(() => {
         shell.classList.remove("map-roll-demo-out");
+        startMotorSound();
         shell.classList.add("map-roll-demo-in");
         root.setTimeout(clearMotionClasses, api.DURATION_MS + 120);
       }, api.DURATION_MS + 350);
