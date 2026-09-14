@@ -15,8 +15,17 @@
   if (!root.document.querySelector("link[data-dad-radar-map-roll]")) {
     const link = root.document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "/UI/map-roll-transition.css?v=4";
+    link.href = "/UI/map-roll-transition.css?v=5";
     link.dataset.dadRadarMapRoll = "true";
+    root.document.head.appendChild(link);
+  }
+
+  /* Desktop and full-family views have physical clock/sequence modules. */
+  if (shell.querySelector(".map-information") && !root.document.querySelector("link[data-dad-radar-map-hardware]")) {
+    const link = root.document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "/UI/map-hardware-rail.css?v=1";
+    link.dataset.dadRadarMapHardware = "true";
     root.document.head.appendChild(link);
   }
 
@@ -67,8 +76,8 @@
 
   function fireRegistrationClacks() {
     audioController?.stopMotor?.();
-    audioController?.playRegisterClack?.();
-    root.setTimeout(() => audioController?.playDetentClack?.(), 135);
+    void audioController?.playRegisterClack?.();
+    root.setTimeout(() => { void audioController?.playDetentClack?.(); }, 135);
   }
 
   function finish(targetSurface, fromAnimation = false) {
@@ -76,11 +85,8 @@
     removeAnimationListener();
     if (finishTimer) root.clearTimeout(finishTimer);
     finishTimer = null;
+    audioController?.stopMotor?.();
     if (fromAnimation) fireRegistrationClacks();
-    else {
-      audioController?.stopMotor?.();
-      fireRegistrationClacks();
-    }
     clearMotionClasses();
     shell.classList.toggle("is-surface-registered", targetSurface);
     if (surfaceLayer) setHidden(surfaceLayer, !targetSurface);
@@ -192,7 +198,7 @@
   }, true);
 })(typeof window !== "undefined" ? window : globalThis, function createMapRollTransitionApi() {
   "use strict";
-  const DURATION_MS = 2800;
+  const DURATION_MS = 2550;
   const PROFILE = Object.freeze([
     [0, 0], [7, 1.5], [16, 9], [31, 32], [39, 37],
     [56, 61], [73, 82], [88, 99], [93, 100.8], [97, 99.5], [100, 100]
