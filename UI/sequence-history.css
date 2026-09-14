@@ -13,45 +13,49 @@
   vector-effect: non-scaling-stroke;
 }
 
+/* Fixed cabinet hardware mounted to the lower map bezel. */
 .sequence-mileage-badge {
   position: absolute;
-  z-index: 55;
-  left: 18px;
-  bottom: 18px;
-  min-width: 150px;
-  padding: 8px 11px 9px;
-  border: 1px solid rgba(91, 64, 36, 0.88);
-  border-radius: 3px;
-  background: linear-gradient(180deg, rgba(220, 197, 148, 0.98), rgba(188, 153, 94, 0.96));
-  color: #493222;
+  z-index: 56;
+  left: 50%;
+  bottom: 0;
+  min-width: 184px;
+  max-width: 220px;
+  padding: 7px 12px 9px;
+  border: 1px solid #72552d;
+  border-bottom: 0;
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(180deg, rgba(43,39,32,.98), rgba(21,20,17,.99));
+  color: #d6b474;
   box-shadow:
-    0 8px 12px rgba(40, 24, 14, 0.38),
-    0 2px 2px rgba(40, 24, 14, 0.35),
-    inset 0 1px 0 rgba(255, 246, 215, 0.65);
+    0 -1px 0 rgba(211,173,100,.18),
+    0 -7px 13px rgba(23,15,9,.26),
+    inset 0 1px 0 rgba(255,222,154,.08),
+    inset 0 0 12px rgba(0,0,0,.55);
   font-family: "Courier New", monospace;
   pointer-events: none;
+  transform: translateX(-50%);
   isolation: isolate;
 }
 
+/* Brass retaining plates connect the module directly to the bezel. */
 .sequence-mileage-badge::before,
 .sequence-mileage-badge::after {
   content: "";
   position: absolute;
-  bottom: -11px;
-  width: 12px;
-  height: 15px;
-  border: 1px solid #6b4d28;
-  border-radius: 2px 2px 4px 4px;
-  background: linear-gradient(90deg, #6b4a25, #c59c5a 46%, #79552d);
-  box-shadow: 0 4px 5px rgba(35, 21, 12, 0.35);
-  z-index: -1;
+  bottom: 0;
+  width: 18px;
+  height: 5px;
+  background: linear-gradient(90deg, #5d431f, #b28749 48%, #644822);
+  border-top: 1px solid rgba(218,177,99,.58);
+  box-shadow: 0 -2px 4px rgba(0,0,0,.3);
+  z-index: 2;
 }
-
-.sequence-mileage-badge::before { left: 14px; }
-.sequence-mileage-badge::after { right: 14px; }
+.sequence-mileage-badge::before { left: 9px; }
+.sequence-mileage-badge::after { right: 9px; }
 
 .sequence-mileage-badge.is-empty {
-  opacity: 0.88;
+  opacity: 0.9;
 }
 
 .sequence-mileage-label,
@@ -62,7 +66,7 @@
   letter-spacing: 1.2px;
 }
 
-.sequence-mileage-label { color: #71392d; }
+.sequence-mileage-label { color: #9d8050; }
 
 .sequence-mileage-value {
   display: block;
@@ -70,19 +74,19 @@
   font-size: 21px;
   line-height: 1.05;
   letter-spacing: 0.5px;
+  color: #e1c080;
+  text-shadow: 0 0 4px rgba(213,164,84,.14);
 }
 
 .sequence-mileage-detail {
   margin-top: 3px;
-  color: #7a4a2c;
+  color: #8f7447;
 }
 
 @media (max-width: 900px) {
   .sequence-mileage-badge {
-    left: 12px;
-    bottom: 12px;
-    min-width: 132px;
-    padding: 7px 9px 8px;
+    min-width: 160px;
+    padding: 7px 10px 8px;
   }
 
   .sequence-mileage-value { font-size: 18px; }
