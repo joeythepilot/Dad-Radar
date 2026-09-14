@@ -5,6 +5,9 @@ on:
     paths: ['.github/workflows/apply-map-repair.yml']
 permissions:
   contents: write
+defaults:
+  run:
+    shell: bash
 jobs:
   apply:
     if: github.repository == 'joeythepilot/Dad-Radar' && github.ref == 'refs/heads/agent/mobile-companion'
@@ -28,7 +31,20 @@ jobs:
           root = Path.cwd().resolve()
           edits = []
           for i in range(1, 5):
-              edits.extend(json.loads(Path(f'scripts/.map-repair-{i}.json').read_text())['edits'])
+              raw = Path(f'scripts/.map-repair-{i}.json').read_text()
+              # Repair only invalid JSON escaping introduced in text transfer.
+              # Every resulting source file must still match its tested SHA256.
+              for attempt in range(20):
+                  try:
+                      payload = json.loads(raw)
+                      break
+                  except json.JSONDecodeError as error:
+                      if 'Invalid' not in error.msg or 'escape' not in error.msg:
+                          raise
+                      raw = raw[:error.pos] + chr(92) + raw[error.pos:]
+              else:
+                  raise RuntimeError('Invalid repair payload')
+              edits.extend(payload['edits'])
           seen = set()
           pending = []
           for edit in edits:
@@ -42,8 +58,12 @@ jobs:
                   assert 0 <= start <= end <= len(lines), 'Invalid edit range'
                   lines[start:end] = replacement.splitlines(keepends=True)
               result = ''.join(lines).encode('utf-8')
+              if edit['path'] == 'scripts/build-browser.js':
+                  result = result.replace(b'.join("' + bytes([10]) + b'")', b'.join("' + bytes([92, 110]) + b'")')
               digest = hashlib.sha256(result).hexdigest()
-              assert digest == edit['after'], 'Payload mismatch: ' + edit['path'] + ' got ' + digest
+              if digest != edit['after']:
+                  Path('/tmp/map-repair-proof/mismatched-source.txt').write_bytes(result)
+                  raise AssertionError('Payload mismatch: ' + edit['path'] + ' got ' + digest)
               pending.append((path, result))
           for path, result in pending:
               path.parent.mkdir(parents=True, exist_ok=True)
