@@ -23,6 +23,16 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
+      - name: Keep reproducible browser source before visual tests
+        run: |
+          mkdir -p artifacts/map-source
+          git rev-parse HEAD > artifacts/map-source/commit.txt
+          tar -czf artifacts/map-source/browser-source.tar.gz App UI Mobile scripts server index.html
+      - uses: actions/upload-artifact@v4
+        with:
+          name: map-source-${{ github.sha }}
+          path: artifacts/map-source/
+          retention-days: 3
       - name: Browser geometry and transport regression
         run: |
           npm install --no-save --package-lock=false playwright@1.51.1
