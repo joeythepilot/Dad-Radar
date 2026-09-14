@@ -6,6 +6,34 @@
   const key = e => e ? [e.id, e.origin, e.destination, e.flightNumber, e.carrierCode, e.times?.startUtc || e.startUtc].join('|') : null;
   const text = (id, value) => { $(id).textContent = value; };
   let dutySignature = '';
+
+  function ensureSequenceMileage() {
+    let node = $('sequence-mileage');
+    if (node) return node;
+    node = document.createElement('span');
+    node.id = 'sequence-mileage';
+    node.className = 'sequence-mobile-mileage';
+    node.hidden = true;
+    const freshness = document.querySelector('.freshness');
+    freshness?.insertBefore(node, $('freshness'));
+    return node;
+  }
+
+  function renderSequenceMileage() {
+    const node = ensureSequenceMileage();
+    if (!node) return;
+    const history = state?.sequenceHistory;
+    const legs = Array.isArray(history?.legs) ? history.legs : [];
+    if (!legs.length) {
+      node.hidden = true;
+      return;
+    }
+    const miles = Number(history.totalDistanceNm);
+    const completed = Number(history.completedLegCount) || 0;
+    node.textContent = `TRIP ${Number.isFinite(miles) ? Math.round(miles).toLocaleString('en-US') : '0'} NM · ${legs.length} ${legs.length === 1 ? 'LEG' : 'LEGS'}${completed ? ` · ${completed} DONE` : ''}`;
+    node.hidden = false;
+  }
+
   function renderDuty(model) {
     const list = $('duty-entries');
     const rowHeight = parseFloat(getComputedStyle(list).getPropertyValue('--duty-row-height')) || 23;
@@ -58,6 +86,7 @@
       node.setAttribute('aria-label',value);
       node.replaceChildren(...Array.from(value || '   ',character=>{const tile=document.createElement('span');tile.className='flap-tile';tile.setAttribute('aria-hidden','true');tile.textContent=character;return tile;}));
     }
+    renderSequenceMileage();
     renderDuty(model);
   }
   function resolved(detail) {
@@ -98,5 +127,21 @@
   if ('ResizeObserver' in window) new ResizeObserver(render).observe($('duty-entries'));
   else window.addEventListener('resize',render);
   if('serviceWorker' in navigator && window.isSecureContext) navigator.serviceWorker.register('/Mobile/sw.js',{scope:'/mobile'}).catch(()=>{});
+
+  // Route map is a module. Load enhancements after the window load event so its
+  // visual-state listener is registered first; the descent controller can then
+  // apply the final arrival framing without creating a second provider poller.
+  window.addEventListener('load', () => {
+    const loadScript = src => new Promise(resolve => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.onload = resolve;
+      script.onerror = resolve;
+      document.body.appendChild(script);
+    });
+    loadScript('/App/descent-camera.js?v=1')
+      .then(() => loadScript('/App/sequence-history-map.js?v=2'));
+  });
+
   startCalendarStateController();render();
 })();
