@@ -10,9 +10,9 @@ concurrency:
   group: map-hardware-beta-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  verify:
-    runs-on: macos-latest
-    timeout-minutes: 15
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
         with:
@@ -22,7 +22,35 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
-      - run: npm test
+      - name: Complete application regression suite
+        shell: bash
+        run: |
+          mkdir -p artifacts/map-regression
+          npm test 2>&1 | tee artifacts/map-regression/tests.log
+      - name: Record source checkpoint
+        if: always()
+        run: |
+          mkdir -p artifacts/map-regression
+          git rev-parse HEAD > artifacts/map-regression/commit.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: map-regression-${{ github.sha }}
+          path: artifacts/map-regression/
+          retention-days: 7
+  browser:
+    runs-on: macos-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build:browser
       - name: Browser geometry and transport regression on macOS
         shell: bash
         run: |
