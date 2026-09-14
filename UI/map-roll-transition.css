@@ -1,6 +1,4 @@
-.route-map-shell {
-  --map-roll-duration: 2800ms;
-}
+.route-map-shell { --map-roll-duration: 2800ms; }
 
 .route-map-svg,
 .airport-surface-layer,
@@ -9,8 +7,6 @@
   backface-visibility: hidden;
 }
 
-/* When the airport chart is fully registered, the regional information strip
-   has physically rolled out with the regional map. */
 .route-map-shell.is-surface-registered .map-information {
   opacity: 0;
   pointer-events: none;
@@ -20,21 +16,16 @@
 .route-map-shell.map-roll-to-surface .map-information {
   animation: map-roll-regional-up var(--map-roll-duration) linear both;
 }
-
 .route-map-shell.map-roll-to-surface .airport-surface-layer {
   animation: map-roll-surface-up var(--map-roll-duration) linear both;
 }
-
 .route-map-shell.map-roll-to-regional .route-map-svg,
 .route-map-shell.map-roll-to-regional .map-information {
   animation: map-roll-regional-down var(--map-roll-duration) linear both;
 }
-
 .route-map-shell.map-roll-to-regional .airport-surface-layer {
   animation: map-roll-surface-down var(--map-roll-duration) linear both;
 }
-
-/* Diagnostic fallback when no airport chart has ever been loaded. */
 .route-map-shell.map-roll-demo-out .route-map-svg,
 .route-map-shell.map-roll-demo-out .map-information {
   animation: map-roll-regional-up var(--map-roll-duration) linear both;
@@ -44,11 +35,6 @@
   animation: map-roll-regional-down var(--map-roll-duration) linear both;
 }
 
-/*
-  These are deliberately not smooth easing curves. The stops represent an
-  elderly motor taking up slack, pulling steadily, hesitating under load,
-  then overshooting and correcting into the mechanical registration detent.
-*/
 @keyframes map-roll-regional-up {
   0%   { transform: translate3d(0, 0%, 0); filter: blur(0); }
   7%   { transform: translate3d(.3px, -1.5%, 0); filter: blur(.25px); }
@@ -77,8 +63,6 @@
   100% { transform: translate3d(0, 0%, 0); filter: blur(0); }
 }
 
-/* The lower reel has slightly different tension, so returning to the regional
-   map is intentionally not the exact animation played backward. */
 @keyframes map-roll-surface-down {
   0%   { transform: translate3d(0, 0%, 0); filter: blur(0); }
   9%   { transform: translate3d(-.3px, 2%, 0); filter: blur(.2px); }
@@ -105,18 +89,26 @@
   100% { transform: translate3d(0, 0%, 0); filter: blur(0); }
 }
 
-/* Subtle fixed shadows imply rollers just beyond the visible aperture. */
-.route-map-shell .map-roll-edge-shadow {
+.map-roll-edge-shadow {
   position: absolute;
   z-index: 39;
   left: 0;
   right: 0;
-  height: 16px;
+  height: 18px;
   pointer-events: none;
+  opacity: .75;
+}
+.map-roll-edge-shadow.is-top {
+  top: 0;
+  background: linear-gradient(to bottom, rgba(24,16,10,.72), rgba(24,16,10,.18), transparent);
+  box-shadow: inset 0 2px 2px rgba(0,0,0,.4);
+}
+.map-roll-edge-shadow.is-bottom {
+  bottom: 0;
+  background: linear-gradient(to top, rgba(24,16,10,.72), rgba(24,16,10,.18), transparent);
+  box-shadow: inset 0 -2px 2px rgba(0,0,0,.4);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .route-map-shell {
-    --map-roll-duration: 1ms;
-  }
+  .route-map-shell { --map-roll-duration: 1ms; }
 }
