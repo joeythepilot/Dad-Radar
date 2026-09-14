@@ -11,7 +11,7 @@
   if (!root.document.querySelector("link[data-dad-radar-map-roll]")) {
     const link = root.document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "/UI/map-roll-transition.css?v=1";
+    link.href = "/UI/map-roll-transition.css?v=2";
     link.dataset.dadRadarMapRoll = "true";
     root.document.head.appendChild(link);
   }
@@ -23,6 +23,13 @@
     shadow.setAttribute("aria-hidden", "true");
     shell.appendChild(shadow);
   });
+
+  if (!shell.querySelector(".map-roll-splice")) {
+    const splice = root.document.createElement("div");
+    splice.className = "map-roll-splice";
+    splice.setAttribute("aria-hidden", "true");
+    shell.appendChild(splice);
+  }
 
   let surfaceLayer = null;
   let surfaceObserver = null;
@@ -93,9 +100,6 @@
     surfaceLayer = layer;
     const requestedSurface = !layer.hidden;
 
-    // The surface layer is born visible on its first valid airport position.
-    // Treat that as a request, not as an already-registered mechanical state,
-    // so the first landing after boot receives the same roll cycle as every other.
     currentSurface = false;
     shell.classList.remove("is-surface-registered");
 
