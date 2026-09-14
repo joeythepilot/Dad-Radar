@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="325" viewBox="0 0 1200 325">
+  <defs>
+    <linearGradient id="enamel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#242019"/>
+      <stop offset="0.2" stop-color="#0e0d0b"/>
+      <stop offset="0.84" stop-color="#171512"/>
+      <stop offset="1" stop-color="#27231e"/>
+    </linearGradient>
+    <linearGradient id="brass" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#624522"/>
+      <stop offset="0.18" stop-color="#d2aa62"/>
+      <stop offset="0.5" stop-color="#7a562d"/>
+      <stop offset="0.82" stop-color="#c49a55"/>
+      <stop offset="1" stop-color="#6d4d28"/>
+    </linearGradient>
+    <filter id="grain" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="2" seed="37" result="n"/>
+      <feColorMatrix in="n" type="saturate" values="0" result="g"/>
+      <feComponentTransfer in="g"><feFuncA type="linear" slope="0.085"/></feComponentTransfer>
+    </filter>
+    <radialGradient id="rivet" cx="35%" cy="28%" r="70%">
+      <stop offset="0" stop-color="#dac083"/><stop offset="0.28" stop-color="#8f6c3d"/><stop offset="1" stop-color="#382916"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="325" fill="url(#enamel)"/>
+  <rect width="1200" height="325" filter="url(#grain)" opacity=".72"/>
+  <rect width="1200" height="29" fill="url(#brass)"/>
+  <rect y="27" width="1200" height="2" fill="#ead3a0" opacity=".55"/>
+  <rect width="1200" height="3" fill="#312315" opacity=".9"/>
+  <g fill="url(#rivet)" stroke="#17110a" stroke-width="1.2">
+    <circle cx="25" cy="15" r="5"/><circle cx="125" cy="15" r="5"/><circle cx="225" cy="15" r="5"/>
+    <circle cx="325" cy="15" r="5"/><circle cx="425" cy="15" r="5"/><circle cx="525" cy="15" r="5"/>
+    <circle cx="625" cy="15" r="5"/><circle cx="725" cy="15" r="5"/><circle cx="825" cy="15" r="5"/>
+    <circle cx="925" cy="15" r="5"/><circle cx="1025" cy="15" r="5"/><circle cx="1125" cy="15" r="5"/>
+  </g>
+  <path d="M0 58H1200M0 112H1200M0 166H1200M0 220H1200M0 274H1200" stroke="#706454" stroke-width="1" opacity=".22"/>
+</svg>
