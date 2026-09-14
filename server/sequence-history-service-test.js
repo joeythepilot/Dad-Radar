@@ -3,6 +3,7 @@
 const assert = require("node:assert/strict");
 const {
   createSequenceHistoryService,
+  eventKey,
   isWorkFlight
 } = require("./sequence-history-service");
 
@@ -62,6 +63,7 @@ let summary = service.update(resolved(first, [
   }
 ]));
 assert.equal(summary.legCount, 1);
+assert.equal(summary.currentEventKey, eventKey(first));
 assert.ok(summary.totalDistanceNm > 50);
 
 now += 2 * 3600000;
@@ -73,6 +75,14 @@ summary = service.update(resolved(first, [
   }
 ], "ARRIVED"));
 assert.equal(summary.completedLegCount, 1);
+
+summary = service.update({
+  event: {kind: "layover", airport: "BMI"},
+  mode: "LAYOVER",
+  state: {}
+});
+assert.equal(summary.currentEventKey, null);
+assert.equal(summary.legCount, 1, "Layover preserves completed trip history.");
 
 const deadhead = event("202", "BMI", "ORD", "deadhead");
 now += 3 * 3600000;
@@ -90,6 +100,7 @@ summary = service.update(resolved(deadhead, [
 ]));
 assert.equal(summary.legCount, 2);
 assert.equal(summary.legs[1].isDeadhead, true);
+assert.equal(summary.currentEventKey, eventKey(deadhead));
 
 const commute = event("303", "AVL", "ORD", "commute");
 summary = service.update(resolved(commute, [
@@ -97,6 +108,7 @@ summary = service.update(resolved(commute, [
   {latitude: 41.9, longitude: -87.9}
 ]));
 assert.equal(summary.legCount, 2, "Personal commute must be excluded.");
+assert.equal(summary.currentEventKey, null);
 
 const cancelled = {...event("404", "ORD", "TVC"), status: "cancelled"};
 summary = service.update(resolved(cancelled, [
@@ -105,7 +117,6 @@ summary = service.update(resolved(cancelled, [
 ]));
 assert.equal(summary.legCount, 2, "Cancelled plans must not become flown history.");
 
-// Same Calendar id but changed route/time is a separate assigned leg identity.
 const reassigned = {
   ...deadhead,
   origin: "ORD",
