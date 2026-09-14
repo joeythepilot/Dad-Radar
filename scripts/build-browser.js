@@ -76,6 +76,7 @@ const combinedSource = [
       `\n/* Source: ${relativePath} */\n${readSource(relativePath)}`
   ),
   `\n/* Source: App/route-map.js (module scope preserved) */\n(function initializeDadRadarRouteMap() {\n${readSource("App/route-map.js")}\n})();`,
+  `\n/* Source: App/descent-camera.js */\n${readSource("App/descent-camera.js")}`,
   `\n/* Source: App/sequence-history-map.js */\n${readSource("App/sequence-history-map.js")}`
 ].join("\n");
 
