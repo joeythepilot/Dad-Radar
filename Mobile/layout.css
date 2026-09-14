@@ -18,7 +18,7 @@ html[data-family-full] .flap-route-section > .flap-cell + .flap-cell { margin-le
 html[data-family-full] .flap-character { width: var(--flap-width) !important; min-width: var(--flap-width) !important; max-width: var(--flap-width) !important; height: var(--flap-height) !important; min-height: var(--flap-height) !important; max-height: var(--flap-height) !important; flex: 0 0 var(--flap-width) !important; font-size: var(--family-flap-font-size) !important; border-radius: var(--family-flap-radius) !important; }
 html[data-family-full] .flap-character + .flap-character { margin-left: var(--flap-gap) !important; }
 
-/* The full-family view shares the same physical map-hardware model as Unit 001. */
+/* Full-family mode keeps the exact same physical bezel mounts as Unit 001. */
 html[data-family-full] .vintage-map-panel .map-information { inset: 0 !important; }
 html[data-family-full] .vintage-map-panel .clock-block,
 html[data-family-full] .vintage-map-panel .eta-block {
@@ -28,13 +28,20 @@ html[data-family-full] .vintage-map-panel .eta-block {
   padding: var(--family-clock-pad-y, 6px) var(--family-clock-pad-x, 8px) !important;
   letter-spacing: var(--family-clock-spacing, .5px) !important;
 }
-html[data-family-full] .vintage-map-panel .clock-block { left: 0 !important; right: auto !important; }
-html[data-family-full] .vintage-map-panel .eta-block { right: 0 !important; left: auto !important; }
+html[data-family-full] .vintage-map-panel .clock-block {
+  left: var(--family-hardware-side-inset, 10px) !important;
+  right: auto !important;
+}
+html[data-family-full] .vintage-map-panel .eta-block {
+  right: var(--family-hardware-side-inset, 10px) !important;
+  left: auto !important;
+}
 html[data-family-full] .vintage-map-panel .clock-value,
 html[data-family-full] .vintage-map-panel .eta-value {
   max-width: 100% !important;
   overflow: hidden !important;
   white-space: nowrap !important;
+  text-overflow: clip !important;
   font-size: var(--family-clock-font, 15px) !important;
 }
 html[data-family-full] .vintage-map-panel .clock-block .small-label,
@@ -44,7 +51,7 @@ html[data-family-full] .vintage-map-panel .eta-zone { font-size: var(--family-cl
 html[data-family-full] .sequence-mileage-badge {
   width: var(--family-sequence-width, 166px) !important;
   max-width: 34% !important;
-  bottom: 0 !important;
+  bottom: var(--family-hardware-bottom, 8px) !important;
   padding: var(--family-sequence-pad-y, 6px) var(--family-sequence-pad-x, 8px) !important;
 }
 html[data-family-full] .sequence-mileage-value { font-size: var(--family-sequence-font, 16px) !important; }
