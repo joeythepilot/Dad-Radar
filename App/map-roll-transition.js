@@ -11,7 +11,7 @@
   if (!root.document.querySelector("link[data-dad-radar-map-roll]")) {
     const link = root.document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "/UI/map-roll-transition.css?v=7";
+    link.href = "/UI/map-roll-transition.css?v=8-clock-rods";
     link.dataset.dadRadarMapRoll = "true";
     root.document.head.appendChild(link);
   }
@@ -21,6 +21,20 @@
     parent.appendChild(node);
     return node;
   }
+  // Use the supplied artwork, not painted CSS brackets. The housings and their
+  // existing positions are unchanged; each shaft fills only the gap below it.
+  [".clock-block", ".eta-block"].forEach(selector => {
+    const housing = shell.querySelector(selector);
+    if (!housing || housing.querySelector(".clock-support-rod")) return;
+    const rod = root.document.createElement("img");
+    rod.className = "clock-support-rod";
+    rod.src = "/assets/hardware/brass-clock-rod.png?v=1";
+    rod.alt = "";
+    rod.setAttribute("aria-hidden", "true");
+    rod.setAttribute("draggable", "false");
+    housing.appendChild(rod);
+  });
+
   // Both sheets move on one HTML transport, in the same CSS-pixel coordinate system.
   const transport = element("map-roll-transport", shell);
   const regionalSheet = element("map-roll-regional-sheet", transport);

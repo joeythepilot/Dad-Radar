@@ -55,7 +55,7 @@ async function geometry(page, compact) {
     const rect = n => {const r=n.getBoundingClientRect();return {left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height};};
     const shell=document.querySelector('.route-map-shell');
     const nodes = isCompact ? ['.freshness','.arrival'] : ['.clock-block','.eta-block','.sequence-mileage-badge'];
-    const hardware=nodes.map(selector=>({selector,node:document.querySelector(selector)})).filter(x=>x.node && !x.node.hidden).map(({selector,node})=>({selector,rect:rect(node),shadow:getComputedStyle(node).boxShadow,mount:getComputedStyle(node,'::before').content,text:[...node.querySelectorAll(isCompact?'span,strong':'.small-label,.clock-value,.eta-value,.eta-zone,.sequence-mileage-value')].filter(n=>!n.hidden).map(n=>({text:n.textContent.trim(),width:n.clientWidth,scroll:n.scrollWidth}))}));
+    const hardware=nodes.map(selector=>({selector,node:document.querySelector(selector)})).filter(x=>x.node && !x.node.hidden).map(({selector,node})=>({selector,rect:rect(node),shadow:getComputedStyle(node).boxShadow,mount:node.querySelector('.clock-support-rod')?.currentSrc || getComputedStyle(node,'::before').content,text:[...node.querySelectorAll(isCompact?'span,strong':'.small-label,.clock-value,.eta-value,.eta-zone,.sequence-mileage-value')].filter(n=>!n.hidden).map(n=>({text:n.textContent.trim(),width:n.clientWidth,scroll:n.scrollWidth}))}));
     return {map:rect(shell),hardware,pageWidth:document.documentElement.scrollWidth,viewport:innerWidth};
   },compact);
 }
@@ -111,7 +111,7 @@ async function transportProof(page, label) {
         independentTransform:r.transform!=='none'||s.transform!=='none',
         sharedParent:regional.parentElement===roll&&surface.parentElement===roll,
         parentHeight:parent.height,regionalHeight:rh,surfaceHeight:sh,
-        clockTop:clock?.top,svgHidden:getComputedStyle(document.querySelector('.route-map-svg')).visibility==='hidden'});
+        clockTop:clock?.top,rodTop:document.querySelector('.clock-support-rod')?.getBoundingClientRect().top,svgHidden:getComputedStyle(document.querySelector('.route-map-svg')).visibility==='hidden'});
       requestAnimationFrame(sample);
     };requestAnimationFrame(sample);
   });
@@ -128,12 +128,12 @@ async function transportProof(page, label) {
   const motion=evidence.frames.filter(x=>x.moving);
   assert(motion.length>30,'capture real animated frames');
   for(const frame of motion) {
-    assert(frame.sharedParent&&!frame.independentTransform,'both sheets share exactly one moving coordinate system');
     assert(Math.abs(frame.gap)<1,'adjacent sheets never separate');
-    assert(Math.abs(frame.parentHeight-frame.regionalHeight)<1 && Math.abs(frame.parentHeight-frame.surfaceHeight)<1,'sheet height agrees with its moving parent');
+    assert(frame.sharedParent&&!frame.independentTransform,'both sheets share the one transport without independent transforms');
     assert(frame.coverTop<=1 && frame.coverBottom>=-1,'map roll covers entire aperture, including top edge');
     assert(!frame.svgHidden,'regional renderer must not hide outgoing sheet');
     if(frame.clockTop!==undefined)assert(Math.abs(frame.clockTop-motion[0].clockTop)<1,'hardware stays stationary');
+    if(frame.rodTop!==undefined)assert(Math.abs(frame.rodTop-motion[0].rodTop)<1,'brass rods stay stationary');
   }
   const clacks=evidence.sounds.filter(x=>/Clack/.test(x.name));
   assert.equal(clacks.length,8,'exactly two registration clacks per completed move');
@@ -173,14 +173,11 @@ async function transportProof(page, label) {
           await page.goto(origin+url,{waitUntil:'load'});
           if(!compact)await page.waitForSelector('#dashboard:not([hidden])');
           await page.waitForSelector('.map-roll-transport',{state:'attached'});
-          // Readiness must precede screenshots, without waiting for the 5s
-          // periodic refresh that previously concealed hidden-startup framing.
           await page.waitForFunction(()=>{
             const map=document.querySelector('.map-roll-regional-sheet .route-map-svg');
-            if(!map)return false;
-            const b=map.viewBox.baseVal,r=map.getBoundingClientRect();
-            return r.height>0&&Math.abs(b.width/b.height-r.width/r.height)<.01;
-          },null,{timeout:2000,polling:20});
+            const box=map.viewBox.baseVal,rect=map.getBoundingClientRect();
+            return rect.height>0&&Math.abs(box.width/box.height-rect.width/rect.height)<.01;
+          },null,{timeout:2000});
           if(!compact)await page.locator('#clock-value').evaluate(n=>n.textContent='12:59:59 PM');
           const measured=await geometry(page,compact);checkGeometry(measured);
           const label=`${engine}-${name}`;

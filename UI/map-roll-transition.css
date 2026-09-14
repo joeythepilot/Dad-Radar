@@ -37,19 +37,20 @@
   right: var(--map-hardware-inset) !important; left: auto !important;
   box-shadow: -8px 9px 16px #120b077a, -2px 3px 5px #120b0757, inset 0 1px 0 #ffde9a12, inset 0 0 14px #0009;
 }
-.route-map-shell .clock-block::before, .route-map-shell .eta-block::before {
-  content: ""; position: absolute; top: 50%; width: calc(var(--map-hardware-inset) + 2px); height: 18px; margin-top: -9px;
-  background: linear-gradient(180deg,#a98245,#6a4a25 45%,#3d2b18); border: 1px solid #dab1638f;
-  box-shadow: 0 5px 8px #0007, inset 0 1px 0 #ffe09f33; z-index: -1;
-}
-.route-map-shell .clock-block::before { right: 100%; border-left: 0; }
-.route-map-shell .eta-block::before { left: 100%; border-right: 0; }
+/* The side arms and screw heads are retired. Only supplied raster art mounts
+   these clocks; no generated metal, collars, caps, or CSS-painted hardware. */
+.route-map-shell .clock-block::before, .route-map-shell .eta-block::before,
 .route-map-shell .clock-block::after, .route-map-shell .eta-block::after {
-  content: ""; position: absolute; top: calc(50% - 3px); width: 6px; height: 6px; border-radius: 50%;
-  background: linear-gradient(135deg,#aa8b53 40%,#302618 42%,#302618 55%,#72562c 58%); box-shadow: 0 1px 2px #000a;
+  content: none !important; display: none !important;
 }
-.route-map-shell .clock-block::after { left: -8px; }
-.route-map-shell .eta-block::after { right: -8px; }
+.vintage-map-panel .route-map-shell .clock-support-rod {
+  position: absolute; z-index: -1; pointer-events: none; user-select: none;
+  left: 50%; top: calc(100% - 1px); transform: translateX(-50%);
+  width: 4px; min-width: 4px; max-width: 4px;
+  height: calc(var(--map-clock-bottom) + 4px); max-height: none;
+  display: block; object-fit: fill; padding: 0; margin: 0;
+  border: 0; border-radius: 0; background: none; box-shadow: none;
+}
 .vintage-map-panel .route-map-shell .clock-block .small-label,
 .vintage-map-panel .route-map-shell .eta-block .small-label,
 .vintage-map-panel .route-map-shell .clock-block .eta-zone,

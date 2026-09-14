@@ -1,0 +1,14 @@
+{
+  "source_file": "steampunk_brass_rod_hardware_set.png",
+  "source_sha256": "61df1200cb99ac297930824aeb3611aed377b896219c32fe50e6c1b0c205885f",
+  "source_size": [1448, 1086],
+  "design": "fourth rod from left, plain shaft only",
+  "crop_box_xyxy": [782, 390, 827, 630],
+  "operation": "crop then proportional LANCZOS downsample; no painting or new generation",
+  "asset": "brass-clock-rod.png",
+  "asset_size": [12, 64],
+  "asset_sha256": "07e865f925ceffa6ba1c4a22c5e9268deb2f2ca2fe8a3aa41a99808c0626a5ce",
+  "display_width_css_px": 4,
+  "visible_metal_width_approx_css_px": 3,
+  "placement": "One shaft below each existing clock. Ends overlap the housing and lower bezel. Existing housing geometry and the sequence counter are unchanged."
+}

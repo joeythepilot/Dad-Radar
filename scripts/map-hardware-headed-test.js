@@ -4,6 +4,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const engines = require("playwright");
 const {checkFamilyDuty} = require("./family-duty-browser-proof");
+const {checkClockRods} = require("./clock-rods-browser-proof");
 const output = path.resolve(__dirname,"../artifacts/map-hardware");
 fs.mkdirSync(output,{recursive:true});
 for (const name of ["chromium","webkit"]) {
@@ -29,6 +30,7 @@ for (const name of ["chromium","webkit"]) {
       await page.bringToFront();
       const screenshot = page.screenshot.bind(page);
       page.screenshot = async options => {
+        await checkClockRods(page);
         await checkFamilyDuty(page, options?.path);
         const defects = await page.evaluate(() => {
           const defects=[];
