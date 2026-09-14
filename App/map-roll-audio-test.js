@@ -20,9 +20,16 @@ const fakeAudio = {
 
 (async () => {
   const controller = audioApi.createController({
-    source: "/test.mp3",
+    source: "/test.b64",
     volume: 0.5,
-    audioFactory: () => fakeAudio
+    audioFactory: () => fakeAudio,
+    fetch: async () => ({ok: true, text: async () => "AA=="}),
+    atob: () => "\0",
+    Blob: class FakeBlob {},
+    URL: {
+      createObjectURL: () => "blob:test",
+      revokeObjectURL() {}
+    }
   });
 
   assert.equal(await controller.unlock(), true);
@@ -34,6 +41,7 @@ const fakeAudio = {
 
   controller.stop();
   assert.equal(fakeAudio.paused, true);
+  controller.destroy();
   console.log("Map roll audio tests passed.");
 })().catch(error => {
   console.error(error);
