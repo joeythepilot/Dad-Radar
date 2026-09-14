@@ -2,7 +2,7 @@ name: Map hardware beta verification
 on:
   push:
     branches: [agent/mobile-companion, agent/map-roll-verification]
-    paths: ['App/**', 'UI/**', 'Mobile/**', 'scripts/**', 'index.html', 'package*.json', '.github/workflows/map-hardware-beta.yml']
+    paths: ['App/**', 'UI/**', 'Mobile/**', 'assets/hardware/**', 'scripts/**', 'index.html', 'package*.json', '.github/workflows/map-hardware-beta.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -17,6 +17,17 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - name: Preserve exact source for local rendering
+        run: |
+          mkdir -p /tmp/dad-radar-beta-source
+          git archive --format=tar.gz -o /tmp/dad-radar-beta-source/source.tar.gz HEAD
+          git rev-parse HEAD > /tmp/dad-radar-beta-source/commit.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: beta-source-${{ github.sha }}
+          path: /tmp/dad-radar-beta-source/
+          retention-days: 3
+          compression-level: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
