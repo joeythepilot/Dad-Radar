@@ -29,19 +29,23 @@ const fakeAudio = {
     URL: {
       createObjectURL: () => "blob:test",
       revokeObjectURL() {}
-    }
+    },
+    AudioContext: null
   });
 
   assert.equal(await controller.unlock(), true);
-  assert.equal(await controller.play(), true);
+  assert.equal(await controller.playMotor(), true);
   assert.equal(played, 2);
   assert.ok(paused >= 2);
   assert.equal(currentTime, 0);
   assert.equal(volume, 0.5);
+  assert.equal(controller.playRegisterClack(), false);
+  assert.equal(controller.playDetentClack(), false);
 
-  controller.stop();
+  controller.stopMotor();
   assert.equal(fakeAudio.paused, true);
   controller.destroy();
+  assert.equal(audioApi.MOTOR_CUTOFF_MS, 2480);
   console.log("Map roll audio tests passed.");
 })().catch(error => {
   console.error(error);
