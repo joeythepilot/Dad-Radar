@@ -91,16 +91,24 @@
     if (!layer || layer === surfaceLayer) return;
     if (surfaceObserver) surfaceObserver.disconnect();
     surfaceLayer = layer;
-    currentSurface = !layer.hidden;
-    shell.classList.toggle("is-surface-registered", currentSurface);
+    const requestedSurface = !layer.hidden;
+
+    // The surface layer is born visible on its first valid airport position.
+    // Treat that as a request, not as an already-registered mechanical state,
+    // so the first landing after boot receives the same roll cycle as every other.
+    currentSurface = false;
+    shell.classList.remove("is-surface-registered");
 
     surfaceObserver = new root.MutationObserver(() => {
       if (suppressMutation) return;
-      const requestedSurface = !surfaceLayer.hidden;
-      if (requestedSurface === currentSurface && !moving) return;
-      transitionTo(requestedSurface);
+      const nextSurface = !surfaceLayer.hidden;
+      if (nextSurface === currentSurface && !moving) return;
+      transitionTo(nextSurface);
     });
     surfaceObserver.observe(surfaceLayer, {attributes: true, attributeFilter: ["hidden"]});
+
+    if (requestedSurface) root.setTimeout(() => transitionTo(true), 0);
+    else setHidden(surfaceLayer, true);
   }
 
   function discoverSurfaceLayer() {
