@@ -7,6 +7,7 @@
 
   const shell = root.document.getElementById("route-map-shell");
   if (!shell) return;
+  shell.style.setProperty("--map-roll-duration", `${api.DURATION_MS}ms`);
 
   const audioController = root.dadRadarMapRollAudio?.createController?.({volume: 0.72}) ?? null;
 
@@ -161,7 +162,9 @@
 })(typeof window !== "undefined" ? window : globalThis, function createMapRollTransitionApi() {
   "use strict";
 
-  const DURATION_MS = 2800;
+  // The approved V3 audio's first registration clack lands at ~2.64 s.
+  // Complete travel just before it, leaving the second clack as the detent correction.
+  const DURATION_MS = 2620;
   const PROFILE = Object.freeze([
     [0, 0], [7, 1.5], [16, 9], [31, 32], [39, 37],
     [56, 61], [73, 82], [88, 99], [93, 100.8], [97, 99.5], [100, 100]
