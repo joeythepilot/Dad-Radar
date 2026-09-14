@@ -7,9 +7,8 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function createMapRollAudioApi(root) {
   "use strict";
 
-  const DEFAULT_SOURCE = "/assets/audio/dadradar-map-roll-v3-gearmotor.mp3.b64?v=1";
+  const DEFAULT_SOURCE = "/assets/audio/dadradar-map-roll-v3-gearmotor.mp3.b64?v=2";
   const DEFAULT_VOLUME = 0.72;
-  const MOTOR_CUTOFF_MS = 2480;
 
   function createController(options = {}) {
     const source = options.source || DEFAULT_SOURCE;
@@ -19,20 +18,18 @@
     const atobImpl = options.atob || root?.atob?.bind(root) || null;
     const BlobCtor = options.Blob || root?.Blob || null;
     const urlApi = options.URL || root?.URL || null;
-    const AudioContextCtor = options.AudioContext || root?.AudioContext || root?.webkitAudioContext || null;
     let audio = null;
     let objectUrl = null;
     let sourcePromise = null;
     let token = 0;
-    let motorTimer = null;
-    let context = null;
 
     function decodeBase64(text) {
       if (!atobImpl || !BlobCtor || !urlApi?.createObjectURL) return null;
       const binary = atobImpl(String(text).replace(/\s+/g, ""));
       const bytes = new Uint8Array(binary.length);
       for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
-      return urlApi.createObjectURL(new BlobCtor([bytes], {type: "audio/mpeg"}));
+      objectUrl = urlApi.createObjectURL(new BlobCtor([bytes], {type: "audio/mpeg"}));
+      return objectUrl;
     }
 
     function loadSource() {
@@ -43,10 +40,7 @@
                 if (!response.ok) throw new Error(`Map-roll audio load failed (${response.status}).`);
                 return response.text();
               })
-              .then(text => {
-                objectUrl = decodeBase64(text);
-                return objectUrl;
-              })
+              .then(decodeBase64)
               .catch(() => null)
           : Promise.resolve(source);
       }
@@ -71,21 +65,12 @@
       instance.volume = volume;
     }
 
-    function stopMotor() {
-      if (motorTimer !== null) {
-        root?.clearTimeout?.(motorTimer);
-        motorTimer = null;
-      }
-      token += 1;
-      reset(audio);
-    }
-
-    async function playMotor() {
+    async function play() {
       const instance = await ensure();
       if (!instance) return false;
-      stopMotor();
       token += 1;
       const current = token;
+      reset(instance);
       try {
         const result = instance.play();
         if (result && typeof result.then === "function") await result;
@@ -93,7 +78,6 @@
           reset(instance);
           return false;
         }
-        motorTimer = root?.setTimeout?.(() => stopMotor(), MOTOR_CUTOFF_MS) ?? null;
         return true;
       } catch (_) {
         reset(instance);
@@ -101,47 +85,11 @@
       }
     }
 
-    function ensureContext() {
-      if (!context && AudioContextCtor) {
-        try { context = new AudioContextCtor(); } catch (_) { context = null; }
-      }
-      return context;
-    }
-
-    function mechanicalClack(strength, lowHz) {
-      const ctx = ensureContext();
-      if (!ctx) return false;
-      try { if (ctx.state === "suspended") void ctx.resume(); } catch (_) {}
-      const duration = 0.16;
-      const frameCount = Math.max(1, Math.floor(ctx.sampleRate * duration));
-      const buffer = ctx.createBuffer(1, frameCount, ctx.sampleRate);
-      const data = buffer.getChannelData(0);
-      for (let index = 0; index < frameCount; index += 1) {
-        const t = index / ctx.sampleRate;
-        const noise = (Math.random() * 2 - 1) * Math.exp(-t / 0.012);
-        const body = Math.sin(2 * Math.PI * lowHz * t) * Math.exp(-t / 0.045);
-        const rattle = Math.sin(2 * Math.PI * lowHz * 0.52 * t) * Math.exp(-t / 0.075);
-        data[index] = strength * (0.64 * noise + 0.24 * body + 0.12 * rattle);
-      }
-      const sourceNode = ctx.createBufferSource();
-      const gain = ctx.createGain();
-      gain.gain.value = 0.42;
-      sourceNode.buffer = buffer;
-      sourceNode.connect(gain);
-      gain.connect(ctx.destination);
-      sourceNode.start();
-      return true;
-    }
-
-    function playRegisterClack() { return mechanicalClack(0.78, 78); }
-    function playDetentClack() { return mechanicalClack(0.52, 96); }
-
     async function unlock() {
       const instance = await ensure();
-      const ctx = ensureContext();
-      try { if (ctx?.state === "suspended") await ctx.resume(); } catch (_) {}
-      if (!instance) return Boolean(ctx);
-      stopMotor();
+      if (!instance) return false;
+      token += 1;
+      reset(instance);
       instance.volume = 0;
       try {
         const result = instance.play();
@@ -150,23 +98,26 @@
         return true;
       } catch (_) {
         reset(instance);
-        return Boolean(ctx);
+        return false;
       }
     }
 
+    function stop() {
+      token += 1;
+      reset(audio);
+    }
+
     function destroy() {
-      stopMotor();
+      stop();
       audio = null;
       if (objectUrl && urlApi?.revokeObjectURL) urlApi.revokeObjectURL(objectUrl);
       objectUrl = null;
       sourcePromise = null;
-      try { void context?.close?.(); } catch (_) {}
-      context = null;
     }
 
     void loadSource();
-    return Object.freeze({playMotor, unlock, stopMotor, playRegisterClack, playDetentClack, destroy});
+    return Object.freeze({play, unlock, stop, destroy});
   }
 
-  return Object.freeze({DEFAULT_SOURCE, DEFAULT_VOLUME, MOTOR_CUTOFF_MS, createController});
+  return Object.freeze({DEFAULT_SOURCE, DEFAULT_VOLUME, createController});
 });
