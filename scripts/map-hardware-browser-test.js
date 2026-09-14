@@ -55,7 +55,7 @@ async function geometry(page, compact) {
     const rect = n => {const r=n.getBoundingClientRect();return {left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height};};
     const shell=document.querySelector('.route-map-shell');
     const nodes = isCompact ? ['.freshness','.arrival'] : ['.clock-block','.eta-block','.sequence-mileage-badge'];
-    const hardware=nodes.map(selector=>({selector,node:document.querySelector(selector)})).filter(x=>x.node && !x.node.hidden).map(({selector,node})=>({selector,rect:rect(node),shadow:getComputedStyle(node).boxShadow,mount:node.querySelector('.clock-support-rod')?.currentSrc || getComputedStyle(node,'::before').content,text:[...node.querySelectorAll(isCompact?'span,strong':'.small-label,.clock-value,.eta-value,.eta-zone,.sequence-mileage-value')].filter(n=>!n.hidden).map(n=>({text:n.textContent.trim(),width:n.clientWidth,scroll:n.scrollWidth}))}));
+    const hardware=nodes.map(selector=>({selector,node:document.querySelector(selector)})).filter(x=>x.node && !x.node.hidden).map(({selector,node})=>({selector,rect:rect(node),shadow:getComputedStyle(node).boxShadow,mount:node.querySelector('.clock-support-rod')?.currentSrc || getComputedStyle(node,'::before').content,mountAfter:getComputedStyle(node,'::after').content,text:[...node.querySelectorAll(isCompact?'span,strong':'.small-label,.clock-value,.eta-value,.eta-zone,.sequence-mileage-value')].filter(n=>!n.hidden).map(n=>({text:n.textContent.trim(),width:n.clientWidth,scroll:n.scrollWidth}))}));
     return {map:rect(shell),hardware,pageWidth:document.documentElement.scrollWidth,viewport:innerWidth};
   },compact);
 }
@@ -66,7 +66,12 @@ function checkGeometry(data) {
     const r=hardware.rect,m=data.map;
     assert(r.left>=m.left-1 && r.right<=m.right+1 && r.top>=m.top-1 && r.bottom<=m.bottom+1,`${hardware.selector} fits chart aperture: ${JSON.stringify(data)}`);
     assert.notEqual(hardware.shadow,"none",`${hardware.selector} has a cast shadow`);
-    assert.notEqual(hardware.mount,"none",`${hardware.selector} has a mechanical attachment`);
+    if (hardware.selector === '.sequence-mileage-badge') {
+      assert.equal(hardware.mount, 'none', 'The rejected counter bracket must not return');
+      assert.equal(hardware.mountAfter, 'none', 'Do not substitute another counter attachment');
+    } else {
+      assert.notEqual(hardware.mount,"none",`${hardware.selector} has a mechanical attachment`);
+    }
     for (const text of hardware.text) assert(text.scroll<=text.width+1,`clipped text: ${JSON.stringify(text)}`);
   }
   for(let i=0;i<data.hardware.length;i++)for(let j=i+1;j<data.hardware.length;j++) {
