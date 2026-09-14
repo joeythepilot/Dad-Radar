@@ -24,10 +24,12 @@ jobs:
       - run: npm ci
       - run: npm test
       - name: Browser geometry and transport regression
+        shell: bash
         run: |
           npm install --no-save --package-lock=false playwright@1.51.1
           npx playwright install --with-deps chromium webkit
-          node scripts/map-hardware-diagnostics.js
+          mkdir -p artifacts/map-hardware
+          xvfb-run --auto-servernum node scripts/map-hardware-headed-test.js 2>&1 | tee artifacts/map-hardware/browser.log
       - name: Keep exact-SHA verification evidence
         if: always()
         run: |

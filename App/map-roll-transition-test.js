@@ -14,6 +14,7 @@ for (let i = 1; i < roll.PROFILE.length; i += 1) {
 
 const distances = roll.PROFILE.slice(1).map((point, index) => point[1] - roll.PROFILE[index][1]);
 assert(Math.max(...distances) > Math.min(...distances) * 2, "transport must not move at a constant rate");
-assert(roll.PROFILE.some(point => point[1] > 100), "transport should overshoot before final registration");
+assert(roll.PROFILE.some(point => point[1] > 100), "motor metadata preserves mechanical overshoot while CSS clamps the visible sheet");
 
+require("./map-roll-lifecycle-test");
 console.log("map-roll-transition-test: ok");
