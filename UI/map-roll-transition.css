@@ -1,104 +1,103 @@
 /* Stationary bezel hardware over two adjacent sheets on one physical roll. */
-.route-map-shell { --map-roll-duration:2800ms; --map-hardware-inset:18px; --map-clock-bottom:18px; --map-clock-width:184px; --map-sequence-width:196px; --map-clock-font:20px; --map-clock-label:9px; --map-clock-pad-x:10px; }
-.map-roll-transport { position:absolute; top:0; bottom:0; left:-2px; right:-2px; z-index:1; transform:translate3d(0,0,0); }
-.map-roll-regional-sheet,.map-roll-surface-sheet { position:absolute; left:0; width:100%; height:100%; overflow:hidden; background:#d3bd8d; }
-.map-roll-regional-sheet { top:0; }
-.map-roll-surface-sheet { top:100%; }
+.route-map-shell { --map-roll-duration: 2800ms; --map-hardware-inset: 18px; --map-clock-bottom: 18px; --map-clock-width: 184px; --map-sequence-width: 196px; --map-clock-font: 20px; --map-clock-label: 9px; --map-clock-pad-x: 10px; }
+.map-roll-transport { position: absolute; top: 0; bottom: 0; left: -2px; right: -2px; z-index: 1; transform: translate3d(0,0,0); }
+.map-roll-regional-sheet, .map-roll-surface-sheet { position: absolute; left: 0; width: 100%; height: 100%; overflow: hidden; background: #d3bd8d; }
+.map-roll-regional-sheet { top: 0; }
+.map-roll-surface-sheet { top: 100%; }
 .route-map-shell .map-roll-transport .route-map-svg,
-.route-map-shell .map-roll-transport .airport-surface-layer { top:0; right:0; bottom:0; left:0; width:100%; height:100%; transform:none !important; filter:none !important; animation:none !important; }
-.route-map-shell .map-roll-transport .route-map-svg { visibility:visible !important; }
-.route-map-shell.is-surface-registered .map-roll-transport { transform:translate3d(0,-100%,0); }
-/* Constant travel blur lets the browser cache the large map raster instead of
-   repainting nested SVG filters for every blur-radius change. Registration is sharp. */
-.route-map-shell.map-roll-to-surface .map-roll-transport { animation:map-roll-up var(--map-roll-duration) linear both; will-change:transform; filter:blur(.65px); }
-.route-map-shell.map-roll-to-regional .map-roll-transport { animation:map-roll-down var(--map-roll-duration) linear both; will-change:transform; filter:blur(.65px); }
+.route-map-shell .map-roll-transport .airport-surface-layer { top: 0; right: 0; bottom: 0; left: 0; width: 100%; height: 100%; transform: none !important; filter: none !important; animation: none !important; }
+/* The renderer still reports surface visibility; transport owns the two-sheet view. */
+.route-map-shell .map-roll-transport .route-map-svg { visibility: visible !important; }
+.route-map-shell.is-surface-registered .map-roll-transport { transform: translate3d(0,-100%,0); }
+.route-map-shell.map-roll-to-surface .map-roll-transport { animation: map-roll-up var(--map-roll-duration) linear both; will-change: transform, filter; }
+.route-map-shell.map-roll-to-regional .map-roll-transport { animation: map-roll-down var(--map-roll-duration) linear both; will-change: transform, filter; }
 
 /* Retire the old grid containing blocks, not just their painted background. */
 .vintage-map-panel .route-map-shell .map-information {
-  position:absolute; z-index:52; top:0 !important; right:0 !important; bottom:0 !important; left:0 !important;
-  display:block !important; grid-template-columns:none !important; min-height:0; gap:0 !important;
-  padding:0 !important; border:0; border-radius:0; background:transparent !important; box-shadow:none !important;
-  backdrop-filter:none !important; pointer-events:none; transform:none !important; filter:none !important; animation:none !important;
+  position: absolute; z-index: 52; top: 0 !important; right: 0 !important; bottom: 0 !important; left: 0 !important;
+  display: block !important; grid-template-columns: none !important; min-height: 0; gap: 0 !important;
+  padding: 0 !important; border: 0; border-radius: 0; background: transparent !important; box-shadow: none !important;
+  backdrop-filter: none !important; pointer-events: none; transform: none !important; filter: none !important; animation: none !important;
 }
 .vintage-map-panel .route-map-shell .clock-block,
 .vintage-map-panel .route-map-shell .eta-block {
-  position:absolute; grid-column:auto; grid-row:auto; z-index:3;
-  bottom:var(--map-clock-bottom) !important; width:var(--map-clock-width) !important; min-width:0 !important; max-width:none !important;
-  box-sizing:border-box; overflow:visible; padding:7px var(--map-clock-pad-x) 8px !important;
-  border:1px solid #72552d; border-radius:4px;
-  background:linear-gradient(180deg,#26231d,#11110f); color:#cfaa65; isolation:isolate;
+  position: absolute; grid-column: auto; grid-row: auto; z-index: 3;
+  bottom: var(--map-clock-bottom) !important; width: var(--map-clock-width) !important; min-width: 0 !important; max-width: none !important;
+  box-sizing: border-box; overflow: visible; padding: 7px var(--map-clock-pad-x) 8px !important;
+  border: 1px solid #72552d; border-radius: 4px;
+  background: linear-gradient(180deg, #26231d, #11110f); color: #cfaa65; isolation: isolate;
 }
 .vintage-map-panel .route-map-shell .clock-block {
-  left:var(--map-hardware-inset) !important; right:auto !important;
-  box-shadow:8px 9px 16px #120b077a,2px 3px 5px #120b0757,inset 0 1px 0 #ffde9a12,inset 0 0 14px #0009;
+  left: var(--map-hardware-inset) !important; right: auto !important;
+  box-shadow: 8px 9px 16px #120b077a, 2px 3px 5px #120b0757, inset 0 1px 0 #ffde9a12, inset 0 0 14px #0009;
 }
 .vintage-map-panel .route-map-shell .eta-block {
-  right:var(--map-hardware-inset) !important; left:auto !important;
-  box-shadow:-8px 9px 16px #120b077a,-2px 3px 5px #120b0757,inset 0 1px 0 #ffde9a12,inset 0 0 14px #0009;
+  right: var(--map-hardware-inset) !important; left: auto !important;
+  box-shadow: -8px 9px 16px #120b077a, -2px 3px 5px #120b0757, inset 0 1px 0 #ffde9a12, inset 0 0 14px #0009;
 }
-.route-map-shell .clock-block::before,.route-map-shell .eta-block::before {
-  content:""; position:absolute; top:50%; width:calc(var(--map-hardware-inset) + 2px); height:18px; margin-top:-9px;
-  background:linear-gradient(180deg,#a98245,#6a4a25 45%,#3d2b18); border:1px solid #dab1638f;
-  box-shadow:0 5px 8px #0007,inset 0 1px 0 #ffe09f33; z-index:-1;
+.route-map-shell .clock-block::before, .route-map-shell .eta-block::before {
+  content: ""; position: absolute; top: 50%; width: calc(var(--map-hardware-inset) + 2px); height: 18px; margin-top: -9px;
+  background: linear-gradient(180deg,#a98245,#6a4a25 45%,#3d2b18); border: 1px solid #dab1638f;
+  box-shadow: 0 5px 8px #0007, inset 0 1px 0 #ffe09f33; z-index: -1;
 }
-.route-map-shell .clock-block::before { right:100%; border-left:0; }
-.route-map-shell .eta-block::before { left:100%; border-right:0; }
-.route-map-shell .clock-block::after,.route-map-shell .eta-block::after {
-  content:""; position:absolute; top:calc(50% - 3px); width:6px; height:6px; border-radius:50%;
-  background:linear-gradient(135deg,#aa8b53 40%,#302618 42%,#302618 55%,#72562c 58%); box-shadow:0 1px 2px #000a;
+.route-map-shell .clock-block::before { right: 100%; border-left: 0; }
+.route-map-shell .eta-block::before { left: 100%; border-right: 0; }
+.route-map-shell .clock-block::after, .route-map-shell .eta-block::after {
+  content: ""; position: absolute; top: calc(50% - 3px); width: 6px; height: 6px; border-radius: 50%;
+  background: linear-gradient(135deg,#aa8b53 40%,#302618 42%,#302618 55%,#72562c 58%); box-shadow: 0 1px 2px #000a;
 }
-.route-map-shell .clock-block::after { left:-8px; }
-.route-map-shell .eta-block::after { right:-8px; }
+.route-map-shell .clock-block::after { left: -8px; }
+.route-map-shell .eta-block::after { right: -8px; }
 .vintage-map-panel .route-map-shell .clock-block .small-label,
 .vintage-map-panel .route-map-shell .eta-block .small-label,
 .vintage-map-panel .route-map-shell .clock-block .eta-zone,
 .vintage-map-panel .route-map-shell .eta-block .eta-zone,
 .vintage-map-panel .route-map-shell .clock-value,
 .vintage-map-panel .route-map-shell .eta-value {
-  display:block; max-width:100%; overflow:hidden; white-space:nowrap; text-overflow:clip;
-  letter-spacing:.4px !important; text-shadow:0 0 3px #d5a4541a;
+  display: block; max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: clip;
+  letter-spacing: .4px !important; text-shadow: 0 0 3px #d5a4541a;
 }
 .vintage-map-panel .route-map-shell .clock-block .small-label,
-.vintage-map-panel .route-map-shell .eta-block .small-label { font-size:var(--map-clock-label) !important; color:#b59a67 !important; }
+.vintage-map-panel .route-map-shell .eta-block .small-label { font-size: var(--map-clock-label) !important; color: #b59a67 !important; }
 .vintage-map-panel .route-map-shell .clock-value,
-.vintage-map-panel .route-map-shell .eta-value { font-size:var(--map-clock-font) !important; line-height:1.1 !important; color:#d6b474 !important; }
+.vintage-map-panel .route-map-shell .eta-value { font-size: var(--map-clock-font) !important; line-height: 1.1 !important; color: #d6b474 !important; }
 .vintage-map-panel .route-map-shell .clock-block .eta-zone,
-.vintage-map-panel .route-map-shell .eta-block .eta-zone { font-size:var(--map-clock-label) !important; color:#a68d60 !important; }
+.vintage-map-panel .route-map-shell .eta-block .eta-zone { font-size: var(--map-clock-label) !important; color: #a68d60 !important; }
 
 .map-roll-splice {
-  position:absolute; z-index:4; left:0; right:0; top:100%; height:14px; margin-top:-7px; opacity:0; pointer-events:none;
-  background:repeating-linear-gradient(90deg,#4e37201f 0 7px,#f5e1b729 7px 10px,#3a28182e 10px 15px),linear-gradient(180deg,transparent,#45301b42 16%,#5a4025bd 34%,#dcc291b3 48%,#49311bd1 59%,#301f1238 82%,transparent);
-  box-shadow:0 -2px 4px #2d1c0f38,0 3px 5px #2d1c0f57;
+  position: absolute; z-index: 4; left: 0; right: 0; top: 100%; height: 14px; margin-top: -7px; opacity: 0; pointer-events: none;
+  background: repeating-linear-gradient(90deg,#4e37201f 0 7px,#f5e1b729 7px 10px,#3a28182e 10px 15px),linear-gradient(180deg,transparent,#45301b42 16%,#5a4025bd 34%,#dcc291b3 48%,#49311bd1 59%,#301f1238 82%,transparent);
+  box-shadow: 0 -2px 4px #2d1c0f38,0 3px 5px #2d1c0f57;
 }
-.map-roll-splice::after { content:""; position:absolute; left:0; right:0; top:5px; height:3px; opacity:.7; background:repeating-linear-gradient(90deg,transparent 0 13px,#3522136b 13px 18px,transparent 18px 31px,#e7d3a952 31px 34px,transparent 34px 47px); }
-.map-roll-to-surface .map-roll-splice,.map-roll-to-regional .map-roll-splice { animation:map-splice-pass var(--map-roll-duration) linear both; }
+.map-roll-splice::after { content:"";position:absolute;left:0;right:0;top:5px;height:3px;opacity:.7;background:repeating-linear-gradient(90deg,transparent 0 13px,#3522136b 13px 18px,transparent 18px 31px,#e7d3a952 31px 34px,transparent 34px 47px); }
+.map-roll-to-surface .map-roll-splice, .map-roll-to-regional .map-roll-splice { animation: map-splice-pass var(--map-roll-duration) linear both; }
 @keyframes map-splice-pass { 0%,100% { opacity:0; } 7%,88% { opacity:1; } }
 @keyframes map-roll-up {
-  0% { transform:translate3d(0,0,0); }
-  7% { transform:translate3d(.3px,-1.5%,0); }
-  16% { transform:translate3d(-.8px,-9%,0); }
-  31% { transform:translate3d(1.2px,-32%,0); }
-  39% { transform:translate3d(.2px,-37%,0); }
-  56% { transform:translate3d(-1.1px,-61%,0); }
-  73% { transform:translate3d(.9px,-82%,0); }
-  88% { transform:translate3d(-.4px,-99%,0); }
-  93% { transform:translate3d(.2px,-100%,0); }
-  97% { transform:translate3d(-.1px,-100%,0); }
-  100% { transform:translate3d(0,-100%,0); }
+  0% { transform:translate3d(0,0,0);filter:blur(0); }
+  7% { transform:translate3d(.3px,-1.5%,0);filter:blur(.25px); }
+  16% { transform:translate3d(-.8px,-9%,0);filter:blur(.65px); }
+  31% { transform:translate3d(1.2px,-32%,0);filter:blur(1.25px); }
+  39% { transform:translate3d(.2px,-37%,0);filter:blur(.2px); }
+  56% { transform:translate3d(-1.1px,-61%,0);filter:blur(1.15px); }
+  73% { transform:translate3d(.9px,-82%,0);filter:blur(.9px); }
+  88% { transform:translate3d(-.4px,-99%,0);filter:blur(.5px); }
+  93% { transform:translate3d(.2px,-100%,0);filter:blur(.2px); }
+  97% { transform:translate3d(-.1px,-100%,0);filter:blur(.12px); }
+  100% { transform:translate3d(0,-100%,0);filter:blur(0); }
 }
 @keyframes map-roll-down {
-  0% { transform:translate3d(0,-100%,0); }
-  9% { transform:translate3d(-.3px,-98%,0); }
-  20% { transform:translate3d(.9px,-87%,0); }
-  35% { transform:translate3d(-1.1px,-61%,0); }
-  44% { transform:translate3d(-.2px,-57%,0); }
-  61% { transform:translate3d(1px,-33%,0); }
-  78% { transform:translate3d(-.7px,-12%,0); }
-  91% { transform:translate3d(.3px,0,0); }
-  96% { transform:translate3d(-.1px,0,0); }
-  100% { transform:translate3d(0,0,0); }
+  0% { transform:translate3d(0,-100%,0);filter:blur(0); }
+  9% { transform:translate3d(-.3px,-98%,0);filter:blur(.2px); }
+  20% { transform:translate3d(.9px,-87%,0);filter:blur(.75px); }
+  35% { transform:translate3d(-1.1px,-61%,0);filter:blur(1.2px); }
+  44% { transform:translate3d(-.2px,-57%,0);filter:blur(.2px); }
+  61% { transform:translate3d(1px,-33%,0);filter:blur(1.05px); }
+  78% { transform:translate3d(-.7px,-12%,0);filter:blur(.8px); }
+  91% { transform:translate3d(.3px,0,0);filter:blur(.35px); }
+  96% { transform:translate3d(-.1px,0,0);filter:blur(.12px); }
+  100% { transform:translate3d(0,0,0);filter:blur(0); }
 }
-.map-roll-edge-shadow { position:absolute; z-index:39; left:0; right:0; height:10px; pointer-events:none; opacity:.58; }
-.map-roll-edge-shadow.is-top { top:0; background:linear-gradient(to bottom,#18100a7a,#18100a1a,transparent); }
-.map-roll-edge-shadow.is-bottom { bottom:0; background:linear-gradient(to top,#18100a7a,#18100a1a,transparent); }
-@media (prefers-reduced-motion:reduce) { .route-map-shell { --map-roll-duration:1ms; } }
+.map-roll-edge-shadow { position:absolute;z-index:39;left:0;right:0;height:10px;pointer-events:none;opacity:.58; }
+.map-roll-edge-shadow.is-top { top:0;background:linear-gradient(to bottom,#18100a7a,#18100a1a,transparent); }
+.map-roll-edge-shadow.is-bottom { bottom:0;background:linear-gradient(to top,#18100a7a,#18100a1a,transparent); }
+@media (prefers-reduced-motion: reduce) { .route-map-shell { --map-roll-duration: 1ms; } }

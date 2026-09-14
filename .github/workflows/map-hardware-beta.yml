@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -23,13 +23,13 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
-      - name: Browser geometry and transport regression
+      - name: Browser geometry and transport regression on macOS
         shell: bash
         run: |
           npm install --no-save --package-lock=false playwright@1.63.0
-          npx playwright install --with-deps chromium webkit
+          npx playwright install chromium webkit
           mkdir -p artifacts/map-hardware
-          xvfb-run --auto-servernum node scripts/map-hardware-headed-test.js 2>&1 | tee artifacts/map-hardware/browser.log
+          node scripts/map-hardware-headed-test.js 2>&1 | tee artifacts/map-hardware/browser.log
       - name: Keep exact-SHA verification evidence
         if: always()
         run: |
