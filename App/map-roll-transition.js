@@ -10,15 +10,12 @@
   shell.style.setProperty("--map-roll-duration", `${api.DURATION_MS}ms`);
 
   const audioController = root.dadRadarMapRollAudio?.createController?.({volume: 0.72}) ?? null;
-
-  root.addEventListener("pointerdown", () => {
-    void audioController?.unlock?.();
-  }, {once: true});
+  root.addEventListener("pointerdown", () => { void audioController?.unlock?.(); }, {once: true});
 
   if (!root.document.querySelector("link[data-dad-radar-map-roll]")) {
     const link = root.document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "/UI/map-roll-transition.css?v=2";
+    link.href = "/UI/map-roll-transition.css?v=4";
     link.dataset.dadRadarMapRoll = "true";
     root.document.head.appendChild(link);
   }
@@ -46,6 +43,8 @@
   let suppressMutation = false;
   let finishTimer = null;
   let lastTestToken = null;
+  let animationTarget = null;
+  let animationListener = null;
 
   function setHidden(element, hidden) {
     if (!element) return;
@@ -60,33 +59,56 @@
     shell.classList.remove("map-roll-to-surface", "map-roll-to-regional", "map-roll-demo-out", "map-roll-demo-in");
   }
 
-  function startMotorSound() {
-    void audioController?.play?.();
+  function removeAnimationListener() {
+    if (animationTarget && animationListener) animationTarget.removeEventListener("animationend", animationListener);
+    animationTarget = null;
+    animationListener = null;
   }
 
-  function finish(targetSurface) {
+  function fireRegistrationClacks() {
+    audioController?.stopMotor?.();
+    audioController?.playRegisterClack?.();
+    root.setTimeout(() => audioController?.playDetentClack?.(), 135);
+  }
+
+  function finish(targetSurface, fromAnimation = false) {
+    if (!moving) return;
+    removeAnimationListener();
+    if (finishTimer) root.clearTimeout(finishTimer);
+    finishTimer = null;
+    if (fromAnimation) fireRegistrationClacks();
+    else {
+      audioController?.stopMotor?.();
+      fireRegistrationClacks();
+    }
     clearMotionClasses();
     shell.classList.toggle("is-surface-registered", targetSurface);
     if (surfaceLayer) setHidden(surfaceLayer, !targetSurface);
     currentSurface = targetSurface;
     moving = false;
-    finishTimer = null;
 
     if (queuedTarget !== null && queuedTarget !== currentSurface) {
       const next = queuedTarget;
       queuedTarget = null;
-      root.setTimeout(() => transitionTo(next), 40);
-    } else {
-      queuedTarget = null;
-    }
+      root.setTimeout(() => transitionTo(next), 180);
+    } else queuedTarget = null;
+  }
+
+  function watchAnimation(targetSurface) {
+    const target = shell.querySelector(".route-map-svg");
+    removeAnimationListener();
+    if (!target) return;
+    animationTarget = target;
+    animationListener = event => {
+      if (event.target !== target) return;
+      finish(targetSurface, true);
+    };
+    target.addEventListener("animationend", animationListener);
   }
 
   function transitionTo(targetSurface) {
     if (!surfaceLayer) return;
-    if (moving) {
-      queuedTarget = targetSurface;
-      return;
-    }
+    if (moving) { queuedTarget = targetSurface; return; }
     if (targetSurface === currentSurface) {
       setHidden(surfaceLayer, !targetSurface);
       shell.classList.toggle("is-surface-registered", targetSurface);
@@ -97,13 +119,11 @@
     clearMotionClasses();
     setHidden(surfaceLayer, false);
     shell.classList.remove("is-surface-registered");
-
     void shell.offsetHeight;
-    startMotorSound();
+    void audioController?.playMotor?.();
+    watchAnimation(targetSurface);
     shell.classList.add(targetSurface ? "map-roll-to-surface" : "map-roll-to-regional");
-
-    if (finishTimer) root.clearTimeout(finishTimer);
-    finishTimer = root.setTimeout(() => finish(targetSurface), api.DURATION_MS + 120);
+    finishTimer = root.setTimeout(() => finish(targetSurface, false), api.DURATION_MS + 500);
   }
 
   function attachSurfaceLayer(layer) {
@@ -111,7 +131,6 @@
     if (surfaceObserver) surfaceObserver.disconnect();
     surfaceLayer = layer;
     const requestedSurface = !layer.hidden;
-
     currentSurface = false;
     shell.classList.remove("is-surface-registered");
 
@@ -122,7 +141,6 @@
       transitionTo(nextSurface);
     });
     surfaceObserver.observe(surfaceLayer, {attributes: true, attributeFilter: ["hidden"]});
-
     if (requestedSurface) root.setTimeout(() => transitionTo(true), 0);
     else setHidden(surfaceLayer, true);
   }
@@ -133,10 +151,31 @@
   }
 
   discoverSurfaceLayer();
-
   if (typeof root.MutationObserver === "function") {
     const shellObserver = new root.MutationObserver(discoverSurfaceLayer);
     shellObserver.observe(shell, {childList: true, subtree: true});
+  }
+
+  function demo(directionClass, done) {
+    clearMotionClasses();
+    moving = true;
+    void shell.offsetHeight;
+    void audioController?.playMotor?.();
+    const target = shell.querySelector(".route-map-svg");
+    if (target) {
+      removeAnimationListener();
+      animationTarget = target;
+      animationListener = event => {
+        if (event.target !== target) return;
+        removeAnimationListener();
+        fireRegistrationClacks();
+        clearMotionClasses();
+        moving = false;
+        done?.();
+      };
+      target.addEventListener("animationend", animationListener);
+    }
+    shell.classList.add(directionClass);
   }
 
   root.addEventListener("dad-radar:visual-state-change", event => {
@@ -146,29 +185,17 @@
     if (surfaceLayer) {
       const returnTarget = currentSurface;
       transitionTo(!returnTarget);
-      root.setTimeout(() => transitionTo(returnTarget), api.DURATION_MS + 650);
+      root.setTimeout(() => transitionTo(returnTarget), api.DURATION_MS + 900);
     } else {
-      clearMotionClasses();
-      startMotorSound();
-      shell.classList.add("map-roll-demo-out");
-      root.setTimeout(() => {
-        shell.classList.remove("map-roll-demo-out");
-        startMotorSound();
-        shell.classList.add("map-roll-demo-in");
-        root.setTimeout(clearMotionClasses, api.DURATION_MS + 120);
-      }, api.DURATION_MS + 350);
+      demo("map-roll-demo-out", () => root.setTimeout(() => demo("map-roll-demo-in"), 500));
     }
   }, true);
 })(typeof window !== "undefined" ? window : globalThis, function createMapRollTransitionApi() {
   "use strict";
-
-  // The approved V3 audio's first registration clack lands at ~2.64 s.
-  // Complete travel just before it, leaving the second clack as the detent correction.
-  const DURATION_MS = 2620;
+  const DURATION_MS = 2800;
   const PROFILE = Object.freeze([
     [0, 0], [7, 1.5], [16, 9], [31, 32], [39, 37],
     [56, 61], [73, 82], [88, 99], [93, 100.8], [97, 99.5], [100, 100]
   ]);
-
   return {DURATION_MS, PROFILE};
 });
