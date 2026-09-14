@@ -42,4 +42,10 @@ const hidden=fixture();hidden.api.setSurfaceVisible(true);hidden.finish();hidden
 hidden.api.setSurfaceVisible(false);hidden.paint();hidden.paint();hidden.tick(135);hidden.tick(220);
 assert(hidden.shell.classList.contains('map-roll-to-regional'),'hidden document must not strand the queued target');
 assert(!hidden.sounds.some(name=>name.includes('Clack')),'registration sounds remain silent in a hidden document');
-console.log('Map roll lifecycle tests passed: finish-gap reversal and hidden-page queue.');
+const preference=fixture();
+preference.root.matchMedia=()=>({matches:true});
+preference.api.setSurfaceVisible(true);
+assert(preference.shell.classList.contains('is-surface-registered'),'new reduced-motion preference applies after startup');
+assert(!preference.shell.classList.contains('map-roll-to-surface'),'changed preference prevents animation');
+assert.deepEqual(preference.sounds,[],'changed preference prevents motor and registration sound');
+console.log('Map roll lifecycle tests passed: finish-gap reversal, hidden-page queue, and changed motion preference.');

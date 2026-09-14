@@ -36,7 +36,9 @@
 
   const audio = root.dadRadarMapRollAudio?.createController?.({volume: 0.72});
   root.addEventListener("pointerdown", () => { void audio?.unlock?.(); }, {once: true});
-  const reduced = root.matchMedia?.("(prefers-reduced-motion: reduce)");
+  // Read the current preference at each request. A retained, unobserved media
+  // query can be stale when WebKit changes the preference after startup.
+  const prefersReducedMotion = () => root.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
   const frame = callback => root.requestAnimationFrame(callback);
   let surface = null, observer = null, current = false, moving = false, registering = false;
   let requested = false, target = false, timer = null, restartTimer = null;
@@ -120,7 +122,7 @@
     if (requested === current) { writeHidden(!current); return; }
     generation += 1;
     target = requested;
-    if (reduced?.matches) {
+    if (prefersReducedMotion()) {
       current = target;
       shell.classList.toggle("is-surface-registered", current);
       clearMotion();
