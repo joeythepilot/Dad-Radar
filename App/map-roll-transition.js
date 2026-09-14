@@ -238,7 +238,7 @@
     const scale = Math.min(1, Math.max(0, width) / 660, Math.max(0, height) / 360);
     const safeScale = scale || 1;
     return {scale, inset:18 * scale, clockBottom:18 * scale, sequenceBottom:14 * scale,
-      valueFont:Math.max(20, Math.min(26, 12 / safeScale)),
+      valueFont:Math.max(20, Math.min(23.5, 12 / safeScale)),
       labelFont:Math.max(9, Math.min(14, 6.5 / safeScale))};
   }
   return {DURATION_MS, PROFILE, familyHardwareMetrics};
