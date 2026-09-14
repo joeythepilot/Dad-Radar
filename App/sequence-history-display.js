@@ -9,7 +9,7 @@
     if (document.querySelector("link[data-dad-radar-sequence-history]")) return;
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "./UI/sequence-history.css?v=sequence-v2";
+    link.href = "./UI/sequence-history.css?v=sequence-v3";
     link.dataset.dadRadarSequenceHistory = "true";
     document.head.appendChild(link);
   }
@@ -20,8 +20,7 @@
     if (!shell) return null;
 
     badge = document.createElement("div");
-    badge.className = "sequence-mileage-badge";
-    badge.hidden = true;
+    badge.className = "sequence-mileage-badge map-hardware-module";
 
     const label = document.createElement("span");
     label.className = "sequence-mileage-label";
@@ -42,17 +41,20 @@
     const element = ensureBadge();
     if (!element) return;
     const legs = Array.isArray(history?.legs) ? history.legs : [];
+    const miles = Number(history?.totalDistanceNm);
+    valueElement.textContent = `${Number.isFinite(miles) ? Math.round(miles).toLocaleString("en-US") : "0"} NM`;
+
     if (!history || legs.length === 0) {
-      element.hidden = true;
+      detailElement.textContent = "NO RECORDED LEGS";
+      element.classList.add("is-empty");
       return;
     }
 
-    element.hidden = false;
-    const miles = Number(history.totalDistanceNm);
-    valueElement.textContent = `${Number.isFinite(miles) ? Math.round(miles).toLocaleString("en-US") : "0"} NM`;
+    element.classList.remove("is-empty");
     const legWord = legs.length === 1 ? "LEG" : "LEGS";
     const completed = Number(history.completedLegCount) || 0;
-    detailElement.textContent = `${legs.length} ${legWord}${completed > 0 ? ` · ${completed} COMPLETE` : ""}`;
+    const estimated = Number(history.estimatedLegCount) || 0;
+    detailElement.textContent = `${legs.length} ${legWord}${completed > 0 ? ` · ${completed} COMPLETE` : ""}${estimated > 0 ? ` · ${estimated} EST` : ""}`;
   }
 
   ensureStylesheet();
