@@ -15,17 +15,8 @@
   if (!root.document.querySelector("link[data-dad-radar-map-roll]")) {
     const link = root.document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "/UI/map-roll-transition.css?v=5";
+    link.href = "/UI/map-roll-transition.css?v=6";
     link.dataset.dadRadarMapRoll = "true";
-    root.document.head.appendChild(link);
-  }
-
-  /* Desktop and full-family views have physical clock/sequence modules. */
-  if (shell.querySelector(".map-information") && !root.document.querySelector("link[data-dad-radar-map-hardware]")) {
-    const link = root.document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "/UI/map-hardware-rail.css?v=1";
-    link.dataset.dadRadarMapHardware = "true";
     root.document.head.appendChild(link);
   }
 
@@ -74,10 +65,15 @@
     animationListener = null;
   }
 
-  function fireRegistrationClacks() {
+  function fireRegistrationClacksAfterPaint() {
     audioController?.stopMotor?.();
-    void audioController?.playRegisterClack?.();
-    root.setTimeout(() => { void audioController?.playDetentClack?.(); }, 135);
+    const firstFrame = root.requestAnimationFrame ?? (callback => root.setTimeout(callback, 16));
+    firstFrame(() => {
+      firstFrame(() => {
+        void audioController?.playRegisterClack?.();
+        root.setTimeout(() => { void audioController?.playDetentClack?.(); }, 135);
+      });
+    });
   }
 
   function finish(targetSurface, fromAnimation = false) {
@@ -85,18 +81,30 @@
     removeAnimationListener();
     if (finishTimer) root.clearTimeout(finishTimer);
     finishTimer = null;
-    audioController?.stopMotor?.();
-    if (fromAnimation) fireRegistrationClacks();
-    clearMotionClasses();
+
+    /*
+      Commit visibility while the completed animation transforms are still in
+      force. In particular, hide the outgoing airport sheet before removing
+      its downward transform, otherwise it flashes back into the aperture for
+      one frame when the animation class is cleared.
+    */
+    if (surfaceLayer && !targetSurface) setHidden(surfaceLayer, true);
     shell.classList.toggle("is-surface-registered", targetSurface);
-    if (surfaceLayer) setHidden(surfaceLayer, !targetSurface);
+    clearMotionClasses();
+    void shell.offsetHeight;
+
+    if (surfaceLayer && targetSurface) setHidden(surfaceLayer, false);
     currentSurface = targetSurface;
     moving = false;
+
+    audioController?.stopMotor?.();
+    if (fromAnimation) fireRegistrationClacksAfterPaint();
+    else fireRegistrationClacksAfterPaint();
 
     if (queuedTarget !== null && queuedTarget !== currentSurface) {
       const next = queuedTarget;
       queuedTarget = null;
-      root.setTimeout(() => transitionTo(next), 180);
+      root.setTimeout(() => transitionTo(next), 220);
     } else queuedTarget = null;
   }
 
@@ -118,6 +126,7 @@
     if (targetSurface === currentSurface) {
       setHidden(surfaceLayer, !targetSurface);
       shell.classList.toggle("is-surface-registered", targetSurface);
+      clearMotionClasses();
       return;
     }
 
@@ -138,6 +147,7 @@
     surfaceLayer = layer;
     const requestedSurface = !layer.hidden;
     currentSurface = false;
+    clearMotionClasses();
     shell.classList.remove("is-surface-registered");
 
     surfaceObserver = new root.MutationObserver(() => {
@@ -174,9 +184,10 @@
       animationListener = event => {
         if (event.target !== target) return;
         removeAnimationListener();
-        fireRegistrationClacks();
         clearMotionClasses();
+        void shell.offsetHeight;
         moving = false;
+        fireRegistrationClacksAfterPaint();
         done?.();
       };
       target.addEventListener("animationend", animationListener);
@@ -191,17 +202,17 @@
     if (surfaceLayer) {
       const returnTarget = currentSurface;
       transitionTo(!returnTarget);
-      root.setTimeout(() => transitionTo(returnTarget), api.DURATION_MS + 900);
+      root.setTimeout(() => transitionTo(returnTarget), api.DURATION_MS + 1000);
     } else {
       demo("map-roll-demo-out", () => root.setTimeout(() => demo("map-roll-demo-in"), 500));
     }
   }, true);
 })(typeof window !== "undefined" ? window : globalThis, function createMapRollTransitionApi() {
   "use strict";
-  const DURATION_MS = 2550;
+  const DURATION_MS = 2800;
   const PROFILE = Object.freeze([
     [0, 0], [7, 1.5], [16, 9], [31, 32], [39, 37],
-    [56, 61], [73, 82], [88, 99], [93, 100.8], [97, 99.5], [100, 100]
+    [56, 61], [73, 82], [88, 99], [93, 100], [97, 100], [100, 100]
   ]);
   return {DURATION_MS, PROFILE};
 });
