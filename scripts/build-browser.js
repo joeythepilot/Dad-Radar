@@ -27,6 +27,7 @@ const browserSources = [
   "App/daily-schedule-layout.js",
   "App/poster-image-loader.js",
   "App/airport-surface-map.js",
+  "App/sequence-history-display.js",
   "App/main.js"
 ];
 
@@ -74,7 +75,8 @@ const combinedSource = [
     (relativePath) =>
       `\n/* Source: ${relativePath} */\n${readSource(relativePath)}`
   ),
-  `\n/* Source: App/route-map.js (module scope preserved) */\n(function initializeDadRadarRouteMap() {\n${readSource("App/route-map.js")}\n})();`
+  `\n/* Source: App/route-map.js (module scope preserved) */\n(function initializeDadRadarRouteMap() {\n${readSource("App/route-map.js")}\n})();`,
+  `\n/* Source: App/sequence-history-map.js */\n${readSource("App/sequence-history-map.js")}`
 ].join("\n");
 
 const result = babel.transformSync(
