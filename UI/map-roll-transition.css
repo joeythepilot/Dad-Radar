@@ -6,48 +6,99 @@
   backface-visibility: hidden;
 }
 
-/* These modules are cabinet hardware mounted in front of the moving map roll. */
+/*
+  The clock/ETA carrier is fixed cabinet hardware in front of the moving map.
+  It occupies the full aperture only as an invisible positioning plane. The
+  individual modules are mechanically attached to the lower map bezel.
+*/
 .route-map-shell .map-information {
+  position: absolute;
   z-index: 52;
+  inset: 0;
+  min-height: 0;
+  display: block;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
   pointer-events: none;
   transform: none !important;
   filter: none !important;
   animation: none !important;
 }
 
-.route-map-shell .clock-block,
-.route-map-shell .eta-block {
-  position: relative;
-  isolation: isolate;
-  padding: 7px 10px 8px;
-  border: 1px solid rgba(91, 64, 36, .86);
-  border-radius: 3px;
-  background: linear-gradient(180deg, rgba(220,197,148,.97), rgba(188,153,94,.94));
-  box-shadow:
-    0 9px 13px rgba(39,23,13,.34),
-    0 2px 2px rgba(39,23,13,.32),
-    inset 0 1px 0 rgba(255,246,215,.62);
+/* Route status belongs to the map, not to the physical clock hardware. */
+.route-map-shell .map-status-block {
+  position: absolute;
+  z-index: 1;
+  top: 14px;
+  left: 16px;
+  max-width: 250px;
+  opacity: .76;
 }
 
+/* Fixed electromechanical modules, flush to the lower cabinet edge. */
+.route-map-shell .clock-block,
+.route-map-shell .eta-block {
+  position: absolute;
+  z-index: 3;
+  bottom: 0;
+  width: 164px;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 7px 11px 9px;
+  border: 1px solid #72552d;
+  border-bottom: 0;
+  border-radius: 4px 4px 0 0;
+  background:
+    linear-gradient(180deg, rgba(43,39,32,.98), rgba(21,20,17,.99));
+  color: #d1ad68;
+  box-shadow:
+    0 -1px 0 rgba(211,173,100,.18),
+    0 -7px 13px rgba(23,15,9,.26),
+    inset 0 1px 0 rgba(255,222,154,.08),
+    inset 0 0 12px rgba(0,0,0,.55);
+  isolation: isolate;
+}
+
+.route-map-shell .clock-block { left: 14px; }
+.route-map-shell .eta-block { right: 14px; }
+
+/* Brass retaining plates tie each module visibly into the lower bezel. */
 .route-map-shell .clock-block::before,
 .route-map-shell .clock-block::after,
 .route-map-shell .eta-block::before,
 .route-map-shell .eta-block::after {
   content: "";
   position: absolute;
-  bottom: -10px;
-  width: 10px;
-  height: 14px;
-  border: 1px solid #684922;
-  border-radius: 2px 2px 4px 4px;
-  background: linear-gradient(90deg, #6a4922, #c39b58 48%, #745027);
-  box-shadow: 0 4px 5px rgba(32,19,11,.34);
-  z-index: -1;
+  bottom: 0;
+  width: 17px;
+  height: 5px;
+  background: linear-gradient(90deg, #5d431f, #b28749 48%, #644822);
+  border-top: 1px solid rgba(218,177,99,.58);
+  box-shadow: 0 -2px 4px rgba(0,0,0,.3);
+  z-index: 2;
 }
 .route-map-shell .clock-block::before,
-.route-map-shell .eta-block::before { left: 12px; }
+.route-map-shell .eta-block::before { left: 8px; }
 .route-map-shell .clock-block::after,
-.route-map-shell .eta-block::after { right: 12px; }
+.route-map-shell .eta-block::after { right: 8px; }
+
+.route-map-shell .clock-block .small-label,
+.route-map-shell .eta-block .small-label {
+  color: #9d8050;
+}
+.route-map-shell .clock-block .clock-value,
+.route-map-shell .eta-block .eta-value {
+  color: #e1c080;
+  text-shadow: 0 0 4px rgba(213,164,84,.14);
+}
+.route-map-shell .clock-block .eta-zone,
+.route-map-shell .eta-block .eta-zone {
+  color: #8f7447;
+}
 
 .route-map-shell.map-roll-to-surface .route-map-svg {
   animation: map-roll-regional-up var(--map-roll-duration) linear both;
