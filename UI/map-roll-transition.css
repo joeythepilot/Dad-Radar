@@ -1,6 +1,8 @@
 /* Stationary bezel hardware over two adjacent sheets on one physical roll. */
 .route-map-shell { --map-roll-duration: 2800ms; --map-hardware-inset: 18px; --map-clock-bottom: 18px; --map-clock-width: 184px; --map-sequence-width: 196px; --map-clock-font: 20px; --map-clock-label: 9px; --map-clock-pad-x: 10px; }
-.map-roll-transport { position: absolute; top: 0; bottom: 0; left: -2px; right: -2px; z-index: 1; transform: translate3d(0,0,0); }
+/* Extra stock remains behind all four bezel lips. WebKit can round the animated
+   percentage transform differently from the fractional sheet height. */
+.map-roll-transport { position: absolute; top: -2px; bottom: -2px; left: -2px; right: -2px; z-index: 1; transform: translate3d(0,0,0); }
 .map-roll-regional-sheet, .map-roll-surface-sheet { position: absolute; left: 0; width: 100%; height: 100%; overflow: hidden; background: #d3bd8d; }
 .map-roll-regional-sheet { top: 0; }
 .map-roll-surface-sheet { top: 100%; }

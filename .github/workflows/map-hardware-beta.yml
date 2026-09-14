@@ -1,7 +1,7 @@
 name: Map hardware beta verification
 on:
   push:
-    branches: [agent/mobile-companion]
+    branches: [agent/mobile-companion, agent/map-roll-verification]
     paths: ['App/**', 'UI/**', 'Mobile/**', 'scripts/**', 'index.html', 'package*.json', '.github/workflows/map-hardware-beta.yml']
   workflow_dispatch:
 permissions:
@@ -10,9 +10,9 @@ concurrency:
   group: map-hardware-beta-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  verify:
+  regression:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
         with:
@@ -22,22 +22,42 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
-      - run: npm test
-      - name: Keep reproducible browser source before visual tests
+      - name: Complete application regression suite
+        shell: bash
         run: |
-          mkdir -p artifacts/map-source
-          git rev-parse HEAD > artifacts/map-source/commit.txt
-          tar -czf artifacts/map-source/browser-source.tar.gz App UI Mobile scripts server index.html
+          mkdir -p artifacts/map-regression
+          npm test 2>&1 | tee artifacts/map-regression/tests.log
+      - name: Record source checkpoint
+        if: always()
+        run: |
+          mkdir -p artifacts/map-regression
+          git rev-parse HEAD > artifacts/map-regression/commit.txt
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: map-source-${{ github.sha }}
-          path: artifacts/map-source/
-          retention-days: 3
-      - name: Browser geometry and transport regression
+          name: map-regression-${{ github.sha }}
+          path: artifacts/map-regression/
+          retention-days: 7
+  browser:
+    runs-on: macos-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build:browser
+      - name: Browser geometry and transport regression on macOS
+        shell: bash
         run: |
-          npm install --no-save --package-lock=false playwright@1.51.1
-          npx playwright install --with-deps chromium webkit
-          node scripts/map-hardware-browser-test.js
+          npm install --no-save --package-lock=false playwright@1.63.0
+          npx playwright install chromium webkit
+          mkdir -p artifacts/map-hardware
+          node scripts/map-hardware-headed-test.js 2>&1 | tee artifacts/map-hardware/browser.log
       - name: Keep exact-SHA verification evidence
         if: always()
         run: |

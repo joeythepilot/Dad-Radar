@@ -83,6 +83,12 @@ async function installSurface(page) {
   });
   await page.waitForSelector('.map-roll-surface-sheet .airport-surface-layer',{state:'attached'});
 }
+async function waitForRegistration(page, moves) {
+  // Paint and timer scheduling vary by OS. Await the actual detent, retaining
+  // exact count/order assertions below and a bounded failure deadline.
+  await page.waitForFunction(count => window.mapProofSounds.filter(sound => sound.name === 'playDetentClack').length >= count,
+    moves, {timeout:2000, polling:20});
+}
 async function transportProof(page, label) {
   await installSurface(page);
   await page.evaluate(() => {
@@ -95,12 +101,13 @@ async function transportProof(page, label) {
       requestAnimationFrame(sample);
     };requestAnimationFrame(sample);
   });
+  let completedMoves = 0;
   for(const next of [true,false,true,false]) {
     await page.evaluate(value=>document.querySelector('.route-map-shell').dadRadarMapRoll.setSurfaceVisible(value),next);
     await page.waitForFunction(value=>{
       const shell=document.querySelector('.route-map-shell');return !shell.className.match(/map-roll-to-/)&&shell.classList.contains('is-surface-registered')===value;
     },next,{timeout:5000});
-    await page.waitForTimeout(300);
+    await waitForRegistration(page, ++completedMoves);
   }
   const evidence=await page.evaluate(()=>{window.mapProofSampling=false;return {frames:window.mapProofFrames,sounds:window.mapProofSounds};});
   const motion=evidence.frames.filter(x=>x.moving);
@@ -118,8 +125,12 @@ async function transportProof(page, label) {
   await page.screenshot({path:path.join(output,`${label}-returned.png`)});
   // Queue several reversals; only the latest request should be applied.
   await page.evaluate(()=>{const roll=document.querySelector('.route-map-shell').dadRadarMapRoll;roll.setSurfaceVisible(true);setTimeout(()=>roll.setSurfaceVisible(false),120);setTimeout(()=>roll.setSurfaceVisible(true),240);});
-  await page.waitForTimeout(3400);
-  assert(await page.locator('.route-map-shell').evaluate(n=>n.classList.contains('is-surface-registered')));
+  await page.waitForFunction(()=>{
+    const shell=document.querySelector('.route-map-shell');
+    return shell.classList.contains('is-surface-registered') && !shell.className.match(/map-roll-to-/);
+  },null,{timeout:5000});
+  await waitForRegistration(page, 5);
+  await page.waitForTimeout(120); // let the already-tested registration dwell end
   await page.emulateMedia({reducedMotion:'reduce'});
   const count=await page.evaluate(()=>mapProofSounds.length);
   await page.evaluate(()=>document.querySelector('.route-map-shell').dadRadarMapRoll.setSurfaceVisible(false));

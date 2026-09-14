@@ -36,11 +36,13 @@
 
   const audio = root.dadRadarMapRollAudio?.createController?.({volume: 0.72});
   root.addEventListener("pointerdown", () => { void audio?.unlock?.(); }, {once: true});
-  const reduced = root.matchMedia?.("(prefers-reduced-motion: reduce)");
+  // Read the current preference at each request. A retained, unobserved media
+  // query can be stale when WebKit changes the preference after startup.
+  const prefersReducedMotion = () => root.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
   const frame = callback => root.requestAnimationFrame(callback);
-  let surface = null, observer = null, current = false, moving = false;
+  let surface = null, observer = null, current = false, moving = false, registering = false;
   let requested = false, target = false, timer = null, restartTimer = null;
-  let generation = 0, lastTestToken = null;
+  let generation = 0, lastTestToken = null, demoSheet = null;
 
   function sizeHardware() {
     const width = shell.clientWidth;
@@ -62,7 +64,14 @@
   }
   sizeHardware();
   if (root.ResizeObserver) new root.ResizeObserver(sizeHardware).observe(shell);
-  else root.addEventListener("resize", sizeHardware);
+  else {
+    root.addEventListener("resize", sizeHardware);
+    // Safari 12 has no ResizeObserver. The dashboard starts hidden, so measure
+    // again after it opens rather than leaving the default desktop widths.
+    const dashboard = root.document.getElementById("dashboard");
+    if (dashboard) new root.MutationObserver(() => frame(sizeHardware))
+      .observe(dashboard, {attributes: true, attributeFilter: ["hidden"]});
+  }
 
   function writeHidden(value) {
     if (!surface || surface.hidden === value) return;
@@ -85,17 +94,19 @@
     shell.classList.toggle("is-surface-registered", current);
     clearMotion();
     moving = false;
+    registering = true;
+    if (!current && demoSheet) { demoSheet.remove(); demoSheet = null; }
     writeHidden(!current);
     audio?.stopMotor?.();
     const settledGeneration = generation;
     frame(() => frame(() => {
-      if (moving || settledGeneration !== generation || root.document.hidden) return;
-      void audio?.playRegisterClack?.();
+      if (moving || settledGeneration !== generation) return;
+      if (!root.document.hidden) void audio?.playRegisterClack?.();
       root.setTimeout(() => {
         if (!moving && settledGeneration === generation && !root.document.hidden) void audio?.playDetentClack?.();
       }, 135);
       // A direction change must wait for this registration cycle to finish.
-      restartTimer = root.setTimeout(() => { restartTimer = null; request(requested); }, 220);
+      restartTimer = root.setTimeout(() => { restartTimer = null; registering = false; request(requested); }, 220);
     }));
   }
   transport.addEventListener("animationend", event => {
@@ -105,16 +116,17 @@
   });
   function request(next) {
     requested = !!next;
-    if (!surface) return;
+    if (!surface && !demoSheet) return;
     if (moving) { writeHidden(false); return; }
-    if (restartTimer !== null) return;
+    if (registering) { writeHidden(!current); return; }
     if (requested === current) { writeHidden(!current); return; }
     generation += 1;
     target = requested;
-    if (reduced?.matches) {
+    if (prefersReducedMotion()) {
       current = target;
       shell.classList.toggle("is-surface-registered", current);
       clearMotion();
+      if (!current && demoSheet) { demoSheet.remove(); demoSheet = null; }
       writeHidden(!current);
       return;
     }
@@ -129,6 +141,7 @@
     const layer = shell.querySelector(".airport-surface-layer");
     if (!layer || layer === surface) return;
     observer?.disconnect();
+    if (demoSheet) { demoSheet.remove(); demoSheet = null; }
     surface = layer;
     const next = !layer.hidden;
     surfaceSheet.appendChild(layer);
@@ -143,8 +156,23 @@
     const token = event.detail?.state?.diagnostics?.shutterTestToken;
     if (!token || token === lastTestToken) return;
     lastTestToken = token;
-    // A diagnostic must never roll to a blank sheet and snap the map back.
-    if (!surface || !surface.querySelector(".airport-surface-svg")) return;
+    if (moving || registering || demoSheet) return;
+    // At home there may be no airport chart yet. Keep the existing test command
+    // useful with a duplicate regional sheet, never a blank/fabricated airport.
+    if (!surface) {
+      demoSheet = regional.cloneNode(true);
+      const nodes = [demoSheet, ...demoSheet.querySelectorAll("*")];
+      const ids = {};
+      nodes.forEach(node => { if (node.id) { ids[node.id] = `map-roll-test-${node.id}`; node.id = ids[node.id]; } });
+      nodes.forEach(node => Array.from(node.attributes).forEach(attribute => {
+        let value = attribute.value.replace(/url\(#([^)]*)\)/g, (match, id) => ids[id] ? `url(#${ids[id]})` : match);
+        if (value[0] === "#" && ids[value.slice(1)]) value = `#${ids[value.slice(1)]}`;
+        if (/^aria-(labelledby|describedby)$/.test(attribute.name)) value = value.split(" ").map(id => ids[id] || id).join(" ");
+        if (value !== attribute.value) node.setAttribute(attribute.name, value);
+      }));
+      demoSheet.setAttribute("aria-hidden", "true");
+      surfaceSheet.appendChild(demoSheet);
+    }
     const previous = requested;
     request(!previous);
     root.setTimeout(() => request(previous), api.DURATION_MS + 1000);
