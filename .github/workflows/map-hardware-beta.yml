@@ -1,0 +1,58 @@
+name: Map hardware beta verification
+
+on:
+  push:
+    branches: [agent/mobile-companion]
+    paths:
+      - 'App/**'
+      - 'UI/**'
+      - 'Mobile/**'
+      - 'scripts/**'
+      - 'index.html'
+      - 'package*.json'
+      - '.github/workflows/map-hardware-beta.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: map-hardware-beta-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Save exact source used for beta verification
+        run: |
+          mkdir -p /tmp/dad-radar-proof
+          git rev-parse HEAD > /tmp/dad-radar-proof/commit.txt
+          git archive --format=tar.gz HEAD > /tmp/dad-radar-proof/source.tar.gz
+      - run: npm ci
+      - name: Existing regression suite
+        run: npm test 2>&1 | tee /tmp/dad-radar-proof/tests.log
+      - name: Browser geometry and transport regression
+        run: |
+          if [ -f scripts/map-hardware-browser-test.js ]; then
+            npm install --no-save --package-lock=false playwright@1.51.1
+            npx playwright install --with-deps chromium webkit
+            node scripts/map-hardware-browser-test.js
+          fi
+      - name: Keep verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: map-hardware-beta-${{ github.sha }}
+          path: |
+            /tmp/dad-radar-proof/
+            artifacts/map-hardware/
+          retention-days: 7
