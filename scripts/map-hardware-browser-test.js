@@ -84,8 +84,6 @@ async function installSurface(page) {
   await page.waitForSelector('.map-roll-surface-sheet .airport-surface-layer',{state:'attached'});
 }
 async function waitForRegistration(page, moves) {
-  // Paint and timer scheduling vary by OS. Await the actual detent, retaining
-  // exact count/order assertions below and a bounded failure deadline.
   await page.waitForFunction(count => window.mapProofSounds.filter(sound => sound.name === 'playDetentClack').length >= count,
     moves, {timeout:2000, polling:20});
 }
@@ -95,9 +93,25 @@ async function transportProof(page, label) {
     window.mapProofFrames=[];window.mapProofSampling=true;
     const sample=()=> {
       if(!window.mapProofSampling)return;
-      const shell=document.querySelector('.route-map-shell'),r=document.querySelector('.map-roll-regional-sheet').getBoundingClientRect(),s=document.querySelector('.map-roll-surface-sheet').getBoundingClientRect(),map=shell.getBoundingClientRect();
+      const shell=document.querySelector('.route-map-shell');
+      const roll=document.querySelector('.map-roll-transport');
+      const regional=document.querySelector('.map-roll-regional-sheet');
+      const surface=document.querySelector('.map-roll-surface-sheet');
+      const r=getComputedStyle(regional),s=getComputedStyle(surface);
+      const rt=parseFloat(r.top),st=parseFloat(s.top),rh=parseFloat(r.height),sh=parseFloat(s.height);
+      // Two independently sampled compositor rectangles can describe different
+      // instants of one moving parent. Measure adjacency in its local layout,
+      // then apply ONE observed parent rectangle for aperture coverage. Do not
+      // pause animation or replace requestAnimationFrame in this proof.
+      const parent=roll.getBoundingClientRect(),map=shell.getBoundingClientRect();
       const clock=document.querySelector('.clock-block')?.getBoundingClientRect();
-      window.mapProofFrames.push({at:performance.now(),moving:!!shell.className.match(/map-roll-to-/),gap:s.top-r.bottom,coverTop:Math.min(r.top,s.top)-map.top,coverBottom:Math.max(r.bottom,s.bottom)-map.bottom,clockTop:clock?.top,svgHidden:getComputedStyle(document.querySelector('.route-map-svg')).visibility==='hidden'});
+      window.mapProofFrames.push({at:performance.now(),moving:!!shell.className.match(/map-roll-to-/),
+        gap:st-(rt+rh),coverTop:parent.top+Math.min(rt,st)-map.top,
+        coverBottom:parent.top+Math.max(rt+rh,st+sh)-map.bottom,
+        independentTransform:r.transform!=='none'||s.transform!=='none',
+        sharedParent:regional.parentElement===roll&&surface.parentElement===roll,
+        parentHeight:parent.height,regionalHeight:rh,surfaceHeight:sh,
+        clockTop:clock?.top,svgHidden:getComputedStyle(document.querySelector('.route-map-svg')).visibility==='hidden'});
       requestAnimationFrame(sample);
     };requestAnimationFrame(sample);
   });
@@ -110,10 +124,13 @@ async function transportProof(page, label) {
     await waitForRegistration(page, ++completedMoves);
   }
   const evidence=await page.evaluate(()=>{window.mapProofSampling=false;return {frames:window.mapProofFrames,sounds:window.mapProofSounds};});
+  fs.writeFileSync(path.join(output,`${label}-transport.json`),JSON.stringify(evidence,null,2));
   const motion=evidence.frames.filter(x=>x.moving);
   assert(motion.length>30,'capture real animated frames');
   for(const frame of motion) {
+    assert(frame.sharedParent&&!frame.independentTransform,'both sheets share exactly one moving coordinate system');
     assert(Math.abs(frame.gap)<1,'adjacent sheets never separate');
+    assert(Math.abs(frame.parentHeight-frame.regionalHeight)<1 && Math.abs(frame.parentHeight-frame.surfaceHeight)<1,'sheet height agrees with its moving parent');
     assert(frame.coverTop<=1 && frame.coverBottom>=-1,'map roll covers entire aperture, including top edge');
     assert(!frame.svgHidden,'regional renderer must not hide outgoing sheet');
     if(frame.clockTop!==undefined)assert(Math.abs(frame.clockTop-motion[0].clockTop)<1,'hardware stays stationary');
@@ -121,16 +138,14 @@ async function transportProof(page, label) {
   const clacks=evidence.sounds.filter(x=>/Clack/.test(x.name));
   assert.equal(clacks.length,8,'exactly two registration clacks per completed move');
   assert(clacks.every(x=>!x.moving),'no registration sound while transport is moving');
-  fs.writeFileSync(path.join(output,`${label}-transport.json`),JSON.stringify(evidence,null,2));
   await page.screenshot({path:path.join(output,`${label}-returned.png`)});
-  // Queue several reversals; only the latest request should be applied.
   await page.evaluate(()=>{const roll=document.querySelector('.route-map-shell').dadRadarMapRoll;roll.setSurfaceVisible(true);setTimeout(()=>roll.setSurfaceVisible(false),120);setTimeout(()=>roll.setSurfaceVisible(true),240);});
   await page.waitForFunction(()=>{
     const shell=document.querySelector('.route-map-shell');
     return shell.classList.contains('is-surface-registered') && !shell.className.match(/map-roll-to-/);
   },null,{timeout:5000});
   await waitForRegistration(page, 5);
-  await page.waitForTimeout(120); // let the already-tested registration dwell end
+  await page.waitForTimeout(120);
   await page.emulateMedia({reducedMotion:'reduce'});
   const count=await page.evaluate(()=>mapProofSounds.length);
   await page.evaluate(()=>document.querySelector('.route-map-shell').dadRadarMapRoll.setSurfaceVisible(false));
@@ -158,8 +173,14 @@ async function transportProof(page, label) {
           await page.goto(origin+url,{waitUntil:'load'});
           if(!compact)await page.waitForSelector('#dashboard:not([hidden])');
           await page.waitForSelector('.map-roll-transport',{state:'attached'});
-          await page.waitForTimeout(500);
-          // Longest normal clock string must fit, not just the current hour.
+          // Readiness must precede screenshots, without waiting for the 5s
+          // periodic refresh that previously concealed hidden-startup framing.
+          await page.waitForFunction(()=>{
+            const map=document.querySelector('.map-roll-regional-sheet .route-map-svg');
+            if(!map)return false;
+            const b=map.viewBox.baseVal,r=map.getBoundingClientRect();
+            return r.height>0&&Math.abs(b.width/b.height-r.width/r.height)<.01;
+          },null,{timeout:2000,polling:20});
           if(!compact)await page.locator('#clock-value').evaluate(n=>n.textContent='12:59:59 PM');
           const measured=await geometry(page,compact);checkGeometry(measured);
           const label=`${engine}-${name}`;
