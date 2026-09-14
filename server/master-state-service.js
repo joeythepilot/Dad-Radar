@@ -4,6 +4,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
 const {createFlightLegGuard} = require("./flight-leg-guard");
+const {createSequenceHistoryService} = require("./sequence-history-service");
 
 // One controller per home-server process. HTTP readers never run this controller
 // or initiate a Calendar/provider lookup. Reuse the tested flight state machine.
@@ -16,6 +17,7 @@ function createMasterStateService(options) {
   try { saved = JSON.parse(fs.readFileSync(file, "utf8")); } catch (_) { /* First start. */ }
   const storage = saved.storage && typeof saved.storage === "object" ? saved.storage : {};
   const legGuard = createFlightLegGuard(storage);
+  const sequenceHistory = createSequenceHistoryService(storage, {now: clock});
   let envelope = {ok: false, resolved: null, calendarAt: null, liveAt: null,
     calendarOk: false, liveOk: true, publishedAt: null};
   let schedule = null;
@@ -39,10 +41,21 @@ function createMasterStateService(options) {
   }
   function publish(resolved) {
     if (stopped) return;
-    if (resolved?.state?.livePhase === "ARRIVED" && !resolved.state.flight?.arrivalEstimated && resolved.event) {
-      legGuard.complete(resolved.event);
+    const history = sequenceHistory.update(resolved);
+    const publishedResolved = resolved
+      ? {
+          ...resolved,
+          state: {
+            ...(resolved.state || {}),
+            sequenceHistory: history
+          }
+        }
+      : resolved;
+    if (publishedResolved?.state?.livePhase === "ARRIVED" &&
+      !publishedResolved.state.flight?.arrivalEstimated && publishedResolved.event) {
+      legGuard.complete(publishedResolved.event);
     }
-    envelope = {...envelope, ok: true, resolved, revision: ++revision,
+    envelope = {...envelope, ok: true, resolved: publishedResolved, revision: ++revision,
       publishedAt: new Date(clock()).toISOString()};
     persist();
   }
