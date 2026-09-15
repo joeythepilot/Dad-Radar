@@ -76,9 +76,14 @@ const server = http.createServer((request,response) => {
           ["desktop",1920,1080,false],
           ["full-landscape",844,390,false],
           ["full-portrait",390,844,false],
+          ["full-tablet",1024,768,false],
           ["compact",390,844,true]
         ]) {
-          const page = await browser.newPage({viewport:{width,height},serviceWorkers:"block"});
+          const page = await browser.newPage({
+            viewport:{width,height},
+            serviceWorkers:"block",
+            hasTouch:name !== "desktop"
+          });
           const errors = [];
           page.on("pageerror", error => errors.push(error.message));
           await page.route("**/*", route => route.request().url().startsWith(origin) || route.request().url().startsWith("blob:") ? route.continue() : route.abort());

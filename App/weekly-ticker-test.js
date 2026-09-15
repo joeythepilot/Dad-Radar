@@ -7,7 +7,12 @@ assert.equal(ticker.normalizeTickerText("  Upcoming Trip — Montréal  "),"UPCO
 const first=ticker.buildGlyphRun("THIS WEEK: TUE OVERNIGHT - MADISON, WI");
 const second=ticker.buildGlyphRun("THIS WEEK: TUE OVERNIGHT - MADISON, WI");
 assert.deepEqual(first.glyphs,second.glyphs,"Typewriter imperfections stay deterministic across refreshes.");
-assert(first.glyphs.some(g=>g.yJitter!==0));assert(first.glyphs.some(g=>g.variant!==0));
+assert(first.glyphs.some(g=>g.yJitter!==0));
+assert(first.glyphs.some(g=>g.variant!==0));
+assert(first.glyphs.every(g=>Math.abs(g.yJitter)<=0.35 && Math.abs(g.xJitter)<=0.2),
+  "Typewriter alignment imperfection stays restrained instead of looking broken.");
+assert(first.glyphs.every((g,index)=>index===0 || g.x-first.glyphs[index-1].x===15),
+  "Typewriter character advance stays steady; ink variation provides most of the mechanical imperfection.");
 
 function flight(id,origin,destination,startUtc,endUtc,overrides={}){return{id,kind:"flight",status:"confirmed",origin,destination,times:{startUtc,endUtc},...overrides};}
 function layover(id,airport,startUtc,endUtc){return{id,kind:"layover",status:"confirmed",airport,times:{startUtc,endUtc}};}
@@ -26,8 +31,9 @@ const schedule={events:[
 ]};
 const options={homeAirport:"AVL",timeZone:"America/New_York",airports:airportCatalog};
 const upcoming=ticker.buildWeeklyTripTicker(schedule,{...options,now:"2026-09-14T16:00:00Z"});
+assert.equal(upcoming.prefix,"UPCOMING TRIP");
 assert.equal(upcoming.text,"UPCOMING TRIP: TUE OVERNIGHT - MADISON, WI • WED OVERNIGHT - WHITE PLAINS, NY • THU OVERNIGHT - BENTONVILLE, AR • FRI - HOME");
 assert.equal(ticker.buildWeeklyTripTicker(schedule,{...options,now:"2026-09-16T18:00:00Z"}).prefix,"CURRENT TRIP");
 assert.equal(ticker.buildWeeklyTripTicker({events:[]},{...options,now:"2026-09-14T16:00:00Z"}).text,"THIS WEEK: HOME ALL WEEK");
 assert.equal(ticker.buildWeeklyTripTicker({events:[flight("out","AVL","ORD","2026-09-14T12:00:00Z","2026-09-14T14:00:00Z"),flight("home","ORD","AVL","2026-09-14T20:00:00Z","2026-09-14T22:00:00Z")]},{...options,now:"2026-09-14T16:00:00Z"}).text,"THIS WEEK: NO OVERNIGHTS");
-console.log("Weekly ticker schedule and raster-type tests passed.");
+console.log("Weekly ticker schedule and restrained raster-type tests passed.");

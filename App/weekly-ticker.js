@@ -18,7 +18,7 @@
 
     const DESIGN_WIDTH = 750;
     const DESIGN_HEIGHT = 72;
-    const PAPER = Object.freeze({left:39, top:18, right:708, bottom:58});
+    const PAPER = Object.freeze({left:52, top:20, right:698, bottom:52});
     const GLYPH_CHARACTERS = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:-,.!?'/•";
     const GLYPH_VARIANTS = 4;
     const GLYPH_CELL_WIDTH = 24;
@@ -51,12 +51,14 @@
         const character = GLYPH_CHARACTERS.includes(requested) ? requested : "?";
         const characterIndex = GLYPH_CHARACTERS.indexOf(character);
         const hash = characterHash(character, index);
+        const verticalNudge = ((hash >>> 4) % 13) === 0 ? ((hash & 1) ? 0.35 : -0.35) : 0;
+        const horizontalNudge = ((hash >>> 7) % 19) === 0 ? ((hash & 2) ? 0.2 : -0.2) : 0;
         glyphs.push({
           character, characterIndex, variant: hash % GLYPH_VARIANTS, x: cursor,
-          yJitter: ((hash >>> 4) % 3) - 1,
-          xJitter: ((hash >>> 7) % 5) === 0 ? 1 : 0
+          yJitter: verticalNudge,
+          xJitter: horizontalNudge
         });
-        cursor += GLYPH_ADVANCE + (((hash >>> 9) % 11) === 0 ? 1 : 0);
+        cursor += GLYPH_ADVANCE;
       }
       return {text,glyphs,width:cursor,cycleWidth:Math.max(cursor + LOOP_GAP, PAPER.right - PAPER.left + LOOP_GAP)};
     }
@@ -165,7 +167,7 @@
       if (!stack || stack.querySelector("#weekly-trip-ticker-canvas")) return null;
 
       if (!root.document.querySelector("link[data-dad-radar-weekly-ticker]")) {
-        const link=root.document.createElement("link"); link.rel="stylesheet"; link.href="/UI/weekly-ticker-layout.css?v=1"; link.dataset.dadRadarWeeklyTicker="true"; root.document.head.appendChild(link);
+        const link=root.document.createElement("link"); link.rel="stylesheet"; link.href="/UI/weekly-ticker-layout.css?v=2"; link.dataset.dadRadarWeeklyTicker="true"; root.document.head.appendChild(link);
       }
 
       const holder=root.document.createElement("div"); holder.className="weekly-trip-ticker"; holder.id="weekly-trip-ticker";
@@ -174,11 +176,14 @@
       holder.appendChild(canvas); stack.appendChild(holder);
 
       const context=canvas.getContext("2d",{alpha:true}); if(!context)return null;
-      const frameImage=new root.Image(), glyphImage=new root.Image(); frameImage.decoding="async";glyphImage.decoding="async";
-      frameImage.src="/assets/ticker/weekly-ticker-frame-v1.png"; glyphImage.src="/assets/ticker/weekly-ticker-glyphs-v1.png";
-      let frameReady=false,glyphsReady=false,run=buildGlyphRun(DEFAULT_TEXT),scrollOffset=0,lastFrameAt=null,animationFrame=null,destroyed=false,lastScheduleFetchAt=0,fetchRequest=null;
+      const frameImage=new root.Image(), paperImage=new root.Image(), glyphImage=new root.Image();
+      frameImage.decoding="async"; paperImage.decoding="async"; glyphImage.decoding="async";
+      frameImage.src="/assets/ticker/weekly-ticker-frame-v2.png";
+      paperImage.src="/assets/ticker/weekly-ticker-paper-v2.png";
+      glyphImage.src="/assets/ticker/weekly-ticker-glyphs-v2.png";
+      let frameReady=false,paperReady=false,glyphsReady=false,run=buildGlyphRun(DEFAULT_TEXT),scrollOffset=0,lastFrameAt=null,animationFrame=null,destroyed=false,lastScheduleFetchAt=0,fetchRequest=null;
       const reducedMotion=()=>root.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches===true;
-      const baseSpeed=24;
+      const baseSpeed=21;
 
       function setSummary(summary) {
         const next=normalizeTickerText(summary?.text??summary??DEFAULT_TEXT); if(next===run.text)return;
@@ -186,16 +191,31 @@
       }
       function drawGlyph(glyph,x,y){if(!glyphsReady)return;const tile=glyph.characterIndex*GLYPH_VARIANTS+glyph.variant;context.drawImage(glyphImage,(tile%GLYPH_COLUMNS)*GLYPH_CELL_WIDTH,Math.floor(tile/GLYPH_COLUMNS)*GLYPH_CELL_HEIGHT,GLYPH_CELL_WIDTH,GLYPH_CELL_HEIGHT,x+glyph.xJitter,y+glyph.yJitter,GLYPH_CELL_WIDTH,GLYPH_CELL_HEIGHT);}
       function drawRun(startX,y){run.glyphs.forEach(glyph=>drawGlyph(glyph,startX+glyph.x,y));}
+      function drawPaper(now){
+        if(!paperReady)return;
+        const width=paperImage.naturalWidth||paperImage.width||1024;
+        const height=PAPER.bottom-PAPER.top;
+        const travel=reducedMotion()?0:(scrollOffset*0.52);
+        const offset=((travel%width)+width)%width;
+        const y=PAPER.top+(reducedMotion()?0:Math.sin(now/941)*0.16);
+        let x=PAPER.left-offset;
+        while(x>PAPER.left)x-=width;
+        for(;x<PAPER.right;x+=width)context.drawImage(paperImage,x,y,width,height);
+      }
       function render(now){
         if(destroyed)return; if(lastFrameAt===null)lastFrameAt=now; const delta=Math.min(Math.max(now-lastFrameAt,0),80); lastFrameAt=now;
         if(!reducedMotion()){
-          const wander=Math.sin(now/1130)*0.026, ripple=Math.sin(now/179)*0.012, phase=now%11700, hitch=phase>5510&&phase<5650?0.72:1;
+          const wander=Math.sin(now/1270)*0.017, ripple=Math.sin(now/223)*0.005, phase=now%12100, hitch=phase>5630&&phase<5790?0.82:1;
           scrollOffset += baseSpeed*(1+wander+ripple)*hitch*delta/1000; if(scrollOffset>=run.cycleWidth)scrollOffset%=run.cycleWidth;
         }
-        context.clearRect(0,0,DESIGN_WIDTH,DESIGN_HEIGHT); if(frameReady)context.drawImage(frameImage,0,0,DESIGN_WIDTH,DESIGN_HEIGHT);
+        context.clearRect(0,0,DESIGN_WIDTH,DESIGN_HEIGHT);
         context.save();context.beginPath();context.rect(PAPER.left,PAPER.top,PAPER.right-PAPER.left,PAPER.bottom-PAPER.top);context.clip();
-        const micro=reducedMotion()?0:Math.sin(now/337)*0.42; const baseline=PAPER.top+Math.round((PAPER.bottom-PAPER.top-GLYPH_CELL_HEIGHT)/2)+micro; const first=PAPER.left+9-scrollOffset;
-        drawRun(first,baseline);drawRun(first+run.cycleWidth,baseline);context.restore();animationFrame=root.requestAnimationFrame(render);
+        drawPaper(now);
+        const micro=reducedMotion()?0:Math.sin(now/509)*0.16; const baseline=PAPER.top+Math.round((PAPER.bottom-PAPER.top-GLYPH_CELL_HEIGHT)/2)+micro; const first=PAPER.left+10-scrollOffset;
+        drawRun(first,baseline);drawRun(first+run.cycleWidth,baseline);
+        context.restore();
+        if(frameReady)context.drawImage(frameImage,0,0,DESIGN_WIDTH,DESIGN_HEIGHT);
+        animationFrame=root.requestAnimationFrame(render);
       }
 
       async function refreshSchedule(force=false){
@@ -210,7 +230,9 @@
         })(); return fetchRequest;
       }
 
-      frameImage.onload=()=>{frameReady=true;}; glyphImage.onload=()=>{glyphsReady=true;};
+      frameImage.onload=()=>{frameReady=true;};
+      paperImage.onload=()=>{paperReady=true;};
+      glyphImage.onload=()=>{glyphsReady=true;};
       canvas.setAttribute("aria-label",run.text);
       root.addEventListener("dad-radar:calendar-sync",event=>{if(event.detail?.ok)void refreshSchedule(false);});
       void refreshSchedule(true);

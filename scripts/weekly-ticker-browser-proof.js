@@ -22,17 +22,36 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
     const node = document.getElementById("weekly-trip-ticker-canvas");
     if (!node || node.getAttribute("aria-label") !== expected) return false;
     const resources = performance.getEntriesByType("resource").map(entry => entry.name);
-    return resources.some(name => name.includes("weekly-ticker-frame-v1.png")) &&
-      resources.some(name => name.includes("weekly-ticker-glyphs-v1.png"));
+    return resources.some(name => name.includes("weekly-ticker-frame-v2.png")) &&
+      resources.some(name => name.includes("weekly-ticker-paper-v2.png")) &&
+      resources.some(name => name.includes("weekly-ticker-glyphs-v2.png"));
   }, expectedText, {timeout: 4000, polling: 25});
+
+  await page.waitForTimeout(120);
 
   const data = await page.evaluate(expected => {
     const rect = node => {
       const r = node.getBoundingClientRect();
       return {left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height};
     };
+    const sample = (context, x, y, width, height) => {
+      const pixels = context.getImageData(x,y,width,height).data;
+      let red=0,green=0,blue=0,weight=0;
+      for (let index=0; index<pixels.length; index+=4) {
+        const alpha=pixels[index+3]/255;
+        if (alpha < .55) continue;
+        red+=pixels[index]*alpha;
+        green+=pixels[index+1]*alpha;
+        blue+=pixels[index+2]*alpha;
+        weight+=alpha;
+      }
+      const divisor=Math.max(weight,1);
+      const r=red/divisor,g=green/divisor,b=blue/divisor;
+      return {r,g,b,luma:r*.2126+g*.7152+b*.0722};
+    };
     const ticker = document.getElementById("weekly-trip-ticker");
     const canvas = document.getElementById("weekly-trip-ticker-canvas");
+    const context = canvas.getContext("2d");
     const stack = document.querySelector(".center-map-stack");
     const mapPanel = stack.querySelector(".map-panel");
     const lower = document.querySelector(".lower-display-grid");
@@ -50,6 +69,11 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
       stack:rect(stack),mapPanel:rect(mapPanel),ticker:rect(ticker),lower:rect(lower),
       posterStack:posterStack ? rect(posterStack) : null,
       instruments:instruments ? rect(instruments) : null,
+      rasterContrast:{
+        paper:sample(context,110,22,530,28),
+        topRail:sample(context,110,5,530,10),
+        leftMechanism:sample(context,8,15,40,42)
+      },
       tickerPaint:{backgroundImage:tickerStyle.backgroundImage,backgroundColor:tickerStyle.backgroundColor,
         borderTop:tickerStyle.borderTopWidth,borderRight:tickerStyle.borderRightWidth,
         borderBottom:tickerStyle.borderBottomWidth,borderLeft:tickerStyle.borderLeftWidth,
@@ -62,7 +86,14 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
   }, expectedText);
 
   assert.equal(data.aria, expectedText, "Ticker shows the family-readable upcoming-trip summary");
-  assert.deepEqual(data.canvasPixels, {width:750,height:72}, "Ticker uses the production raster-art coordinate system");
+  assert.deepEqual(data.canvasPixels, {width:750,height:72}, "Ticker preserves the production raster-art coordinate system");
+  assert(data.rasterContrast.paper.luma > 145, "Paper window remains visibly light instead of disappearing into the cabinet");
+  assert(data.rasterContrast.paper.r - data.rasterContrast.paper.b > 22, "Paper keeps a warm ivory/aged-cream tone");
+  assert(data.rasterContrast.paper.luma > data.rasterContrast.topRail.luma + 65,
+    "Ivory paper remains clearly distinct from the dark top machine rail");
+  assert(data.rasterContrast.paper.luma > data.rasterContrast.leftMechanism.luma + 55,
+    "Paper remains clearly distinct from the visible end mechanism");
+
   assert(Math.abs(data.ticker.left-data.mapPanel.left)<=1 && Math.abs(data.ticker.right-data.mapPanel.right)<=1,
     "Ticker occupies only the center-map column");
   assert(data.ticker.top>=data.mapPanel.bottom-1, "Ticker sits directly below the map, never over it");
@@ -113,11 +144,15 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
   const first = await canvas.screenshot();
   await page.waitForTimeout(450);
   const second = await canvas.screenshot();
-  assert(!first.equals(second), "Ticker text actually scrolls horizontally");
+  assert(!first.equals(second), "Ticker paper/text actually scrolls horizontally while the machine stays fixed");
 
-  if (label === "chromium-desktop" || label === "webkit-desktop") {
+  if (label === "chromium-ticker-desktop" || label === "webkit-ticker-desktop") {
     fs.writeFileSync(path.join(output, `${label}-weekly-ticker-a.png`), first);
     fs.writeFileSync(path.join(output, `${label}-weekly-ticker-b.png`), second);
+  }
+
+  if (label === "chromium-ticker-desktop" || label === "chromium-ticker-full-landscape") {
+    await page.screenshot({path:path.join(output, `${label}-dashboard.png`), fullPage:false});
   }
 
   return data;
