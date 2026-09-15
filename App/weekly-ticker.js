@@ -16,18 +16,18 @@
   function createWeeklyTickerApi() {
     "use strict";
 
-    const DESIGN_WIDTH = 750;
-    const DESIGN_HEIGHT = 100;
-    const PAPER = Object.freeze({left:145, top:30, right:606, bottom:70});
+    const DESIGN_WIDTH = 1500;
+    const DESIGN_HEIGHT = 200;
+    const PAPER = Object.freeze({left:290, top:60, right:1212, bottom:140});
     const GLYPH_CHARACTERS = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:-,.!?'/•";
     const GLYPH_VARIANTS = 4;
     const GLYPH_CELL_WIDTH = 24;
     const GLYPH_CELL_HEIGHT = 32;
     const GLYPH_COLUMNS = 16;
-    const GLYPH_DRAW_WIDTH = 12;
-    const GLYPH_DRAW_HEIGHT = 16;
-    const GLYPH_ADVANCE = 9;
-    const LOOP_GAP = 92;
+    const GLYPH_DRAW_WIDTH = 24;
+    const GLYPH_DRAW_HEIGHT = 32;
+    const GLYPH_ADVANCE = 18;
+    const LOOP_GAP = 184;
     const DEFAULT_TEXT = "THIS WEEK: UPDATING SCHEDULE";
     const TRIP_GAP_MS = 20 * 60 * 60 * 1000;
     const DEFAULT_ALIASES = Object.freeze({XNA:"BENTONVILLE, AR"});
@@ -180,11 +180,11 @@
       const frameImage=new root.Image(), paperImage=new root.Image(), glyphImage=new root.Image();
       frameImage.decoding="async"; paperImage.decoding="async"; glyphImage.decoding="async";
       let run=buildGlyphRun(DEFAULT_TEXT),scrollOffset=0,lastFrameAt=null,animationFrame=null,destroyed=false,lastScheduleFetchAt=0,fetchRequest=null;
-      frameImage.src="/assets/ticker/weekly-ticker-machine-v8.png";
+      frameImage.src="/assets/ticker/weekly-ticker-machine-v9.png";
       paperImage.src="/assets/ticker/weekly-ticker-paper-v5.png";
       glyphImage.src="/assets/ticker/weekly-ticker-glyphs-v5.png";
       const reducedMotion=()=>root.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches===true;
-      const baseSpeed=21;
+      const baseSpeed=42;
       const imageReady=image=>image.complete && Number(image.naturalWidth||image.width)>0;
 
       function setSummary(summary) {
@@ -195,11 +195,11 @@
       function drawRun(startX,y){run.glyphs.forEach(glyph=>drawGlyph(glyph,startX+glyph.x,y));}
       function drawPaper(now){
         if(!imageReady(paperImage))return;
-        const width=paperImage.naturalWidth||paperImage.width||1024;
+        const width=(paperImage.naturalWidth||paperImage.width||1024)*2;
         const height=PAPER.bottom-PAPER.top;
         const travel=reducedMotion()?0:(scrollOffset*0.52);
         const offset=((travel%width)+width)%width;
-        const y=PAPER.top+(reducedMotion()?0:Math.sin(now/941)*0.16);
+        const y=PAPER.top+(reducedMotion()?0:Math.sin(now/941)*0.32);
         let x=PAPER.left-offset;
         while(x>PAPER.left)x-=width;
         for(;x<PAPER.right;x+=width)context.drawImage(paperImage,x,y,width,height);
@@ -213,7 +213,7 @@
         context.clearRect(0,0,DESIGN_WIDTH,DESIGN_HEIGHT);
         context.save();context.beginPath();context.rect(PAPER.left,PAPER.top,PAPER.right-PAPER.left,PAPER.bottom-PAPER.top);context.clip();
         drawPaper(now);
-        const micro=reducedMotion()?0:Math.sin(now/509)*0.06; const baseline=PAPER.top+Math.round((PAPER.bottom-PAPER.top-GLYPH_DRAW_HEIGHT)/2)+micro; const first=PAPER.left+12-scrollOffset;
+        const micro=reducedMotion()?0:Math.sin(now/509)*0.12; const baseline=PAPER.top+Math.round((PAPER.bottom-PAPER.top-GLYPH_DRAW_HEIGHT)/2)+micro; const first=PAPER.left+24-scrollOffset;
         drawRun(first,baseline);drawRun(first+run.cycleWidth,baseline);
         context.restore();
         if(imageReady(frameImage))context.drawImage(frameImage,0,0,DESIGN_WIDTH,DESIGN_HEIGHT);

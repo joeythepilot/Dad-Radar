@@ -22,7 +22,7 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
     const node = document.getElementById("weekly-trip-ticker-canvas");
     if (!node || node.getAttribute("aria-label") !== expected) return false;
     const resources = performance.getEntriesByType("resource").map(entry => entry.name);
-    return resources.some(name => name.includes("weekly-ticker-machine-v8.png")) &&
+    return resources.some(name => name.includes("weekly-ticker-machine-v9.png")) &&
       resources.some(name => name.includes("weekly-ticker-paper-v5.png")) &&
       resources.some(name => name.includes("weekly-ticker-glyphs-v5.png"));
   }, expectedText, {timeout: 4000, polling: 25});
@@ -70,9 +70,9 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
       posterStack:posterStack ? rect(posterStack) : null,
       instruments:instruments ? rect(instruments) : null,
       rasterContrast:{
-        paper:sample(context,160,38,430,3),
-        topRail:sample(context,165,8,420,14),
-        leftMechanism:sample(context,8,18,110,62)
+        paper:sample(context,320,76,860,6),
+        topRail:sample(context,330,16,840,28),
+        leftMechanism:sample(context,16,36,220,124)
       },
       tickerPaint:{backgroundImage:tickerStyle.backgroundImage,backgroundColor:tickerStyle.backgroundColor,
         borderTop:tickerStyle.borderTopWidth,borderRight:tickerStyle.borderRightWidth,
@@ -86,7 +86,7 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
   }, expectedText);
 
   assert.equal(data.aria, expectedText, "Ticker shows the family-readable upcoming-trip summary");
-  assert.deepEqual(data.canvasPixels, {width:750,height:100}, "Ticker preserves the production raster-art coordinate system");
+  assert.deepEqual(data.canvasPixels, {width:1500,height:200}, "Ticker uses a 2x internal backing resolution so desktop rendering downsamples crisp raster artwork");
   assert(data.rasterContrast.paper.luma > 150, "Paper remains readable instead of disappearing into the cabinet");
   assert(data.rasterContrast.paper.luma < 200, "Paper stays aged cream/tan instead of reading as bright white");
   assert(data.rasterContrast.paper.r - data.rasterContrast.paper.b > 22, "Paper keeps a warm aged-cream/tan tone");
