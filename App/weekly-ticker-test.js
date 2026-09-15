@@ -11,7 +11,7 @@ assert(first.glyphs.some(g=>g.yJitter!==0));
 assert(first.glyphs.some(g=>g.variant!==0));
 assert(first.glyphs.every(g=>Math.abs(g.yJitter)<=0.35 && Math.abs(g.xJitter)<=0.2),
   "Typewriter alignment imperfection stays restrained instead of looking broken.");
-assert(first.glyphs.every((g,index)=>index===0 || g.x-first.glyphs[index-1].x===15),
+assert(first.glyphs.every((g,index)=>index===0 || g.x-first.glyphs[index-1].x===16),
   "Typewriter character advance stays steady; ink variation provides most of the mechanical imperfection.");
 
 function flight(id,origin,destination,startUtc,endUtc,overrides={}){return{id,kind:"flight",status:"confirmed",origin,destination,times:{startUtc,endUtc},...overrides};}

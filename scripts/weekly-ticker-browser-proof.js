@@ -22,9 +22,9 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
     const node = document.getElementById("weekly-trip-ticker-canvas");
     if (!node || node.getAttribute("aria-label") !== expected) return false;
     const resources = performance.getEntriesByType("resource").map(entry => entry.name);
-    return resources.some(name => name.includes("weekly-ticker-frame-v2.png")) &&
-      resources.some(name => name.includes("weekly-ticker-paper-v2.png")) &&
-      resources.some(name => name.includes("weekly-ticker-glyphs-v2.png"));
+    return resources.some(name => name.includes("weekly-ticker-frame-v3.png")) &&
+      resources.some(name => name.includes("weekly-ticker-paper-v3.png")) &&
+      resources.some(name => name.includes("weekly-ticker-glyphs-v3.png"));
   }, expectedText, {timeout: 4000, polling: 25});
 
   await page.waitForTimeout(120);
@@ -70,9 +70,9 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
       posterStack:posterStack ? rect(posterStack) : null,
       instruments:instruments ? rect(instruments) : null,
       rasterContrast:{
-        paper:sample(context,110,22,530,28),
-        topRail:sample(context,110,5,530,10),
-        leftMechanism:sample(context,8,15,40,42)
+        paper:sample(context,160,35,430,28),
+        topRail:sample(context,165,8,420,14),
+        leftMechanism:sample(context,8,18,110,62)
       },
       tickerPaint:{backgroundImage:tickerStyle.backgroundImage,backgroundColor:tickerStyle.backgroundColor,
         borderTop:tickerStyle.borderTopWidth,borderRight:tickerStyle.borderRightWidth,
@@ -86,7 +86,7 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
   }, expectedText);
 
   assert.equal(data.aria, expectedText, "Ticker shows the family-readable upcoming-trip summary");
-  assert.deepEqual(data.canvasPixels, {width:750,height:72}, "Ticker preserves the production raster-art coordinate system");
+  assert.deepEqual(data.canvasPixels, {width:750,height:100}, "Ticker preserves the production raster-art coordinate system");
   assert(data.rasterContrast.paper.luma > 145, "Paper window remains visibly light instead of disappearing into the cabinet");
   assert(data.rasterContrast.paper.r - data.rasterContrast.paper.b > 22, "Paper keeps a warm ivory/aged-cream tone");
   assert(data.rasterContrast.paper.luma > data.rasterContrast.topRail.luma + 65,
@@ -100,9 +100,6 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
   assert(data.ticker.bottom<=data.stack.bottom+1, "Ticker remains inside the existing center-stack height");
 
   if (data.portrait) {
-    // Full portrait already uses two intentional lower-grid rows: map first,
-    // then poster/instruments. The ticker must consume space only inside that
-    // existing first row rather than making the portrait dashboard taller.
     const expectedMapRowHeight = (data.lower.height - data.lowerRowGap) / 2;
     assert(Math.abs(data.stack.top-data.lower.top)<=1,
       "Portrait ticker stays at the top of the existing lower grid map row");

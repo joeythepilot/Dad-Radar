@@ -10,11 +10,11 @@ The weekly itinerary ticker keeps the existing schedule reducer and calendar-ref
 
 Production presentation layers:
 
-- `assets/ticker/weekly-ticker-frame-v2.png` — stationary raster hardware with upper/lower slot rails, end supports, guides and roller housings.
-- `assets/ticker/weekly-ticker-paper-v2.png` — opaque warm-ivory raster paper texture with subtle grain/fibers; the asset was simplified after CI proved the earlier PNG payload had a corrupt palette/transparency chunk.
-- `assets/ticker/weekly-ticker-glyphs-v2.png` — restrained raster typewriter glyph atlas with dark charcoal/aged ink.
+- `assets/ticker/weekly-ticker-frame-v3.png` — generated physical ticker machinery, cropped into the production strip: substantial end housings, rollers, guides, rails and fasteners on a transparent background.
+- `assets/ticker/weekly-ticker-paper-v3.png` — generated warm-ivory paper texture with restrained fibers and tonal variation.
+- `assets/ticker/weekly-ticker-glyphs-v3.png` — production atlas distilled from the generated typewriter sheet, with four restrained raster impressions per character.
 
-CSS remains geometry-only. It reserves the 87/13 map/ticker split and positions the canvas; it does not draw visible machine hardware, paper, rails, rollers or type.
+CSS remains geometry-only. It reserves the 84/16 map/ticker split and positions the canvas; it does not draw visible machine hardware, paper, rails, rollers or type.
 
 ## Renderer behavior
 
@@ -22,7 +22,7 @@ CSS remains geometry-only. It reserves the 87/13 map/ticker split and positions 
 - Paper and type move horizontally together through the stationary raster frame.
 - Motion keeps a slow mechanical character with restrained speed wander and one small periodic hesitation.
 - Per-character jitter is intentionally very small and rare. Most imperfection lives in the raster glyph variants and paper texture rather than in letter placement.
-- Image readiness handlers are attached before raster requests so fast/cached assets cannot miss their load event.
+- Raster readiness is checked directly from each image’s decoded state on every frame, avoiding load-event races with fast or cached assets.
 
 ## Layout boundaries retained
 
@@ -47,7 +47,7 @@ The ticker still refetches calendar data on the normal schedule interval and aft
 
 The focused browser proof checks:
 
-- v2 frame, paper and glyph raster assets loaded;
+- v3 generated frame, paper and glyph raster assets loaded;
 - visible ivory-paper brightness and warmth versus dark stationary machine hardware;
 - center-column-only placement;
 - shortened map without cabinet growth;

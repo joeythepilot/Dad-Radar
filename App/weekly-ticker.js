@@ -17,14 +17,14 @@
     "use strict";
 
     const DESIGN_WIDTH = 750;
-    const DESIGN_HEIGHT = 72;
-    const PAPER = Object.freeze({left:52, top:20, right:698, bottom:52});
+    const DESIGN_HEIGHT = 100;
+    const PAPER = Object.freeze({left:145, top:30, right:606, bottom:70});
     const GLYPH_CHARACTERS = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:-,.!?'/•";
     const GLYPH_VARIANTS = 4;
     const GLYPH_CELL_WIDTH = 24;
     const GLYPH_CELL_HEIGHT = 32;
     const GLYPH_COLUMNS = 16;
-    const GLYPH_ADVANCE = 15;
+    const GLYPH_ADVANCE = 16;
     const LOOP_GAP = 92;
     const DEFAULT_TEXT = "THIS WEEK: UPDATING SCHEDULE";
     const TRIP_GAP_MS = 20 * 60 * 60 * 1000;
@@ -167,7 +167,7 @@
       if (!stack || stack.querySelector("#weekly-trip-ticker-canvas")) return null;
 
       if (!root.document.querySelector("link[data-dad-radar-weekly-ticker]")) {
-        const link=root.document.createElement("link"); link.rel="stylesheet"; link.href="/UI/weekly-ticker-layout.css?v=2"; link.dataset.dadRadarWeeklyTicker="true"; root.document.head.appendChild(link);
+        const link=root.document.createElement("link"); link.rel="stylesheet"; link.href="/UI/weekly-ticker-layout.css?v=3"; link.dataset.dadRadarWeeklyTicker="true"; root.document.head.appendChild(link);
       }
 
       const holder=root.document.createElement("div"); holder.className="weekly-trip-ticker"; holder.id="weekly-trip-ticker";
@@ -179,9 +179,9 @@
       const frameImage=new root.Image(), paperImage=new root.Image(), glyphImage=new root.Image();
       frameImage.decoding="async"; paperImage.decoding="async"; glyphImage.decoding="async";
       let run=buildGlyphRun(DEFAULT_TEXT),scrollOffset=0,lastFrameAt=null,animationFrame=null,destroyed=false,lastScheduleFetchAt=0,fetchRequest=null;
-      frameImage.src="/assets/ticker/weekly-ticker-frame-v2.png";
-      paperImage.src="/assets/ticker/weekly-ticker-paper-v2.png";
-      glyphImage.src="/assets/ticker/weekly-ticker-glyphs-v2.png";
+      frameImage.src="/assets/ticker/weekly-ticker-frame-v3.png";
+      paperImage.src="/assets/ticker/weekly-ticker-paper-v3.png";
+      glyphImage.src="/assets/ticker/weekly-ticker-glyphs-v3.png";
       const reducedMotion=()=>root.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches===true;
       const baseSpeed=21;
       const imageReady=image=>image.complete && Number(image.naturalWidth||image.width)>0;
