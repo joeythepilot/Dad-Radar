@@ -7,11 +7,10 @@ assert.equal(ticker.normalizeTickerText("  Upcoming Trip — Montréal  "),"UPCO
 const first=ticker.buildGlyphRun("THIS WEEK: TUE OVERNIGHT - MADISON, WI");
 const second=ticker.buildGlyphRun("THIS WEEK: TUE OVERNIGHT - MADISON, WI");
 assert.deepEqual(first.glyphs,second.glyphs,"Typewriter imperfections stay deterministic across refreshes.");
-assert(first.glyphs.some(g=>g.yJitter!==0));
 assert(first.glyphs.some(g=>g.variant!==0));
-assert(first.glyphs.every(g=>Math.abs(g.yJitter)<=0.35 && Math.abs(g.xJitter)<=0.2),
-  "Typewriter alignment imperfection stays restrained instead of looking broken.");
-assert(first.glyphs.every((g,index)=>index===0 || g.x-first.glyphs[index-1].x===16),
+assert(first.glyphs.every(g=>g.yJitter===0 && g.xJitter===0),
+  "Typewriter baseline and spacing stay mechanically steady; only ink density varies.");
+assert(first.glyphs.every((g,index)=>index===0 || g.x-first.glyphs[index-1].x===11),
   "Typewriter character advance stays steady; ink variation provides most of the mechanical imperfection.");
 
 function flight(id,origin,destination,startUtc,endUtc,overrides={}){return{id,kind:"flight",status:"confirmed",origin,destination,times:{startUtc,endUtc},...overrides};}

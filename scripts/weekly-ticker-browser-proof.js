@@ -22,9 +22,9 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
     const node = document.getElementById("weekly-trip-ticker-canvas");
     if (!node || node.getAttribute("aria-label") !== expected) return false;
     const resources = performance.getEntriesByType("resource").map(entry => entry.name);
-    return resources.some(name => name.includes("weekly-ticker-frame-v3.png")) &&
-      resources.some(name => name.includes("weekly-ticker-paper-v3.png")) &&
-      resources.some(name => name.includes("weekly-ticker-glyphs-v3.png"));
+    return resources.some(name => name.includes("weekly-ticker-frame-v4.png")) &&
+      resources.some(name => name.includes("weekly-ticker-paper-v4.png")) &&
+      resources.some(name => name.includes("weekly-ticker-glyphs-v4.png"));
   }, expectedText, {timeout: 4000, polling: 25});
 
   await page.waitForTimeout(120);
@@ -87,8 +87,9 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
 
   assert.equal(data.aria, expectedText, "Ticker shows the family-readable upcoming-trip summary");
   assert.deepEqual(data.canvasPixels, {width:750,height:100}, "Ticker preserves the production raster-art coordinate system");
-  assert(data.rasterContrast.paper.luma > 145, "Paper window remains visibly light instead of disappearing into the cabinet");
-  assert(data.rasterContrast.paper.r - data.rasterContrast.paper.b > 22, "Paper keeps a warm ivory/aged-cream tone");
+  assert(data.rasterContrast.paper.luma > 125, "Paper window remains readable instead of disappearing into the cabinet");
+  assert(data.rasterContrast.paper.luma < 205, "Paper stays aged cream/tan instead of reading as bright white");
+  assert(data.rasterContrast.paper.r - data.rasterContrast.paper.b > 28, "Paper keeps a warm aged-cream/tan tone");
   assert(data.rasterContrast.paper.luma > data.rasterContrast.topRail.luma + 65,
     "Ivory paper remains clearly distinct from the dark top machine rail");
   assert(data.rasterContrast.paper.luma > data.rasterContrast.leftMechanism.luma + 55,
