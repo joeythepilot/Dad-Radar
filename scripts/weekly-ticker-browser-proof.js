@@ -36,13 +36,20 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
     const stack = document.querySelector(".center-map-stack");
     const mapPanel = stack.querySelector(".map-panel");
     const lower = document.querySelector(".lower-display-grid");
+    const posterStack = document.querySelector(".left-module-stack");
+    const instruments = document.querySelector(".instrument-rail");
+    const lowerStyle = getComputedStyle(lower);
     const tickerStyle = getComputedStyle(ticker);
     const canvasStyle = getComputedStyle(canvas);
     return {
       expected,
       aria:canvas.getAttribute("aria-label"),
+      portrait:document.documentElement.classList.contains("family-full-portrait"),
+      lowerRowGap:parseFloat(lowerStyle.rowGap) || 0,
       canvasPixels:{width:canvas.width,height:canvas.height},
       stack:rect(stack),mapPanel:rect(mapPanel),ticker:rect(ticker),lower:rect(lower),
+      posterStack:posterStack ? rect(posterStack) : null,
+      instruments:instruments ? rect(instruments) : null,
       tickerPaint:{backgroundImage:tickerStyle.backgroundImage,backgroundColor:tickerStyle.backgroundColor,
         borderTop:tickerStyle.borderTopWidth,borderRight:tickerStyle.borderRightWidth,
         borderBottom:tickerStyle.borderBottomWidth,borderLeft:tickerStyle.borderLeftWidth,
@@ -60,8 +67,35 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
     "Ticker occupies only the center-map column");
   assert(data.ticker.top>=data.mapPanel.bottom-1, "Ticker sits directly below the map, never over it");
   assert(data.ticker.bottom<=data.stack.bottom+1, "Ticker remains inside the existing center-stack height");
-  assert(Math.abs(data.stack.top-data.lower.top)<=1 && Math.abs(data.stack.bottom-data.lower.bottom)<=1,
-    "Adding the ticker does not increase the cabinet/lower-grid height");
+
+  if (data.portrait) {
+    // Full portrait already uses two intentional lower-grid rows: map first,
+    // then poster/instruments. The ticker must consume space only inside that
+    // existing first row rather than making the portrait dashboard taller.
+    const expectedMapRowHeight = (data.lower.height - data.lowerRowGap) / 2;
+    assert(Math.abs(data.stack.top-data.lower.top)<=1,
+      "Portrait ticker stays at the top of the existing lower grid map row");
+    assert(Math.abs(data.stack.height-expectedMapRowHeight)<=2,
+      "Portrait ticker shares the pre-existing map row instead of growing the dashboard");
+    assert(data.stack.bottom<data.lower.bottom-1,
+      "Portrait map stack remains the first lower-grid row, not the whole lower grid");
+    if (data.posterStack) {
+      assert(data.posterStack.top>=data.stack.bottom+data.lowerRowGap-2,
+        "Portrait poster row still begins after the existing row gap");
+      assert(Math.abs(data.posterStack.bottom-data.lower.bottom)<=1,
+        "Portrait poster row still ends at the existing lower-grid bottom");
+    }
+    if (data.instruments) {
+      assert(data.instruments.top>=data.stack.bottom+data.lowerRowGap-2,
+        "Portrait instruments stay in the existing second lower-grid row");
+      assert(Math.abs(data.instruments.bottom-data.lower.bottom)<=1,
+        "Portrait instruments still end at the existing lower-grid bottom");
+    }
+  } else {
+    assert(Math.abs(data.stack.top-data.lower.top)<=1 && Math.abs(data.stack.bottom-data.lower.bottom)<=1,
+      "Adding the ticker does not increase the cabinet/lower-grid height");
+  }
+
   assert(data.mapPanel.height/data.stack.height>=.80 && data.mapPanel.height/data.stack.height<=.90,
     "The map shrinks vertically only enough to reserve the ticker strip");
   assert(data.ticker.height/data.stack.height>=.09 && data.ticker.height/data.stack.height<=.16,
