@@ -22,7 +22,7 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
     const node = document.getElementById("weekly-trip-ticker-canvas");
     if (!node || node.getAttribute("aria-label") !== expected) return false;
     const resources = performance.getEntriesByType("resource").map(entry => entry.name);
-    return resources.some(name => name.includes("weekly-ticker-frame-v5.png")) &&
+    return resources.some(name => name.includes("weekly-ticker-machine-v8.png")) &&
       resources.some(name => name.includes("weekly-ticker-paper-v5.png")) &&
       resources.some(name => name.includes("weekly-ticker-glyphs-v5.png"));
   }, expectedText, {timeout: 4000, polling: 25});
