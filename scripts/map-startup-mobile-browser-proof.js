@@ -48,10 +48,11 @@ async function checkDiagnosticRoundTrip(page) {
     await window.refreshCalendarState();
   });
   // These predicates observe recorded events, not geometry. Poll by timer so a
-  // busy WebKit paint does not hide an event already present in the log. The
-  // original deadlines, exact counts and post-settle assertions remain intact;
-  // real transport frame sampling elsewhere is not replaced or accelerated.
-  await page.waitForFunction(()=>window.mapProofSounds.some(s=>s.name==='playMotor'),null,{timeout:2000,polling:20});
+  // busy WebKit paint does not hide an event already present in the log. WebKit
+  // can defer JavaScript polling for several seconds while compositing the real
+  // transport, so the first observation window is deliberately longer than the
+  // animation without changing any product timing or assertion.
+  await page.waitForFunction(()=>window.mapProofSounds.some(s=>s.name==='playMotor'),null,{timeout:5000,polling:20});
   assert.equal(await page.locator('.map-roll-surface-sheet .route-map-svg').count(),1,'New intentional test uses a second chart, not blank paper');
   await page.evaluate(()=>window.refreshCalendarState());
   await page.waitForFunction(()=>window.mapProofSounds.filter(s=>s.name==='playDetentClack').length===2,null,{timeout:9000,polling:20});
