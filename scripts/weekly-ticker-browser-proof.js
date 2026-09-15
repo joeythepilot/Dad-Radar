@@ -87,8 +87,9 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
 
   assert.equal(data.aria, expectedText, "Ticker shows the family-readable upcoming-trip summary");
   assert.deepEqual(data.canvasPixels, {width:750,height:100}, "Ticker preserves the production raster-art coordinate system");
-  assert(data.rasterContrast.paper.luma > 145, "Paper window remains visibly light instead of disappearing into the cabinet");
-  assert(data.rasterContrast.paper.r - data.rasterContrast.paper.b > 22, "Paper keeps a warm ivory/aged-cream tone");
+  assert(data.rasterContrast.paper.luma > 120, "Paper remains readable instead of disappearing into the cabinet");
+  assert(data.rasterContrast.paper.luma < 205, "Paper stays aged cream/tan instead of reading as bright white");
+  assert(data.rasterContrast.paper.r - data.rasterContrast.paper.b > 22, "Paper keeps a warm aged-cream/tan tone");
   assert(data.rasterContrast.paper.luma > data.rasterContrast.topRail.luma + 65,
     "Ivory paper remains clearly distinct from the dark top machine rail");
   assert(data.rasterContrast.paper.luma > data.rasterContrast.leftMechanism.luma + 55,
