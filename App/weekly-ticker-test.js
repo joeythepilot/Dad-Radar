@@ -11,7 +11,7 @@ assert(first.glyphs.every(g=>g.yJitter===0 && g.xJitter===0),
   "Typewriter baseline stays steady instead of wobbling like cartoon lettering.");
 assert(first.glyphs.every(g=>g.variant===0),
   "Ticker uses one restrained typewriter impression instead of erratic per-letter variants.");
-assert(first.glyphs.every((g,index)=>index===0 || g.x-first.glyphs[index-1].x===11),
+assert(first.glyphs.every((g,index)=>index===0 || g.x-first.glyphs[index-1].x===16),
   "Typewriter character advance stays steady; ink variation provides most of the mechanical imperfection.");
 
 function flight(id,origin,destination,startUtc,endUtc,overrides={}){return{id,kind:"flight",status:"confirmed",origin,destination,times:{startUtc,endUtc},...overrides};}
