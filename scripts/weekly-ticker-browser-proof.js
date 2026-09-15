@@ -70,7 +70,7 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
       posterStack:posterStack ? rect(posterStack) : null,
       instruments:instruments ? rect(instruments) : null,
       rasterContrast:{
-        paper:sample(context,160,31,430,3),
+        paper:sample(context,160,38,430,3),
         topRail:sample(context,165,8,420,14),
         leftMechanism:sample(context,8,18,110,62)
       },
