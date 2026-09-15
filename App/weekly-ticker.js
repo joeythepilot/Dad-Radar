@@ -24,7 +24,9 @@
     const GLYPH_CELL_WIDTH = 24;
     const GLYPH_CELL_HEIGHT = 32;
     const GLYPH_COLUMNS = 16;
-    const GLYPH_ADVANCE = 16;
+    const GLYPH_DRAW_WIDTH = 12;
+    const GLYPH_DRAW_HEIGHT = 16;
+    const GLYPH_ADVANCE = 9;
     const LOOP_GAP = 92;
     const DEFAULT_TEXT = "THIS WEEK: UPDATING SCHEDULE";
     const TRIP_GAP_MS = 20 * 60 * 60 * 1000;
@@ -178,7 +180,7 @@
       const frameImage=new root.Image(), paperImage=new root.Image(), glyphImage=new root.Image();
       frameImage.decoding="async"; paperImage.decoding="async"; glyphImage.decoding="async";
       let run=buildGlyphRun(DEFAULT_TEXT),scrollOffset=0,lastFrameAt=null,animationFrame=null,destroyed=false,lastScheduleFetchAt=0,fetchRequest=null;
-      frameImage.src="/assets/ticker/weekly-ticker-frame-v5.png";
+      frameImage.src="/assets/ticker/weekly-ticker-machine-v8.png";
       paperImage.src="/assets/ticker/weekly-ticker-paper-v5.png";
       glyphImage.src="/assets/ticker/weekly-ticker-glyphs-v5.png";
       const reducedMotion=()=>root.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches===true;
@@ -189,7 +191,7 @@
         const next=normalizeTickerText(summary?.text??summary??DEFAULT_TEXT); if(next===run.text)return;
         run=buildGlyphRun(next);scrollOffset=0;canvas.setAttribute("aria-label",next);
       }
-      function drawGlyph(glyph,x,y){if(!imageReady(glyphImage))return;const tile=glyph.characterIndex*GLYPH_VARIANTS+glyph.variant;context.drawImage(glyphImage,(tile%GLYPH_COLUMNS)*GLYPH_CELL_WIDTH,Math.floor(tile/GLYPH_COLUMNS)*GLYPH_CELL_HEIGHT,GLYPH_CELL_WIDTH,GLYPH_CELL_HEIGHT,x+glyph.xJitter,y+glyph.yJitter,GLYPH_CELL_WIDTH,GLYPH_CELL_HEIGHT);}
+      function drawGlyph(glyph,x,y){if(!imageReady(glyphImage))return;const tile=glyph.characterIndex*GLYPH_VARIANTS+glyph.variant;context.drawImage(glyphImage,(tile%GLYPH_COLUMNS)*GLYPH_CELL_WIDTH,Math.floor(tile/GLYPH_COLUMNS)*GLYPH_CELL_HEIGHT,GLYPH_CELL_WIDTH,GLYPH_CELL_HEIGHT,x+glyph.xJitter,y+glyph.yJitter,GLYPH_DRAW_WIDTH,GLYPH_DRAW_HEIGHT);}
       function drawRun(startX,y){run.glyphs.forEach(glyph=>drawGlyph(glyph,startX+glyph.x,y));}
       function drawPaper(now){
         if(!imageReady(paperImage))return;
@@ -211,7 +213,7 @@
         context.clearRect(0,0,DESIGN_WIDTH,DESIGN_HEIGHT);
         context.save();context.beginPath();context.rect(PAPER.left,PAPER.top,PAPER.right-PAPER.left,PAPER.bottom-PAPER.top);context.clip();
         drawPaper(now);
-        const micro=reducedMotion()?0:Math.sin(now/509)*0.06; const baseline=PAPER.top+Math.round((PAPER.bottom-PAPER.top-GLYPH_CELL_HEIGHT)/2)+micro; const first=PAPER.left+12-scrollOffset;
+        const micro=reducedMotion()?0:Math.sin(now/509)*0.06; const baseline=PAPER.top+Math.round((PAPER.bottom-PAPER.top-GLYPH_DRAW_HEIGHT)/2)+micro; const first=PAPER.left+12-scrollOffset;
         drawRun(first,baseline);drawRun(first+run.cycleWidth,baseline);
         context.restore();
         if(imageReady(frameImage))context.drawImage(frameImage,0,0,DESIGN_WIDTH,DESIGN_HEIGHT);
