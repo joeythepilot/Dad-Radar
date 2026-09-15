@@ -178,9 +178,9 @@
       const frameImage=new root.Image(), paperImage=new root.Image(), glyphImage=new root.Image();
       frameImage.decoding="async"; paperImage.decoding="async"; glyphImage.decoding="async";
       let run=buildGlyphRun(DEFAULT_TEXT),scrollOffset=0,lastFrameAt=null,animationFrame=null,destroyed=false,lastScheduleFetchAt=0,fetchRequest=null;
-      frameImage.src="/assets/ticker/weekly-ticker-frame-v4.png";
-      paperImage.src="/assets/ticker/weekly-ticker-paper-v4.png";
-      glyphImage.src="/assets/ticker/weekly-ticker-glyphs-v4.png";
+      frameImage.src="/assets/ticker/weekly-ticker-frame-v5.png";
+      paperImage.src="/assets/ticker/weekly-ticker-paper-v5.png";
+      glyphImage.src="/assets/ticker/weekly-ticker-glyphs-v5.png";
       const reducedMotion=()=>root.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches===true;
       const baseSpeed=21;
       const imageReady=image=>image.complete && Number(image.naturalWidth||image.width)>0;
