@@ -4,6 +4,12 @@ const ticker = require("./weekly-ticker");
 const airportCatalog = require("../data/airport-catalog");
 
 assert.equal(ticker.normalizeTickerText("  Upcoming Trip — Montréal  "),"UPCOMING TRIP - MONTREAL");
+assert.deepEqual(
+  {width:ticker.DESIGN_WIDTH,height:ticker.DESIGN_HEIGHT,paper:ticker.PAPER},
+  {width:1500,height:200,paper:{left:290,top:60,right:1212,bottom:140}},
+  "Ticker keeps a 2x internal backing resolution while preserving the same displayed geometry."
+);
+
 const first=ticker.buildGlyphRun("THIS WEEK: TUE OVERNIGHT - MADISON, WI");
 const second=ticker.buildGlyphRun("THIS WEEK: TUE OVERNIGHT - MADISON, WI");
 assert.deepEqual(first.glyphs,second.glyphs,"Typewriter imperfections stay deterministic across refreshes.");
@@ -11,7 +17,7 @@ assert(first.glyphs.every(g=>g.yJitter===0 && g.xJitter===0),
   "Typewriter baseline stays steady instead of wobbling like cartoon lettering.");
 assert(first.glyphs.every(g=>g.variant===0),
   "Ticker uses one restrained typewriter impression instead of erratic per-letter variants.");
-assert(first.glyphs.every((g,index)=>index===0 || g.x-first.glyphs[index-1].x===9),
+assert(first.glyphs.every((g,index)=>index===0 || g.x-first.glyphs[index-1].x===18),
   "Typewriter character advance stays steady; ink variation provides most of the mechanical imperfection.");
 
 function flight(id,origin,destination,startUtc,endUtc,overrides={}){return{id,kind:"flight",status:"confirmed",origin,destination,times:{startUtc,endUtc},...overrides};}
