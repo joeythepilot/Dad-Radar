@@ -1,4 +1,4 @@
-/* Geometry only. All visible ticker frame, paper, rollers and lettering are raster artwork. */
+/* Geometry only. All visible ticker frame, paper, rollers and lettering are raster artwork. V4 paper/type refinement remains canvas-rendered. */
 .center-map-stack {
   grid-template-rows: minmax(0, 84fr) minmax(0, 16fr) !important;
   row-gap: var(--panel-gap);
