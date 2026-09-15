@@ -178,10 +178,13 @@
       const context=canvas.getContext("2d",{alpha:true}); if(!context)return null;
       const frameImage=new root.Image(), paperImage=new root.Image(), glyphImage=new root.Image();
       frameImage.decoding="async"; paperImage.decoding="async"; glyphImage.decoding="async";
+      let frameReady=false,paperReady=false,glyphsReady=false,run=buildGlyphRun(DEFAULT_TEXT),scrollOffset=0,lastFrameAt=null,animationFrame=null,destroyed=false,lastScheduleFetchAt=0,fetchRequest=null;
+      frameImage.onload=()=>{frameReady=true;};
+      paperImage.onload=()=>{paperReady=true;};
+      glyphImage.onload=()=>{glyphsReady=true;};
       frameImage.src="/assets/ticker/weekly-ticker-frame-v2.png";
       paperImage.src="/assets/ticker/weekly-ticker-paper-v2.png";
       glyphImage.src="/assets/ticker/weekly-ticker-glyphs-v2.png";
-      let frameReady=false,paperReady=false,glyphsReady=false,run=buildGlyphRun(DEFAULT_TEXT),scrollOffset=0,lastFrameAt=null,animationFrame=null,destroyed=false,lastScheduleFetchAt=0,fetchRequest=null;
       const reducedMotion=()=>root.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches===true;
       const baseSpeed=21;
 
@@ -230,9 +233,6 @@
         })(); return fetchRequest;
       }
 
-      frameImage.onload=()=>{frameReady=true;};
-      paperImage.onload=()=>{paperReady=true;};
-      glyphImage.onload=()=>{glyphsReady=true;};
       canvas.setAttribute("aria-label",run.text);
       root.addEventListener("dad-radar:calendar-sync",event=>{if(event.detail?.ok)void refreshSchedule(false);});
       void refreshSchedule(true);
