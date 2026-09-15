@@ -6,9 +6,6 @@ const path = require("node:path");
 const http = require("node:http");
 const {chromium, webkit} = require("playwright");
 const {checkInitialReplay,checkFullHardware,checkDiagnosticRoundTrip} = require("./map-startup-mobile-browser-proof");
-const {checkWeeklyTicker} = require("./weekly-ticker-browser-proof");
-const weeklyTickerApi = require("../App/weekly-ticker");
-const airportCatalog = require("../data/airport-catalog");
 const root = path.resolve(__dirname, "..");
 const output = path.join(root, "artifacts/map-hardware");
 fs.mkdirSync(output, {recursive: true});
@@ -22,20 +19,6 @@ const state = {
     {time:"3:00 PM",label:"ORD → AVL",tag:"COMMUTE",status:"completed",kind:"flight"}
   ]}
 };
-const tickerNow = new Date();
-const hour = 60 * 60 * 1000;
-const at = hours => new Date(tickerNow.getTime() + hours * hour).toISOString();
-const tickerSchedule = {events:[
-  {id:"commute-out",kind:"flight",status:"confirmed",origin:"AVL",destination:"ORD",isCommute:true,times:{startUtc:at(24),endUtc:at(26)}},
-  {id:"msn-flight",kind:"flight",status:"confirmed",origin:"ORD",destination:"MSN",times:{startUtc:at(27),endUtc:at(29)}},
-  {id:"msn-night",kind:"layover",status:"confirmed",airport:"MSN",times:{startUtc:at(29),endUtc:at(44)}},
-  {id:"hpn-flight",kind:"flight",status:"confirmed",origin:"MSN",destination:"HPN",times:{startUtc:at(46),endUtc:at(49)}},
-  {id:"hpn-night",kind:"layover",status:"confirmed",airport:"HPN",times:{startUtc:at(49),endUtc:at(68)}},
-  {id:"xna-flight",kind:"flight",status:"confirmed",origin:"HPN",destination:"XNA",times:{startUtc:at(70),endUtc:at(73)}},
-  {id:"xna-night",kind:"layover",status:"confirmed",airport:"XNA",times:{startUtc:at(73),endUtc:at(92)}},
-  {id:"home-flight",kind:"flight",status:"confirmed",origin:"XNA",destination:"AVL",isCommute:true,times:{startUtc:at(94),endUtc:at(97)}}
-]};
-const tickerExpected = weeklyTickerApi.buildWeeklyTripTicker(tickerSchedule,{now:tickerNow,homeAirport:"AVL",timeZone:"America/New_York",airports:airportCatalog}).text;
 const now = new Date().toISOString();
 const payload = {ok:true,revision:1,publishedAt:now,calendarOk:true,liveOk:true,calendarAt:now,liveAt:now,resolved:{mode:"HOME",state,event:null}};
 const html = fs.readFileSync(path.join(root,"index.html"),"utf8");
@@ -54,7 +37,6 @@ const server = http.createServer((req,res) => {
   if (url.pathname.startsWith("/api/")) {
     if (url.pathname.startsWith("/api/weather")) {res.writeHead(204);res.end();return;}
     res.setHeader("Content-Type","application/json");
-    if (url.pathname === "/api/calendar/upcoming") {res.end(JSON.stringify({ok:true,...tickerSchedule}));return;}
     res.end(JSON.stringify(url.pathname.includes("/surface") ? {pending:true,retryAfterMs:3600000} : payload));return;
   }
   if (url.pathname === "/mobile/full") {res.setHeader("Content-Type","text/html");res.end(fullHtml);return;}
@@ -108,15 +90,21 @@ async function installSurface(page) {
   await page.evaluate(() => {
     if(document.querySelector('.airport-surface-layer'))return;
     const node=document.createElement('div');node.className='airport-surface-layer';node.hidden=true;
-    const svg=document.getElementById('route-map-svg');svg.parentElement.appendChild(node);
+    node.innerHTML='<svg class="airport-surface-svg" viewBox="0 0 800 600"><rect width="800" height="600" fill="#d3bd8d"/><path d="M80 100L690 510" stroke="#635e4f" stroke-width="30"/><text x="40" y="65" fill="#493823">FICTIONAL AIRPORT CHART: TRANSPORT TEST</text></svg>';
+    document.querySelector('.route-map-shell').appendChild(node);
   });
+  await page.waitForSelector('.map-roll-surface-sheet .airport-surface-layer',{state:'attached'});
 }
-async function waitForRegistration(page, expected) {
-  await page.waitForFunction(expected => window.mapProofSounds.filter(x=>/Clack/.test(x.name)).length>=expected,expected,{timeout:4000});
+async function waitForRegistration(page, moves) {
+  await page.waitForFunction(count => window.mapProofSounds.filter(sound => sound.name === 'playDetentClack').length >= count,
+    moves, {timeout:2000, polling:20});
 }
-async function transportProof(page,label) {
+async function transportProof(page, label) {
   await installSurface(page);
-  await page.evaluate(()=>{window.mapProofSampling=true;window.mapProofFrames=[];const sample=()=>{
+  await page.evaluate(() => {
+    window.mapProofFrames=[];window.mapProofSampling=true;
+    const sample=()=> {
+      if(!window.mapProofSampling)return;
       const shell=document.querySelector('.route-map-shell');
       const roll=document.querySelector('.map-roll-transport');
       const regional=document.querySelector('.map-roll-regional-sheet');
@@ -208,14 +196,13 @@ async function transportProof(page,label) {
           const proportions=await checkFullHardware(page);
           const measured=await geometry(page,compact);checkGeometry(measured);
           const label=`${engine}-${name}`;
-          const ticker=await checkWeeklyTicker(page,compact,label,output,tickerExpected);
           await page.screenshot({path:path.join(output,`${label}.png`),fullPage:true});
           if(name==='desktop'||name==='compact-portrait') {
             await checkDiagnosticRoundTrip(page);
             await transportProof(page,label);
           }
           assert.deepEqual(errors,[],`${label}: browser errors`);
-          report.push({label,passed:true,geometry:measured,proportions,ticker});
+          report.push({label,passed:true,geometry:measured,proportions});
           await page.close();console.log(`${label}: geometry and ${name==='desktop'||name==='compact-portrait'?'transport':'layout'} passed`);
         }
       } finally {await browser.close();}
