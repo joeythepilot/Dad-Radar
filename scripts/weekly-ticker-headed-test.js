@@ -84,7 +84,11 @@ const server = http.createServer((request,response) => {
           await page.route("**/*", route => route.request().url().startsWith(origin) || route.request().url().startsWith("blob:") ? route.continue() : route.abort());
           const url = name === "desktop" ? "/" : compact ? "/mobile?layout=compact" : "/mobile/full?layout=full";
           await page.goto(origin + url,{waitUntil:"load"});
-          if (!compact) await page.waitForSelector("#dashboard:not([hidden])",{timeout:5000});
+          // The product intentionally keeps its normal 3s startup sequence. A
+          // loaded WebKit runner can take several extra seconds to paint that
+          // transition, so this proof waits for readiness without changing the
+          // startup delay itself.
+          if (!compact) await page.waitForSelector("#dashboard:not([hidden])",{timeout:12000});
           const label = `${engine}-ticker-${name}`;
           const evidence = await checkWeeklyTicker(page,compact,label,output,expected);
           assert.deepEqual(errors,[],`${label}: browser errors`);
