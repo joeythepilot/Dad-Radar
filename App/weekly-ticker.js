@@ -24,10 +24,7 @@
     const GLYPH_CELL_WIDTH = 24;
     const GLYPH_CELL_HEIGHT = 32;
     const GLYPH_COLUMNS = 16;
-    const GLYPH_DRAW_WIDTH = 15;
-    const GLYPH_DRAW_HEIGHT = 20;
-    const GLYPH_ADVANCE = 11;
-    const GLYPH_ALPHA = 0.74;
+    const GLYPH_ADVANCE = 16;
     const LOOP_GAP = 92;
     const DEFAULT_TEXT = "THIS WEEK: UPDATING SCHEDULE";
     const TRIP_GAP_MS = 20 * 60 * 60 * 1000;
@@ -53,7 +50,6 @@
         const requested = text[index];
         const character = GLYPH_CHARACTERS.includes(requested) ? requested : "?";
         const characterIndex = GLYPH_CHARACTERS.indexOf(character);
-        const hash = characterHash(character, index);
         const verticalNudge = 0;
         const horizontalNudge = 0;
         glyphs.push({
@@ -182,9 +178,9 @@
       const frameImage=new root.Image(), paperImage=new root.Image(), glyphImage=new root.Image();
       frameImage.decoding="async"; paperImage.decoding="async"; glyphImage.decoding="async";
       let run=buildGlyphRun(DEFAULT_TEXT),scrollOffset=0,lastFrameAt=null,animationFrame=null,destroyed=false,lastScheduleFetchAt=0,fetchRequest=null;
-      frameImage.src="/assets/ticker/weekly-ticker-frame-v3.png";
-      paperImage.src="/assets/ticker/weekly-ticker-paper-v3.png";
-      glyphImage.src="/assets/ticker/weekly-ticker-glyphs-v3.png";
+      frameImage.src="/assets/ticker/weekly-ticker-frame-v4.png";
+      paperImage.src="/assets/ticker/weekly-ticker-paper-v4.png";
+      glyphImage.src="/assets/ticker/weekly-ticker-glyphs-v4.png";
       const reducedMotion=()=>root.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches===true;
       const baseSpeed=21;
       const imageReady=image=>image.complete && Number(image.naturalWidth||image.width)>0;
@@ -193,7 +189,7 @@
         const next=normalizeTickerText(summary?.text??summary??DEFAULT_TEXT); if(next===run.text)return;
         run=buildGlyphRun(next);scrollOffset=0;canvas.setAttribute("aria-label",next);
       }
-      function drawGlyph(glyph,x,y){if(!imageReady(glyphImage))return;const tile=glyph.characterIndex*GLYPH_VARIANTS+glyph.variant;context.save();context.globalAlpha=GLYPH_ALPHA;context.drawImage(glyphImage,(tile%GLYPH_COLUMNS)*GLYPH_CELL_WIDTH,Math.floor(tile/GLYPH_COLUMNS)*GLYPH_CELL_HEIGHT,GLYPH_CELL_WIDTH,GLYPH_CELL_HEIGHT,x+glyph.xJitter,y+glyph.yJitter,GLYPH_DRAW_WIDTH,GLYPH_DRAW_HEIGHT);context.restore();}
+      function drawGlyph(glyph,x,y){if(!imageReady(glyphImage))return;const tile=glyph.characterIndex*GLYPH_VARIANTS+glyph.variant;context.drawImage(glyphImage,(tile%GLYPH_COLUMNS)*GLYPH_CELL_WIDTH,Math.floor(tile/GLYPH_COLUMNS)*GLYPH_CELL_HEIGHT,GLYPH_CELL_WIDTH,GLYPH_CELL_HEIGHT,x+glyph.xJitter,y+glyph.yJitter,GLYPH_CELL_WIDTH,GLYPH_CELL_HEIGHT);}
       function drawRun(startX,y){run.glyphs.forEach(glyph=>drawGlyph(glyph,startX+glyph.x,y));}
       function drawPaper(now){
         if(!imageReady(paperImage))return;
@@ -205,10 +201,6 @@
         let x=PAPER.left-offset;
         while(x>PAPER.left)x-=width;
         for(;x<PAPER.right;x+=width)context.drawImage(paperImage,x,y,width,height);
-        context.save();
-        context.fillStyle="rgba(124, 85, 43, 0.24)";
-        context.fillRect(PAPER.left,y,PAPER.right-PAPER.left,height);
-        context.restore();
       }
       function render(now){
         if(destroyed)return; if(lastFrameAt===null)lastFrameAt=now; const delta=Math.min(Math.max(now-lastFrameAt,0),80); lastFrameAt=now;
@@ -219,7 +211,7 @@
         context.clearRect(0,0,DESIGN_WIDTH,DESIGN_HEIGHT);
         context.save();context.beginPath();context.rect(PAPER.left,PAPER.top,PAPER.right-PAPER.left,PAPER.bottom-PAPER.top);context.clip();
         drawPaper(now);
-        const micro=reducedMotion()?0:Math.sin(now/509)*0.06; const baseline=PAPER.top+Math.round((PAPER.bottom-PAPER.top-GLYPH_DRAW_HEIGHT)/2)+micro; const first=PAPER.left+12-scrollOffset;
+        const micro=reducedMotion()?0:Math.sin(now/509)*0.06; const baseline=PAPER.top+Math.round((PAPER.bottom-PAPER.top-GLYPH_CELL_HEIGHT)/2)+micro; const first=PAPER.left+12-scrollOffset;
         drawRun(first,baseline);drawRun(first+run.cycleWidth,baseline);
         context.restore();
         if(imageReady(frameImage))context.drawImage(frameImage,0,0,DESIGN_WIDTH,DESIGN_HEIGHT);
