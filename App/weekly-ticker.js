@@ -178,24 +178,22 @@
       const context=canvas.getContext("2d",{alpha:true}); if(!context)return null;
       const frameImage=new root.Image(), paperImage=new root.Image(), glyphImage=new root.Image();
       frameImage.decoding="async"; paperImage.decoding="async"; glyphImage.decoding="async";
-      let frameReady=false,paperReady=false,glyphsReady=false,run=buildGlyphRun(DEFAULT_TEXT),scrollOffset=0,lastFrameAt=null,animationFrame=null,destroyed=false,lastScheduleFetchAt=0,fetchRequest=null;
-      frameImage.onload=()=>{frameReady=true;};
-      paperImage.onload=()=>{paperReady=true;};
-      glyphImage.onload=()=>{glyphsReady=true;};
+      let run=buildGlyphRun(DEFAULT_TEXT),scrollOffset=0,lastFrameAt=null,animationFrame=null,destroyed=false,lastScheduleFetchAt=0,fetchRequest=null;
       frameImage.src="/assets/ticker/weekly-ticker-frame-v2.png";
       paperImage.src="/assets/ticker/weekly-ticker-paper-v2.png";
       glyphImage.src="/assets/ticker/weekly-ticker-glyphs-v2.png";
       const reducedMotion=()=>root.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches===true;
       const baseSpeed=21;
+      const imageReady=image=>image.complete && Number(image.naturalWidth||image.width)>0;
 
       function setSummary(summary) {
         const next=normalizeTickerText(summary?.text??summary??DEFAULT_TEXT); if(next===run.text)return;
         run=buildGlyphRun(next);scrollOffset=0;canvas.setAttribute("aria-label",next);
       }
-      function drawGlyph(glyph,x,y){if(!glyphsReady)return;const tile=glyph.characterIndex*GLYPH_VARIANTS+glyph.variant;context.drawImage(glyphImage,(tile%GLYPH_COLUMNS)*GLYPH_CELL_WIDTH,Math.floor(tile/GLYPH_COLUMNS)*GLYPH_CELL_HEIGHT,GLYPH_CELL_WIDTH,GLYPH_CELL_HEIGHT,x+glyph.xJitter,y+glyph.yJitter,GLYPH_CELL_WIDTH,GLYPH_CELL_HEIGHT);}
+      function drawGlyph(glyph,x,y){if(!imageReady(glyphImage))return;const tile=glyph.characterIndex*GLYPH_VARIANTS+glyph.variant;context.drawImage(glyphImage,(tile%GLYPH_COLUMNS)*GLYPH_CELL_WIDTH,Math.floor(tile/GLYPH_COLUMNS)*GLYPH_CELL_HEIGHT,GLYPH_CELL_WIDTH,GLYPH_CELL_HEIGHT,x+glyph.xJitter,y+glyph.yJitter,GLYPH_CELL_WIDTH,GLYPH_CELL_HEIGHT);}
       function drawRun(startX,y){run.glyphs.forEach(glyph=>drawGlyph(glyph,startX+glyph.x,y));}
       function drawPaper(now){
-        if(!paperReady)return;
+        if(!imageReady(paperImage))return;
         const width=paperImage.naturalWidth||paperImage.width||1024;
         const height=PAPER.bottom-PAPER.top;
         const travel=reducedMotion()?0:(scrollOffset*0.52);
@@ -217,7 +215,7 @@
         const micro=reducedMotion()?0:Math.sin(now/509)*0.16; const baseline=PAPER.top+Math.round((PAPER.bottom-PAPER.top-GLYPH_CELL_HEIGHT)/2)+micro; const first=PAPER.left+10-scrollOffset;
         drawRun(first,baseline);drawRun(first+run.cycleWidth,baseline);
         context.restore();
-        if(frameReady)context.drawImage(frameImage,0,0,DESIGN_WIDTH,DESIGN_HEIGHT);
+        if(imageReady(frameImage))context.drawImage(frameImage,0,0,DESIGN_WIDTH,DESIGN_HEIGHT);
         animationFrame=root.requestAnimationFrame(render);
       }
 
