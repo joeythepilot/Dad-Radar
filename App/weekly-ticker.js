@@ -141,7 +141,7 @@
       trip.layovers.forEach(layover=>{
         const airport=String(layover.airport??"").toUpperCase(); const key=`${dateKey(startOf(layover),options.timeZone)}|${airport}`;
         if(!airport || seen.has(key))return; seen.add(key);
-        items.push(`${weekday(startOf(layover),options.timeZone)} OVERNIGHT - ${locationFor(airport,options)}`);
+        items.push(`${weekday(startOf(layover),options.timeZone)} - ${locationFor(airport,options)}`);
       });
       items.push(trip.homeFlight ? `${weekday(endOf(trip.homeFlight),options.timeZone)} - HOME` : "RETURN HOME - TBD");
       return items;
@@ -169,7 +169,7 @@
           const start=dateKey(startOf(event),options.timeZone); const inclusiveEnd=new Date(endOf(event).getTime()-1); const end=dateKey(inclusiveEnd,options.timeZone);
           return start<=week.endKey && end>=week.startKey;
         });
-        items=[eventsThisWeek.some(event=>event.kind==="flight") ? "NO OVERNIGHTS" : "HOME ALL WEEK"];
+        items=[eventsThisWeek.some(event=>event.kind==="flight") ? "NO LAYOVERS" : "HOME ALL WEEK"];
       }
       return {prefix,items,text:`${prefix}: ${items.join(ITEM_SEPARATOR)}`};
     }
