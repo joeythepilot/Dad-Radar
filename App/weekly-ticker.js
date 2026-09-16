@@ -35,9 +35,9 @@
     const GLYPH_CELL_WIDTH = 24;
     const GLYPH_CELL_HEIGHT = 32;
     const GLYPH_COLUMNS = 16;
-    const GLYPH_DRAW_WIDTH = 24;
-    const GLYPH_DRAW_HEIGHT = 32;
-    const GLYPH_ADVANCE = 18;
+    const GLYPH_DRAW_WIDTH = 32;
+    const GLYPH_DRAW_HEIGHT = 42;
+    const GLYPH_ADVANCE = 24;
     const LOOP_GAP = 184;
     const DEFAULT_TEXT = "THIS WEEK: UPDATING SCHEDULE";
     const TRIP_GAP_MS = 20 * 60 * 60 * 1000;
@@ -264,6 +264,6 @@
       canvas.dadRadarTicker=controller; return controller;
     }
 
-    return {DESIGN_WIDTH,DESIGN_HEIGHT,PAPER,FRAME_SOURCE,TEXT_BASELINE_OFFSET,SCROLL_SPEED,ITEM_SEPARATOR,buildGlyphRun,buildWeeklyTripTicker,install,normalizeTickerText};
+    return {DESIGN_WIDTH,DESIGN_HEIGHT,PAPER,FRAME_SOURCE,TEXT_BASELINE_OFFSET,SCROLL_SPEED,ITEM_SEPARATOR,GLYPH_DRAW_WIDTH,GLYPH_DRAW_HEIGHT,GLYPH_ADVANCE,buildGlyphRun,buildWeeklyTripTicker,install,normalizeTickerText};
   }
 );
