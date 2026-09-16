@@ -43,7 +43,7 @@
     const TRIP_GAP_MS = 20 * 60 * 60 * 1000;
     const DEFAULT_ALIASES = Object.freeze({XNA:"BENTONVILLE, AR"});
     const US = Object.freeze({Alabama:"AL",Alaska:"AK",Arizona:"AZ",Arkansas:"AR",California:"CA",Colorado:"CO",Connecticut:"CT",Delaware:"DE",Florida:"FL",Georgia:"GA",Hawaii:"HI",Idaho:"ID",Illinois:"IL",Indiana:"IN",Iowa:"IA",Kansas:"KS",Kentucky:"KY",Louisiana:"LA",Maine:"ME",Maryland:"MD",Massachusetts:"MA",Michigan:"MI",Minnesota:"MN",Mississippi:"MS",Missouri:"MO",Montana:"MT",Nebraska:"NE",Nevada:"NV","New Hampshire":"NH","New Jersey":"NJ","New Mexico":"NM","New York":"NY","North Carolina":"NC","North Dakota":"ND",Ohio:"OH",Oklahoma:"OK",Oregon:"OR",Pennsylvania:"PA","Rhode Island":"RI","South Carolina":"SC","South Dakota":"SD",Tennessee:"TN",Texas:"TX",Utah:"UT",Vermont:"VT",Virginia:"VA",Washington:"WA","West Virginia":"WV",Wisconsin:"WI",Wyoming:"WY","District of Columbia":"DC","Puerto Rico":"PR","U.S. Virgin Islands":"VI"});
-    const CA = Object.freeze({Alberta:"AB","British Columbia":"BC",Manitoba:"MB","New Brunswick":"NB","Newfoundland and Labrador":"NL","Northwest Territories":"NT","Nova Scotia":"NS",Nunavut:"NU",Ontario:"ON","Prince Edward Island":"PE",Quebec:"QC",Saskatchewan:"SK",Yukon:"YT"});
+    const CA = Object.freeze({Alberta:"AB","British Columbia":"BC",Manitoba:"MB","New Brunswick":"NB","Newfoundland and Labrador":"NL","Northwest Territories":"NT","Nova Scotia:"NS",Nunavut:"NU",Ontario:"ON","Prince Edward Island":"PE",Quebec:"QC",Saskatchewan:"SK",Yukon:"YT"});
 
     function normalizeTickerText(value) {
       let text = String(value ?? DEFAULT_TEXT);
@@ -216,7 +216,7 @@
         for(;x<PAPER.right;x+=width)context.drawImage(paperImage,x,y,width,height);
       }
       function drawFrame(){
-        if(!imaeReady(frameImage))return;
+        if(!imageReady(frameImage))return;
         const sourceWidth=Number(frameImage.naturalWidth||frameImage.width)||FRAME_SOURCE.referenceWidth;
         const sourceHeight=Number(frameImage.naturalHeight||frameImage.height)||FRAME_SOURCE.referenceHeight;
         const sx=sourceWidth*FRAME_SOURCE.left/FRAME_SOURCE.referenceWidth;
@@ -254,7 +254,7 @@
       }
 
       canvas.setAttribute("aria-label",run.text);
-      root.addEventListener("dad-radar:calendar-sync",event=>{if(event.detail?.ok)toid refreshSchedule(false);});
+      root.addEventListener("dad-radar:calendar-sync",event=>{if(event.detail?.ok)void refreshSchedule(false);});
       void refreshSchedule(true);
       const refreshMs=Math.max(60000,Number(root.dadRadarSettings?.schedule?.refreshIntervalMs)||300000);
       const interval=root.setInterval(()=>void refreshSchedule(true),refreshMs);
@@ -264,6 +264,6 @@
       canvas.dadRadarTicker=controller; return controller;
     }
 
-    return {DESIGN_WIDTH,DESIGN_HEIGHT,PAPER,VRAME_SOURCE,TEXT_BASELINE_OFFSET,SCROLL_SPEED,ITEM_SEPARATOR,buildGlyphRun,buildWeeklyTripTicker,install,normalizeTickerText};
+    return {DESIGN_WIDTH,DESIGN_HEIGHT,PAPER,FRAME_SOURCE,TEXT_BASELINE_OFFSET,SCROLL_SPEED,ITEM_SEPARATOR,buildGlyphRun,buildWeeklyTripTicker,install,normalizeTickerText};
   }
 );
