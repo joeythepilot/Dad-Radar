@@ -27,6 +27,9 @@
       right:1530,
       bottom:388
     });
+    const TEXT_BASELINE_OFFSET = -5;
+    const SCROLL_SPEED = 48;
+    const ITEM_SEPARATOR = " • • ";
     const GLYPH_CHARACTERS = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:-,.!?'/•";
     const GLYPH_VARIANTS = 4;
     const GLYPH_CELL_WIDTH = 24;
@@ -39,7 +42,7 @@
     const DEFAULT_TEXT = "THIS WEEK: UPDATING SCHEDULE";
     const TRIP_GAP_MS = 20 * 60 * 60 * 1000;
     const DEFAULT_ALIASES = Object.freeze({XNA:"BENTONVILLE, AR"});
-    const US = Object.freeze({Alabama:"AL",Alaska:"AK",Arizona:"AZ",Arkansas:"AR",California:"CA",Colorado:"CO",Connecticut:"CT",Delaware:"DE",Florida:"FL",Georgia:"GA",Hawaii:"HI",Idaho:"ID",Illinois:"IL",Indiana:"IN",Iowa:"IA",Kansas:"KS",Kentucky:"KY",Louisiana:"LA",Maine:"ME",Maryland:"MD",Massachusetts:"MA",Michigan:"MI",Minnesota:"MN",Mississippi:"MS",Missouri:"MO",Montana:"MT",Nebraska:"NE",Nevada:"NV","New Hampshire":"NH","New Jersey":"NJ","New Mexico":"NM","New York":"NY","North Carolina":"NC","North Dakota":"ND",Ohio:"OH",Oklahoma:"OK",Oregon:"OR",Pennsylvania:"PA","Rhode Island":"RI","South Carolina":"SC","South Dakota":"SD",Tennessee:"TN",Texas:"TX",Utah:"UT",Vermont:"VT",Virginia:"VA",Washington:"WA","West Virginia":"WV",Wisconsin:"WI",Wyoming:"WY","District of Columbia":"DC","Puerto Rico":"PR","U.S. Virgin Islands":"VI"});
+    const US = Object.freeze({Alabama:"AL",Alaska:"AK",Arizona:"AZ",Arkansas:"AR",California:"CA",Colorado:"CO",Connecticut:"CT",Delaware:"DE",Florida:"FL",Georgia:"GA",Hawaii:"HI",Idaho:"ID",Illinois:"IL",Indiana:"IN",Iowa:"IA",Kansas:"KS",Kentucky:"KY",Louisiana:"LA",Maine:"ME",Maryland:"MD",Massachusetts:"MA",Michigan:"MI",Minnesota:"MN",Mississippi:"MS",Missouri:"MO",Montana:"MT",Nebraska:"NE",Nevada:"NV","New Hampshire":"NH","New Jersey":"NJ","New Mexico":"NM","New York":"NY","North Carolina":"NC","North Dakota":"ND",Ohio:"OH",Oregon:"OR",Pennsylvania:"PA","Rhode Island":"RI","South Carolina":"SC","South Dakota":"SD",Tennessee:"TN",Texas:"TX",Utah:"UT",Vermont:"VT",Virginia:"VA",Washington:"WA","West Virginia":"WV",Wisconsin:"WI",Wyoming:"WY","District of Columbia":"DC","Puerto Rico":"PR","U.S. Virgin Islands":"VI"});
     const CA = Object.freeze({Alberta:"AB","British Columbia":"BC",Manitoba:"MB","New Brunswick":"NB","Newfoundland and Labrador":"NL","Northwest Territories":"NT","Nova Scotia":"NS",Nunavut:"NU",Ontario:"ON","Prince Edward Island":"PE",Quebec:"QC",Saskatchewan:"SK",Yukon:"YT"});
 
     function normalizeTickerText(value) {
@@ -168,7 +171,7 @@
         });
         items=[eventsThisWeek.some(event=>event.kind==="flight") ? "NO OVERNIGHTS" : "HOME ALL WEEK"];
       }
-      return {prefix,items,text:`${prefix}: ${items.join(" • ")}`};
+      return {prefix,items,text:`${prefix}: ${items.join(ITEM_SEPARATOR)}`};
     }
 
     function install(root) {
@@ -192,7 +195,7 @@
       paperImage.src="/assets/ticker/weekly-ticker-paper-v5.png";
       glyphImage.src="/assets/ticker/weekly-ticker-glyphs-v5.png";
       const reducedMotion=()=>root.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches===true;
-      const baseSpeed=42;
+      const baseSpeed=SCROLL_SPEED;
       const imageReady=image=>image.complete && Number(image.naturalWidth||image.width)>0;
 
       function setSummary(summary) {
@@ -231,7 +234,7 @@
         context.clearRect(0,0,DESIGN_WIDTH,DESIGN_HEIGHT);
         context.save();context.beginPath();context.rect(PAPER.left,PAPER.top,PAPER.right-PAPER.left,PAPER.bottom-PAPER.top);context.clip();
         drawPaper(now);
-        const micro=reducedMotion()?0:Math.sin(now/509)*0.12; const baseline=PAPER.top+Math.round((PAPER.bottom-PAPER.top-GLYPH_DRAW_HEIGHT)/2)+micro; const first=PAPER.left+24-scrollOffset;
+        const micro=reducedMotion()?0:Math.sin(now/509)*0.12; const baseline=PAPER.top+Math.round((PAPER.bottom-PAPER.top-GLYPH_DRAW_HEIGHT)/2)+TEXT_BASELINE_OFFSET+micro; const first=PAPER.left+24-scrollOffset;
         drawRun(first,baseline);drawRun(first+run.cycleWidth,baseline);
         context.restore();
         drawFrame();
@@ -261,6 +264,6 @@
       canvas.dadRadarTicker=controller; return controller;
     }
 
-    return {DESIGN_WIDTH,DESIGN_HEIGHT,PAPER,FRAME_SOURCE,buildGlyphRun,buildWeeklyTripTicker,install,normalizeTickerText};
+    return {DESIGN_WIDTH,DESIGN_HEIGHT,PAPER,FRAME_SOURCE,TEXT_BASELINE_OFFSET,SCROLL_SPEED,ITEM_SEPARATOR,buildGlyphRun,buildWeeklyTripTicker,install,normalizeTickerText};
   }
 );
