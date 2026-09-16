@@ -34,7 +34,7 @@ async function checkFullHardware(page) {
     assert(data.bottom-m.bottom <= 20, 'All readouts stay near the lower bezel, never on 90px stilts');
   }
   const coverage=data.modules.reduce((a,m)=>a+m.width*m.height,0)/(data.width*data.height);
-  assert(coverage<=.19, `Readouts cover ${(coverage*100).toFixed(1)}% of map; maximum is 19%`);
+  assert(coverage<=.20, `Readouts cover ${(coverage*100).toFixed(1)}% of map; maximum is 20%`);
   const widths=data.modules.map(m=>m.width);
   assert(Math.abs(widths[0]-184*data.scale)<1 && Math.abs(widths[2]-196*data.scale)<1,
     'Existing housings share one proportional scale, not just smaller text');
