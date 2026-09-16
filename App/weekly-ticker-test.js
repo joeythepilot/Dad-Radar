@@ -5,14 +5,25 @@ const airportCatalog = require("../data/airport-catalog");
 
 assert.equal(ticker.normalizeTickerText("  Upcoming Trip — Montréal  "),"UPCOMING TRIP - MONTREAL");
 assert.deepEqual(
-  {width:ticker.DESIGN_WIDTH,height:ticker.DESIGN_HEIGHT,paper:ticker.PAPER,frame:ticker.FRAME_SOURCE},
+  {
+    width:ticker.DESIGN_WIDTH,
+    height:ticker.DESIGN_HEIGHT,
+    paper:ticker.PAPER,
+    frame:ticker.FRAME_SOURCE,
+    textBaselineOffset:ticker.TEXT_BASELINE_OFFSET,
+    scrollSpeed:ticker.SCROLL_SPEED,
+    itemSeparator:ticker.ITEM_SEPARATOR
+  },
   {
     width:1500,
     height:200,
     paper:{left:400,top:48,right:1180,bottom:128},
-    frame:{referenceWidth:1536,referenceHeight:512,left:7,top:91,right:1530,bottom:388}
+    frame:{referenceWidth:1536,referenceHeight:512,left:7,top:91,right:1530,bottom:388},
+    textBaselineOffset:-5,
+    scrollSpeed:48,
+    itemSeparator:" • • "
   },
-  "Ticker geometry matches the integrated printer artwork and centers the paper in its opening."
+  "Ticker geometry keeps the printer fit while nudging the type upward and modestly increasing paper speed."
 );
 
 const first=ticker.buildGlyphRun("THIS WEEK: TUE OVERNIGHT - MADISON, WI");
@@ -43,8 +54,8 @@ const schedule={events:[
 const options={homeAirport:"AVL",timeZone:"America/New_York",airports:airportCatalog};
 const upcoming=ticker.buildWeeklyTripTicker(schedule,{...options,now:"2026-09-14T16:00:00Z"});
 assert.equal(upcoming.prefix,"UPCOMING TRIP");
-assert.equal(upcoming.text,"UPCOMING TRIP: TUE OVERNIGHT - MADISON, WI • WED OVERNIGHT - WHITE PLAINS, NY • THU OVERNIGHT - BENTONVILLE, AR • FRI - HOME");
+assert.equal(upcoming.text,"UPCOMING TRIP: TUE OVERNIGHT - MADISON, WI • • WED OVERNIGHT - WHITE PLAINS, NY • • THU OVERNIGHT - BENTONVILLE, AR • • FRI - HOME");
 assert.equal(ticker.buildWeeklyTripTicker(schedule,{...options,now:"2026-09-16T18:00:00Z"}).prefix,"CURRENT TRIP");
 assert.equal(ticker.buildWeeklyTripTicker({events:[]},{...options,now:"2026-09-14T16:00:00Z"}).text,"THIS WEEK: HOME ALL WEEK");
 assert.equal(ticker.buildWeeklyTripTicker({events:[flight("out","AVL","ORD","2026-09-14T12:00:00Z","2026-09-14T14:00:00Z"),flight("home","ORD","AVL","2026-09-14T20:00:00Z","2026-09-14T22:00:00Z")]},{...options,now:"2026-09-14T16:00:00Z"}).text,"THIS WEEK: NO OVERNIGHTS");
-console.log("Weekly ticker schedule and integrated-printer geometry tests passed.");
+console.log("Weekly ticker schedule, type placement, separator, and scroll-speed tests passed.");
