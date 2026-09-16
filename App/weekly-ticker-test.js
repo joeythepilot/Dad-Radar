@@ -32,8 +32,8 @@ assert.deepEqual(
   "Ticker geometry keeps the printer fit while making the type substantially easier to read."
 );
 
-const first=ticker.buildGlyphRun("THIS WEEK: TUE OVERNIGHT - MADISON, WI");
-const second=ticker.buildGlyphRun("THIS WEEK: TUE OVERNIGHT - MADISON, WI");
+const first=ticker.buildGlyphRun("THIS WEEK: TUE - MADISON, WI");
+const second=ticker.buildGlyphRun("THIS WEEK: TUE - MADISON, WI");
 assert.deepEqual(first.glyphs,second.glyphs,"Typewriter imperfections stay deterministic across refreshes.");
 assert(first.glyphs.every(g=>g.yJitter===0 && g.xJitter===0),
   "Typewriter baseline stays steady instead of wobbling like cartoon lettering.");
@@ -60,8 +60,9 @@ const schedule={events:[
 const options={homeAirport:"AVL",timeZone:"America/New_York",airports:airportCatalog};
 const upcoming=ticker.buildWeeklyTripTicker(schedule,{...options,now:"2026-09-14T16:00:00Z"});
 assert.equal(upcoming.prefix,"UPCOMING TRIP");
-assert.equal(upcoming.text,"UPCOMING TRIP: TUE OVERNIGHT - MADISON, WI • • WED OVERNIGHT - WHITE PLAINS, NY • • THU OVERNIGHT - BENTONVILLE, AR • • FRI - HOME");
+assert.equal(upcoming.text,"UPCOMING TRIP: TUE - MADISON, WI • • WED - WHITE PLAINS, NY • • THU - BENTONVILLE, AR • • FRI - HOME");
+assert(!upcoming.text.includes("OVERNIGHT"),"Ticker omits the repetitive word OVERNIGHT from trip entries.");
 assert.equal(ticker.buildWeeklyTripTicker(schedule,{...options,now:"2026-09-16T18:00:00Z"}).prefix,"CURRENT TRIP");
 assert.equal(ticker.buildWeeklyTripTicker({events:[]},{...options,now:"2026-09-14T16:00:00Z"}).text,"THIS WEEK: HOME ALL WEEK");
-assert.equal(ticker.buildWeeklyTripTicker({events:[flight("out","AVL","ORD","2026-09-14T12:00:00Z","2026-09-14T14:00:00Z"),flight("home","ORD","AVL","2026-09-14T20:00:00Z","2026-09-14T22:00:00Z")]},{...options,now:"2026-09-14T16:00:00Z"}).text,"THIS WEEK: NO OVERNIGHTS");
-console.log("Weekly ticker schedule, larger type, type placement, separator, and scroll-speed tests passed.");
+assert.equal(ticker.buildWeeklyTripTicker({events:[flight("out","AVL","ORD","2026-09-14T12:00:00Z","2026-09-14T14:00:00Z"),flight("home","ORD","AVL","2026-09-14T20:00:00Z","2026-09-14T22:00:00Z")]},{...options,now:"2026-09-14T16:00:00Z"}).text,"THIS WEEK: NO LAYOVERS");
+console.log("Weekly ticker schedule, larger type, concise trip wording, type placement, separator, and scroll-speed tests passed.");
