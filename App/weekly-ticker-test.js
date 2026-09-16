@@ -12,7 +12,10 @@ assert.deepEqual(
     frame:ticker.FRAME_SOURCE,
     textBaselineOffset:ticker.TEXT_BASELINE_OFFSET,
     scrollSpeed:ticker.SCROLL_SPEED,
-    itemSeparator:ticker.ITEM_SEPARATOR
+    itemSeparator:ticker.ITEM_SEPARATOR,
+    glyphDrawWidth:ticker.GLYPH_DRAW_WIDTH,
+    glyphDrawHeight:ticker.GLYPH_DRAW_HEIGHT,
+    glyphAdvance:ticker.GLYPH_ADVANCE
   },
   {
     width:1500,
@@ -21,9 +24,12 @@ assert.deepEqual(
     frame:{referenceWidth:1536,referenceHeight:512,left:7,top:91,right:1530,bottom:388},
     textBaselineOffset:-5,
     scrollSpeed:48,
-    itemSeparator:" • • "
+    itemSeparator:" • • ",
+    glyphDrawWidth:32,
+    glyphDrawHeight:42,
+    glyphAdvance:24
   },
-  "Ticker geometry keeps the printer fit while nudging the type upward and modestly increasing paper speed."
+  "Ticker geometry keeps the printer fit while making the type substantially easier to read."
 );
 
 const first=ticker.buildGlyphRun("THIS WEEK: TUE OVERNIGHT - MADISON, WI");
@@ -33,8 +39,8 @@ assert(first.glyphs.every(g=>g.yJitter===0 && g.xJitter===0),
   "Typewriter baseline stays steady instead of wobbling like cartoon lettering.");
 assert(first.glyphs.every(g=>g.variant===0),
   "Ticker uses one restrained typewriter impression instead of erratic per-letter variants.");
-assert(first.glyphs.every((g,index)=>index===0 || g.x-first.glyphs[index-1].x===18),
-  "Typewriter character advance stays steady; ink variation provides most of the mechanical imperfection.");
+assert(first.glyphs.every((g,index)=>index===0 || g.x-first.glyphs[index-1].x===24),
+  "Larger type keeps a steady proportional character advance.");
 
 function flight(id,origin,destination,startUtc,endUtc,overrides={}){return{id,kind:"flight",status:"confirmed",origin,destination,times:{startUtc,endUtc},...overrides};}
 function layover(id,airport,startUtc,endUtc){return{id,kind:"layover",status:"confirmed",airport,times:{startUtc,endUtc}};}
@@ -58,4 +64,4 @@ assert.equal(upcoming.text,"UPCOMING TRIP: TUE OVERNIGHT - MADISON, WI • • W
 assert.equal(ticker.buildWeeklyTripTicker(schedule,{...options,now:"2026-09-16T18:00:00Z"}).prefix,"CURRENT TRIP");
 assert.equal(ticker.buildWeeklyTripTicker({events:[]},{...options,now:"2026-09-14T16:00:00Z"}).text,"THIS WEEK: HOME ALL WEEK");
 assert.equal(ticker.buildWeeklyTripTicker({events:[flight("out","AVL","ORD","2026-09-14T12:00:00Z","2026-09-14T14:00:00Z"),flight("home","ORD","AVL","2026-09-14T20:00:00Z","2026-09-14T22:00:00Z")]},{...options,now:"2026-09-14T16:00:00Z"}).text,"THIS WEEK: NO OVERNIGHTS");
-console.log("Weekly ticker schedule, type placement, separator, and scroll-speed tests passed.");
+console.log("Weekly ticker schedule, larger type, type placement, separator, and scroll-speed tests passed.");
