@@ -78,7 +78,7 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
         borderTop:tickerStyle.borderTopWidth,borderRight:tickerStyle.borderRightWidth,
         borderBottom:tickerStyle.borderBottomWidth,borderLeft:tickerStyle.borderLeftWidth,
         before:getComputedStyle(ticker,"::before").content,after:getComputedStyle(ticker,"::after").content},
-      canvasPaint:{backgroundImage:canvasStyle.backgroundImage,backgroundColor:canvasStyle.backgroundColor,
+      canvasPaint:{backgroundImage:canvasStyle.backgroundImage,backgroundColor:canvasStyle.backgroundColor,transform:canvasStyle.transform,
         borderTop:canvasStyle.borderTopWidth,borderRight:canvasStyle.borderRightWidth,
         borderBottom:canvasStyle.borderBottomWidth,borderLeft:canvasStyle.borderLeftWidth,
         before:getComputedStyle(canvas,"::before").content,after:getComputedStyle(canvas,"::after").content}
@@ -129,6 +129,8 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
     "The map reserves enough vertical room for the full integrated printer without growing the cabinet");
   assert(data.ticker.height/data.stack.height>=.20 && data.ticker.height/data.stack.height<=.28,
     "Ticker gets the substantial integrated-equipment height required by the printer artwork");
+
+  assert.equal(data.canvasPaint.transform, "none", "Ticker canvas is not vertically stretched by CSS");
 
   for (const paint of [data.tickerPaint,data.canvasPaint]) {
     assert.equal(paint.backgroundImage, "none", "No CSS-generated ticker artwork");
