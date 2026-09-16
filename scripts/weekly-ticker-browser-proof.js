@@ -70,7 +70,7 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
       posterStack:posterStack ? rect(posterStack) : null,
       instruments:instruments ? rect(instruments) : null,
       rasterContrast:{
-        paper:sample(context,320,76,860,6),
+        paper:sample(context,420,76,740,6),
         topRail:sample(context,330,16,840,28),
         leftMechanism:sample(context,16,36,220,124)
       },
@@ -86,7 +86,7 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
   }, expectedText);
 
   assert.equal(data.aria, expectedText, "Ticker shows the family-readable upcoming-trip summary");
-  assert.deepEqual(data.canvasPixels, {width:1500,height:200}, "Ticker uses a 2x internal backing resolution so desktop rendering downsamples crisp raster artwork");
+  assert.deepEqual(data.canvasPixels, {width:1500,height:200}, "Ticker keeps the established high-resolution raster backing canvas");
   assert(data.rasterContrast.paper.luma > 150, "Paper remains readable instead of disappearing into the cabinet");
   assert(data.rasterContrast.paper.luma < 200, "Paper stays aged cream/tan instead of reading as bright white");
   assert(data.rasterContrast.paper.r - data.rasterContrast.paper.b > 22, "Paper keeps a warm aged-cream/tan tone");
@@ -125,10 +125,10 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
       "Adding the ticker does not increase the cabinet/lower-grid height");
   }
 
-  assert(data.mapPanel.height/data.stack.height>=.80 && data.mapPanel.height/data.stack.height<=.90,
-    "The map shrinks vertically only enough to reserve the ticker strip");
-  assert(data.ticker.height/data.stack.height>=.09 && data.ticker.height/data.stack.height<=.16,
-    "Ticker stays a shallow strip rather than becoming another dashboard panel");
+  assert(data.mapPanel.height/data.stack.height>=.70 && data.mapPanel.height/data.stack.height<=.80,
+    "The map reserves enough vertical room for the full integrated printer without growing the cabinet");
+  assert(data.ticker.height/data.stack.height>=.20 && data.ticker.height/data.stack.height<=.28,
+    "Ticker gets the substantial integrated-equipment height required by the printer artwork");
 
   for (const paint of [data.tickerPaint,data.canvasPaint]) {
     assert.equal(paint.backgroundImage, "none", "No CSS-generated ticker artwork");

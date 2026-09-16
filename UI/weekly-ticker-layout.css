@@ -1,6 +1,6 @@
 /* Geometry only. All visible ticker frame, paper, rollers and lettering are raster artwork; refined paper/type lives in the raster asset files loaded by the proven ticker renderer. */
 .center-map-stack {
-  grid-template-rows: minmax(0, 84fr) minmax(0, 16fr) !important;
+  grid-template-rows: minmax(0, 76fr) minmax(0, 24fr) !important;
   row-gap: var(--panel-gap);
 }
 .weekly-trip-ticker {

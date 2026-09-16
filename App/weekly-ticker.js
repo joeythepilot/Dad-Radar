@@ -18,7 +18,15 @@
 
     const DESIGN_WIDTH = 1500;
     const DESIGN_HEIGHT = 200;
-    const PAPER = Object.freeze({left:290, top:60, right:1212, bottom:140});
+    const PAPER = Object.freeze({left:400, top:48, right:1180, bottom:128});
+    const FRAME_SOURCE = Object.freeze({
+      referenceWidth:1536,
+      referenceHeight:512,
+      left:7,
+      top:91,
+      right:1530,
+      bottom:388
+    });
     const GLYPH_CHARACTERS = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:-,.!?'/•";
     const GLYPH_VARIANTS = 4;
     const GLYPH_CELL_WIDTH = 24;
@@ -168,7 +176,7 @@
       if (!stack || stack.querySelector("#weekly-trip-ticker-canvas")) return null;
 
       if (!root.document.querySelector("link[data-dad-radar-weekly-ticker]")) {
-        const link=root.document.createElement("link"); link.rel="stylesheet"; link.href="/UI/weekly-ticker-layout.css?v=5"; link.dataset.dadRadarWeeklyTicker="true"; root.document.head.appendChild(link);
+        const link=root.document.createElement("link"); link.rel="stylesheet"; link.href="/UI/weekly-ticker-layout.css?v=6"; link.dataset.dadRadarWeeklyTicker="true"; root.document.head.appendChild(link);
       }
 
       const holder=root.document.createElement("div"); holder.className="weekly-trip-ticker"; holder.id="weekly-trip-ticker";
@@ -180,7 +188,7 @@
       const frameImage=new root.Image(), paperImage=new root.Image(), glyphImage=new root.Image();
       frameImage.decoding="async"; paperImage.decoding="async"; glyphImage.decoding="async";
       let run=buildGlyphRun(DEFAULT_TEXT),scrollOffset=0,lastFrameAt=null,animationFrame=null,destroyed=false,lastScheduleFetchAt=0,fetchRequest=null;
-      frameImage.src="/assets/ticker/weekly-ticker-machine-v9.png";
+      frameImage.src="/assets/ticker/weekly-ticker-machine-v9.png?v=integrated-panel-1";
       paperImage.src="/assets/ticker/weekly-ticker-paper-v5.png";
       glyphImage.src="/assets/ticker/weekly-ticker-glyphs-v5.png";
       const reducedMotion=()=>root.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches===true;
@@ -204,6 +212,16 @@
         while(x>PAPER.left)x-=width;
         for(;x<PAPER.right;x+=width)context.drawImage(paperImage,x,y,width,height);
       }
+      function drawFrame(){
+        if(!imageReady(frameImage))return;
+        const sourceWidth=Number(frameImage.naturalWidth||frameImage.width)||FRAME_SOURCE.referenceWidth;
+        const sourceHeight=Number(frameImage.naturalHeight||frameImage.height)||FRAME_SOURCE.referenceHeight;
+        const sx=sourceWidth*FRAME_SOURCE.left/FRAME_SOURCE.referenceWidth;
+        const sy=sourceHeight*FRAME_SOURCE.top/FRAME_SOURCE.referenceHeight;
+        const ex=sourceWidth*FRAME_SOURCE.right/FRAME_SOURCE.referenceWidth;
+        const ey=sourceHeight*FRAME_SOURCE.bottom/FRAME_SOURCE.referenceHeight;
+        context.drawImage(frameImage,sx,sy,Math.max(1,ex-sx),Math.max(1,ey-sy),0,0,DESIGN_WIDTH,DESIGN_HEIGHT);
+      }
       function render(now){
         if(destroyed)return; if(lastFrameAt===null)lastFrameAt=now; const delta=Math.min(Math.max(now-lastFrameAt,0),80); lastFrameAt=now;
         if(!reducedMotion()){
@@ -216,7 +234,7 @@
         const micro=reducedMotion()?0:Math.sin(now/509)*0.12; const baseline=PAPER.top+Math.round((PAPER.bottom-PAPER.top-GLYPH_DRAW_HEIGHT)/2)+micro; const first=PAPER.left+24-scrollOffset;
         drawRun(first,baseline);drawRun(first+run.cycleWidth,baseline);
         context.restore();
-        if(imageReady(frameImage))context.drawImage(frameImage,0,0,DESIGN_WIDTH,DESIGN_HEIGHT);
+        drawFrame();
         animationFrame=root.requestAnimationFrame(render);
       }
 
@@ -243,6 +261,6 @@
       canvas.dadRadarTicker=controller; return controller;
     }
 
-    return {DESIGN_WIDTH,DESIGN_HEIGHT,PAPER,buildGlyphRun,buildWeeklyTripTicker,install,normalizeTickerText};
+    return {DESIGN_WIDTH,DESIGN_HEIGHT,PAPER,FRAME_SOURCE,buildGlyphRun,buildWeeklyTripTicker,install,normalizeTickerText};
   }
 );
