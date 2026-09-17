@@ -26,11 +26,19 @@
     }
 
     function plannedStart(event) {
-      return toDate(event?.times?.startUtc ?? event?.startUtc);
+      return toDate(
+        event?.calendarPlan?.startUtc ??
+        event?.times?.startUtc ??
+        event?.startUtc
+      );
     }
 
     function plannedEnd(event) {
-      return toDate(event?.times?.endUtc ?? event?.endUtc);
+      return toDate(
+        event?.calendarPlan?.endUtc ??
+        event?.times?.endUtc ??
+        event?.endUtc
+      );
     }
 
     function operational(event) {
@@ -99,6 +107,23 @@
       return schedule.events.find(candidate => eventId(candidate) === id) ?? event;
     }
 
+    function restoreCalendarPlan(event) {
+      if (!event) return event;
+      const start = event?.calendarPlan?.startUtc;
+      const end = event?.calendarPlan?.endUtc;
+      const op = operational(event);
+      if (!start && !end && !op?.actualIn) return event;
+      return {
+        ...event,
+        times: {
+          ...(event.times || {}),
+          ...(start ? {startUtc: start} : {}),
+          ...(end ? {endUtc: end} : {})
+        },
+        ...(op?.actualIn ? {confirmedArrivalAt: op.actualIn} : {})
+      };
+    }
+
     function finiteMinutes(value) {
       if (value === null || value === undefined || value === "") return null;
       const number = Number(value);
@@ -164,7 +189,7 @@
 
     function operationalResolved(baseResolved, schedule, providedOptions = {}) {
       if (!baseResolved?.event || baseResolved.event.kind !== "flight") return baseResolved;
-      const event = originalEvent(schedule, baseResolved.event);
+      const event = restoreCalendarPlan(originalEvent(schedule, baseResolved.event));
       const op = operational(event);
       if (!op || !baseResolved?.state?.flight) {
         return event === baseResolved.event ? baseResolved : {...baseResolved, event};
@@ -195,14 +220,14 @@
             operational: op,
             departureDelayMinutes: delay,
             arrivalDelayMinutes: arrivalDelay,
-            scheduledOut: op.scheduledOut ?? event?.times?.startUtc ?? null,
+            scheduledOut: op.scheduledOut ?? event?.calendarPlan?.startUtc ?? event?.times?.startUtc ?? null,
             estimatedOut: op.estimatedOut ?? null,
             actualOut: op.actualOut ?? null,
             estimatedOff: op.estimatedOff ?? null,
             actualOff: op.actualOff ?? null,
             estimatedOn: op.estimatedOn ?? null,
             actualOn: op.actualOn ?? null,
-            scheduledIn: op.scheduledIn ?? event?.times?.endUtc ?? null,
+            scheduledIn: op.scheduledIn ?? event?.calendarPlan?.endUtc ?? event?.times?.endUtc ?? null,
             estimatedIn: op.estimatedIn ?? null,
             actualIn: op.actualIn ?? null
           }
