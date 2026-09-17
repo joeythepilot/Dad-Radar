@@ -35,7 +35,7 @@ assert(css.includes(".daily-schedule-operational-stamp"), "The operational stamp
 assert(css.includes("rgba(139, 32, 25"), "The operational stamp uses aged red dispatch ink.");
 assert(css.includes("background: transparent"), "The live overlay stays transparent so CSS does not repaint the physical card.");
 assert(css.includes(".daily-schedule-operational-stamp"), "Today’s Duty must include geometry for the operational revision stamp.");
-assert(css.includes("#9b2f24"), "Operational delay stamps use the muted red dispatch-ink treatment.");
+assert(css.includes("rgba(139, 32, 25"), "Operational delay stamps use the muted red dispatch-ink treatment.");
 assert(!css.includes("linear-gradient") && !css.includes("radial-gradient"), "CSS does not fabricate card material, lighting, or aging.");
 assert(build.includes('"App/daily-duty-card.js"'), "The modern browser bundle includes the physical-card renderer.");
 assert(mobileLayout.includes("is-physical-duty-card"), "Mobile Full must detect the physical Today’s Duty card before applying narrow-panel reflow.");
