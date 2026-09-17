@@ -2,7 +2,7 @@
 
 /* Geometry only for the ticker. The screen renders only the generated raster paper transport behind the future physical faceplate. */
 .center-map-stack {
-  grid-template-rows: minmax(0, 89fr) minmax(0, 11fr) !important;
+  grid-template-rows: minmax(0, 84fr) minmax(0, 16fr) !important;
   row-gap: var(--panel-gap);
 }
 .weekly-trip-ticker {
