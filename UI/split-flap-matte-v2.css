@@ -1,0 +1,76 @@
+/* =========================================================
+   DAD RADAR — MATTE SPLIT-FLAP MATERIAL V2
+
+   Visual repair for the HP 23es/full-RGB display path.
+   The animation mechanics remain in UI/styles.css; this file
+   only replaces the card material and excessive simulated
+   lighting with a restrained matte electromechanical finish.
+   ========================================================= */
+
+.flap-character {
+  background:
+    #060707
+    url("../assets/split-flap/split-flap-tile-matte-v2.png")
+    center /
+    100%
+    100%
+    no-repeat;
+
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.86),
+    0 1px 0 rgba(255, 255, 255, 0.015);
+
+  color: #e8e0cf;
+
+  text-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.72);
+}
+
+.flap-half {
+  background-color: #060707;
+
+  background-image:
+    url("../assets/split-flap/split-flap-tile-matte-v2.png");
+}
+
+/* A split-flap joint is a fine mechanical break, not a glowing bar. */
+.flap-character::before {
+  right: 8%;
+  left: 8%;
+  height: 1px;
+
+  background: rgba(0, 0, 0, 0.9);
+
+  box-shadow:
+    0 -1px 0 rgba(255, 255, 255, 0.018),
+    0 1px 0 rgba(0, 0, 0, 0.62);
+}
+
+/* The raster card already carries its minute material variation. */
+.flap-character::after {
+  content: none;
+}
+
+/* Deep mechanical well with only a whisper of neutral-warm edge light. */
+.flight-board {
+  background:
+    linear-gradient(
+      180deg,
+      #030404,
+      #000
+    );
+
+  box-shadow:
+    inset 0 7px 18px rgba(0, 0, 0, 0.74),
+    inset 0 -10px 22px rgba(0, 0, 0, 0.82);
+}
+
+.flight-board::after {
+  background: none;
+  border-color: rgba(214, 195, 160, 0.12);
+
+  box-shadow:
+    inset 0 0 7px rgba(225, 216, 198, 0.05),
+    inset 0 0 18px rgba(0, 0, 0, 0.55),
+    0 0 2px rgba(214, 195, 160, 0.04);
+}
