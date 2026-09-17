@@ -72,6 +72,25 @@ function createMasterStateService(options) {
     return prior?.operational ?? null;
   }
 
+  function calendarPlanFor(event) {
+    return {
+      startUtc: event?.calendarPlan?.startUtc ?? event?.times?.startUtc ?? event?.startUtc ?? null,
+      endUtc: event?.calendarPlan?.endUtc ?? event?.times?.endUtc ?? event?.endUtc ?? null
+    };
+  }
+
+  function withOperational(event, operational) {
+    if (!operational) return event;
+    return {
+      ...event,
+      calendarPlan: calendarPlanFor(event),
+      operational,
+      ...(operational.actualIn
+        ? {confirmedArrivalAt: operational.actualIn}
+        : {})
+    };
+  }
+
   async function enrichCalendar(value) {
     if (!value || !Array.isArray(value.events) || typeof options.getOperational !== "function") {
       return value;
@@ -81,15 +100,7 @@ function createMasterStateService(options) {
       const previousOperational = priorOperationalFor(event);
       try {
         const operational = await options.getOperational(event);
-        const effectiveOperational = operational ?? previousOperational;
-        if (!effectiveOperational) return event;
-        return {
-          ...event,
-          operational: effectiveOperational,
-          ...(effectiveOperational.actualIn
-            ? {confirmedArrivalAt: effectiveOperational.actualIn}
-            : {})
-        };
+        return withOperational(event, operational ?? previousOperational);
       } catch (error) {
         options.report?.("flightaware-operational-error", {
           eventId: event?.id ?? null,
@@ -97,14 +108,7 @@ function createMasterStateService(options) {
           destination: event?.destination ?? null,
           message: error?.message ?? String(error)
         });
-        if (!previousOperational) return event;
-        return {
-          ...event,
-          operational: previousOperational,
-          ...(previousOperational.actualIn
-            ? {confirmedArrivalAt: previousOperational.actualIn}
-            : {})
-        };
+        return withOperational(event, previousOperational);
       }
     }));
     return {...value, events};
