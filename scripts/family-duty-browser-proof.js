@@ -22,6 +22,52 @@ async function checkFamilyDuty(page, screenshotPath) {
     assert.equal(data.narrow, false, 'Physical Today’s Duty card must not enter legacy narrow reflow');
     assert.equal(data.tabindex, null, 'Physical Today’s Duty card must not become a scrolling tab stop');
     assert(data.text.some(x => x.text.includes('→')), 'Proof includes real rendered route labels');
+
+    const statusGeometry = await panel.evaluate(node => {
+      const context = node.querySelector('.daily-schedule-context');
+      const status = context?.querySelector('strong');
+      if (!context || !status) return null;
+
+      const original = status.textContent;
+      status.textContent = 'DADDY IS COMMUTING TO CHICAGO, ILLINOIS';
+
+      const panelBounds = node.getBoundingClientRect();
+      const contextBounds = context.getBoundingClientRect();
+      const statusBounds = status.getBoundingClientRect();
+      const result = {
+        panelTop: panelBounds.top,
+        panelHeight: panelBounds.height,
+        contextTop: contextBounds.top,
+        contextBottom: contextBounds.bottom,
+        statusTop: statusBounds.top,
+        statusBottom: statusBounds.bottom,
+        statusClientHeight: status.clientHeight,
+        statusScrollHeight: status.scrollHeight
+      };
+
+      status.textContent = original;
+      return result;
+    });
+
+    assert(statusGeometry, 'Physical Today’s Duty card exposes the live Current Status field');
+    const printedStatusBottom = statusGeometry.panelTop + statusGeometry.panelHeight * 0.365;
+    assert(
+      statusGeometry.contextBottom <= printedStatusBottom + 1,
+      `Current Status window must stay above the printed assignment divider: ${JSON.stringify(statusGeometry)}`
+    );
+    assert(
+      statusGeometry.statusTop >= statusGeometry.contextTop - 1,
+      `Current Status text must not clip above its live window: ${JSON.stringify(statusGeometry)}`
+    );
+    assert(
+      statusGeometry.statusBottom <= statusGeometry.contextBottom + 1,
+      `Current Status text must not spill below its live window: ${JSON.stringify(statusGeometry)}`
+    );
+    assert(
+      statusGeometry.statusScrollHeight <= statusGeometry.statusClientHeight + 1,
+      `Long Current Status copy must fit without hidden top/bottom text: ${JSON.stringify(statusGeometry)}`
+    );
+
     if (screenshotPath) await panel.screenshot({path:screenshotPath.replace(/\.png$/, '-duty-detail.png')});
     return;
   }
