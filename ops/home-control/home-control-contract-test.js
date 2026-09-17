@@ -28,8 +28,8 @@ assert.match(
   /\^\\\[DADRADAR\\\] \(status\|test\|deploy\|restart\|logs\|rollback\)\$/,
   "remote executor must use an exact allowlist command-title regex"
 );
-assert.match(remote, /\^\[0-9a-fA-F\]\{40\}\$$/, "deploy SHA must be full 40-character hex");
-assert.match(remote, /status --porcelain/, "deploy must inspect the working tree for local changes");
+assert.match(remote, /\^\[0-9a-fA-F\]\{40\}\$/, "deploy SHA must be full 40-character hex");
+assert.match(remote, /\("status",\s*"--porcelain"\)/, "deploy must inspect the working tree for local changes");
 assert.match(remote, /merge-base[^\r\n]+--is-ancestor/, "deploy must prove the SHA belongs to the configured branch history");
 assert.match(remote, /npm\.cmd[^\r\n]+ci/i, "deploy must restore dependencies with npm ci");
 assert.match(remote, /npm\.cmd[^\r\n]+test/i, "deploy must run the full Dad Radar tests");
@@ -38,6 +38,7 @@ assert.match(remote, /Dad Radar Remote Display Refresh|displayRefreshTask/, "rem
 assert.match(remote, /family-beta\.log/, "logs command must read the bounded Dad Radar runtime log");
 assert.doesNotMatch(remote, /Invoke-Expression|\biex\b/i, "remote executor must not use arbitrary expression execution");
 assert.doesNotMatch(remote, /\.env|credentials\.json|token\.json/i, "remote executor must never read or print Dad Radar credential files");
+assert.doesNotMatch(remote, /\?\s*["']|\?\?/, "remote executor must stay compatible with Windows PowerShell 5.1 syntax");
 
 assert.match(refresh, /edge-display-profile/, "display refresh must target Dad Radar's dedicated Edge profile");
 assert.match(refresh, /windows-display-host\.js/, "display refresh must relaunch the existing Dad Radar display host");
