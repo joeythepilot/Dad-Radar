@@ -92,6 +92,28 @@ assert.deepEqual(
   "Mobile Full should show the same full-day assignment list as the desktop physical card."
 );
 
+const stampedDuty = {
+  dateLabel: "THU SEP 17",
+  timeZoneLabel: "CENTRAL TIME",
+  context: "DADDY'S NEXT FLIGHT IS DELAYED",
+  entries: [
+    {
+      time:"11:07 PM",
+      label:"ORD → CMI",
+      tag:"FLT 3375",
+      status:"upcoming",
+      kind:"flight",
+      operationalStamp:{kind:"delay",label:"EST 11:07 PM",detail:"+37 MIN"}
+    }
+  ]
+};
+const stampedView = buildDutyCardView(stampedDuty, 1024, {homeAirport:"AVL", rowCapacity:5});
+assert.deepEqual(
+  stampedView.rows[0].operationalStamp,
+  {kind:"delay",label:"EST 11:07 PM",detail:"+37 MIN"},
+  "The physical-card view model preserves the live operational stamp for the renderer."
+);
+
 const mixedDutyFreeDay = {
   dateLabel: "THU SEP 17",
   timeZoneLabel: "EASTERN TIME",
