@@ -234,6 +234,8 @@
               .join(" · "),
             time:
               entry?.time ?? "--:--",
+            operationalStamp:
+              entry?.operationalStamp ?? null,
             status: [
               "completed",
               "current",
