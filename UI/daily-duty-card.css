@@ -220,7 +220,7 @@
   box-sizing: border-box;
   padding: 0.12em 0.25em;
   border: 1.5px solid currentColor;
-  color: #9b2f24;
+  color: rgba(139, 32, 25, 0.9);
   font-family: "Courier New", monospace;
   font-size: clamp(7px, 0.58vw, 10px);
   font-weight: 800;
