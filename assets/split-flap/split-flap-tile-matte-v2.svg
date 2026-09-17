@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="95" height="160" viewBox="0 0 95 160">
+  <defs>
+    <linearGradient id="surface" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#23211f"/>
+      <stop offset="0.18" stop-color="#1f1e1c"/>
+      <stop offset="0.82" stop-color="#1d1c1a"/>
+      <stop offset="1" stop-color="#191816"/>
+    </linearGradient>
+    <radialGradient id="grazing" cx="50%" cy="15%" r="72%">
+      <stop offset="0" stop-color="#5a554c" stop-opacity="0.12"/>
+      <stop offset="0.42" stop-color="#393631" stop-opacity="0.035"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.78" numOctaves="2" seed="620" result="noise"/>
+      <feColorMatrix in="noise" type="matrix" values="0.10 0 0 0 0  0 0.10 0 0 0  0 0 0.10 0 0  0 0 0 0.11 0"/>
+    </filter>
+  </defs>
+  <rect x="1" y="1" width="93" height="158" rx="7" fill="#0c0c0b"/>
+  <rect x="3.5" y="3.5" width="88" height="153" rx="5.5" fill="url(#surface)" stroke="#39362f" stroke-width="1"/>
+  <rect x="5" y="5" width="85" height="150" rx="4.5" fill="url(#grazing)"/>
+  <rect x="6" y="6" width="83" height="148" rx="4" fill="#8a8274" opacity="0.08" filter="url(#grain)"/>
+  <path d="M7 8H88" stroke="#6f685d" stroke-opacity="0.12"/>
+  <path d="M7 152H88" stroke="#000" stroke-opacity="0.5"/>
+  <ellipse cx="3.5" cy="80" rx="1.2" ry="3.5" fill="#080807" stroke="#3b3731" stroke-width="0.5"/>
+  <ellipse cx="91.5" cy="80" rx="1.2" ry="3.5" fill="#080807" stroke="#3b3731" stroke-width="0.5"/>
+</svg>

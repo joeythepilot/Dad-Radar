@@ -1,0 +1,62 @@
+/*
+ * Dad Radar split-flap material correction.
+ * Keep the proven flip mechanics; replace the bronze/backlit treatment with
+ * matte graphite cards in a dark electromechanical cavity.
+ */
+
+.flap-character,
+.flap-half {
+  background-color: #1d1c1a !important;
+  background-image: url("../assets/split-flap/split-flap-tile-matte-v2.svg") !important;
+  background-blend-mode: normal !important;
+}
+
+.flap-character {
+  border-radius: clamp(2px, 0.18vw, 3px) !important;
+  color: #e8e1d3 !important;
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.84),
+    inset 0 1px 0 rgba(255, 255, 255, 0.018) !important;
+  text-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.46) !important;
+}
+
+/* Hairline card break instead of the previous heavy illuminated bar. */
+.flap-character::before {
+  right: 8% !important;
+  left: 8% !important;
+  height: 1px !important;
+  background: rgba(0, 0, 0, 0.92) !important;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.014) !important;
+}
+
+/* Only a whisper of grazing light; the SVG carries the matte card texture. */
+.flap-character::after {
+  inset: 1px 3px !important;
+  border-radius: 2px !important;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(222, 202, 165, 0.012) 0%,
+      transparent 16%,
+      transparent 84%,
+      rgba(0, 0, 0, 0.055) 100%
+    ) !important;
+}
+
+/* The board is a dark cavity. Warm light is restrained to a faint edge catch. */
+.flight-board::after {
+  border-color: rgba(205, 177, 121, 0.09) !important;
+  box-shadow:
+    inset 0 0 8px rgba(255, 220, 158, 0.035),
+    inset 0 0 22px rgba(0, 0, 0, 0.62),
+    0 0 2px rgba(255, 190, 82, 0.025) !important;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(229, 202, 151, 0.010),
+      transparent 15%,
+      transparent 85%,
+      rgba(0, 0, 0, 0.09)
+    ) !important;
+}
