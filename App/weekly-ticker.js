@@ -203,23 +203,23 @@
       return items;
     }
 
-    function weekOverviewItems(trips, todayKey, week, options) {
+    function weekOverviewItems(trips, todayKey, endKey, options) {
       const overnightByKey = new Map();
       const homeReturnByKey = new Map();
       trips.forEach(trip=>{
         trip.layovers.forEach(layover=>{
           const key=dateKey(startOf(layover),options.timeZone);
           const airport=String(layover.airport??"").toUpperCase();
-          if(key && airport && key>=todayKey && key<=week.endKey) overnightByKey.set(key,locationFor(airport,options));
+          if(key && airport && key>=todayKey && key<=endKey) overnightByKey.set(key,locationFor(airport,options));
         });
         if(trip.homeFlight){
           const key=dateKey(endOf(trip.homeFlight),options.timeZone);
-          if(key && key>=todayKey && key<=week.endKey) homeReturnByKey.set(key,formatTime(endOf(trip.homeFlight),options.timeZone));
+          if(key && key>=todayKey && key<=endKey) homeReturnByKey.set(key,formatTime(endOf(trip.homeFlight),options.timeZone));
         }
       });
 
       const items=[];
-      for(let key=todayKey; key && key<=week.endKey; key=shiftKey(key,1)){
+      for(let key=todayKey; key && key<=endKey; key=shiftKey(key,1)){
         const day=weekdayForKey(key);
         if(overnightByKey.has(key)) items.push(`${day} - ${overnightByKey.get(key)}`);
         else if(homeReturnByKey.has(key)) items.push(`${day} - HOME ${homeReturnByKey.get(key)}`);
@@ -236,28 +236,31 @@
         airports: providedOptions.airports ?? null
       };
       const now=toDate(providedOptions.now)??new Date();
-      const todayKey=dateKey(now,options.timeZone), tomorrowKey=shiftKey(todayKey,1), week=weekBounds(todayKey);
+      const todayKey=dateKey(now,options.timeZone), tomorrowKey=shiftKey(todayKey,1), rollingEndKey=shiftKey(todayKey,6);
       const trips=tripClusters(schedule,options);
       const current=trips.find(trip=>trip.start<=now && now<=trip.end)??null;
       const next=trips.find(trip=>trip.start>now)??null;
-      let prefix="WEEK AHEAD"; let selected=[];
+      let prefix="WEEK AHEAD"; let selected=[]; let overviewEndKey=rollingEndKey;
       if(current){prefix="CURRENT TRIP";selected=[current];}
       else if(next && next.startKey===tomorrowKey){prefix="UPCOMING TRIP";selected=[next];}
-      else selected=trips.filter(trip=>trip.startKey<=week.endKey && trip.endKey>=todayKey);
+      else {
+        selected=trips.filter(trip=>trip.startKey<=rollingEndKey && trip.endKey>=todayKey);
+        overviewEndKey=selected.reduce((latest,trip)=>trip.endKey && trip.endKey>latest ? trip.endKey : latest,rollingEndKey);
+      }
 
       let items=[];
       if(current || (next && next.startKey===tomorrowKey)){
         selected.forEach(trip=>{ items = items.concat(tripItems(trip,options)); });
       } else if(selected.length){
-        items=weekOverviewItems(selected,todayKey,week,options);
+        items=weekOverviewItems(selected,todayKey,overviewEndKey,options);
       }
 
       if(!items.length){
-        const eventsThisWeek=sorted(schedule?.events).filter(event=>{
+        const eventsAhead=sorted(schedule?.events).filter(event=>{
           const start=dateKey(startOf(event),options.timeZone); const inclusiveEnd=new Date(endOf(event).getTime()-1); const end=dateKey(inclusiveEnd,options.timeZone);
-          return start<=week.endKey && end>=todayKey;
+          return start<=overviewEndKey && end>=todayKey;
         });
-        items=[eventsThisWeek.some(event=>event.kind==="flight") ? "HOME EACH NIGHT" : "HOME ALL WEEK"];
+        items=[eventsAhead.some(event=>event.kind==="flight") ? "HOME EACH NIGHT" : "HOME ALL WEEK"];
       }
       return {prefix,items,text:`${prefix}: ${items.join(ITEM_SEPARATOR)}`};
     }
