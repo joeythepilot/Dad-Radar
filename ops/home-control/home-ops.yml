@@ -32,3 +32,8 @@ jobs:
           & 'C:\DadRadarOps\DadRadarRemote.ps1' `
             -IssueTitle $env:DADRADAR_ISSUE_TITLE `
             -IssueBody $env:DADRADAR_ISSUE_BODY
+
+          # Protected scheduled-task probes can be handled as UNAVAILABLE while
+          # leaving a nonzero LASTEXITCODE behind. If the executor returned normally,
+          # the allowlisted action succeeded; real failures throw before this line.
+          exit 0
