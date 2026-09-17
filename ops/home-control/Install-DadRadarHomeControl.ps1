@@ -65,6 +65,64 @@ function Ensure-SystemGitSafeDirectory([string]$GitPath, [string]$RepoPath) {
   }
 }
 
+function Test-ServerTaskUsesBrokerHost([object]$Task, [string]$ExpectedHostScript) {
+  if (-not $Task) {
+    return $false
+  }
+
+  foreach ($action in @($Task.Actions)) {
+    $arguments = [string]$action.Arguments
+    if (
+      -not [string]::IsNullOrWhiteSpace($arguments) -and
+      $arguments.IndexOf($ExpectedHostScript, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
+    ) {
+      return $true
+    }
+  }
+
+  return $false
+}
+
+function Invoke-NpmScript([string]$NpmPath, [string]$WorkingDirectory, [string]$ScriptName) {
+  Push-Location $WorkingDirectory
+  try {
+    & $NpmPath run $ScriptName
+    if ($LASTEXITCODE -ne 0) {
+      throw "npm run $ScriptName failed with code $LASTEXITCODE"
+    }
+  }
+  finally {
+    Pop-Location
+  }
+}
+
+function Ensure-BrokerAwareServerTask(
+  [string]$NpmPath,
+  [string]$RepoPath,
+  [string]$ExpectedHostScript,
+  [string]$RestartRequestPath
+) {
+  $task = Get-ScheduledTask -TaskName $ServerTaskName -ErrorAction SilentlyContinue
+  if (Test-ServerTaskUsesBrokerHost $task $ExpectedHostScript) {
+    Write-Host "[PASS] SYSTEM startup task already uses family-beta-host.js"
+    return
+  }
+
+  Write-Host "[INFO] Repairing Dad Radar SYSTEM startup task for brokered remote restarts..."
+  Remove-Item -LiteralPath $RestartRequestPath -Force -ErrorAction SilentlyContinue
+
+  Invoke-NpmScript $NpmPath $RepoPath "beta:autostart:install"
+  Invoke-NpmScript $NpmPath $RepoPath "beta:autostart:restart"
+
+  Start-Sleep -Seconds 2
+  $updatedTask = Get-ScheduledTask -TaskName $ServerTaskName -ErrorAction SilentlyContinue
+  if (-not (Test-ServerTaskUsesBrokerHost $updatedTask $ExpectedHostScript)) {
+    throw "Dad Radar SYSTEM startup task was not updated to family-beta-host.js."
+  }
+
+  Write-Host "[PASS] SYSTEM startup task repaired and broker-aware host activated"
+}
+
 Assert-Administrator
 
 $resolvedRepo = Resolve-RepoPath $RepoPath
@@ -80,6 +138,11 @@ if (-not (Test-Path -LiteralPath (Join-Path $resolvedRepo "scripts\windows-displ
   throw "RepoPath does not look like the Dad Radar checkout: $resolvedRepo"
 }
 
+$serverHostScript = Join-Path $resolvedRepo "scripts\family-beta-host.js"
+if (-not (Test-Path -LiteralPath $serverHostScript -PathType Leaf)) {
+  throw "Broker-aware Dad Radar background host is missing: $serverHostScript"
+}
+
 if (-not (Test-Path -LiteralPath $RemoteSource -PathType Leaf)) {
   throw "Remote executor source is missing: $RemoteSource"
 }
@@ -87,10 +150,17 @@ if (-not (Test-Path -LiteralPath $RefreshSource -PathType Leaf)) {
   throw "Display refresh source is missing: $RefreshSource"
 }
 
-$serverTask = Get-ScheduledTask -TaskName $ServerTaskName -ErrorAction SilentlyContinue
-if (-not $serverTask) {
-  throw "Existing '$ServerTaskName' scheduled task was not found. Keep the current Dad Radar server autostart installed before enabling remote control."
+$currentSha = (& $gitPath -C $resolvedRepo rev-parse HEAD).Trim()
+if ($LASTEXITCODE -ne 0 -or $currentSha -notmatch '^[0-9a-fA-F]{40}$') {
+  throw "Unable to determine the current Dad Radar Git SHA."
 }
+$currentSha = $currentSha.ToLowerInvariant()
+
+$runtimeRoot = Join-Path $resolvedRepo "runtime"
+$restartRequestPath = Join-Path $runtimeRoot "remote-restart-request.json"
+New-Item -ItemType Directory -Path $runtimeRoot -Force | Out-Null
+Remove-Item -LiteralPath $restartRequestPath -Force -ErrorAction SilentlyContinue
+Set-Content -LiteralPath (Join-Path $runtimeRoot "deployed-sha.txt") -Value $currentSha -Encoding ascii
 
 $identity = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
 Write-Host "Installing Dad Radar home control for $identity"
@@ -112,6 +182,11 @@ Copy-Item -LiteralPath $RefreshSource -Destination $RefreshTarget -Force
 Grant-RunnerModifyAccess $resolvedRepo
 Grant-RunnerModifyAccess $OpsRoot
 Ensure-SystemGitSafeDirectory $gitPath $resolvedRepo
+
+# Existing family-beta installations can predate the broker-aware background host.
+# Repair those through Dad Radar's canonical task installer, then explicitly restart
+# the task so Task Scheduler is running the new action rather than an old process.
+Ensure-BrokerAwareServerTask $npmPath $resolvedRepo $serverHostScript $restartRequestPath
 
 $config = [ordered]@{
   repoPath = $resolvedRepo
@@ -147,16 +222,6 @@ Register-ScheduledTask `
   -Settings $taskSettings `
   -Description "Refreshes the visible Dad Radar Edge application in the logged-in desktop session." | Out-Null
 
-$currentSha = (& $gitPath -C $resolvedRepo rev-parse HEAD).Trim()
-if ($LASTEXITCODE -ne 0 -or $currentSha -notmatch '^[0-9a-fA-F]{40}$') {
-  throw "Unable to determine the current Dad Radar Git SHA."
-}
-$currentSha = $currentSha.ToLowerInvariant()
-
-$runtimeRoot = Join-Path $resolvedRepo "runtime"
-New-Item -ItemType Directory -Path $runtimeRoot -Force | Out-Null
-Set-Content -LiteralPath (Join-Path $runtimeRoot "deployed-sha.txt") -Value $currentSha -Encoding ascii
-
 Set-Content -LiteralPath (Join-Path $StateRoot "current-good-sha.txt") -Value $currentSha -Encoding ascii
 if (-not (Test-Path -LiteralPath (Join-Path $StateRoot "previous-good-sha.txt"))) {
   Set-Content -LiteralPath (Join-Path $StateRoot "previous-good-sha.txt") -Value $currentSha -Encoding ascii
@@ -167,6 +232,7 @@ Write-Host "[PASS] Local control scripts installed in $OpsRoot"
 Write-Host "[PASS] Local non-secret config written to $ConfigPath"
 Write-Host "[PASS] Network Service modify access prepared for Dad Radar and home-control state"
 Write-Host "[PASS] Dad Radar checkout added to Git system safe.directory"
+Write-Host "[PASS] SYSTEM startup task verified: family-beta-host.js"
 Write-Host "[PASS] Interactive display task registered: $DisplayTaskName"
 Write-Host "[PASS] Running-server deployment marker seeded: $currentSha"
 Write-Host "[PASS] Current known-good SHA recorded: $currentSha"
