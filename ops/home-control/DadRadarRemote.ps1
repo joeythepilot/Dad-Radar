@@ -32,7 +32,7 @@ function Load-Config {
   $config = Get-Content -LiteralPath $ConfigPath -Raw | ConvertFrom-Json
 
   foreach ($name in @("repoPath", "branch", "remote", "serverTask", "displayRefreshTask", "healthUrl")) {
-    if (-not $config.PSObject.Properties.Name.Contains($name) -or [string]::IsNullOrWhiteSpace([string]$config.$name)) {
+    if (-not $config.PSObject.Properties[$name] -or [string]::IsNullOrWhiteSpace([string]$config.$name)) {
       throw "Missing required home-control config property: $name"
     }
   }
@@ -237,17 +237,19 @@ function Show-Status([object]$Config) {
   $branch = Get-GitValue $Config @("rev-parse", "--abbrev-ref", "HEAD")
   $upstream = Get-GitValue $Config @("rev-parse", "$($Config.remote)/$($Config.branch)")
   $dirty = Get-GitValue $Config @("status", "--porcelain")
+  $workingTreeState = if ([string]::IsNullOrWhiteSpace($dirty)) { "CLEAN" } else { "DIRTY" }
 
   Write-Host "Repo:          $($Config.repoPath)"
   Write-Host "Branch:        $branch"
   Write-Host "Installed SHA: $head"
   Write-Host "Upstream SHA:  $upstream"
-  Write-Host "Working tree:  $([string]::IsNullOrWhiteSpace($dirty) ? 'CLEAN' : 'DIRTY')"
+  Write-Host "Working tree:  $workingTreeState"
   Write-Host "Server task:   $(Get-TaskState $Config.serverTask)"
   Write-Host "Display task:  $(Get-TaskState $Config.displayRefreshTask)"
 
   $healthy = Wait-DadRadarHealth $Config 1
-  Write-Host "Health:        $($healthy ? 'HEALTHY' : 'UNREACHABLE')"
+  $healthState = if ($healthy) { "HEALTHY" } else { "UNREACHABLE" }
+  Write-Host "Health:        $healthState"
 
   $runner = Get-Service -ErrorAction SilentlyContinue | Where-Object {
     $_.Name -like "actions.runner.*" -or $_.Name -like "actionsrunner.*"
