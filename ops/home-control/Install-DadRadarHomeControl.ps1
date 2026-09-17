@@ -14,6 +14,7 @@ $RemoteTarget = Join-Path $OpsRoot "DadRadarRemote.ps1"
 $RefreshTarget = Join-Path $OpsRoot "Refresh-DadRadarDisplay.ps1"
 $DisplayTaskName = "Dad Radar Remote Display Refresh"
 $ServerTaskName = "Dad Radar Family Beta"
+$RunnerServiceAccount = "NT AUTHORITY\NETWORK SERVICE"
 $Branch = "agent/mobile-companion"
 $Remote = "origin"
 $HealthUrl = "http://127.0.0.1:4173/api/health"
@@ -40,6 +41,28 @@ function Resolve-RepoPath([string]$Provided) {
   }
 
   return (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..\..")).Path
+}
+
+function Grant-RunnerModifyAccess([string]$Path) {
+  & icacls.exe $Path /grant "${RunnerServiceAccount}:(OI)(CI)M" /T /C | Out-Null
+  if ($LASTEXITCODE -ne 0) {
+    throw "Unable to grant $RunnerServiceAccount modify access to $Path"
+  }
+}
+
+function Ensure-SystemGitSafeDirectory([string]$GitPath, [string]$RepoPath) {
+  $existing = @(
+    & $GitPath config --system --get-all safe.directory 2>$null
+  )
+
+  if ($existing -contains $RepoPath) {
+    return
+  }
+
+  & $GitPath config --system --add safe.directory $RepoPath
+  if ($LASTEXITCODE -ne 0) {
+    throw "Unable to add the Dad Radar checkout to Git's system safe.directory list."
+  }
 }
 
 Assert-Administrator
@@ -75,12 +98,20 @@ Write-Host "Dad Radar checkout: $resolvedRepo"
 Write-Host "Git:  $gitPath"
 Write-Host "Node: $nodePath"
 Write-Host "npm:  $npmPath"
+Write-Host "Persistent runner service identity: $RunnerServiceAccount"
 
 New-Item -ItemType Directory -Path $OpsRoot -Force | Out-Null
 New-Item -ItemType Directory -Path $StateRoot -Force | Out-Null
 
 Copy-Item -LiteralPath $RemoteSource -Destination $RemoteTarget -Force
 Copy-Item -LiteralPath $RefreshSource -Destination $RefreshTarget -Force
+
+# GitHub's Windows runner uses Network Service as its default passwordless service
+# identity. Grant only the application/control directories it needs to deploy Dad
+# Radar, and mark the user-owned checkout safe for Git when invoked by that service.
+Grant-RunnerModifyAccess $resolvedRepo
+Grant-RunnerModifyAccess $OpsRoot
+Ensure-SystemGitSafeDirectory $gitPath $resolvedRepo
 
 $config = [ordered]@{
   repoPath = $resolvedRepo
@@ -93,6 +124,7 @@ $config = [ordered]@{
   nodePath = $nodePath
   npmPath = $npmPath
   interactiveUser = $identity
+  runnerServiceAccount = $RunnerServiceAccount
 }
 
 $config | ConvertTo-Json | Set-Content -LiteralPath $ConfigPath -Encoding utf8
@@ -133,6 +165,8 @@ if (-not (Test-Path -LiteralPath (Join-Path $StateRoot "previous-good-sha.txt"))
 Write-Host ""
 Write-Host "[PASS] Local control scripts installed in $OpsRoot"
 Write-Host "[PASS] Local non-secret config written to $ConfigPath"
+Write-Host "[PASS] Network Service modify access prepared for Dad Radar and home-control state"
+Write-Host "[PASS] Dad Radar checkout added to Git system safe.directory"
 Write-Host "[PASS] Interactive display task registered: $DisplayTaskName"
 Write-Host "[PASS] Running-server deployment marker seeded: $currentSha"
 Write-Host "[PASS] Current known-good SHA recorded: $currentSha"
