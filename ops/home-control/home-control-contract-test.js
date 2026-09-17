@@ -58,6 +58,7 @@ assert.match(installer, /Dad Radar Remote Display Refresh/, "installer must regi
 assert.match(installer, /config\.json/, "installer must create local non-secret configuration");
 assert.match(installer, /gitPath\s*=\s*\$gitPath/, "installer must persist the exact Git executable path");
 assert.match(installer, /npmPath\s*=\s*\$npmPath/, "installer must persist the exact npm executable path");
+assert.match(installer, /deployed-sha\.txt/, "installer must seed the running-server deployment version marker");
 
 assert.match(workflow, /issues:\s*[\s\S]*types:\s*\[opened\]/, "control workflow must trigger only on opened issues");
 assert.match(workflow, /startsWith\(github\.event\.issue\.title, '\[DADRADAR\]'\)/, "workflow must ignore non-Dad-Radar issues");
