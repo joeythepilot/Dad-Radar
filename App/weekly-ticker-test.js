@@ -111,6 +111,41 @@ assert.deepEqual(weekAhead.items,[
   "SUN - HOME"
 ],"Week-ahead mode explicitly shows where the family can expect Dad to overnight each day.");
 
+const rollingWeekSchedule={events:[
+  flight("sun-base","AVL","ORD","2026-09-20T13:00:00Z","2026-09-20T15:00:00Z",{isCommute:true}),
+  layover("sun-ord-night","ORD","2026-09-20T15:00:00Z","2026-09-21T12:00:00Z"),
+  flight("mon-xna","ORD","XNA","2026-09-21T13:00:00Z","2026-09-21T15:00:00Z"),
+  layover("mon-xna-night","XNA","2026-09-21T15:00:00Z","2026-09-22T11:00:00Z"),
+  flight("tue-ord","XNA","ORD","2026-09-22T11:30:00Z","2026-09-22T13:00:00Z"),
+  flight("tue-home","ORD","AVL","2026-09-22T17:00:00Z","2026-09-22T19:00:00Z",{isCommute:true})
+]};
+const rollingWeek=ticker.buildWeeklyTripTicker(rollingWeekSchedule,{...options,now:"2026-09-17T16:00:00Z"});
+assert.equal(rollingWeek.prefix,"WEEK AHEAD");
+assert.deepEqual(rollingWeek.items,[
+  "THU - HOME",
+  "FRI - HOME",
+  "SAT - HOME",
+  "SUN - CHICAGO, IL",
+  "MON - BENTONVILLE, AR",
+  "TUE - HOME 3:00 PM",
+  "WED - HOME"
+],"Week-ahead mode is a rolling seven-day family forecast and must not stop at the calendar-week Sunday boundary.");
+
+const spilloverSchedule={events:[
+  flight("wed-base","AVL","ORD","2026-09-23T13:00:00Z","2026-09-23T15:00:00Z",{isCommute:true}),
+  layover("wed-ord-night","ORD","2026-09-23T15:00:00Z","2026-09-24T12:00:00Z"),
+  flight("thu-dfw","ORD","DFW","2026-09-24T13:00:00Z","2026-09-24T16:00:00Z"),
+  layover("thu-dfw-night","DFW","2026-09-24T16:00:00Z","2026-09-25T11:00:00Z"),
+  flight("fri-ord","DFW","ORD","2026-09-25T11:30:00Z","2026-09-25T14:00:00Z"),
+  flight("fri-home","ORD","AVL","2026-09-25T17:00:00Z","2026-09-25T19:00:00Z",{isCommute:true})
+]};
+const spillover=ticker.buildWeeklyTripTicker(spilloverSchedule,{...options,now:"2026-09-17T16:00:00Z"});
+assert.deepEqual(spillover.items.slice(-3),[
+  "WED - CHICAGO, IL",
+  "THU - DALLAS-FORT WORTH, TX",
+  "FRI - HOME 3:00 PM"
+],"A trip that begins inside the rolling horizon remains visible through the actual return home instead of being clipped on day seven.");
+
 assert.equal(ticker.buildWeeklyTripTicker({events:[]},{...options,now:"2026-09-14T16:00:00Z"}).text,"WEEK AHEAD: HOME ALL WEEK");
 assert.equal(ticker.buildWeeklyTripTicker({events:[flight("out","AVL","ORD","2026-09-14T12:00:00Z","2026-09-14T14:00:00Z"),flight("home","ORD","AVL","2026-09-14T20:00:00Z","2026-09-14T22:00:00Z")]},{...options,now:"2026-09-14T16:00:00Z"}).text,"WEEK AHEAD: HOME EACH NIGHT");
-console.log("Weekly ticker family overview contract tests passed: overnights, return-home time, week-ahead home nights, reverse vertical feed, and no duplicated daily flight detail.");
+console.log("Weekly ticker family overview contract tests passed: overnights, return-home time, rolling horizon spillover, reverse vertical feed, and no duplicated daily flight detail.");
