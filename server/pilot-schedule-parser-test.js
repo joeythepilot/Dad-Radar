@@ -115,6 +115,32 @@ function testManualCommute() {
   );
 }
 
+function testNoteDrivenCommute() {
+  const result = parsePilotEvent(
+    createEvent({
+      summary: "Commute",
+      description:
+        "Commute\nFlight: UA 1234 Stations: AVL->ORD Time: 2026-08-04T11:34:00 - 2026-08-04T12:44:00"
+    })
+  );
+
+  assert.equal(result.kind, "flight");
+  assert.equal(result.isCommute, true);
+  assert.equal(result.travelRole, "commute");
+  assert.equal(result.carrierCode, "UA");
+  assert.equal(result.flightNumber, "1234");
+  assert.equal(result.origin, "AVL");
+  assert.equal(result.destination, "ORD");
+  assert.deepEqual(
+    result.liveLookupCandidates,
+    ["UA1234"]
+  );
+  assert.equal(
+    result.times.source,
+    "description-wall-times"
+  );
+}
+
 function testDeadheadSummary() {
   const result = parsePilotEvent(
     createEvent({
@@ -320,6 +346,7 @@ function testFullSchedule() {
 function runTests() {
   testRosterFlightTimeZones();
   testManualCommute();
+  testNoteDrivenCommute();
   testDeadheadSummary();
   testDeadheadDescriptionMarker();
   testLayover();
