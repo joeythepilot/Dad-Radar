@@ -38,6 +38,36 @@ html[data-family-full] .daily-schedule-heading > span { min-width:0; overflow:hi
 html.family-full-portrait .instrument-slot .instrument { width:24vw !important; height:24vw !important; max-width:130px !important; max-height:130px !important; }
 html.family-full-portrait .destination-poster-image { position:absolute; top:0; left:0; width:100% !important; height:100% !important; object-fit:contain !important; }
 
+/* Mobile Full uses the same physical dispatch card as the desktop display, but
+   the cabinet is scaled into a much smaller housing. Scale the live type with
+   that housing instead of inheriting the desktop minimum font sizes. */
+html[data-family-full] .daily-schedule-panel.is-physical-duty-card {
+  --family-duty-date-font-size: clamp(5px, 0.58vw, 8px);
+  --family-duty-context-font-size: clamp(7px, 0.82vw, 10px);
+  --family-duty-row-font-size: clamp(5.5px, 0.66vw, 8.5px);
+  --family-duty-footer-font-size: clamp(5.5px, 0.62vw, 8px);
+}
+html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-heading span {
+  font-size: var(--family-duty-date-font-size) !important;
+  letter-spacing: 0.15px !important;
+}
+html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-context strong {
+  font-size: var(--family-duty-context-font-size) !important;
+  line-height: 1.04 !important;
+  letter-spacing: 0.1px !important;
+}
+html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-entry {
+  grid-template-columns: minmax(0, 1fr) 24% !important;
+  column-gap: 2% !important;
+  font-size: var(--family-duty-row-font-size) !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+}
+html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-footer {
+  font-size: var(--family-duty-footer-font-size) !important;
+  letter-spacing: 0.15px !important;
+}
+
 /* Legacy web duty panels may reflow in a narrow Full-view housing. The raster
    physical Today’s Duty card is excluded so its calibrated overlays stay fixed. */
 html[data-family-full] .daily-schedule-panel.family-duty-narrow:not(.is-physical-duty-card) {
