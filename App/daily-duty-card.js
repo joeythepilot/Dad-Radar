@@ -201,6 +201,24 @@
       time.textContent = row.time;
 
       item.append(route, time);
+
+      if (row.operationalStamp?.kind === "delay") {
+        const stamp = root.document.createElement("span");
+        stamp.className = "daily-schedule-operational-stamp is-delay";
+        stamp.setAttribute("aria-label", `${row.operationalStamp.label} ${row.operationalStamp.detail}`);
+
+        const stampLabel = root.document.createElement("span");
+        stampLabel.className = "daily-schedule-operational-stamp-label";
+        stampLabel.textContent = row.operationalStamp.label;
+
+        const stampDetail = root.document.createElement("span");
+        stampDetail.className = "daily-schedule-operational-stamp-detail";
+        stampDetail.textContent = row.operationalStamp.detail;
+
+        stamp.append(stampLabel, stampDetail);
+        item.appendChild(stamp);
+      }
+
       list.appendChild(item);
     });
   }
