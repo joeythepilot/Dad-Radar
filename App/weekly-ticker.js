@@ -26,6 +26,7 @@
     const FEED_STEP_PX = 16;
     const FEED_CYCLE_MS = 2200;
     const FEED_MOVE_MS = 460;
+    const FEED_DIRECTION = "up";
     const ITEM_SEPARATOR = " • ";
     const GLYPH_CHARACTERS = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:-,.!?'/•";
     const GLYPH_VARIANTS = 4;
@@ -271,7 +272,7 @@
 
       const holder=root.document.createElement("div"); holder.className="weekly-trip-ticker"; holder.id="weekly-trip-ticker";
       const canvas=root.document.createElement("canvas"); canvas.className="weekly-trip-ticker-canvas"; canvas.id="weekly-trip-ticker-canvas";
-      canvas.width=DESIGN_WIDTH; canvas.height=DESIGN_HEIGHT; canvas.setAttribute("role","img"); canvas.setAttribute("aria-label",DEFAULT_TEXT); canvas.dataset.scrollAxis=SCROLL_AXIS;
+      canvas.width=DESIGN_WIDTH; canvas.height=DESIGN_HEIGHT; canvas.setAttribute("role","img"); canvas.setAttribute("aria-label",DEFAULT_TEXT); canvas.dataset.scrollAxis=SCROLL_AXIS; canvas.dataset.feedDirection=FEED_DIRECTION;
       holder.appendChild(canvas); stack.appendChild(holder);
 
       const context=canvas.getContext("2d",{alpha:true}); if(!context)return null;
@@ -305,7 +306,7 @@
         const sourceHeight=paperImage.naturalHeight||paperImage.height||40;
         const tileWidth=sourceWidth*2;
         const tileHeight=sourceHeight*2;
-        const travel=reducedMotion()?0:scrollOffset*0.55;
+        const travel=reducedMotion()?0:-scrollOffset*0.55;
         const yOffset=((travel%tileHeight)+tileHeight)%tileHeight;
         const xWander=reducedMotion()?0:Math.sin(now/1100)*0.28;
         for(let y=PAPER.top-tileHeight+yOffset;y<PAPER.bottom;y+=tileHeight){
@@ -321,9 +322,12 @@
       function drawRows(now){
         const cycle=cycleHeight();
         const phase=reducedMotion()?0:scrollOffset%cycle;
+        const direction=FEED_DIRECTION === "up" ? -1 : 1;
         const lateral=reducedMotion()?0:Math.sin(now/1300)*0.24;
-        const firstTop=PAPER.top-cycle+phase;
-        for(let blockTop=firstTop;blockTop<PAPER.bottom+cycle;blockTop+=cycle){
+        const firstTop=direction < 0
+          ? PAPER.top+cycle-phase
+          : PAPER.top-cycle+phase;
+        for(let blockTop=firstTop-cycle;blockTop<PAPER.bottom+cycle;blockTop+=cycle){
           rows.forEach((run,index)=>{
             const y=blockTop+index*LINE_ADVANCE+TEXT_BASELINE_OFFSET;
             drawRun(run,PAPER.left+32+lateral,y);
@@ -375,6 +379,6 @@
       canvas.dadRadarTicker=controller; return controller;
     }
 
-    return {DESIGN_WIDTH,DESIGN_HEIGHT,PAPER,TEXT_BASELINE_OFFSET,SCROLL_SPEED,SCROLL_AXIS,LINE_ADVANCE,FEED_STEP_PX,FEED_CYCLE_MS,FEED_MOVE_MS,LINE_CHARACTER_LIMIT,ITEM_SEPARATOR,GLYPH_DRAW_WIDTH,GLYPH_DRAW_HEIGHT,GLYPH_ADVANCE,buildGlyphRun,buildTickerLines,buildWeeklyTripTicker,install,normalizeTickerText};
+    return {DESIGN_WIDTH,DESIGN_HEIGHT,PAPER,TEXT_BASELINE_OFFSET,SCROLL_SPEED,SCROLL_AXIS,LINE_ADVANCE,FEED_STEP_PX,FEED_CYCLE_MS,FEED_MOVE_MS,FEED_DIRECTION,LINE_CHARACTER_LIMIT,ITEM_SEPARATOR,GLYPH_DRAW_WIDTH,GLYPH_DRAW_HEIGHT,GLYPH_ADVANCE,buildGlyphRun,buildTickerLines,buildWeeklyTripTicker,install,normalizeTickerText};
   }
 );
