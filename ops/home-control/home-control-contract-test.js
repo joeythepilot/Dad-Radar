@@ -67,6 +67,9 @@ assert.match(installer, /NT AUTHORITY\\NETWORK SERVICE/i, "installer must prepar
 assert.match(installer, /icacls\.exe[\s\S]*\$resolvedRepo/i, "installer must grant the runner service modify access to the Dad Radar checkout");
 assert.match(installer, /icacls\.exe[\s\S]*\$OpsRoot/i, "installer must grant the runner service access to fixed home-control state");
 assert.match(installer, /safe\.directory/i, "installer must mark the user-owned Dad Radar checkout safe for the Network Service Git process");
+assert.match(installer, /family-beta-host\.js/i, "installer must verify that the SYSTEM startup task uses the broker-aware background host");
+assert.match(installer, /beta:autostart:install/i, "installer must repair a legacy Dad Radar startup task through the canonical autostart installer");
+assert.match(installer, /remote-restart-request\.json/i, "installer must clear stale restart requests before installing the broker-aware host");
 
 assert.match(workflow, /issues:\s*[\s\S]*types:\s*\[opened\]/, "control workflow must trigger only on opened issues");
 assert.match(workflow, /startsWith\(github\.event\.issue\.title, '\[DADRADAR\]'\)/, "workflow must ignore non-Dad-Radar issues");
