@@ -209,6 +209,38 @@ assert.equal(
   assert.equal(refreshed.estimatedOut, "2026-09-17T23:20:00Z");
   assert.equal(fetchCalls, 2);
 
+  now += OPERATIONAL_TTLS_MS.NEAR_RANGE + 1;
+  await assert.rejects(
+    () => getOperationalStatus(event, {
+      apiKey: "test-key",
+      baseUrl: "https://example.test/aeroapi",
+      cache,
+      now: () => now,
+      async fetchImpl() {
+        fetchCalls++;
+        throw new Error("Fixture AeroAPI outage");
+      }
+    }),
+    /Fixture AeroAPI outage/,
+    "The first provider error remains visible to diagnostics/master-state handling."
+  );
+  assert.equal(fetchCalls, 3);
+
+  const cooled = await getOperationalStatus(event, {
+    apiKey: "test-key",
+    baseUrl: "https://example.test/aeroapi",
+    cache,
+    now: () => now + 60_000,
+    async fetchImpl() {
+      fetchCalls++;
+      throw new Error("Provider must not be hammered during its cooldown.");
+    }
+  });
+  assert.deepEqual(cooled, refreshed,
+    "After the first error, the cache should serve the last good operational record during cooldown.");
+  assert.equal(fetchCalls, 3,
+    "A one-minute Calendar refresh must not create another AeroAPI request during cooldown.");
+
   console.log("FlightAware operational-status service tests passed.");
 })().catch((error) => {
   console.error(error);
