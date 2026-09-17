@@ -7,6 +7,7 @@ const path = require("node:path");
 
 const {
   createLogger,
+  createRestartRequestWatcher,
   resolvePort,
   rotateLog,
   waitForManualServer
@@ -139,9 +140,48 @@ function testLogging() {
   }
 }
 
+function testRestartMarkerWatcher() {
+  const SHA =
+    "0123456789abcdef0123456789abcdef01234567";
+  let markerExists = true;
+  let removals = 0;
+  const restarts = [];
+
+  const watcher = createRestartRequestWatcher({
+    requestPath: "C:\\temp\\restart.json",
+    existsSync: () => markerExists,
+    readFileSync: () =>
+      JSON.stringify({
+        action: "restart",
+        sha: SHA,
+        requestedAt: "2026-09-17T15:00:00.000Z"
+      }),
+    rmSync: () => {
+      markerExists = false;
+      removals += 1;
+    },
+    onRestart: (request) => {
+      restarts.push(request);
+    }
+  });
+
+  assert.equal(watcher.check(), true);
+  assert.equal(removals, 1);
+  assert.equal(restarts.length, 1);
+  assert.equal(restarts[0].sha, SHA);
+
+  assert.equal(
+    watcher.check(),
+    false,
+    "consumed restart markers must not fire twice"
+  );
+  assert.equal(restarts.length, 1);
+}
+
 Promise.resolve()
   .then(testManualTakeover)
   .then(testLogging)
+  .then(testRestartMarkerWatcher)
   .then(() => {
     console.log(
       "Family beta background-host tests passed."
