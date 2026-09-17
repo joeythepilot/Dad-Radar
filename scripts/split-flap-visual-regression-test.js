@@ -44,14 +44,14 @@ assert.equal(
 
 assert.equal(
   png.readUInt32BE(16),
-  128,
-  "Split-flap matte asset should retain the intended compact source width."
+  64,
+  "Split-flap matte asset should retain the intended native-scale source width."
 );
 
 assert.equal(
   png.readUInt32BE(20),
-  214,
-  "Split-flap matte asset should retain the intended compact source height."
+  107,
+  "Split-flap matte asset should retain the intended native-scale source height."
 );
 
 assert.match(
