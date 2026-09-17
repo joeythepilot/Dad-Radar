@@ -64,7 +64,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build:browser
-      - name: Browser geometry, transport, and weekly ticker regression on macOS
+      - name: Browser geometry, transport, ticker, and split-flap regression on macOS
         shell: bash
         run: |
           npm install --no-save --package-lock=false playwright@1.63.0
@@ -72,6 +72,7 @@ jobs:
           mkdir -p artifacts/map-hardware
           node scripts/map-hardware-headed-test.js 2>&1 | tee artifacts/map-hardware/browser.log
           node scripts/weekly-ticker-headed-test.js 2>&1 | tee -a artifacts/map-hardware/browser.log
+          node scripts/split-flap-headed-test.js 2>&1 | tee -a artifacts/map-hardware/browser.log
       - name: Keep exact-SHA verification evidence
         if: always()
         run: |
