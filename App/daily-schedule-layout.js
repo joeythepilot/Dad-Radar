@@ -241,11 +241,10 @@
             ].includes(entry?.status)
               ? entry.status
               : "upcoming",
-            operationalStamp:
-              entry?.operationalStamp &&
+            ...(entry?.operationalStamp &&
               typeof entry.operationalStamp === "object"
-                ? {...entry.operationalStamp}
-                : null
+                ? {operationalStamp: {...entry.operationalStamp}}
+                : {})
           })
         ),
         footerText: footerTextFor(
