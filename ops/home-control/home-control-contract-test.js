@@ -37,8 +37,11 @@ assert.doesNotMatch(remote, /Invoke-External\s+"git"/, "remote executor must not
 assert.doesNotMatch(remote, /Invoke-External\s+"npm\.cmd"/, "remote executor must not depend on the runner service PATH for npm");
 assert.match(remote, /npmPath[^\r\n]*@\("ci"\)|Config\.npmPath[^\r\n]*@\("ci"\)/i, "deploy must restore dependencies with npm ci");
 assert.match(remote, /npmPath[^\r\n]*@\("test"\)|Config\.npmPath[^\r\n]*@\("test"\)/i, "deploy must run the full Dad Radar tests");
-assert.match(remote, /Dad Radar Family Beta|serverTask/, "remote executor must manage the existing Dad Radar server task");
-assert.match(remote, /Dad Radar Remote Display Refresh|displayRefreshTask/, "remote executor must request the interactive display refresh task");
+assert.match(remote, /deployed-sha\.txt/, "remote deployment must record the exact installed SHA for the running server");
+assert.match(remote, /remote-restart-request\.json/, "remote deployment must request restart through the local SYSTEM host marker");
+assert.match(remote, /instanceId/, "remote deployment must verify that a new server instance came online");
+assert.match(remote, /version/, "remote deployment must verify the running server reports the target SHA");
+assert.doesNotMatch(remote, /schtasks\.exe[\s\S]{0,120}\/(?:End|Run)/i, "remote executor must not require permission to stop or start SYSTEM scheduled tasks");
 assert.match(remote, /family-beta\.log/, "logs command must read the bounded Dad Radar runtime log");
 assert.doesNotMatch(remote, /Invoke-Expression|\biex\b/i, "remote executor must not use arbitrary expression execution");
 assert.doesNotMatch(remote, /\.env|credentials\.json|token\.json/i, "remote executor must never read or print Dad Radar credential files");
