@@ -21,6 +21,8 @@ const COMMUTE_SUMMARY_PATTERN =
     "i"
   );
 
+const COMMUTE_MARKER_PATTERN = /\bCOMMUTE\b/i;
+
 const DEADHEAD_SUMMARY_PATTERN =
   new RegExp(
     `^DEADHEAD(?:\\s+FLIGHT)?\\s+(?:([A-Z]{2,3})\\s*)?(\\d{1,4})\\s+([A-Z]{3})\\s*${ROUTE_ARROW_PATTERN}\\s*([A-Z]{3})`,
@@ -332,6 +334,15 @@ function parsePilotEvent(
   const descriptionFlight =
     parseFlightDescription(description);
 
+  const isCommute =
+    Boolean(commuteMatch) ||
+    Boolean(
+      descriptionFlight &&
+      COMMUTE_MARKER_PATTERN.test(
+        `${summary} ${description}`
+      )
+    );
+
   const isDeadhead =
     DEADHEAD_PATTERN.test(
       `${summary} ${description}`
@@ -341,19 +352,14 @@ function parsePilotEvent(
     commuteMatch ||
     flightMatch ||
     deadheadMatch ||
+    (isCommute && descriptionFlight) ||
     (isDeadhead && descriptionFlight)
   ) {
-    const isCommute =
-      Boolean(commuteMatch);
-
-    const match =
-      commuteMatch ??
-      deadheadMatch ??
-      flightMatch;
-
     const summaryCarrier =
-      isCommute
-        ? normalizeCarrier(match[1])
+      commuteMatch
+        ? normalizeCarrier(
+            commuteMatch[1]
+          )
         : deadheadMatch
           ? normalizeCarrier(
               deadheadMatch[1]
@@ -361,8 +367,8 @@ function parsePilotEvent(
           : null;
 
     const summaryFlightNumber =
-      isCommute
-        ? match[2]
+      commuteMatch
+        ? commuteMatch[2]
         : deadheadMatch
           ? deadheadMatch[2]
           : flightMatch?.[1] ??
@@ -370,8 +376,10 @@ function parsePilotEvent(
               ?.flightNumber;
 
     const summaryOrigin =
-      isCommute
-        ? normalizeAirport(match[3])
+      commuteMatch
+        ? normalizeAirport(
+            commuteMatch[3]
+          )
         : deadheadMatch
           ? normalizeAirport(
               deadheadMatch[3]
@@ -381,8 +389,10 @@ function parsePilotEvent(
             );
 
     const summaryDestination =
-      isCommute
-        ? normalizeAirport(match[4])
+      commuteMatch
+        ? normalizeAirport(
+            commuteMatch[4]
+          )
         : deadheadMatch
           ? normalizeAirport(
               deadheadMatch[4]
