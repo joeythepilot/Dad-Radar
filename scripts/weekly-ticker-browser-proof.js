@@ -22,7 +22,7 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
     const node = document.getElementById("weekly-trip-ticker-canvas");
     if (!node || node.getAttribute("aria-label") !== expected) return false;
     const resources = performance.getEntriesByType("resource").map(entry => entry.name);
-    return resources.some(name => name.includes("weekly-ticker-machine-v9.png")) &&
+    return resources.some(name => name.includes("weekly-ticker-mechanism-v10.svg")) &&
       resources.some(name => name.includes("weekly-ticker-paper-v5.png")) &&
       resources.some(name => name.includes("weekly-ticker-glyphs-v5.png"));
   }, expectedText, {timeout: 4000, polling: 25});
@@ -66,13 +66,15 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
       portrait:document.documentElement.classList.contains("family-full-portrait"),
       lowerRowGap:parseFloat(lowerStyle.rowGap) || 0,
       canvasPixels:{width:canvas.width,height:canvas.height},
+      scrollAxis:canvas.dataset.scrollAxis,
+      paperGeometry:window.dadRadarWeeklyTicker ? window.dadRadarWeeklyTicker.PAPER : null,
       stack:rect(stack),mapPanel:rect(mapPanel),ticker:rect(ticker),lower:rect(lower),
       posterStack:posterStack ? rect(posterStack) : null,
       instruments:instruments ? rect(instruments) : null,
       rasterContrast:{
-        paper:sample(context,420,52,740,4),
-        topRail:sample(context,330,16,840,28),
-        leftMechanism:sample(context,16,36,220,124)
+        paper:sample(context,180,44,1140,5),
+        topRail:sample(context,180,7,1140,10),
+        leftMechanism:sample(context,8,38,58,66)
       },
       tickerPaint:{backgroundImage:tickerStyle.backgroundImage,backgroundColor:tickerStyle.backgroundColor,
         borderTop:tickerStyle.borderTopWidth,borderRight:tickerStyle.borderRightWidth,
@@ -86,7 +88,10 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
   }, expectedText);
 
   assert.equal(data.aria, expectedText, "Ticker shows the family-readable upcoming-trip summary");
-  assert.deepEqual(data.canvasPixels, {width:1500,height:200}, "Ticker keeps the established high-resolution raster backing canvas");
+  assert.deepEqual(data.canvasPixels, {width:1500,height:144}, "Ticker uses a shallow high-resolution backing canvas");
+  assert.equal(data.scrollAxis, "vertical", "Ticker paper feed moves top-to-bottom rather than crawling sideways");
+  assert(data.paperGeometry && (data.paperGeometry.right-data.paperGeometry.left)/1500>=.85,
+    "Paper occupies nearly the full map-width mechanism opening");
   assert(data.rasterContrast.paper.luma > 150, "Paper remains readable instead of disappearing into the cabinet");
   assert(data.rasterContrast.paper.luma < 200, "Paper stays aged cream/tan instead of reading as bright white");
   assert(data.rasterContrast.paper.r - data.rasterContrast.paper.b > 22, "Paper keeps a warm aged-cream/tan tone");
@@ -125,10 +130,10 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
       "Adding the ticker does not increase the cabinet/lower-grid height");
   }
 
-  assert(data.mapPanel.height/data.stack.height>=.70 && data.mapPanel.height/data.stack.height<=.80,
-    "The map reserves enough vertical room for the full integrated printer without growing the cabinet");
-  assert(data.ticker.height/data.stack.height>=.20 && data.ticker.height/data.stack.height<=.28,
-    "Ticker gets the substantial integrated-equipment height required by the printer artwork");
+  assert(data.mapPanel.height/data.stack.height>=.84 && data.mapPanel.height/data.stack.height<=.90,
+    "The map reclaims most of the center-column height after the printer is made shallow");
+  assert(data.ticker.height/data.stack.height>=.10 && data.ticker.height/data.stack.height<=.16,
+    "Ticker stays a shallow map-width mechanism strip instead of making the unit vertically bulky");
 
   assert.equal(data.canvasPaint.transform, "none", "Ticker canvas is not vertically stretched by CSS");
 
@@ -144,7 +149,7 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
   const first = await canvas.screenshot();
   await page.waitForTimeout(450);
   const second = await canvas.screenshot();
-  assert(!first.equals(second), "Ticker paper/text actually scrolls horizontally while the machine stays fixed");
+  assert(!first.equals(second), "Ticker paper/text actually rolls vertically while the mechanism stays fixed");
 
   if (label === "chromium-ticker-desktop" || label === "webkit-ticker-desktop") {
     fs.writeFileSync(path.join(output, `${label}-weekly-ticker-a.png`), first);

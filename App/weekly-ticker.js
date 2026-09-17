@@ -17,18 +17,12 @@
     "use strict";
 
     const DESIGN_WIDTH = 1500;
-    const DESIGN_HEIGHT = 200;
-    const PAPER = Object.freeze({left:400, top:48, right:1180, bottom:128});
-    const FRAME_SOURCE = Object.freeze({
-      referenceWidth:1536,
-      referenceHeight:512,
-      left:7,
-      top:91,
-      right:1530,
-      bottom:388
-    });
-    const TEXT_BASELINE_OFFSET = -5;
-    const SCROLL_SPEED = 48;
+    const DESIGN_HEIGHT = 144;
+    const PAPER = Object.freeze({left:80, top:18, right:1420, bottom:126});
+    const TEXT_BASELINE_OFFSET = -2;
+    const SCROLL_SPEED = 14;
+    const SCROLL_AXIS = "vertical";
+    const LINE_ADVANCE = 48;
     const ITEM_SEPARATOR = " • • ";
     const GLYPH_CHARACTERS = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:-,.!?'/•";
     const GLYPH_VARIANTS = 4;
@@ -38,7 +32,8 @@
     const GLYPH_DRAW_WIDTH = 32;
     const GLYPH_DRAW_HEIGHT = 42;
     const GLYPH_ADVANCE = 24;
-    const LOOP_GAP = 184;
+    const LINE_CHARACTER_LIMIT = Math.floor((PAPER.right - PAPER.left - 64) / GLYPH_ADVANCE);
+    const LOOP_GAP = 36;
     const DEFAULT_TEXT = "THIS WEEK: UPDATING SCHEDULE";
     const TRIP_GAP_MS = 20 * 60 * 60 * 1000;
     const DEFAULT_ALIASES = Object.freeze({XNA:"BENTONVILLE, AR"});
@@ -72,7 +67,54 @@
         });
         cursor += GLYPH_ADVANCE;
       }
-      return {text,glyphs,width:cursor,cycleWidth:Math.max(cursor + LOOP_GAP, PAPER.right - PAPER.left + LOOP_GAP)};
+      return {text,glyphs,width:cursor};
+    }
+
+    function wrapTickerText(value) {
+      const text = normalizeTickerText(value);
+      if (!text) return [];
+      const words = text.split(" ");
+      const lines = [];
+      let current = "";
+      for (const word of words) {
+        const candidate = current ? `${current} ${word}` : word;
+        if (candidate.length <= LINE_CHARACTER_LIMIT) {
+          current = candidate;
+          continue;
+        }
+        if (current) lines.push(current);
+        current = word;
+      }
+      if (current) lines.push(current);
+      return lines;
+    }
+
+    function buildTickerLines(summary) {
+      if (!summary || typeof summary !== "object" || Array.isArray(summary)) {
+        return wrapTickerText(summary ?? DEFAULT_TEXT);
+      }
+      const prefix = normalizeTickerText(summary.prefix ?? "");
+      const items = (Array.isArray(summary.items) ? summary.items : []).map(normalizeTickerText).filter(Boolean);
+      if (!prefix && !items.length) return wrapTickerText(summary.text ?? DEFAULT_TEXT);
+      const lines = prefix ? [prefix] : [];
+      let row = "";
+      for (const item of items) {
+        const candidate = row ? `${row}${ITEM_SEPARATOR}${item}` : item;
+        if (candidate.length <= LINE_CHARACTER_LIMIT) {
+          row = candidate;
+          continue;
+        }
+        if (row) lines.push(row);
+        if (item.length <= LINE_CHARACTER_LIMIT) {
+          row = item;
+          continue;
+        }
+        const wrapped = wrapTickerText(item);
+        lines.push(...wrapped.slice(0, -1));
+        row = wrapped.at(-1) ?? "";
+      }
+      if (row) lines.push(row);
+      return lines.length ? lines : wrapTickerText(summary.text ?? DEFAULT_TEXT);
     }
 
     function toDate(value) {
@@ -179,65 +221,86 @@
       if (!stack || stack.querySelector("#weekly-trip-ticker-canvas")) return null;
 
       if (!root.document.querySelector("link[data-dad-radar-weekly-ticker]")) {
-        const link=root.document.createElement("link"); link.rel="stylesheet"; link.href="/UI/weekly-ticker-layout.css?v=6"; link.dataset.dadRadarWeeklyTicker="true"; root.document.head.appendChild(link);
+        const link=root.document.createElement("link"); link.rel="stylesheet"; link.href="/UI/weekly-ticker-layout.css?v=7"; link.dataset.dadRadarWeeklyTicker="true"; root.document.head.appendChild(link);
       }
 
       const holder=root.document.createElement("div"); holder.className="weekly-trip-ticker"; holder.id="weekly-trip-ticker";
       const canvas=root.document.createElement("canvas"); canvas.className="weekly-trip-ticker-canvas"; canvas.id="weekly-trip-ticker-canvas";
-      canvas.width=DESIGN_WIDTH; canvas.height=DESIGN_HEIGHT; canvas.setAttribute("role","img"); canvas.setAttribute("aria-label",DEFAULT_TEXT);
+      canvas.width=DESIGN_WIDTH; canvas.height=DESIGN_HEIGHT; canvas.setAttribute("role","img"); canvas.setAttribute("aria-label",DEFAULT_TEXT); canvas.dataset.scrollAxis=SCROLL_AXIS;
       holder.appendChild(canvas); stack.appendChild(holder);
 
       const context=canvas.getContext("2d",{alpha:true}); if(!context)return null;
-      const frameImage=new root.Image(), paperImage=new root.Image(), glyphImage=new root.Image();
-      frameImage.decoding="async"; paperImage.decoding="async"; glyphImage.decoding="async";
-      let run=buildGlyphRun(DEFAULT_TEXT),scrollOffset=0,lastFrameAt=null,animationFrame=null,destroyed=false,lastScheduleFetchAt=0,fetchRequest=null;
-      frameImage.src="/assets/ticker/weekly-ticker-machine-v9.png?v=integrated-panel-1";
+      const mechanismImage=new root.Image(), paperImage=new root.Image(), glyphImage=new root.Image();
+      mechanismImage.decoding="async"; paperImage.decoding="async"; glyphImage.decoding="async";
+      let summary={prefix:"THIS WEEK",items:["UPDATING SCHEDULE"],text:DEFAULT_TEXT};
+      let rows=buildTickerLines(summary).map(buildGlyphRun);
+      let summaryText=normalizeTickerText(summary.text);
+      let scrollOffset=0,lastFrameAt=null,animationFrame=null,destroyed=false,lastScheduleFetchAt=0,fetchRequest=null;
+      mechanismImage.src="/assets/ticker/weekly-ticker-mechanism-v10.svg?v=vertical-feed-1";
       paperImage.src="/assets/ticker/weekly-ticker-paper-v5.png";
       glyphImage.src="/assets/ticker/weekly-ticker-glyphs-v5.png";
       const reducedMotion=()=>root.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches===true;
       const baseSpeed=SCROLL_SPEED;
       const imageReady=image=>image.complete && Number(image.naturalWidth||image.width)>0;
+      const cycleHeight=()=>Math.max(LINE_ADVANCE,rows.length*LINE_ADVANCE+LOOP_GAP);
 
-      function setSummary(summary) {
-        const next=normalizeTickerText(summary?.text??summary??DEFAULT_TEXT); if(next===run.text)return;
-        run=buildGlyphRun(next);scrollOffset=0;canvas.setAttribute("aria-label",next);
+      function setSummary(nextSummary) {
+        const nextText=normalizeTickerText(nextSummary?.text??nextSummary??DEFAULT_TEXT);
+        if(nextText===summaryText)return;
+        summary=nextSummary && typeof nextSummary==="object" ? nextSummary : {text:nextText};
+        rows=buildTickerLines(summary).map(buildGlyphRun);
+        summaryText=nextText;
+        scrollOffset=0;
+        canvas.setAttribute("aria-label",nextText);
       }
       function drawGlyph(glyph,x,y){if(!imageReady(glyphImage))return;const tile=glyph.characterIndex*GLYPH_VARIANTS+glyph.variant;context.drawImage(glyphImage,(tile%GLYPH_COLUMNS)*GLYPH_CELL_WIDTH,Math.floor(tile/GLYPH_COLUMNS)*GLYPH_CELL_HEIGHT,GLYPH_CELL_WIDTH,GLYPH_CELL_HEIGHT,x+glyph.xJitter,y+glyph.yJitter,GLYPH_DRAW_WIDTH,GLYPH_DRAW_HEIGHT);}
-      function drawRun(startX,y){run.glyphs.forEach(glyph=>drawGlyph(glyph,startX+glyph.x,y));}
+      function drawRun(run,x,y){run.glyphs.forEach(glyph=>drawGlyph(glyph,x+glyph.x,y));}
       function drawPaper(now){
         if(!imageReady(paperImage))return;
-        const width=(paperImage.naturalWidth||paperImage.width||1024)*2;
-        const height=PAPER.bottom-PAPER.top;
-        const travel=reducedMotion()?0:(scrollOffset*0.52);
-        const offset=((travel%width)+width)%width;
-        const y=PAPER.top+(reducedMotion()?0:Math.sin(now/941)*0.32);
-        let x=PAPER.left-offset;
-        while(x>PAPER.left)x-=width;
-        for(;x<PAPER.right;x+=width)context.drawImage(paperImage,x,y,width,height);
+        const sourceWidth=paperImage.naturalWidth||paperImage.width||256;
+        const sourceHeight=paperImage.naturalHeight||paperImage.height||40;
+        const tileWidth=sourceWidth*2;
+        const tileHeight=sourceHeight*2;
+        const travel=reducedMotion()?0:scrollOffset*0.55;
+        const yOffset=((travel%tileHeight)+tileHeight)%tileHeight;
+        const xWander=reducedMotion()?0:Math.sin(now/1100)*0.28;
+        for(let y=PAPER.top-tileHeight+yOffset;y<PAPER.bottom;y+=tileHeight){
+          for(let x=PAPER.left-tileWidth+xWander;x<PAPER.right;x+=tileWidth){
+            context.drawImage(paperImage,x,y,tileWidth,tileHeight);
+          }
+        }
       }
-      function drawFrame(){
-        if(!imageReady(frameImage))return;
-        const sourceWidth=Number(frameImage.naturalWidth||frameImage.width)||FRAME_SOURCE.referenceWidth;
-        const sourceHeight=Number(frameImage.naturalHeight||frameImage.height)||FRAME_SOURCE.referenceHeight;
-        const sx=sourceWidth*FRAME_SOURCE.left/FRAME_SOURCE.referenceWidth;
-        const sy=sourceHeight*FRAME_SOURCE.top/FRAME_SOURCE.referenceHeight;
-        const ex=sourceWidth*FRAME_SOURCE.right/FRAME_SOURCE.referenceWidth;
-        const ey=sourceHeight*FRAME_SOURCE.bottom/FRAME_SOURCE.referenceHeight;
-        context.drawImage(frameImage,sx,sy,Math.max(1,ex-sx),Math.max(1,ey-sy),0,0,DESIGN_WIDTH,DESIGN_HEIGHT);
+      function drawMechanism(){
+        if(!imageReady(mechanismImage))return;
+        context.drawImage(mechanismImage,0,0,DESIGN_WIDTH,DESIGN_HEIGHT);
+      }
+      function drawRows(now){
+        const cycle=cycleHeight();
+        const phase=reducedMotion()?0:scrollOffset%cycle;
+        const lateral=reducedMotion()?0:Math.sin(now/1300)*0.24;
+        const firstTop=PAPER.top-cycle+phase;
+        for(let blockTop=firstTop;blockTop<PAPER.bottom+cycle;blockTop+=cycle){
+          rows.forEach((run,index)=>{
+            const y=blockTop+index*LINE_ADVANCE+TEXT_BASELINE_OFFSET;
+            drawRun(run,PAPER.left+32+lateral,y);
+          });
+        }
       }
       function render(now){
         if(destroyed)return; if(lastFrameAt===null)lastFrameAt=now; const delta=Math.min(Math.max(now-lastFrameAt,0),80); lastFrameAt=now;
         if(!reducedMotion()){
-          const wander=Math.sin(now/1270)*0.017, ripple=Math.sin(now/223)*0.005, phase=now%12100, hitch=phase>5630&&phase<5790?0.82:1;
-          scrollOffset += baseSpeed*(1+wander+ripple)*hitch*delta/1000; if(scrollOffset>=run.cycleWidth)scrollOffset%=run.cycleWidth;
+          const wander=Math.sin(now/1510)*0.014, ripple=Math.sin(now/317)*0.004, phase=now%13700, hitch=phase>6840&&phase<7050?0.68:1;
+          scrollOffset += baseSpeed*(1+wander+ripple)*hitch*delta/1000;
+          const cycle=cycleHeight(); if(scrollOffset>=cycle)scrollOffset%=cycle;
         }
         context.clearRect(0,0,DESIGN_WIDTH,DESIGN_HEIGHT);
+        context.fillStyle="#050505";
+        context.fillRect(0,0,DESIGN_WIDTH,DESIGN_HEIGHT);
         context.save();context.beginPath();context.rect(PAPER.left,PAPER.top,PAPER.right-PAPER.left,PAPER.bottom-PAPER.top);context.clip();
         drawPaper(now);
-        const micro=reducedMotion()?0:Math.sin(now/509)*0.12; const baseline=PAPER.top+Math.round((PAPER.bottom-PAPER.top-GLYPH_DRAW_HEIGHT)/2)+TEXT_BASELINE_OFFSET+micro; const first=PAPER.left+24-scrollOffset;
-        drawRun(first,baseline);drawRun(first+run.cycleWidth,baseline);
+        drawRows(now);
         context.restore();
-        drawFrame();
+        drawMechanism();
         animationFrame=root.requestAnimationFrame(render);
       }
 
@@ -253,7 +316,7 @@
         })(); return fetchRequest;
       }
 
-      canvas.setAttribute("aria-label",run.text);
+      canvas.setAttribute("aria-label",summaryText);
       root.addEventListener("dad-radar:calendar-sync",event=>{if(event.detail?.ok)void refreshSchedule(false);});
       void refreshSchedule(true);
       const refreshMs=Math.max(60000,Number(root.dadRadarSettings?.schedule?.refreshIntervalMs)||300000);
@@ -264,6 +327,6 @@
       canvas.dadRadarTicker=controller; return controller;
     }
 
-    return {DESIGN_WIDTH,DESIGN_HEIGHT,PAPER,FRAME_SOURCE,TEXT_BASELINE_OFFSET,SCROLL_SPEED,ITEM_SEPARATOR,GLYPH_DRAW_WIDTH,GLYPH_DRAW_HEIGHT,GLYPH_ADVANCE,buildGlyphRun,buildWeeklyTripTicker,install,normalizeTickerText};
+    return {DESIGN_WIDTH,DESIGN_HEIGHT,PAPER,TEXT_BASELINE_OFFSET,SCROLL_SPEED,SCROLL_AXIS,LINE_ADVANCE,LINE_CHARACTER_LIMIT,ITEM_SEPARATOR,GLYPH_DRAW_WIDTH,GLYPH_DRAW_HEIGHT,GLYPH_ADVANCE,buildGlyphRun,buildTickerLines,buildWeeklyTripTicker,install,normalizeTickerText};
   }
 );

@@ -55,3 +55,25 @@ The focused browser proof checks:
 - actual horizontal movement between frames;
 - desktop, full landscape, full tablet, full portrait and touch-family layouts in Chromium and WebKit;
 - unchanged map hardware/transport suite in the same workflow.
+
+
+## Physical-build vertical feed revision — 2026-09-16
+
+The physical-build pass supersedes the v9 finished-module presentation while retaining the same schedule reducer and refresh behavior. The LCD now renders only the mechanism that will remain visible behind the real Dad Radar faceplate.
+
+Current presentation layers:
+
+- `assets/ticker/weekly-ticker-mechanism-v10.svg` — shallow internal transport artwork only: upper/lower feed rollers, side bearings, gears, shafts, guides and dark cavity. It contains no outer faceplate, corner screws, module label or decorative service-panel trim.
+- `assets/ticker/weekly-ticker-paper-v5.png` — warm aged paper texture, now spanning about 89% of the design width.
+- `assets/ticker/weekly-ticker-glyphs-v5.png` — restrained typewriter impression atlas.
+
+Current geometry and motion:
+
+- Canvas is `1500 × 144`, substantially shallower than the previous `1500 × 200` presentation.
+- Center stack is `87% map / 13% ticker`; overall cabinet and lower-grid height do not grow.
+- Paper window is `x=80..1420`, leaving only narrow machinery strips at the ends.
+- Itinerary text wraps into paper-width rows and the paper/type move **top-to-bottom** together. There is no horizontal text crawl.
+- Feed speed is deliberately slow, with restrained speed wander and one short periodic hesitation to keep the movement mechanical rather than perfectly digital.
+- CSS remains geometry-only. The screen-rendered mechanism, paper and type are asset/canvas layers; the production cabinet will provide the real outer service faceplate and fasteners.
+
+Verification adds explicit checks for the shallow ticker ratio, vertical feed axis, near-full-width paper, absence of digital faceplate lettering, and exact rendering in Chromium/WebKit.

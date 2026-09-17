@@ -1,5 +1,7 @@
 "use strict";
 const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
 const ticker = require("./weekly-ticker");
 const airportCatalog = require("../data/airport-catalog");
 
@@ -9,9 +11,10 @@ assert.deepEqual(
     width:ticker.DESIGN_WIDTH,
     height:ticker.DESIGN_HEIGHT,
     paper:ticker.PAPER,
-    frame:ticker.FRAME_SOURCE,
     textBaselineOffset:ticker.TEXT_BASELINE_OFFSET,
     scrollSpeed:ticker.SCROLL_SPEED,
+    scrollAxis:ticker.SCROLL_AXIS,
+    lineAdvance:ticker.LINE_ADVANCE,
     itemSeparator:ticker.ITEM_SEPARATOR,
     glyphDrawWidth:ticker.GLYPH_DRAW_WIDTH,
     glyphDrawHeight:ticker.GLYPH_DRAW_HEIGHT,
@@ -19,18 +22,24 @@ assert.deepEqual(
   },
   {
     width:1500,
-    height:200,
-    paper:{left:400,top:48,right:1180,bottom:128},
-    frame:{referenceWidth:1536,referenceHeight:512,left:7,top:91,right:1530,bottom:388},
-    textBaselineOffset:-5,
-    scrollSpeed:48,
+    height:144,
+    paper:{left:80,top:18,right:1420,bottom:126},
+    textBaselineOffset:-2,
+    scrollSpeed:14,
+    scrollAxis:"vertical",
+    lineAdvance:48,
     itemSeparator:" • • ",
     glyphDrawWidth:32,
     glyphDrawHeight:42,
     glyphAdvance:24
   },
-  "Ticker geometry keeps the printer fit while making the type substantially easier to read."
+  "Ticker becomes a shallow map-width paper transport with a vertical feed."
 );
+assert((ticker.PAPER.right-ticker.PAPER.left)/ticker.DESIGN_WIDTH >= 0.85,
+  "Paper occupies nearly the full width of the visible mechanism.");
+const mechanismAsset=fs.readFileSync(path.join(__dirname,"..","assets","ticker","weekly-ticker-mechanism-v10.svg"),"utf8");
+assert(!mechanismAsset.includes("<text"),"Mechanism artwork contains no digital labels or fake faceplate lettering.");
+assert(!mechanismAsset.includes("FLIGHT ITINERARY PRINTER"),"Old digital printer faceplate copy is removed from the mechanism artwork.");
 
 const first=ticker.buildGlyphRun("THIS WEEK: TUE - MADISON, WI");
 const second=ticker.buildGlyphRun("THIS WEEK: TUE - MADISON, WI");
@@ -62,7 +71,16 @@ const upcoming=ticker.buildWeeklyTripTicker(schedule,{...options,now:"2026-09-14
 assert.equal(upcoming.prefix,"UPCOMING TRIP");
 assert.equal(upcoming.text,"UPCOMING TRIP: TUE - MADISON, WI • • WED - WHITE PLAINS, NY • • THU - BENTONVILLE, AR • • FRI - HOME");
 assert(!upcoming.text.includes("OVERNIGHT"),"Ticker omits the repetitive word OVERNIGHT from trip entries.");
+
+const upcomingLines=ticker.buildTickerLines(upcoming);
+assert.deepEqual(upcomingLines,[
+  "UPCOMING TRIP",
+  "TUE - MADISON, WI • • WED - WHITE PLAINS, NY",
+  "THU - BENTONVILLE, AR • • FRI - HOME"
+],"Vertical ticker wraps the itinerary into restrained typewritten rows instead of a horizontal crawl.");
+assert(upcomingLines.every(line=>line.length<=ticker.LINE_CHARACTER_LIMIT),
+  "Every vertical-feed line fits the paper width without horizontal scrolling.");
 assert.equal(ticker.buildWeeklyTripTicker(schedule,{...options,now:"2026-09-16T18:00:00Z"}).prefix,"CURRENT TRIP");
 assert.equal(ticker.buildWeeklyTripTicker({events:[]},{...options,now:"2026-09-14T16:00:00Z"}).text,"THIS WEEK: HOME ALL WEEK");
 assert.equal(ticker.buildWeeklyTripTicker({events:[flight("out","AVL","ORD","2026-09-14T12:00:00Z","2026-09-14T14:00:00Z"),flight("home","ORD","AVL","2026-09-14T20:00:00Z","2026-09-14T22:00:00Z")]},{...options,now:"2026-09-14T16:00:00Z"}).text,"THIS WEEK: NO LAYOVERS");
-console.log("Weekly ticker schedule, larger type, concise trip wording, type placement, separator, and scroll-speed tests passed.");
+console.log("Weekly ticker schedule, shallow geometry, full-width paper, vertical feed, wrapping, and concise wording tests passed.");
