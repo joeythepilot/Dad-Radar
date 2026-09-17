@@ -188,7 +188,8 @@ function createMasterStateService(options) {
   context.globalThis = context;
   vm.createContext(context);
   for (const source of ["data/airport-catalog.js", "config/settings.js", "models/schedule-state.js",
-    "models/live-flight-state.js", "services/live-refresh-schedule.js", "services/calendar-state-controller.js"]) {
+    "models/operational-schedule-state.js", "models/live-flight-state.js", "services/live-refresh-schedule.js",
+    "services/calendar-state-controller.js"]) {
     vm.runInContext(fs.readFileSync(path.join(root, source), "utf8"), context, {filename: source});
   }
   vm.runInContext("dadRadarSettings.schedule.refreshIntervalMs = 60000;", context);
