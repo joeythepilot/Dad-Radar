@@ -189,4 +189,27 @@ function resolve(op, options = {}, overrides = {}) {
   assert.equal(result.mode, "EN_ROUTE");
 }
 
+{
+  const commute = flight(operational({
+    ident: "AA3963",
+    actualOut: "2026-08-04T13:20:00.000Z",
+    actualOff: "2026-08-04T13:35:00.000Z",
+    status: "En Route"
+  }), {
+    id: "commute-3963",
+    isCommute: true,
+    flightNumber: "3963",
+    origin: "AVL",
+    destination: "ORD",
+    liveLookupCandidates: ["AA3963"]
+  });
+  const result = resolveScheduleState(schedule(commute), {
+    now: NOW,
+    homeAirport: "AVL",
+    baseAirport: "ORD"
+  });
+  assert.equal(result.mode, "COMMUTING_TO_BASE",
+    "FlightAware airborne timing must not erase the family-facing commute identity.");
+}
+
 console.log("Operational schedule-state tests passed.");
