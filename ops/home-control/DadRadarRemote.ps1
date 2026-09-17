@@ -31,7 +31,7 @@ function Load-Config {
   Require-File $ConfigPath "Dad Radar home-control config"
   $config = Get-Content -LiteralPath $ConfigPath -Raw | ConvertFrom-Json
 
-  foreach ($name in @("repoPath", "branch", "remote", "serverTask", "displayRefreshTask", "healthUrl")) {
+  foreach ($name in @("repoPath", "branch", "remote", "serverTask", "displayRefreshTask", "healthUrl", "gitPath", "npmPath")) {
     if (-not $config.PSObject.Properties[$name] -or [string]::IsNullOrWhiteSpace([string]$config.$name)) {
       throw "Missing required home-control config property: $name"
     }
@@ -40,6 +40,9 @@ function Load-Config {
   if (-not (Test-Path -LiteralPath $config.repoPath -PathType Container)) {
     throw "Dad Radar repository path does not exist: $($config.repoPath)"
   }
+
+  Require-File ([string]$config.gitPath) "Configured Git executable"
+  Require-File ([string]$config.npmPath) "Configured npm executable"
 
   return $config
 }
@@ -68,7 +71,7 @@ function Invoke-External(
 }
 
 function Get-GitValue([object]$Config, [string[]]$Arguments) {
-  $output = & git -C $Config.repoPath @Arguments
+  $output = & $Config.gitPath -C $Config.repoPath @Arguments
   if ($LASTEXITCODE -ne 0) {
     throw "git $($Arguments -join ' ') failed with code $LASTEXITCODE"
   }
@@ -84,7 +87,7 @@ function Assert-CleanTree([object]$Config) {
 }
 
 function Fetch-ConfiguredBranch([object]$Config) {
-  Invoke-External "git" @(
+  Invoke-External $Config.gitPath @(
     "-C", $Config.repoPath,
     "fetch", "--prune", $Config.remote, $Config.branch
   )
@@ -95,12 +98,12 @@ function Assert-DeploySha([object]$Config, [string]$Sha) {
     throw "Deploy target must be a full 40-character hexadecimal commit SHA."
   }
 
-  & git -C $Config.repoPath cat-file -e "$Sha^{commit}" 2>$null
+  & $Config.gitPath -C $Config.repoPath cat-file -e "$Sha^{commit}" 2>$null
   if ($LASTEXITCODE -ne 0) {
     throw "Deploy target does not exist in the local Git object database after fetch: $Sha"
   }
 
-  & git -C $Config.repoPath merge-base --is-ancestor $Sha "$($Config.remote)/$($Config.branch)"
+  & $Config.gitPath -C $Config.repoPath merge-base --is-ancestor $Sha "$($Config.remote)/$($Config.branch)"
   if ($LASTEXITCODE -ne 0) {
     throw "Deploy target is not in $($Config.remote)/$($Config.branch) history: $Sha"
   }
@@ -149,9 +152,9 @@ function Restore-Checkout([object]$Config, [string]$Sha) {
   }
 
   Write-Section "Restoring previous checkout"
-  Invoke-External "git" @("-C", $Config.repoPath, "checkout", "-q", $Config.branch)
-  Invoke-External "git" @("-C", $Config.repoPath, "reset", "--hard", $Sha)
-  Invoke-External "npm.cmd" @("ci") $Config.repoPath
+  Invoke-External $Config.gitPath @("-C", $Config.repoPath, "checkout", "-q", $Config.branch)
+  Invoke-External $Config.gitPath @("-C", $Config.repoPath, "reset", "--hard", $Sha)
+  Invoke-External $Config.npmPath @("ci") $Config.repoPath
 }
 
 function Record-GoodDeployment([string]$PreviousSha, [string]$CurrentSha) {
@@ -171,12 +174,12 @@ function Deploy-Sha([object]$Config, [string]$TargetSha) {
   Write-Section "Deploying Dad Radar $TargetSha"
 
   try {
-    Invoke-External "git" @("-C", $Config.repoPath, "checkout", "-q", $Config.branch)
-    Invoke-External "git" @("-C", $Config.repoPath, "reset", "--hard", $TargetSha)
+    Invoke-External $Config.gitPath @("-C", $Config.repoPath, "checkout", "-q", $Config.branch)
+    Invoke-External $Config.gitPath @("-C", $Config.repoPath, "reset", "--hard", $TargetSha)
     $movedCheckout = $true
 
-    Invoke-External "npm.cmd" @("ci") $Config.repoPath
-    Invoke-External "npm.cmd" @("test") $Config.repoPath
+    Invoke-External $Config.npmPath @("ci") $Config.repoPath
+    Invoke-External $Config.npmPath @("test") $Config.repoPath
 
     Restart-ServerTask $Config
     Refresh-Display $Config
@@ -266,7 +269,7 @@ function Show-Status([object]$Config) {
 function Run-Tests([object]$Config) {
   Write-Section "Running Dad Radar tests"
   Assert-CleanTree $Config
-  Invoke-External "npm.cmd" @("test") $Config.repoPath
+  Invoke-External $Config.npmPath @("test") $Config.repoPath
 }
 
 function Show-Logs([object]$Config, [string]$Body) {
