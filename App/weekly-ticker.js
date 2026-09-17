@@ -20,7 +20,7 @@
     const DESIGN_HEIGHT = 144;
     const PAPER = Object.freeze({left:80, top:18, right:1420, bottom:126});
     const TEXT_BASELINE_OFFSET = -2;
-    const SCROLL_SPEED = 48;
+    const SCROLL_SPEED = 14;
     const SCROLL_AXIS = "vertical";
     const LINE_ADVANCE = 48;
     const ITEM_SEPARATOR = " • • ";
@@ -181,4 +181,152 @@
     function tripItems(trip, options) {
       const items=[]; const seen=new Set();
       trip.layovers.forEach(layover=>{
-        const airport=String(layover.airport??"").toUpperCase(); const key=`${dateKey(startOf(layover),options.timeZone)}|${SECB1
+        const airport=String(layover.airport??"").toUpperCase(); const key=`${dateKey(startOf(layover),options.timeZone)}|${airport}`;
+        if(!airport || seen.has(key))return; seen.add(key);
+        items.push(`${weekday(startOf(layover),options.timeZone)} - ${locationFor(airport,options)}`);
+      });
+      items.push(trip.homeFlight ? `${weekday(endOf(trip.homeFlight),options.timeZone)} - HOME` : "RETURN HOME - TBD");
+      return items;
+    }
+
+    function buildWeeklyTripTicker(schedule, providedOptions = {}) {
+      const options = {
+        homeAirport: providedOptions.homeAirport ?? "AVL",
+        timeZone: providedOptions.timeZone ?? "America/New_York",
+        locationAliases: providedOptions.locationAliases ?? {},
+        airports: providedOptions.airports ?? null
+      };
+      const now=toDate(providedOptions.now)??new Date();
+      const todayKey=dateKey(now,options.timeZone), tomorrowKey=shiftKey(todayKey,1), week=weekBounds(todayKey);
+      const trips=tripClusters(schedule,options);
+      const current=trips.find(trip=>trip.start<=now && now<=trip.end)??null;
+      const next=trips.find(trip=>trip.start>now)??null;
+      let prefix="THIS WEEK"; let selected=[];
+      if(current){prefix="CURRENT TRIP";selected=[current];}
+      else if(next && next.startKey===tomorrowKey){prefix="UPCOMING TRIP";selected=[next];}
+      else selected=trips.filter(trip=>trip.startKey<=week.endKey && trip.endKey>=week.startKey);
+      let items=[]; selected.forEach(trip=>{ items = items.concat(tripItems(trip,options)); });
+      if(!items.length){
+        const eventsThisWeek=sorted(schedule?.events).filter(event=>{
+          const start=dateKey(startOf(event),options.timeZone); const inclusiveEnd=new Date(endOf(event).getTime()-1); const end=dateKey(inclusiveEnd,options.timeZone);
+          return start<=week.endKey && end>=week.startKey;
+        });
+        items=[eventsThisWeek.some(event=>event.kind==="flight") ? "NO LAYOVERS" : "HOME ALL WEEK"];
+      }
+      return {prefix,items,text:`${prefix}: ${items.join(ITEM_SEPARATOR)}`};
+    }
+
+    function install(root) {
+      const stack = root.document.querySelector(".center-map-stack");
+      if (!stack || stack.querySelector("#weekly-trip-ticker-canvas")) return null;
+
+      if (!root.document.querySelector("link[data-dad-radar-weekly-ticker]")) {
+        const link=root.document.createElement("link"); link.rel="stylesheet"; link.href="/UI/weekly-ticker-layout.css?v=7"; link.dataset.dadRadarWeeklyTicker="true"; root.document.head.appendChild(link);
+      }
+
+      const holder=root.document.createElement("div"); holder.className="weekly-trip-ticker"; holder.id="weekly-trip-ticker";
+      const canvas=root.document.createElement("canvas"); canvas.className="weekly-trip-ticker-canvas"; canvas.id="weekly-trip-ticker-canvas";
+      canvas.width=DESIGN_WIDTH; canvas.height=DESIGN_HEIGHT; canvas.setAttribute("role","img"); canvas.setAttribute("aria-label",DEFAULT_TEXT); canvas.dataset.scrollAxis=SCROLL_AXIS;
+      holder.appendChild(canvas); stack.appendChild(holder);
+
+      const context=canvas.getContext("2d",{alpha:true}); if(!context)return null;
+      const mechanismImage=new root.Image(), paperImage=new root.Image(), glyphImage=new root.Image();
+      mechanismImage.decoding="async"; paperImage.decoding="async"; glyphImage.decoding="async";
+      let summary={prefix:"THIS WEEK",items:["UPDATING SCHEDULE"],text:DEFAULT_TEXT};
+      let rows=buildTickerLines(summary).map(buildGlyphRun);
+      let summaryText=normalizeTickerText(summary.text);
+      let scrollOffset=0,lastFrameAt=null,animationFrame=null,destroyed=false,lastScheduleFetchAt=0,fetchRequest=null;
+      mechanismImage.src="/assets/ticker/weekly-ticker-mechanism-v10.svg?v=vertical-feed-1";
+      paperImage.src="/assets/ticker/weekly-ticker-paper-v5.png";
+      glyphImage.src="/assets/ticker/weekly-ticker-glyphs-v5.png";
+      const reducedMotion=()=>root.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches===true;
+      const baseSpeed=SCROLL_SPEED;
+      const imageReady=image=>image.complete && Number(image.naturalWidth||image.width)>0;
+      const cycleHeight=()=>Math.max(LINE_ADVANCE,rows.length*LINE_ADVANCE+LOOP_GAP);
+
+      function setSummary(nextSummary) {
+        const nextText=normalizeTickerText(nextSummary?.text??nextSummary??DEFAULT_TEXT);
+        if(nextText===summaryText)return;
+        summary=nextSummary && typeof nextSummary==="object" ? nextSummary : {text:nextText};
+        rows=buildTickerLines(summary).map(buildGlyphRun);
+        summaryText=nextText;
+        scrollOffset=0;
+        canvas.setAttribute("aria-label",nextText);
+      }
+      function drawGlyph(glyph,x,y){if(!imageReady(glyphImage))return;const tile=glyph.characterIndex*GLYPH_VARIANTS+glyph.variant;context.drawImage(glyphImage,(tile%GLYPH_COLUMNS)*GLYPH_CELL_WIDTH,Math.floor(tile/GLYPH_COLUMNS)*GLYPH_CELL_HEIGHT,GLYPH_CELL_WIDTH,GLYPH_CELL_HEIGHT,x+glyph.xJitter,y+glyph.yJitter,GLYPH_DRAW_WIDTH,GLYPH_DRAW_HEIGHT);}
+      function drawRun(run,x,y){run.glyphs.forEach(glyph=>drawGlyph(glyph,x+glyph.x,y));}
+      function drawPaper(now){
+        if(!imageReady(paperImage))return;
+        const sourceWidth=paperImage.naturalWidth||paperImage.width||256;
+        const sourceHeight=paperImage.naturalHeight||paperImage.height||40;
+        const tileWidth=sourceWidth*2;
+        const tileHeight=sourceHeight*2;
+        const travel=reducedMotion()?0:scrollOffset*0.55;
+        const yOffset=((travel%tileHeight)+tileHeight)%tileHeight;
+        const xWander=reducedMotion()?0:Math.sin(now/1100)*0.28;
+        for(let y=PAPER.top-tileHeight+yOffset;y<PAPER.bottom;y+=tileHeight){
+          for(let x=PAPER.left-tileWidth+xWander;x<PAPER.right;x+=tileWidth){
+            context.drawImage(paperImage,x,y,tileWidth,tileHeight);
+          }
+        }
+      }
+      function drawMechanism(){
+        if(!imageReady(mechanismImage))return;
+        context.drawImage(mechanismImage,0,0,DESIGN_WIDTH,DESIGN_HEIGHT);
+      }
+      function drawRows(now){
+        const cycle=cycleHeight();
+        const phase=reducedMotion()?0:scrollOffset%cycle;
+        const lateral=reducedMotion()?0:Math.sin(now/1300)*0.24;
+        const firstTop=PAPER.top-cycle+phase;
+        for(let blockTop=firstTop;blockTop<PAPER.bottom+cycle;blockTop+=cycle){
+          rows.forEach((run,index)=>{
+            const y=blockTop+index*LINE_ADVANCE+TEXT_BASELINE_OFFSET;
+            drawRun(run,PAPER.left+32+lateral,y);
+          });
+        }
+      }
+      function render(now){
+        if(destroyed)return; if(lastFrameAt===null)lastFrameAt=now; const delta=Math.min(Math.max(now-lastFrameAt,0),80); lastFrameAt=now;
+        if(!reducedMotion()){
+          const wander=Math.sin(now/1510)*0.014, ripple=Math.sin(now/317)*0.004, phase=now%13700, hitch=phase>6840&&phase<7050?0.68:1;
+          scrollOffset += baseSpeed*(1+wander+ripple)*hitch*delta/1000;
+          const cycle=cycleHeight(); if(scrollOffset>=cycle)scrollOffset%=cycle;
+        }
+        context.clearRect(0,0,DESIGN_WIDTH,DESIGN_HEIGHT);
+        context.fillStyle="#050505";
+        context.fillRect(0,0,DESIGN_WIDTH,DESIGN_HEIGHT);
+        context.save();context.beginPath();context.rect(PAPER.left,PAPER.top,PAPER.right-PAPER.left,PAPER.bottom-PAPER.top);context.clip();
+        drawPaper(now);
+        drawRows(now);
+        context.restore();
+        drawMechanism();
+        animationFrame=root.requestAnimationFrame(render);
+      }
+
+      async function refreshSchedule(force=false){
+        const now=Date.now(); if(fetchRequest)return fetchRequest; if(!force && now-lastScheduleFetchAt<30000)return null; lastScheduleFetchAt=now;
+        fetchRequest=(async()=>{
+          try{
+            const response=await root.fetch("/api/calendar/upcoming",{cache:"no-store"}); const data=await response.json();
+            if(!response.ok || !data?.events)throw new Error("Schedule unavailable");
+            setSummary(buildWeeklyTripTicker(data,{homeAirport:root.dadRadarSettings?.homeAirport??"AVL",timeZone:root.dadRadarSettings?.displayTimeZone??"America/New_York",locationAliases:root.dadRadarSettings?.weeklyTicker?.locationAliases??{},airports:root.dadRadarAirports}));
+          }catch(_error){}
+          finally{fetchRequest=null;}
+        })(); return fetchRequest;
+      }
+
+      canvas.setAttribute("aria-label",summaryText);
+      root.addEventListener("dad-radar:calendar-sync",event=>{if(event.detail?.ok)void refreshSchedule(false);});
+      void refreshSchedule(true);
+      const refreshMs=Math.max(60000,Number(root.dadRadarSettings?.schedule?.refreshIntervalMs)||300000);
+      const interval=root.setInterval(()=>void refreshSchedule(true),refreshMs);
+      animationFrame=root.requestAnimationFrame(render);
+
+      const controller=Object.freeze({setSummary,refreshSchedule,destroy(){destroyed=true;root.clearInterval(interval);if(animationFrame!==null)root.cancelAnimationFrame(animationFrame);}});
+      canvas.dadRadarTicker=controller; return controller;
+    }
+
+    return {DESIGN_WIDTH,DESIGN_HEIGHT,PAPER,TEXT_BASELINE_OFFSET,SCROLL_SPEED,SCROLL_AXIS,LINE_ADVANCE,LINE_CHARACTER_LIMIT,ITEM_SEPARATOR,GLYPH_DRAW_WIDTH,GLYPH_DRAW_HEIGHT,GLYPH_ADVANCE,buildGlyphRun,buildTickerLines,buildWeeklyTripTicker,install,normalizeTickerText};
+  }
+);

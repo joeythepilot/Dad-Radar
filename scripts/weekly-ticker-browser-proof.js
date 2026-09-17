@@ -22,7 +22,7 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
     const node = document.getElementById("weekly-trip-ticker-canvas");
     if (!node || node.getAttribute("aria-label") !== expected) return false;
     const resources = performance.getEntriesByType("resource").map(entry => entry.name);
-    return resources.some(name => name.includes("weekly-ticker-mechanism-v11.png")) &&
+    return resources.some(name => name.includes("weekly-ticker-mechanism-v10.svg")) &&
       resources.some(name => name.includes("weekly-ticker-paper-v5.png")) &&
       resources.some(name => name.includes("weekly-ticker-glyphs-v5.png"));
   }, expectedText, {timeout: 4000, polling: 25});
@@ -130,9 +130,9 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
       "Adding the ticker does not increase the cabinet/lower-grid height");
   }
 
-  assert(data.mapPanel.height/data.stack.height>=.87 && data.mapPanel.height/data.stack.height<=.92,
+  assert(data.mapPanel.height/data.stack.height>=.84 && data.mapPanel.height/data.stack.height<=.90,
     "The map reclaims most of the center-column height after the printer is made shallow");
-  assert(data.ticker.height/data.stack.height>=.08 && data.ticker.height/data.stack.height<=.13,
+  assert(data.ticker.height/data.stack.height>=.10 && data.ticker.height/data.stack.height<=.16,
     "Ticker stays a shallow map-width mechanism strip instead of making the unit vertically bulky");
 
   assert.equal(data.canvasPaint.transform, "none", "Ticker canvas is not vertically stretched by CSS");

@@ -25,7 +25,7 @@ assert.deepEqual(
     height:144,
     paper:{left:80,top:18,right:1420,bottom:126},
     textBaselineOffset:-2,
-    scrollSpeed:48,
+    scrollSpeed:14,
     scrollAxis:"vertical",
     lineAdvance:48,
     itemSeparator:" • • ",
@@ -37,16 +37,9 @@ assert.deepEqual(
 );
 assert((ticker.PAPER.right-ticker.PAPER.left)/ticker.DESIGN_WIDTH >= 0.85,
   "Paper occupies nearly the full width of the visible mechanism.");
-const mechanismAsset=fs.readFileSync(path.join(__dirname,"..","assets","ticker","weekly-ticker-mechanism-v11.png"));
-assert.deepEqual([...mechanismAsset.subarray(0,8)],[137,80,78,71,13,10,26,10],
-  "Mechanism is generated raster artwork rather than a CSS/vector faceplate.");
-assert.equal(mechanismAsset.readUInt32BE(16),1500,"Mechanism raster matches the ticker backing width.");
-assert.equal(mechanismAsset.readUInt32BE(20),144,"Mechanism raster matches the shallow ticker backing height.");
-assert.equal(ticker.feedVelocityFactor(1000),0,"Vertical paper feed dwells between mechanical advances.");
-assert(ticker.feedVelocityFactor(3050)>1,"Vertical paper feed accelerates through a short roller-driven advance.");
-assert(ticker.feedVelocityFactor(3720)>0 && ticker.feedVelocityFactor(3720)<0.5,
-  "Vertical paper feed eases into a brief mechanical settle.");
-assert.equal(ticker.feedVelocityFactor(4100),0,"Vertical paper feed fully settles before the next advance.");
+const mechanismAsset=fs.readFileSync(path.join(__dirname,"..","assets","ticker","weekly-ticker-mechanism-v10.svg"),"utf8");
+assert(!mechanismAsset.includes("<text"),"Mechanism artwork contains no digital labels or fake faceplate lettering.");
+assert(!mechanismAsset.includes("FLIGHT ITINERARY PRINTER"),"Old digital printer faceplate copy is removed from the mechanism artwork.");
 
 const first=ticker.buildGlyphRun("THIS WEEK: TUE - MADISON, WI");
 const second=ticker.buildGlyphRun("THIS WEEK: TUE - MADISON, WI");
