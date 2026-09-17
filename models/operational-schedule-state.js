@@ -196,7 +196,14 @@
       }
 
       const now = toDate(providedOptions.now) ?? new Date();
-      const mode = operationalMode(event, now, providedOptions) ?? baseResolved.mode;
+      let mode = operationalMode(event, now, providedOptions) ?? baseResolved.mode;
+      if (
+        event.isCommute === true &&
+        mode === "EN_ROUTE" &&
+        ["COMMUTING_TO_BASE", "COMMUTING_HOME"].includes(baseResolved.mode)
+      ) {
+        mode = baseResolved.mode;
+      }
       const delay = finiteMinutes(op.departureDelayMinutes);
       const arrivalDelay = finiteMinutes(op.arrivalDelayMinutes);
       const arrival = bestArrival(event);
