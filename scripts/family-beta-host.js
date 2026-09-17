@@ -32,6 +32,9 @@ const REMOTE_RESTART_REQUEST_PATH = path.join(
   "remote-restart-request.json"
 );
 
+const SERVER_RESTART_BROKER_TASK_NAME =
+  "Dad Radar Remote Restart Broker";
+
 const MAX_LOG_BYTES =
   1024 * 1024;
 
@@ -286,6 +289,33 @@ function buildBrowser(options = {}) {
   );
 }
 
+function runRestartBrokerTask(options = {}) {
+  const spawn =
+    options.spawnSync ?? spawnSync;
+
+  const taskName =
+    options.taskName ??
+    SERVER_RESTART_BROKER_TASK_NAME;
+
+  const result = spawn(
+    "schtasks.exe",
+    [
+      "/Run",
+      "/TN",
+      taskName
+    ],
+    {
+      encoding: "utf8",
+      windowsHide: true
+    }
+  );
+
+  return Boolean(
+    !result.error &&
+    result.status === 0
+  );
+}
+
 function isDadRadarHealthy(options = {}) {
   const port =
     options.port ?? 4173;
@@ -501,12 +531,29 @@ async function run(options = {}) {
       `SHA ${request.sha}.`
     );
 
+    const launchBroker =
+      options.runRestartBrokerTask ??
+      runRestartBrokerTask;
+
+    if (!launchBroker()) {
+      stopping = false;
+      log(
+        "Dad Radar could not start the managed restart broker; keeping the current server online."
+      );
+      restartWatcher?.start();
+      return;
+    }
+
+    log(
+      "Dad Radar managed restart broker started."
+    );
+
     server.close(() => {
-      process.exit(1);
+      process.exit(0);
     });
 
     setTimeout(() => {
-      process.exit(1);
+      process.exit(0);
     }, 5000).unref();
   }
 
@@ -608,6 +655,7 @@ module.exports = {
   REMOTE_RESTART_REQUEST_PATH,
   RESTART_CHECK_INTERVAL_MS,
   RUNTIME_DIRECTORY,
+  SERVER_RESTART_BROKER_TASK_NAME,
   buildBrowser,
   createLogger,
   createRestartRequestWatcher,
@@ -615,5 +663,6 @@ module.exports = {
   resolvePort,
   rotateLog,
   run,
+  runRestartBrokerTask,
   waitForManualServer
 };
