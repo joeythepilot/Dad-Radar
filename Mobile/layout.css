@@ -38,24 +38,24 @@ html[data-family-full] .daily-schedule-heading > span { min-width:0; overflow:hi
 html.family-full-portrait .instrument-slot .instrument { width:24vw !important; height:24vw !important; max-width:130px !important; max-height:130px !important; }
 html.family-full-portrait .destination-poster-image { position:absolute; top:0; left:0; width:100% !important; height:100% !important; object-fit:contain !important; }
 
-/* A narrow Full-view duty housing must retain complete routes and flight tags.
-   Scroll within the existing housing rather than reducing type or the map. */
-html[data-family-full] .daily-schedule-panel.family-duty-narrow {
+/* Legacy web duty panels may reflow in a narrow Full-view housing. The raster
+   physical Today’s Duty card is excluded so its calibrated overlays stay fixed. */
+html[data-family-full] .daily-schedule-panel.family-duty-narrow:not(.is-physical-duty-card) {
   display:block !important; overflow-x:hidden; overflow-y:auto;
   -webkit-overflow-scrolling:touch;
 }
-html[data-family-full] .family-duty-narrow:focus { outline:2px solid #e9bf75; outline-offset:-3px; }
-html[data-family-full] .family-duty-narrow .daily-schedule-heading { flex-wrap:wrap; row-gap:4px; }
-html[data-family-full] .family-duty-narrow .daily-schedule-heading > span { overflow:visible; white-space:normal; line-height:1.2; }
-html[data-family-full] .family-duty-narrow .daily-schedule-context { margin:6px 0; overflow:visible; }
-html[data-family-full] .family-duty-narrow .daily-schedule-context strong { display:block; overflow:visible; -webkit-line-clamp:unset; }
-html[data-family-full] .family-duty-narrow .daily-schedule-list { display:block; overflow:visible; }
-html[data-family-full] .family-duty-narrow .daily-schedule-entry {
+html[data-family-full] .family-duty-narrow:not(.is-physical-duty-card):focus { outline:2px solid #e9bf75; outline-offset:-3px; }
+html[data-family-full] .family-duty-narrow:not(.is-physical-duty-card) .daily-schedule-heading { flex-wrap:wrap; row-gap:4px; }
+html[data-family-full] .family-duty-narrow:not(.is-physical-duty-card) .daily-schedule-heading > span { overflow:visible; white-space:normal; line-height:1.2; }
+html[data-family-full] .family-duty-narrow:not(.is-physical-duty-card) .daily-schedule-context { margin:6px 0; overflow:visible; }
+html[data-family-full] .family-duty-narrow:not(.is-physical-duty-card) .daily-schedule-context strong { display:block; overflow:visible; -webkit-line-clamp:unset; }
+html[data-family-full] .family-duty-narrow:not(.is-physical-duty-card) .daily-schedule-list { display:block; overflow:visible; }
+html[data-family-full] .family-duty-narrow:not(.is-physical-duty-card) .daily-schedule-entry {
   grid-template-columns:minmax(0,1fr) auto; grid-template-areas:"time tag" "route route";
   gap:2px 5px; padding:5px 0 5px 7px; overflow:visible;
 }
-html[data-family-full] .family-duty-narrow .daily-schedule-time { grid-area:time; }
-html[data-family-full] .family-duty-narrow .daily-schedule-tag { grid-area:tag; }
-html[data-family-full] .family-duty-narrow .daily-schedule-label {
+html[data-family-full] .family-duty-narrow:not(.is-physical-duty-card) .daily-schedule-time { grid-area:time; }
+html[data-family-full] .family-duty-narrow:not(.is-physical-duty-card) .daily-schedule-tag { grid-area:tag; }
+html[data-family-full] .family-duty-narrow:not(.is-physical-duty-card) .daily-schedule-label {
   grid-area:route; overflow:visible; white-space:normal; overflow-wrap:break-word; line-height:1.25;
 }
