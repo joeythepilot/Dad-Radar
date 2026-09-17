@@ -64,10 +64,14 @@
     }
 
     const viewportWidth = root.visualViewport?.width ?? root.innerWidth;
+    const isFamilyFull = root.document.documentElement.hasAttribute("data-family-full");
     const view = root.dadRadarDailyScheduleLayout?.buildDutyCardView(
       dailySchedule,
       viewportWidth,
-      {homeAirport: root.dadRadarSettings?.homeAirport ?? "AVL"}
+      {
+        homeAirport: root.dadRadarSettings?.homeAirport ?? "AVL",
+        rowCapacity: isFamilyFull ? 5 : undefined
+      }
     );
 
     if (!view) {
