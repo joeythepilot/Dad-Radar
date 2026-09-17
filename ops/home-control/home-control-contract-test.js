@@ -42,6 +42,7 @@ assert.match(remote, /remote-restart-request\.json/, "remote deployment must req
 assert.match(remote, /instanceId/, "remote deployment must verify that a new server instance came online");
 assert.match(remote, /version/, "remote deployment must verify the running server reports the target SHA");
 assert.doesNotMatch(remote, /schtasks\.exe[\s\S]{0,120}\/(?:End|Run)/i, "remote executor must not require permission to stop or start SYSTEM scheduled tasks");
+assert.match(remote, /function Get-TaskState[\s\S]*try[\s\S]*schtasks\.exe[\s\S]*catch[\s\S]*UNAVAILABLE/i, "status must degrade gracefully when the runner cannot inspect a protected Windows task");
 assert.match(remote, /family-beta\.log/, "logs command must read the bounded Dad Radar runtime log");
 assert.doesNotMatch(remote, /Invoke-Expression|\biex\b/i, "remote executor must not use arbitrary expression execution");
 assert.doesNotMatch(remote, /\.env|credentials\.json|token\.json/i, "remote executor must never read or print Dad Radar credential files");
