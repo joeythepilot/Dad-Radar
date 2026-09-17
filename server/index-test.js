@@ -5,6 +5,10 @@ const {
   startServer
 } = require("./index");
 
+async function drainResponse(response) {
+  await response.arrayBuffer();
+}
+
 async function runTests() {
   const server = app.listen(
     0,
@@ -46,6 +50,7 @@ async function runTests() {
         200,
         `${publicPath} should be available to the family display.`
       );
+      await drainResponse(response);
     }
 
     for (const privatePath of [
@@ -66,6 +71,7 @@ async function runTests() {
         404,
         `${privatePath} must not be exposed on the home network.`
       );
+      await drainResponse(response);
     }
 
     const displayResponse = await fetch(
@@ -94,8 +100,10 @@ async function runTests() {
     assert(!displayHtml.includes('data-family-full'), 'Home console stays independent of family layout choice');
     const worker = await fetch(`${baseUrl}/Mobile/sw.js`);
     assert.equal(worker.headers.get("service-worker-allowed"), "/mobile");
+    await drainResponse(worker);
     const api = await fetch(`${baseUrl}/api/health`);
     assert.match(api.headers.get("cache-control"), /no-store/);
+    await drainResponse(api);
 
     const collisionServer = startServer({
       port: address.port,
