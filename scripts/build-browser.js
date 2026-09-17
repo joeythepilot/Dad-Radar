@@ -33,37 +33,6 @@ const browserSources = [
   "App/main.js"
 ];
 
-const compatibilityBootstrap = `
-(function installDadRadarCompatibility(root) {
-  "use strict";
-
-  if (typeof root.globalThis === "undefined") {
-    root.globalThis = root;
-  }
-
-  if (
-    typeof root.Element !== "undefined" &&
-    !root.Element.prototype.replaceChildren
-  ) {
-    root.Element.prototype.replaceChildren = function replaceChildren() {
-      while (this.firstChild) {
-        this.removeChild(this.firstChild);
-      }
-
-      for (var index = 0; index < arguments.length; index += 1) {
-        var child = arguments[index];
-
-        this.appendChild(
-          child instanceof root.Node
-            ? child
-            : root.document.createTextNode(String(child))
-        );
-      }
-    };
-  }
-})(window);
-`;
-
 function readSource(relativePath) {
   return fs.readFileSync(
     path.join(projectRoot, relativePath),
@@ -72,7 +41,6 @@ function readSource(relativePath) {
 }
 
 const combinedSource = [
-  compatibilityBootstrap,
   ...browserSources.map(
     (relativePath) =>
       `\n/* Source: ${relativePath} */\n${readSource(relativePath)}`
@@ -95,11 +63,8 @@ const result = babel.transformSync(
         require.resolve("@babel/preset-env"),
         {
           bugfixes: true,
-          forceAllTransforms: true,
           modules: false,
-          targets: {
-            ios: "9"
-          }
+          targets: "> 0.5%, not dead"
         }
       ]
     ],
@@ -120,13 +85,13 @@ fs.writeFileSync(
 );
 
 console.log(
-  `Built ${path.relative(projectRoot, outputPath)} in legacy Safari-compatible ES5.`
+  `Built ${path.relative(projectRoot, outputPath)} for supported modern browsers.`
 );
 
-// Compact viewers use the identical transport/audio controller, including on old Safari.
-const rollBundle = babel.transformSync(compatibilityBootstrap + "\n" +
+// Compact viewers use the identical transport/audio controller.
+const rollBundle = babel.transformSync(
   readSource("App/map-roll-audio.js") + "\n" + readSource("App/map-roll-transition.js"), {
   babelrc:false, configFile:false, comments:false, presets:[[require.resolve("@babel/preset-env"),
-    {bugfixes:true,forceAllTransforms:true,modules:false,targets:{ios:"9"}}]], sourceType:"script"
+    {bugfixes:true,modules:false,targets:"> 0.5%, not dead"}]], sourceType:"script"
 });
 fs.writeFileSync(path.join(projectRoot,"App/map-roll-browser.js"),rollBundle.code + "\n","utf8");

@@ -15,6 +15,9 @@ assert.deepEqual(
     scrollSpeed:ticker.SCROLL_SPEED,
     scrollAxis:ticker.SCROLL_AXIS,
     lineAdvance:ticker.LINE_ADVANCE,
+    feedStep:ticker.FEED_STEP_PX,
+    feedCycle:ticker.FEED_CYCLE_MS,
+    feedMove:ticker.FEED_MOVE_MS,
     itemSeparator:ticker.ITEM_SEPARATOR,
     glyphDrawWidth:ticker.GLYPH_DRAW_WIDTH,
     glyphDrawHeight:ticker.GLYPH_DRAW_HEIGHT,
@@ -25,21 +28,25 @@ assert.deepEqual(
     height:144,
     paper:{left:80,top:18,right:1420,bottom:126},
     textBaselineOffset:-2,
-    scrollSpeed:14,
+    scrollSpeed:0,
     scrollAxis:"vertical",
     lineAdvance:48,
+    feedStep:16,
+    feedCycle:2200,
+    feedMove:460,
     itemSeparator:" • • ",
     glyphDrawWidth:32,
     glyphDrawHeight:42,
     glyphAdvance:24
   },
-  "Ticker becomes a shallow map-width paper transport with a vertical feed."
+  "Ticker becomes a shallow map-width paper transport with a stepped vertical feed."
 );
 assert((ticker.PAPER.right-ticker.PAPER.left)/ticker.DESIGN_WIDTH >= 0.85,
   "Paper occupies nearly the full width of the visible mechanism.");
-const mechanismAsset=fs.readFileSync(path.join(__dirname,"..","assets","ticker","weekly-ticker-mechanism-v10.svg"),"utf8");
-assert(!mechanismAsset.includes("<text"),"Mechanism artwork contains no digital labels or fake faceplate lettering.");
-assert(!mechanismAsset.includes("FLIGHT ITINERARY PRINTER"),"Old digital printer faceplate copy is removed from the mechanism artwork.");
+const mechanismAsset=path.join(__dirname,"..","assets","ticker","weekly-ticker-mechanism-v11.png");
+assert(fs.existsSync(mechanismAsset),"Photographic internal mechanism artwork is present.");
+assert(fs.statSync(mechanismAsset).size>10000,"Mechanism artwork is a real raster asset, not a placeholder.");
+assert(ticker.FEED_MOVE_MS<ticker.FEED_CYCLE_MS/2,"Paper advances in a short motorized movement followed by a longer readable pause.");
 
 const first=ticker.buildGlyphRun("THIS WEEK: TUE - MADISON, WI");
 const second=ticker.buildGlyphRun("THIS WEEK: TUE - MADISON, WI");
@@ -83,4 +90,4 @@ assert(upcomingLines.every(line=>line.length<=ticker.LINE_CHARACTER_LIMIT),
 assert.equal(ticker.buildWeeklyTripTicker(schedule,{...options,now:"2026-09-16T18:00:00Z"}).prefix,"CURRENT TRIP");
 assert.equal(ticker.buildWeeklyTripTicker({events:[]},{...options,now:"2026-09-14T16:00:00Z"}).text,"THIS WEEK: HOME ALL WEEK");
 assert.equal(ticker.buildWeeklyTripTicker({events:[flight("out","AVL","ORD","2026-09-14T12:00:00Z","2026-09-14T14:00:00Z"),flight("home","ORD","AVL","2026-09-14T20:00:00Z","2026-09-14T22:00:00Z")]},{...options,now:"2026-09-14T16:00:00Z"}).text,"THIS WEEK: NO LAYOVERS");
-console.log("Weekly ticker schedule, shallow geometry, full-width paper, vertical feed, wrapping, and concise wording tests passed.");
+console.log("Weekly ticker schedule, shallow geometry, photographic mechanism, stepped vertical feed, wrapping, and concise wording tests passed.");
