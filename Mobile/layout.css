@@ -39,38 +39,59 @@ html.family-full-portrait .instrument-slot .instrument { width:24vw !important; 
 html.family-full-portrait .destination-poster-image { position:absolute; top:0; left:0; width:100% !important; height:100% !important; object-fit:contain !important; }
 
 /* Mobile Full uses the same physical dispatch card as the desktop display, but
-   the cabinet is scaled into a much smaller housing. Scale the live type with
-   that housing instead of inheriting the desktop minimum font sizes. */
+   the cabinet is scaled into a much smaller housing. Scale only the live ink
+   and its calibrated text windows. The desktop physical card remains unchanged. */
 html[data-family-full] .daily-schedule-panel.is-physical-duty-card {
-  --family-duty-date-font-size: clamp(5px, 0.58vw, 8px);
-  --family-duty-context-font-size: clamp(7px, 0.82vw, 10px);
-  --family-duty-row-font-size: clamp(5.5px, 0.66vw, 8.5px);
-  --family-duty-footer-font-size: clamp(5.5px, 0.62vw, 8px);
-  --family-duty-context-top: 21.8%;
+  --family-duty-date-font-size: clamp(4.5px, 0.52vw, 6.5px);
+  --family-duty-context-font-size: clamp(6.5px, 0.74vw, 9px);
+  --family-duty-row-font-size: clamp(5.2px, 0.60vw, 8px);
+  --family-duty-footer-font-size: clamp(5.2px, 0.58vw, 7.5px);
+  --family-duty-context-top: 21.4%;
+  --family-duty-context-height: 16.4%;
+  --family-duty-context-safety-pad: 0.28em;
+  --family-duty-date-width: 23%;
+  --family-duty-time-column-width: 31%;
 }
 html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-heading span {
+  right: 3.8% !important;
+  width: var(--family-duty-date-width) !important;
   font-size: var(--family-duty-date-font-size) !important;
-  letter-spacing: 0.15px !important;
+  letter-spacing: 0.08px !important;
+  overflow: hidden !important;
+  text-overflow: clip !important;
 }
 html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-context {
   top: var(--family-duty-context-top) !important;
-  height: 14.8% !important;
+  height: var(--family-duty-context-height) !important;
+  align-items: flex-start !important;
 }
 html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-context strong {
+  display: block !important;
+  width: 100% !important;
+  max-height: 2.65em !important;
+  padding-top: var(--family-duty-context-safety-pad) !important;
+  overflow: hidden !important;
+  -webkit-box-orient: initial !important;
+  -webkit-line-clamp: unset !important;
   font-size: var(--family-duty-context-font-size) !important;
-  line-height: 1.12 !important;
-  letter-spacing: 0.1px !important;
+  line-height: 1.16 !important;
+  letter-spacing: 0.05px !important;
 }
 html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-entry {
-  grid-template-columns: minmax(0, 1fr) 24% !important;
-  column-gap: 2% !important;
+  grid-template-columns: minmax(0, 1fr) var(--family-duty-time-column-width) !important;
+  column-gap: 1% !important;
   font-size: var(--family-duty-row-font-size) !important;
   line-height: 1 !important;
   letter-spacing: 0 !important;
 }
+html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-time {
+  overflow: hidden !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+}
 html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-footer {
   font-size: var(--family-duty-footer-font-size) !important;
-  letter-spacing: 0.15px !important;
+  letter-spacing: 0.1px !important;
 }
 
 /* Legacy web duty panels may reflow in a narrow Full-view housing. The raster
