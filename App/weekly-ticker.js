@@ -26,7 +26,7 @@
     const FEED_STEP_PX = 16;
     const FEED_CYCLE_MS = 2200;
     const FEED_MOVE_MS = 460;
-    const ITEM_SEPARATOR = " • • ";
+    const ITEM_SEPARATOR = " • ";
     const GLYPH_CHARACTERS = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:-,.!?'/•";
     const GLYPH_VARIANTS = 4;
     const GLYPH_CELL_WIDTH = 24;
@@ -37,7 +37,7 @@
     const GLYPH_ADVANCE = 24;
     const LINE_CHARACTER_LIMIT = Math.floor((PAPER.right - PAPER.left - 64) / GLYPH_ADVANCE);
     const LOOP_GAP = 36;
-    const DEFAULT_TEXT = "THIS WEEK: UPDATING SCHEDULE";
+    const DEFAULT_TEXT = "WEEK AHEAD: UPDATING SCHEDULE";
     const TRIP_GAP_MS = 20 * 60 * 60 * 1000;
     const DEFAULT_ALIASES = Object.freeze({XNA:"BENTONVILLE, AR"});
     const US = Object.freeze({Alabama:"AL",Alaska:"AK",Arizona:"AZ",Arkansas:"AR",California:"CA",Colorado:"CO",Connecticut:"CT",Delaware:"DE",Florida:"FL",Georgia:"GA",Hawaii:"HI",Idaho:"ID",Illinois:"IL",Indiana:"IN",Iowa:"IA",Kansas:"KS",Kentucky:"KY",Louisiana:"LA",Maine:"ME",Maryland:"MD",Massachusetts:"MA",Michigan:"MI",Minnesota:"MN",Mississippi:"MS",Missouri:"MO",Montana:"MT",Nebraska:"NE",Nevada:"NV","New Hampshire":"NH","New Jersey":"NJ","New Mexico":"NM","New York":"NY","North Carolina":"NC","North Dakota":"ND",Ohio:"OH",Oklahoma:"OK",Oregon:"OR",Pennsylvania:"PA","Rhode Island":"RI","South Carolina":"SC","South Dakota":"SD",Tennessee:"TN",Texas:"TX",Utah:"UT",Vermont:"VT",Virginia:"VA",Washington:"WA","West Virginia":"WV",Wisconsin:"WI",Wyoming:"WY","District of Columbia":"DC","Puerto Rico":"PR","U.S. Virgin Islands":"VI"});
@@ -149,6 +149,14 @@
     function weekday(value, timeZone) {
       const date = toDate(value); return date ? new Intl.DateTimeFormat("en-US",{timeZone,weekday:"short"}).format(date).toUpperCase() : "---";
     }
+    function weekdayForKey(key) {
+      const date = toDate(`${key}T12:00:00.000Z`);
+      return date ? new Intl.DateTimeFormat("en-US",{timeZone:"UTC",weekday:"short"}).format(date).toUpperCase() : "---";
+    }
+    function formatTime(value, timeZone) {
+      const date = toDate(value); if (!date) return "TBD";
+      return normalizeTickerText(new Intl.DateTimeFormat("en-US",{timeZone,hour:"numeric",minute:"2-digit",hour12:true}).format(date));
+    }
 
     function locationFor(code, options) {
       const normalized = String(code ?? "").trim().toUpperCase();
@@ -188,7 +196,34 @@
         if(!airport || seen.has(key))return; seen.add(key);
         items.push(`${weekday(startOf(layover),options.timeZone)} - ${locationFor(airport,options)}`);
       });
-      items.push(trip.homeFlight ? `${weekday(endOf(trip.homeFlight),options.timeZone)} - HOME` : "RETURN HOME - TBD");
+      items.push(trip.homeFlight
+        ? `${weekday(endOf(trip.homeFlight),options.timeZone)} - HOME ${formatTime(endOf(trip.homeFlight),options.timeZone)}`
+        : "RETURN HOME - TBD");
+      return items;
+    }
+
+    function weekOverviewItems(trips, todayKey, week, options) {
+      const overnightByKey = new Map();
+      const homeReturnByKey = new Map();
+      trips.forEach(trip=>{
+        trip.layovers.forEach(layover=>{
+          const key=dateKey(startOf(layover),options.timeZone);
+          const airport=String(layover.airport??"").toUpperCase();
+          if(key && airport && key>=todayKey && key<=week.endKey) overnightByKey.set(key,locationFor(airport,options));
+        });
+        if(trip.homeFlight){
+          const key=dateKey(endOf(trip.homeFlight),options.timeZone);
+          if(key && key>=todayKey && key<=week.endKey) homeReturnByKey.set(key,formatTime(endOf(trip.homeFlight),options.timeZone));
+        }
+      });
+
+      const items=[];
+      for(let key=todayKey; key && key<=week.endKey; key=shiftKey(key,1)){
+        const day=weekdayForKey(key);
+        if(overnightByKey.has(key)) items.push(`${day} - ${overnightByKey.get(key)}`);
+        else if(homeReturnByKey.has(key)) items.push(`${day} - HOME ${homeReturnByKey.get(key)}`);
+        else items.push(`${day} - HOME`);
+      }
       return items;
     }
 
@@ -204,17 +239,24 @@
       const trips=tripClusters(schedule,options);
       const current=trips.find(trip=>trip.start<=now && now<=trip.end)??null;
       const next=trips.find(trip=>trip.start>now)??null;
-      let prefix="THIS WEEK"; let selected=[];
+      let prefix="WEEK AHEAD"; let selected=[];
       if(current){prefix="CURRENT TRIP";selected=[current];}
       else if(next && next.startKey===tomorrowKey){prefix="UPCOMING TRIP";selected=[next];}
-      else selected=trips.filter(trip=>trip.startKey<=week.endKey && trip.endKey>=week.startKey);
-      let items=[]; selected.forEach(trip=>{ items = items.concat(tripItems(trip,options)); });
+      else selected=trips.filter(trip=>trip.startKey<=week.endKey && trip.endKey>=todayKey);
+
+      let items=[];
+      if(current || (next && next.startKey===tomorrowKey)){
+        selected.forEach(trip=>{ items = items.concat(tripItems(trip,options)); });
+      } else if(selected.length){
+        items=weekOverviewItems(selected,todayKey,week,options);
+      }
+
       if(!items.length){
         const eventsThisWeek=sorted(schedule?.events).filter(event=>{
           const start=dateKey(startOf(event),options.timeZone); const inclusiveEnd=new Date(endOf(event).getTime()-1); const end=dateKey(inclusiveEnd,options.timeZone);
-          return start<=week.endKey && end>=week.startKey;
+          return start<=week.endKey && end>=todayKey;
         });
-        items=[eventsThisWeek.some(event=>event.kind==="flight") ? "NO LAYOVERS" : "HOME ALL WEEK"];
+        items=[eventsThisWeek.some(event=>event.kind==="flight") ? "HOME EACH NIGHT" : "HOME ALL WEEK"];
       }
       return {prefix,items,text:`${prefix}: ${items.join(ITEM_SEPARATOR)}`};
     }
@@ -224,7 +266,7 @@
       if (!stack || stack.querySelector("#weekly-trip-ticker-canvas")) return null;
 
       if (!root.document.querySelector("link[data-dad-radar-weekly-ticker]")) {
-        const link=root.document.createElement("link"); link.rel="stylesheet"; link.href="/UI/weekly-ticker-layout.css?v=7"; link.dataset.dadRadarWeeklyTicker="true"; root.document.head.appendChild(link);
+        const link=root.document.createElement("link"); link.rel="stylesheet"; link.href="/UI/weekly-ticker-layout.css?v=8"; link.dataset.dadRadarWeeklyTicker="true"; root.document.head.appendChild(link);
       }
 
       const holder=root.document.createElement("div"); holder.className="weekly-trip-ticker"; holder.id="weekly-trip-ticker";
@@ -235,7 +277,7 @@
       const context=canvas.getContext("2d",{alpha:true}); if(!context)return null;
       const mechanismImage=new root.Image(), paperImage=new root.Image(), glyphImage=new root.Image();
       mechanismImage.decoding="async"; paperImage.decoding="async"; glyphImage.decoding="async";
-      let summary={prefix:"THIS WEEK",items:["UPDATING SCHEDULE"],text:DEFAULT_TEXT};
+      let summary={prefix:"WEEK AHEAD",items:["UPDATING SCHEDULE"],text:DEFAULT_TEXT};
       let rows=buildTickerLines(summary).map(buildGlyphRun);
       let summaryText=normalizeTickerText(summary.text);
       let scrollOffset=0,lastFrameAt=null,animationFrame=null,destroyed=false,lastScheduleFetchAt=0,fetchRequest=null;
