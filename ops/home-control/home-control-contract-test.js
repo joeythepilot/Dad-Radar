@@ -31,8 +31,12 @@ assert.match(
 assert.match(remote, /\^\[0-9a-fA-F\]\{40\}\$/, "deploy SHA must be full 40-character hex");
 assert.match(remote, /\("status",\s*"--porcelain"\)/, "deploy must inspect the working tree for local changes");
 assert.match(remote, /merge-base[^\r\n]+--is-ancestor/, "deploy must prove the SHA belongs to the configured branch history");
-assert.match(remote, /npm\.cmd[^\r\n]+ci/i, "deploy must restore dependencies with npm ci");
-assert.match(remote, /npm\.cmd[^\r\n]+test/i, "deploy must run the full Dad Radar tests");
+assert.match(remote, /Config\.gitPath/, "remote executor must use the installer-recorded absolute Git path");
+assert.match(remote, /Config\.npmPath/, "remote executor must use the installer-recorded absolute npm path");
+assert.doesNotMatch(remote, /Invoke-External\s+"git"/, "remote executor must not depend on the runner service PATH for Git");
+assert.doesNotMatch(remote, /Invoke-External\s+"npm\.cmd"/, "remote executor must not depend on the runner service PATH for npm");
+assert.match(remote, /npmPath[^\r\n]*@\("ci"\)|Config\.npmPath[^\r\n]*@\("ci"\)/i, "deploy must restore dependencies with npm ci");
+assert.match(remote, /npmPath[^\r\n]*@\("test"\)|Config\.npmPath[^\r\n]*@\("test"\)/i, "deploy must run the full Dad Radar tests");
 assert.match(remote, /Dad Radar Family Beta|serverTask/, "remote executor must manage the existing Dad Radar server task");
 assert.match(remote, /Dad Radar Remote Display Refresh|displayRefreshTask/, "remote executor must request the interactive display refresh task");
 assert.match(remote, /family-beta\.log/, "logs command must read the bounded Dad Radar runtime log");
@@ -49,6 +53,8 @@ assert.match(installer, /New-ScheduledTaskPrincipal/, "installer must create the
 assert.match(installer, /-LogonType\s+Interactive/, "display task must run in an existing interactive user session");
 assert.match(installer, /Dad Radar Remote Display Refresh/, "installer must register the dedicated display refresh task");
 assert.match(installer, /config\.json/, "installer must create local non-secret configuration");
+assert.match(installer, /gitPath\s*=\s*\$gitPath/, "installer must persist the exact Git executable path");
+assert.match(installer, /npmPath\s*=\s*\$npmPath/, "installer must persist the exact npm executable path");
 
 assert.match(workflow, /issues:\s*[\s\S]*types:\s*\[opened\]/, "control workflow must trigger only on opened issues");
 assert.match(workflow, /startsWith\(github\.event\.issue\.title, '\[DADRADAR\]'\)/, "workflow must ignore non-Dad-Radar issues");
