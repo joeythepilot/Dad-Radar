@@ -27,10 +27,17 @@ const PREVIOUS_LOG_PATH = path.join(
   "family-beta.previous.log"
 );
 
+const REMOTE_RESTART_REQUEST_PATH = path.join(
+  RUNTIME_DIRECTORY,
+  "remote-restart-request.json"
+);
+
 const MAX_LOG_BYTES =
   1024 * 1024;
 
 const HEALTH_INTERVAL_MS = 5000;
+const RESTART_CHECK_INTERVAL_MS = 2000;
+const RESTART_SHA_PATTERN = /^[0-9a-f]{40}$/;
 
 function rotateLog(options = {}) {
   const logPath =
@@ -122,6 +129,116 @@ function createLogger(options = {}) {
       "utf8"
     );
   };
+}
+
+function createRestartRequestWatcher(options = {}) {
+  const requestPath =
+    options.requestPath ??
+    REMOTE_RESTART_REQUEST_PATH;
+
+  const existsSync =
+    options.existsSync ?? fs.existsSync;
+  const readFileSync =
+    options.readFileSync ?? fs.readFileSync;
+  const rmSync =
+    options.rmSync ?? fs.rmSync;
+  const setTimer =
+    options.setInterval ?? setInterval;
+  const clearTimer =
+    options.clearInterval ?? clearInterval;
+  const intervalMs =
+    options.intervalMs ??
+    RESTART_CHECK_INTERVAL_MS;
+  const onRestart =
+    options.onRestart ?? (() => {});
+  const log =
+    options.log ?? (() => {});
+
+  let timerId = null;
+
+  function removeRequest() {
+    rmSync(requestPath, { force: true });
+  }
+
+  function check() {
+    if (!existsSync(requestPath)) {
+      return false;
+    }
+
+    let request;
+
+    try {
+      request = JSON.parse(
+        readFileSync(requestPath, "utf8")
+      );
+    } catch (error) {
+      log(
+        "Discarding unreadable remote restart request.",
+        error
+      );
+      removeRequest();
+      return false;
+    }
+
+    const sha = String(
+      request?.sha ?? ""
+    ).trim().toLowerCase();
+
+    if (
+      request?.action !== "restart" ||
+      !RESTART_SHA_PATTERN.test(sha)
+    ) {
+      log(
+        "Discarding invalid remote restart request."
+      );
+      removeRequest();
+      return false;
+    }
+
+    const normalizedRequest = {
+      action: "restart",
+      sha,
+      requestedAt:
+        request.requestedAt ?? null
+    };
+
+    removeRequest();
+    onRestart(normalizedRequest);
+    return true;
+  }
+
+  function start() {
+    if (timerId !== null) {
+      return timerId;
+    }
+
+    if (check()) {
+      return null;
+    }
+
+    timerId = setTimer(
+      check,
+      intervalMs
+    );
+
+    timerId?.unref?.();
+    return timerId;
+  }
+
+  function stop() {
+    if (timerId === null) {
+      return;
+    }
+
+    clearTimer(timerId);
+    timerId = null;
+  }
+
+  return Object.freeze({
+    check,
+    start,
+    stop
+  });
 }
 
 function loadRuntimeEnvironment() {
@@ -369,6 +486,49 @@ async function run(options = {}) {
   const server = startServer({ port });
 
   let stopping = false;
+  let restartWatcher = null;
+
+  function forceRestart(request) {
+    if (stopping) {
+      return;
+    }
+
+    stopping = true;
+    restartWatcher?.stop();
+
+    log(
+      "Dad Radar accepted remote restart request.",
+      `SHA ${request.sha}.`
+    );
+
+    server.close(() => {
+      process.exit(1);
+    });
+
+    setTimeout(() => {
+      process.exit(1);
+    }, 5000).unref();
+  }
+
+  restartWatcher =
+    createRestartRequestWatcher({
+      requestPath:
+        options.restartRequestPath,
+      intervalMs:
+        options.restartCheckIntervalMs,
+      existsSync:
+        options.existsSync,
+      readFileSync:
+        options.readFileSync,
+      rmSync:
+        options.rmSync,
+      setInterval:
+        options.setInterval,
+      clearInterval:
+        options.clearInterval,
+      log,
+      onRestart: forceRestart
+    });
 
   server.on("error", (error) => {
     log("Server error.", error);
@@ -386,9 +546,12 @@ async function run(options = {}) {
     log(
       "Dad Radar is running in the background."
     );
+    restartWatcher.start();
   });
 
   server.on("close", () => {
+    restartWatcher.stop();
+
     if (!stopping) {
       log(
         "Dad Radar server closed unexpectedly. Windows will restart the background task."
@@ -399,6 +562,7 @@ async function run(options = {}) {
 
   const stop = (signal) => {
     stopping = true;
+    restartWatcher.stop();
 
     log(
       `Dad Radar background host received ${signal}.`
@@ -441,9 +605,12 @@ module.exports = {
   MAX_LOG_BYTES,
   PREVIOUS_LOG_PATH,
   PROJECT_ROOT,
+  REMOTE_RESTART_REQUEST_PATH,
+  RESTART_CHECK_INTERVAL_MS,
   RUNTIME_DIRECTORY,
   buildBrowser,
   createLogger,
+  createRestartRequestWatcher,
   isDadRadarHealthy,
   resolvePort,
   rotateLog,
