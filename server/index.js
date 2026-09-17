@@ -13,6 +13,9 @@ const {
   getLiveFlightSnapshot
 } = require("./live-flight-provider-service");
 const {
+  getOperationalStatus
+} = require("./flightaware-operational-service");
+const {
   addDiagnostic,
   recentDiagnostics
 } = require("./diagnostic-log");
@@ -27,7 +30,10 @@ const {
 const {createAirportSurfaceService} = require("./airport-surface-service");
 const airportSurface = createAirportSurfaceService({report: addDiagnostic});
 const masterState = require("./master-state-service").createMasterStateService({
-  getCalendar: getUpcomingEvents, getFlight: getLiveFlightSnapshot, report: addDiagnostic
+  getCalendar: getUpcomingEvents,
+  getFlight: getLiveFlightSnapshot,
+  getOperational: getOperationalStatus,
+  report: addDiagnostic
 });
 
 const app = express();
@@ -103,6 +109,10 @@ app.get("/api/health", (request, response) => {
         flightradar24: {
           configured: Boolean(process.env.FR24_API_TOKEN)
         }
+      },
+      operationalStatus: {
+        provider: "flightaware",
+        configured: Boolean(process.env.FLIGHTAWARE_AEROAPI_KEY)
       },
       filedRoute: {
         provider: "flightaware",
