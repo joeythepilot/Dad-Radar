@@ -109,17 +109,25 @@ function Assert-DeploySha([object]$Config, [string]$Sha) {
   }
 }
 
+function Get-DadRadarHealth([object]$Config) {
+  try {
+    $result = Invoke-RestMethod -Uri $Config.healthUrl -Method Get -TimeoutSec 3
+    if ($result.ok -eq $true -and $result.service -eq "Dad Radar") {
+      return $result
+    }
+  }
+  catch {
+    return $null
+  }
+
+  return $null
+}
+
 function Wait-DadRadarHealth([object]$Config, [int]$Attempts = 40) {
   for ($attempt = 1; $attempt -le $Attempts; $attempt += 1) {
-    try {
-      $result = Invoke-RestMethod -Uri $Config.healthUrl -Method Get -TimeoutSec 3
-      if ($result.ok -eq $true -and $result.service -eq "Dad Radar") {
-        Write-Host "Dad Radar health check passed on attempt $attempt."
-        return $true
-      }
-    }
-    catch {
-      # Expected while the background server is restarting.
+    if ($null -ne (Get-DadRadarHealth $Config)) {
+      Write-Host "Dad Radar health check passed on attempt $attempt."
+      return $true
     }
 
     if ($attempt -lt $Attempts) {
@@ -130,20 +138,75 @@ function Wait-DadRadarHealth([object]$Config, [int]$Attempts = 40) {
   return $false
 }
 
-function Restart-ServerTask([object]$Config) {
-  Write-Section "Restarting Dad Radar background server"
-  & schtasks.exe /End /TN $Config.serverTask 2>$null | Out-Host
-  Start-Sleep -Seconds 1
-  Invoke-External "schtasks.exe" @("/Run", "/TN", $Config.serverTask)
-
-  if (-not (Wait-DadRadarHealth $Config)) {
-    throw "Dad Radar did not become healthy after restarting scheduled task '$($Config.serverTask)'."
-  }
+function Get-RuntimePath([object]$Config, [string]$Name) {
+  return Join-Path (Join-Path $Config.repoPath "runtime") $Name
 }
 
-function Refresh-Display([object]$Config) {
-  Write-Section "Refreshing visible Dad Radar display"
-  Invoke-External "schtasks.exe" @("/Run", "/TN", $Config.displayRefreshTask)
+function Write-DeploymentVersion([object]$Config, [string]$Sha) {
+  if ($Sha -notmatch $ShaPattern) {
+    throw "Cannot record an invalid Dad Radar deployment SHA."
+  }
+
+  $runtime = Join-Path $Config.repoPath "runtime"
+  New-Item -ItemType Directory -Path $runtime -Force | Out-Null
+
+  $path = Get-RuntimePath $Config "deployed-sha.txt"
+  Set-Content -LiteralPath $path -Value $Sha.ToLowerInvariant() -Encoding ascii
+}
+
+function Write-RestartRequest([object]$Config, [string]$Sha) {
+  if ($Sha -notmatch $ShaPattern) {
+    throw "Cannot request restart for an invalid Dad Radar deployment SHA."
+  }
+
+  $runtime = Join-Path $Config.repoPath "runtime"
+  New-Item -ItemType Directory -Path $runtime -Force | Out-Null
+
+  $path = Get-RuntimePath $Config "remote-restart-request.json"
+  $temporaryPath = "$path.tmp"
+  $payload = @{
+    action = "restart"
+    sha = $Sha.ToLowerInvariant()
+    requestedAt = (Get-Date).ToUniversalTime().ToString("o")
+  } | ConvertTo-Json -Compress
+
+  Set-Content -LiteralPath $temporaryPath -Value $payload -Encoding ascii
+  Move-Item -LiteralPath $temporaryPath -Destination $path -Force
+}
+
+function Request-DadRadarRestart(
+  [object]$Config,
+  [string]$ExpectedSha,
+  [int]$Attempts = 60
+) {
+  $before = Get-DadRadarHealth $Config
+  $beforeInstance = if ($null -ne $before) { [string]$before.instanceId } else { "" }
+
+  Write-Section "Requesting Dad Radar background restart"
+  Write-DeploymentVersion $Config $ExpectedSha
+  Write-RestartRequest $Config $ExpectedSha
+
+  for ($attempt = 1; $attempt -le $Attempts; $attempt += 1) {
+    Start-Sleep -Seconds 2
+    $current = Get-DadRadarHealth $Config
+
+    if ($null -ne $current) {
+      $currentVersion = [string]$current.version
+      $currentInstance = [string]$current.instanceId
+      $instanceChanged = [string]::IsNullOrWhiteSpace($beforeInstance) -or $currentInstance -ne $beforeInstance
+
+      if (
+        $currentVersion -eq $ExpectedSha.ToLowerInvariant() -and
+        -not [string]::IsNullOrWhiteSpace($currentInstance) -and
+        $instanceChanged
+      ) {
+        Write-Host "Dad Radar restarted on deployment $currentVersion (instance $currentInstance)."
+        return $true
+      }
+    }
+  }
+
+  return $false
 }
 
 function Restore-Checkout([object]$Config, [string]$Sha) {
@@ -168,7 +231,8 @@ function Deploy-Sha([object]$Config, [string]$TargetSha) {
   Fetch-ConfiguredBranch $Config
   Assert-DeploySha $Config $TargetSha
 
-  $beforeSha = Get-GitValue $Config @("rev-parse", "HEAD")
+  $TargetSha = $TargetSha.ToLowerInvariant()
+  $beforeSha = (Get-GitValue $Config @("rev-parse", "HEAD")).ToLowerInvariant()
   $movedCheckout = $false
 
   Write-Section "Deploying Dad Radar $TargetSha"
@@ -181,14 +245,15 @@ function Deploy-Sha([object]$Config, [string]$TargetSha) {
     Invoke-External $Config.npmPath @("ci") $Config.repoPath
     Invoke-External $Config.npmPath @("test") $Config.repoPath
 
-    Restart-ServerTask $Config
-    Refresh-Display $Config
+    if (-not (Request-DadRadarRestart $Config $TargetSha)) {
+      throw "Dad Radar did not restart on deployment $TargetSha within the verification window."
+    }
 
     $previousGood = $beforeSha
     if (Test-Path -LiteralPath $CurrentGoodPath -PathType Leaf) {
       $recorded = (Get-Content -LiteralPath $CurrentGoodPath -Raw).Trim()
       if ($recorded -match $ShaPattern) {
-        $previousGood = $recorded
+        $previousGood = $recorded.ToLowerInvariant()
       }
     }
 
@@ -205,8 +270,9 @@ function Deploy-Sha([object]$Config, [string]$TargetSha) {
     if ($movedCheckout -and $beforeSha -match $ShaPattern) {
       try {
         Restore-Checkout $Config $beforeSha
-        Restart-ServerTask $Config
-        Refresh-Display $Config
+        if (-not (Request-DadRadarRestart $Config $beforeSha)) {
+          throw "Dad Radar did not confirm the restored deployment $beforeSha."
+        }
         Write-Host "Previous checkout was restored after the failed deployment."
       }
       catch {
@@ -250,9 +316,15 @@ function Show-Status([object]$Config) {
   Write-Host "Server task:   $(Get-TaskState $Config.serverTask)"
   Write-Host "Display task:  $(Get-TaskState $Config.displayRefreshTask)"
 
-  $healthy = Wait-DadRadarHealth $Config 1
-  $healthState = if ($healthy) { "HEALTHY" } else { "UNREACHABLE" }
-  Write-Host "Health:        $healthState"
+  $health = Get-DadRadarHealth $Config
+  if ($null -ne $health) {
+    Write-Host "Health:        HEALTHY"
+    Write-Host "Running SHA:   $([string]$health.version)"
+    Write-Host "Server instance: $([string]$health.instanceId)"
+  }
+  else {
+    Write-Host "Health:        UNREACHABLE"
+  }
 
   $runner = Get-Service -ErrorAction SilentlyContinue | Where-Object {
     $_.Name -like "actions.runner.*" -or $_.Name -like "actionsrunner.*"
@@ -307,7 +379,16 @@ function Read-PreviousGoodSha {
   if ($sha -notmatch $ShaPattern) {
     throw "Previous-good deployment state is invalid."
   }
-  return $sha
+  return $sha.ToLowerInvariant()
+}
+
+function Restart-CurrentDeployment([object]$Config) {
+  Assert-CleanTree $Config
+  $sha = (Get-GitValue $Config @("rev-parse", "HEAD")).ToLowerInvariant()
+
+  if (-not (Request-DadRadarRestart $Config $sha)) {
+    throw "Dad Radar did not complete the requested restart."
+  }
 }
 
 $titleMatch = [regex]::Match($IssueTitle.Trim(), $CommandPattern, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
@@ -333,8 +414,7 @@ switch ($action) {
     Deploy-Sha $config (Parse-DeploySha $IssueBody)
   }
   "restart" {
-    Restart-ServerTask $config
-    Refresh-Display $config
+    Restart-CurrentDeployment $config
   }
   "logs" {
     Show-Logs $config $IssueBody
