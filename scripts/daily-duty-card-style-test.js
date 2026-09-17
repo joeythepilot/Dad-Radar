@@ -39,5 +39,9 @@ assert(mobileLayoutCss.includes("--family-duty-context-font-size"), "Mobile Full
 assert(mobileLayoutCss.includes("html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-entry"), "Mobile Full must apply its compact type scale only to the physical duty card.");
 assert(mobileLayoutCss.includes("--family-duty-context-top"), "Mobile Full must give the status copy a lower safe top inset so glyph ascenders are not clipped.");
 assert(mobileLayoutCss.includes("top: var(--family-duty-context-top) !important"), "Mobile Full must apply the status safe inset to the physical duty card context window.");
+assert(mobileLayoutCss.includes("--family-duty-context-safety-pad"), "Mobile Full must reserve ascender safety space inside the status text window.");
+assert(mobileLayoutCss.includes("--family-duty-date-width"), "Mobile Full must widen the physical-card date field so THU SEP 17 fits without ellipsis.");
+assert(mobileLayoutCss.includes("--family-duty-time-column-width"), "Mobile Full must reserve enough width for 11:30 AM/PM without clipping the suffix.");
+assert(mobileLayoutCss.includes("text-overflow: clip !important"), "Mobile Full physical-card fields must not replace valid date/time text with ellipses.");
 
 console.log("Today's Duty physical-card source contract tests passed.");
