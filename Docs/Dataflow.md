@@ -1,27 +1,118 @@
-Dad Radar data flow. Calendar service to state engine. The calendar service reads upcoming trips, scheduled flights, deadheads, and key event times. It provides the authoritative planned timeline to the state engine.
+# Dad Radar Data Flow
 
-Flight data service to state engine. Beginning 30 minutes before a Calendar flight, the browser sends provider-neutral lookup details to the local backend. adsb.lol is the primary live-position source. If it has no matching callsign or is unavailable, Flightradar24 is the automatic fallback. Once a provider acquires a leg, provider stickiness prevents source oscillation. Boarding, delayed, acquisition, and ground states refresh every 60 seconds; Taxi Out, En Route, Approach, and Landing refresh every 30 seconds. Both adapters return the same normalized snapshot and no provider credential reaches the browser.
+## Source-of-truth model
 
-Live reconciliation. A fresh, route-matched snapshot can refine the display phase, ETA, progress, heading, altitude, groundspeed, and aircraft position. FR24 vertical speed becomes the altitude trend used by phase inference. Approach combines altitude, descent, direct-route progress, groundspeed, and distance from the destination, with climbing departures explicitly excluded. Once Approach is confirmed for a Calendar flight, temporary level segments cannot demote it to En Route. During that confirmed Approach, Landing begins below 3,000 feet above the destination airport elevation. It remains latched unless the aircraft climbs above 3,500 feet AGL for a go-around. The Approach latch otherwise resets for a different flight, a terminal phase, or a confirmed climb through 12,500 feet.
+DadRadar deliberately separates four kinds of truth instead of asking one provider to answer every question.
 
-Route presentation. When `FLIGHTAWARE_AEROAPI_KEY` is configured, the backend performs a cached one-time route enrichment for the Calendar leg and supplies decoded filed-route fixes. The vintage dashed planned line then passes through those fixes. If FlightAware is unconfigured, has no route, or fails, the existing direct origin-to-destination curve remains. The browser keeps up to 180 observed positions for the current leg and draws them as the solid actual-flight breadcrumb track.
+- **Google Calendar is planned schedule truth.** It identifies the pilot's planned assignment, flight number, origin, destination, commute/deadhead role, and original planned times. DadRadar does not rewrite the Google Calendar event when operations change.
+- **FlightAware AeroAPI is operational timing/status truth when configured.** It enriches the Calendar leg with scheduled, estimated, and actual OUT/OFF/ON/IN times, cancellation/diversion state, provider status, delay minutes, and optional gate/terminal fields.
+- **ADSB.lol is movement/position truth.** It remains the primary source for aircraft position, altitude, groundspeed, heading, actual track, and movement-derived flight phase. Flightradar24 remains an optional telemetry fallback only.
+- **DadRadar inference is fallback truth.** The existing delay, terminal-coverage, taxi-silence, and arrival-continuity logic remains available when FlightAware is unconfigured, stale, unmatched, or incomplete. It must not override fresher matched FlightAware operational evidence.
 
-Geography and weather. The moving map uses Natural Earth coastlines and country boundaries across the continental United States, southern Canada, Mexico, the Bahamas, and the Caribbean, with permanent major-city reference labels. Subtle mountain relief, contour lines, state detail, and printed-paper texture give the chart geographic depth without competing with the route. NOAA/NWS composite reflectivity is fetched through the local server, cached for five minutes, and layered transparently over the vintage map. NOAA CONUS radar can be blank outside its official coverage and radar failure never blocks flight tracking.
+## Home-server master state
 
-Diagnostics. The local server retains a sanitized 200-entry in-memory history of provider matches, fallbacks, weather failures, and 10,000-foot chime crossings. `npm.cmd run diagnose:recent` prints the latest entries without exposing API keys or Calendar tokens. Opening the display with `?diagnostics=1` adds a temporary chime-test control.
+The Windows home server owns one authoritative master flight state. Google Calendar, FlightAware operational enrichment, ADS-B telemetry, filed-route enrichment, sequence history, and fallback inference all run against that one server-side state. Displays do not independently poll external flight providers.
 
-Visual interpolation. Operational status changes publish immediately. For two consecutive live snapshots of the same flight, a presentation-only visual state interpolates position, heading, altitude, groundspeed, and route progress for 52 seconds. The raw provider snapshot remains intact as the source of truth; interpolation never represents itself as a new observation.
+Clients read `/api/state` and receive the same resolved state. This includes the local cabinet, Mobile Full, and other family viewers. `/api/calendar/upcoming` exposes the server's parsed and internally enriched schedule for diagnostics and schedule-driven UI.
 
-Fallback behavior. Live snapshots expire after three minutes. Stale data never invents a new observation, but the same flight retains its highest confirmed live phase, last position, track, and progress with `liveData` marked false instead of regressing to Boarding or Calendar-inferred Delayed. This continuity applies from Taxi Out through Landing and yields to a fresh later phase, a different Calendar flight, or Calendar Arrived. A flight that became Delayed before Taxi Out remains family-facing as Delayed while it is on the ground and yields immediately to an airborne phase. When live data confirms Arrived, the controller records that time as the flight's effective completion, persists it across a browser reload, and stops provider polling. Calendar then owns the local Arrived hold before Home or the confirmed away-ground/Layover location. A live-data failure never changes Dad Radar to Offline when Calendar data is still available.
+This architecture prevents separate displays from acquiring different aircraft, multiplying provider calls, or disagreeing about whether a leg has departed or arrived.
 
-Cascading-delay continuity. Once a leg is Delayed, Taxi Out, En Route, Approach, Landing, or Diverted, the controller locks that Calendar event so an overlapping later flight cannot replace it. The lock releases immediately on Arrived or Landed and otherwise expires eight hours after the planned end as a safety limit.
+## Calendar acquisition and operational enrichment
 
-Location continuity. The default Calendar query includes seven days of completed-event history plus the future schedule window. The state engine uses the most recently completed flight destination as Daddy's last known ground location, or the next flight origin when no completed flight is available. Home is published only when that evidence points to AVL. Away airports remain a ground or layover state, and no evidence produces Location Unknown rather than Home.
+Calendar refresh begins with the parsed Google Calendar schedule. For each near-term flight, the server may call `server/flightaware-operational-service.js` when `FLIGHTAWARE_AEROAPI_KEY` is configured.
 
-Airport metadata. One generated local catalog supplies city, state or province, country, coordinates, field elevation, and IANA time zone for every current IATA airport record. The Calendar parser, schedule state, live reconciliation, and moving map all use this catalog rather than separate hand-maintained airport lists. Today's Duty uses the full family-facing location, such as `BILLINGS, MONTANA`; map placards retain the shorter city name. Runtime operation remains offline and unknown codes fall back to the three-letter identifier.
+The operational adapter uses the event's airline/flight-number lookup candidates, then accepts only a FlightAware record that matches the Calendar origin, destination, and closest plausible planned departure instance. The matched `fa_flight_id` and normalized operational data are attached to the internal event as `event.operational`.
 
-State engine to user interface. The state engine publishes high-level states, such as home, location unknown, commuting, boarding, delayed, taxi out, en route, approach, landing, arrived, layover, and offline. Deadhead is carried as a travel role so Today's Duty can say Daddy is riding while the split-flap continues to show the operational phase. Each published state also carries a Calendar-derived daily timeline: completed events, the current activity, and upcoming events for the Eastern Time day. The user interface reacts to these state changes by updating animations, sounds, the Today's Duty panel, the destination artwork, and the other display modules.
+The original Calendar values are retained separately as `event.calendarPlan.startUtc` and `event.calendarPlan.endUtc`. Operational estimates never become Calendar identity. If a saved fallback arrival checkpoint later conflicts with a real FlightAware `actualIn`, the real operational arrival wins and the planned Calendar end remains preserved.
 
-Faceplate-safe split-flap projection. Every state is projected into the permanent Flight, From, To, and Status tile groups. Flight states use their flight number and route. Non-flight states keep Flight and From blank, place `state.locationAirport` in To when location evidence exists, and place the compact state label in Status. The browser never substitutes full-width upper-screen text because the final faceplate exposes only the tile openings.
+The normalized operational record contains:
 
-Destination artwork. The browser selects only explicitly approved posters. If the current destination or ground location has no approved artwork, it renders a vintage placeholder with the airport catalog's city, state or province, and airport code. No unrelated city art is substituted.
+- scheduled / estimated / actual OUT;
+- scheduled / estimated / actual OFF;
+- scheduled / estimated / actual ON;
+- scheduled / estimated / actual IN;
+- provider status;
+- cancellation and diversion flags;
+- departure and arrival delay minutes;
+- optional origin/destination gate and terminal fields;
+- FlightAware flight-instance identity and retrieval timestamp.
+
+## FlightAware cost control
+
+Operational lookup is server-side and cached. Calendar refreshes can occur every minute without creating a paid FlightAware request every minute.
+
+The operational cache cadence is deliberately conservative:
+
+- more than 12 hours before a flight: no operational lookup;
+- 3 to 12 hours before: at most one lookup every 30 minutes;
+- 1 to 3 hours before: at most one every 10 minutes;
+- within 1 hour before departure and before OUT: at most one every 2 minutes;
+- after actual OUT and before actual IN: at most one every 5 minutes;
+- after actual IN or cancellation: terminal data is retained for hours rather than polled continuously.
+
+A provider failure never counts as departure or arrival evidence. The master state keeps the last good operational record when one exists and otherwise falls back to Calendar/ADS-B logic.
+
+## State resolution precedence
+
+For a matched FlightAware operational record, operational evidence is applied before wall-clock fallback inference:
+
+1. cancellation -> `CANCELLED`;
+2. actual IN -> `ARRIVED`;
+3. actual ON without actual IN -> `TAXI_IN`;
+4. diversion -> `DIVERTED` when not superseded by a terminal arrival;
+5. actual OFF -> `EN_ROUTE`;
+6. actual OUT without actual OFF -> `TAXI_OUT`;
+7. provider delay / revised OUT later than planned beyond the grace period -> `DELAYED` using provider-derived delay minutes;
+8. a provider-reported delay with no usable estimate -> `DELAYED` without inventing minutes;
+9. a matched provider record reporting no delay prevents DadRadar from manufacturing a numeric delay merely because the planned departure has passed;
+10. without usable operational evidence, the existing Calendar/ADS-B fallback behavior remains active.
+
+The Calendar event ID and original planned time remain the leg identity even when estimates move substantially.
+
+## ETA and Today's Duty
+
+For a flight row in Today's Duty, the displayed departure time is:
+
+`actual OUT -> estimated OUT -> planned Calendar start`.
+
+The family-facing ETA is:
+
+`actual IN -> estimated IN -> actual/estimated ON when appropriate -> planned Calendar end`.
+
+The state can therefore show a real airline delay or revised arrival time while retaining the original planned schedule internally. DadRadar does not need to alter the user's Google Calendar to stay operationally current.
+
+## Live aircraft telemetry
+
+ADSB.lol remains the primary live-position source. If it is unavailable or has no match and FR24 is configured, FR24 may be used as a fallback. Provider association is guarded by route direction, flight-instance continuity, and destination evidence so a same-number return flight cannot replace the selected leg.
+
+Fresh route-matched telemetry can refine phase, progress, heading, altitude, groundspeed, and position. The browser receives the server's master result rather than performing its own provider lookup.
+
+Approach and Landing still use altitude, destination distance, route progress, groundspeed, vertical trend, and destination field elevation. These movement states complement airline operational timing rather than replacing it.
+
+## Arrival behavior
+
+FlightAware `actualOn` is authoritative evidence that the aircraft is on the destination surface. `actualIn` is authoritative gate-arrival evidence and becomes the internal `confirmedArrivalAt` for that Calendar event.
+
+The older terminal-coverage and taxi-silence mechanisms remain as fallback for flights where operational arrival data is unavailable. A stale fallback checkpoint cannot overwrite a later real `actualIn`, and provider outages never create arrival evidence.
+
+Once arrival is confirmed, provider polling winds down and the normal Arrived hold yields to Home, At Base, or Layover based on the schedule and confirmed location.
+
+## Filed route and map presentation
+
+FlightAware also remains an independent optional filed-route enrichment. Operational status and filed-route enrichment share the same AeroAPI key but are distinct capabilities in `/api/health`.
+
+When a filed route is available, the dashed planned line follows decoded fixes. Without it, the direct origin-to-destination curve remains. ADS-B observations build the solid current-leg breadcrumb track.
+
+For work sequences, the server persists previous work-leg tracks and mileage in master storage. Prior actual tracks remain drawn as muted sequence-history lines after the active leg advances; commute legs are excluded from the work-sequence total.
+
+## Geography, weather, and diagnostics
+
+The regional map uses local geographic data and airport metadata. NOAA/NWS composite reflectivity is fetched through the local server and cached; weather failure never blocks flight tracking.
+
+The server retains sanitized provider diagnostics without credentials. `/api/health` reports FlightAware operational-status configuration separately from FlightAware filed-route configuration. API keys and Google credentials never enter browser-visible source code.
+
+## Visual publication
+
+The resolved master state publishes to the local cabinet and family clients. The UI updates split-flap tiles, Today's Duty, map, poster, instruments, sequence mileage, ticker, ETA, and audio from the same state revision.
+
+Presentation interpolation may animate between consecutive telemetry positions, but interpolation never represents itself as a new provider observation and never changes operational OUT/OFF/ON/IN truth.
