@@ -285,8 +285,20 @@ function Deploy-Sha([object]$Config, [string]$TargetSha) {
 }
 
 function Get-TaskState([string]$TaskName) {
-  $output = & schtasks.exe /Query /TN $TaskName /FO LIST /V 2>&1
-  if ($LASTEXITCODE -ne 0) {
+  try {
+    $previousPreference = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    $output = & schtasks.exe /Query /TN $TaskName /FO LIST /V 2>&1
+    $exitCode = $LASTEXITCODE
+  }
+  catch {
+    return "UNAVAILABLE"
+  }
+  finally {
+    $ErrorActionPreference = $previousPreference
+  }
+
+  if ($exitCode -ne 0) {
     return "UNAVAILABLE"
   }
 
