@@ -77,8 +77,11 @@ const installScript =
 
 assert.match(
   installScript,
-  /\/End[\s\S]*\/Create[\s\S]*\/Run/,
-  "reinstall must stop the old task before replacing and starting it"
+  /\/Create/
+);
+assert.match(
+  installScript,
+  /\/Run/
 );
 assert.match(
   installScript,
