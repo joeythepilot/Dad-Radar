@@ -59,6 +59,10 @@ assert.match(installer, /config\.json/, "installer must create local non-secret 
 assert.match(installer, /gitPath\s*=\s*\$gitPath/, "installer must persist the exact Git executable path");
 assert.match(installer, /npmPath\s*=\s*\$npmPath/, "installer must persist the exact npm executable path");
 assert.match(installer, /deployed-sha\.txt/, "installer must seed the running-server deployment version marker");
+assert.match(installer, /NT AUTHORITY\\NETWORK SERVICE/i, "installer must prepare the supported passwordless Windows runner service identity");
+assert.match(installer, /icacls\.exe[\s\S]*\$resolvedRepo/i, "installer must grant the runner service modify access to the Dad Radar checkout");
+assert.match(installer, /icacls\.exe[\s\S]*\$OpsRoot/i, "installer must grant the runner service access to fixed home-control state");
+assert.match(installer, /safe\.directory/i, "installer must mark the user-owned Dad Radar checkout safe for the Network Service Git process");
 
 assert.match(workflow, /issues:\s*[\s\S]*types:\s*\[opened\]/, "control workflow must trigger only on opened issues");
 assert.match(workflow, /startsWith\(github\.event\.issue\.title, '\[DADRADAR\]'\)/, "workflow must ignore non-Dad-Radar issues");
@@ -73,6 +77,8 @@ assert.doesNotMatch(workflow, /actions\/checkout/, "control workflow must not ex
 assert.match(readme, /private/i, "operator README must require a private control repository");
 assert.match(readme, /never.*public.*runner|public.*must not/i, "operator README must explicitly prohibit attaching the runner to the public Dad Radar repository");
 assert.match(readme, /dad-radar-home/, "operator README must document the custom runner label");
+assert.match(readme, /NETWORK SERVICE/i, "operator README must document the passwordless Network Service runner identity");
+assert.match(readme, /remote-restart-request\.json/, "operator README must document the low-privilege restart broker");
 
 const packageJson = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
 assert(
