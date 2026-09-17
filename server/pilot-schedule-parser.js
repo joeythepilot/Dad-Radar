@@ -17,11 +17,11 @@ const FLIGHT_SUMMARY_PATTERN =
 
 const COMMUTE_SUMMARY_PATTERN =
   new RegExp(
-    `^COMMUTE\\s+([A-Z]{2,3})\\s*(\\d{1,4})\\s+([A-Z]{3})\\s*${ROUTE_ARROW_PATTERN}\\s*([A-Z]{3})`,
+    `^COM{2,}UTE\\s+([A-Z]{2,3})\\s*(\\d{1,4})\\s+([A-Z]{3})\\s*${ROUTE_ARROW_PATTERN}\\s*([A-Z]{3})`,
     "i"
   );
 
-const COMMUTE_MARKER_PATTERN = /\bCOMMUTE\b/i;
+const COMMUTE_MARKER_PATTERN = /\bCOM{2,}UTE\b/i;
 
 const DEADHEAD_SUMMARY_PATTERN =
   new RegExp(
