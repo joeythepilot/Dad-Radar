@@ -22,7 +22,7 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
     const node = document.getElementById("weekly-trip-ticker-canvas");
     if (!node || node.getAttribute("aria-label") !== expected) return false;
     const resources = performance.getEntriesByType("resource").map(entry => entry.name);
-    return resources.some(name => name.includes("weekly-ticker-mechanism-v10.svg")) &&
+    return resources.some(name => name.includes("weekly-ticker-mechanism-v11.png")) &&
       resources.some(name => name.includes("weekly-ticker-paper-v5.png")) &&
       resources.some(name => name.includes("weekly-ticker-glyphs-v5.png"));
   }, expectedText, {timeout: 4000, polling: 25});
@@ -147,9 +147,9 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
   }
 
   const first = await canvas.screenshot();
-  await page.waitForTimeout(450);
+  await page.waitForTimeout(2400);
   const second = await canvas.screenshot();
-  assert(!first.equals(second), "Ticker paper/text actually rolls vertically while the mechanism stays fixed");
+  assert(!first.equals(second), "Ticker paper/text advances vertically between electromechanical feed steps while the mechanism stays fixed");
 
   if (label === "chromium-ticker-desktop" || label === "webkit-ticker-desktop") {
     fs.writeFileSync(path.join(output, `${label}-weekly-ticker-a.png`), first);
