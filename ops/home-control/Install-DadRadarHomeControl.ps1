@@ -115,10 +115,15 @@ Register-ScheduledTask `
   -Settings $taskSettings `
   -Description "Refreshes the visible Dad Radar Edge application in the logged-in desktop session." | Out-Null
 
-$currentSha = (& git -C $resolvedRepo rev-parse HEAD).Trim()
+$currentSha = (& $gitPath -C $resolvedRepo rev-parse HEAD).Trim()
 if ($LASTEXITCODE -ne 0 -or $currentSha -notmatch '^[0-9a-fA-F]{40}$') {
   throw "Unable to determine the current Dad Radar Git SHA."
 }
+$currentSha = $currentSha.ToLowerInvariant()
+
+$runtimeRoot = Join-Path $resolvedRepo "runtime"
+New-Item -ItemType Directory -Path $runtimeRoot -Force | Out-Null
+Set-Content -LiteralPath (Join-Path $runtimeRoot "deployed-sha.txt") -Value $currentSha -Encoding ascii
 
 Set-Content -LiteralPath (Join-Path $StateRoot "current-good-sha.txt") -Value $currentSha -Encoding ascii
 if (-not (Test-Path -LiteralPath (Join-Path $StateRoot "previous-good-sha.txt"))) {
@@ -129,6 +134,7 @@ Write-Host ""
 Write-Host "[PASS] Local control scripts installed in $OpsRoot"
 Write-Host "[PASS] Local non-secret config written to $ConfigPath"
 Write-Host "[PASS] Interactive display task registered: $DisplayTaskName"
+Write-Host "[PASS] Running-server deployment marker seeded: $currentSha"
 Write-Host "[PASS] Current known-good SHA recorded: $currentSha"
 Write-Host ""
 Write-Host "Running local status self-test..."
