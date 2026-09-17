@@ -68,9 +68,12 @@ assert.equal(
 );
 assert.equal(
   result.mode,
-  "TRACKING_LOST",
-  "Dad Radar must keep polling an overdue commute instead of inferring HOME/base from the timetable."
+  "COMMUTING_TO_BASE",
+  "An overdue commute stays active as a commute until arrival is confirmed or the safety timeout expires."
 );
+assert.equal(result.state.flight?.origin, "AVL");
+assert.equal(result.state.flight?.destination, "ORD");
+assert.equal(result.state.status, "COMMUTING TO BASE");
 assert.notEqual(result.mode, "HOME");
 assert.notEqual(result.mode, "AT_BASE");
 assert.notEqual(result.mode, "LAYOVER");
