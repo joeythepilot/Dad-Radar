@@ -2,7 +2,7 @@ name: Map hardware beta verification
 on:
   push:
     branches: [agent/mobile-companion, agent/map-roll-verification]
-    paths: ['App/**', 'UI/**', 'Mobile/**', 'assets/hardware/**', 'assets/ticker/**', 'scripts/**', 'index.html', 'package*.json', '.github/workflows/map-hardware-beta.yml']
+    paths: ['App/**', 'UI/**', 'Mobile/**', 'assets/hardware/**', 'assets/ticker/**', 'assets/split-flap/**', 'scripts/**', 'index.html', 'package*.json', '.github/workflows/map-hardware-beta.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -62,7 +62,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build:browser
-      - name: Browser geometry, transport, and weekly ticker regression on macOS
+      - name: Browser geometry, transport, ticker, and split-flap regression on macOS
         shell: bash
         run: |
           npm install --no-save --package-lock=false playwright@1.63.0
@@ -70,6 +70,7 @@ jobs:
           mkdir -p artifacts/map-hardware
           node scripts/map-hardware-headed-test.js 2>&1 | tee artifacts/map-hardware/browser.log
           node scripts/weekly-ticker-headed-test.js 2>&1 | tee -a artifacts/map-hardware/browser.log
+          node scripts/split-flap-headed-test.js 2>&1 | tee -a artifacts/map-hardware/browser.log
       - name: Keep exact-SHA verification evidence
         if: always()
         run: |
