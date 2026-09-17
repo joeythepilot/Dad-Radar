@@ -187,11 +187,24 @@
       viewportWidth,
       providedOptions = {}
     ) {
-      const allEntries = Array.isArray(
+      const sourceEntries = Array.isArray(
         dailySchedule?.entries
       )
         ? dailySchedule.entries
         : [];
+
+      const hasRealDuty = sourceEntries.some(
+        (entry) =>
+          entry?.kind === "flight" ||
+          entry?.kind === "layover"
+      );
+
+      const allEntries = hasRealDuty
+        ? sourceEntries.filter(
+            (entry) =>
+              entry?.kind !== "duty-free"
+          )
+        : sourceEntries;
 
       const visibleEntries =
         selectVisibleEntries(
