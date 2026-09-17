@@ -27,8 +27,8 @@ class FlightAwareOperationalError extends Error {
 
 function validIso(value) {
   if (!value) return null;
-  const time = Date.parse(value);
-  return Number.isFinite(time) ? new Date(time).toISOString() : null;
+  const text = String(value).trim();
+  return Number.isFinite(Date.parse(text)) ? text : null;
 }
 
 function minuteDifference(later, earlier) {
