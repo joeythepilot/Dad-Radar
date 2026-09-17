@@ -12,6 +12,7 @@ const browserSources = [
   "config/posters.js",
   "models/states.js",
   "models/schedule-state.js",
+  "models/operational-schedule-state.js",
   "models/live-flight-state.js",
   "App/state-engine.js",
   "App/visual-state-controller.js",
