@@ -93,8 +93,8 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
   }
   console.log(`${label}: ticker raster samples ${JSON.stringify(data.rasterContrast)}`);
 
-  assert.equal(data.aria, expectedText, "Ticker shows the family-readable upcoming-trip summary");
-  assert.deepEqual(data.canvasPixels, {width:1500,height:144}, "Ticker uses a shallow high-resolution backing canvas");
+  assert.equal(data.aria, expectedText, "Ticker shows the family-readable weekly overnight/home summary");
+  assert.deepEqual(data.canvasPixels, {width:1500,height:144}, "Ticker uses its high-resolution backing canvas");
   assert.equal(data.scrollAxis, "vertical", "Ticker paper feed moves top-to-bottom rather than crawling sideways");
   assert(data.paperGeometry && (data.paperGeometry.right-data.paperGeometry.left)/1500>=.85,
     "Paper occupies nearly the full map-width mechanism opening");
@@ -136,12 +136,12 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
       "Adding the ticker does not increase the cabinet/lower-grid height");
   }
 
-  assert(data.mapPanel.height/data.stack.height>=.84 && data.mapPanel.height/data.stack.height<=.90,
-    "The map reclaims most of the center-column height after the printer is made shallow");
-  assert(data.ticker.height/data.stack.height>=.10 && data.ticker.height/data.stack.height<=.16,
-    "Ticker stays a shallow map-width mechanism strip instead of making the unit vertically bulky");
+  assert(data.mapPanel.height/data.stack.height>=.80 && data.mapPanel.height/data.stack.height<=.86,
+    "The map still owns most of the center column while leaving enough ticker height for across-room reading");
+  assert(data.ticker.height/data.stack.height>=.14 && data.ticker.height/data.stack.height<=.18,
+    "Ticker aperture is tall enough for legible family text without returning to the old bulky printer proportions");
 
-  assert.equal(data.canvasPaint.transform, "none", "Ticker canvas is not vertically stretched by CSS");
+  assert.equal(data.canvasPaint.transform, "none", "Ticker canvas is not vertically stretched by CSS transform");
 
   for (const paint of [data.tickerPaint,data.canvasPaint]) {
     assert.equal(paint.backgroundImage, "none", "No CSS-generated ticker artwork");
