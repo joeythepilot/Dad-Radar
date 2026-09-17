@@ -8,7 +8,7 @@ async function checkFamilyDuty(page, screenshotPath) {
   const data = await panel.evaluate(node => ({
     width: node.clientWidth, narrow: node.classList.contains('family-duty-narrow'),
     tabindex: node.getAttribute('tabindex'),
-    text: [...node.querySelectorAll('.daily-schedule-label,.daily-schedule-time,.daily-schedule-tag,#daily-schedule-date,h2')]
+    text: [...node.querySelectorAll('.daily-schedule-label,.daily-schedule-time,.daily-schedule-tag,#daily-schedule-date,h2:not(.visually-hidden)')]
       .map(n => ({text:n.textContent.trim(),width:n.clientWidth,scroll:n.scrollWidth}))
   }));
   if (data.width >= 300) return;
