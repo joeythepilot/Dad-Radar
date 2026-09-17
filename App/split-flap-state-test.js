@@ -23,6 +23,25 @@ assert.deepEqual(
   }
 );
 
+assert.deepEqual(
+  fieldsForState({
+    status: "COMMUTING TO BASE",
+    flight: {
+      number: "UA 1234",
+      origin: "AVL",
+      destination: "ORD",
+      isCommute: true
+    }
+  }),
+  {
+    flightNumber: "1234",
+    origin: "AVL",
+    destination: "ORD",
+    status: "TO BASE "
+  },
+  "A commute flight must remain a flight on the split-flap instead of collapsing to HOME."
+);
+
 assert.equal(
   fieldsForState({
     status: "LANDING",
