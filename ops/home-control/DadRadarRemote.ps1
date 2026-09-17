@@ -123,6 +123,28 @@ function Get-DadRadarHealth([object]$Config) {
   return $null
 }
 
+function Get-OptionalProperty(
+  [object]$Object,
+  [string]$Name,
+  [string]$Default = ""
+) {
+  if ($null -eq $Object) {
+    return $Default
+  }
+
+  $property = $Object.PSObject.Properties[$Name]
+  if ($null -eq $property -or $null -eq $property.Value) {
+    return $Default
+  }
+
+  $value = [string]$property.Value
+  if ([string]::IsNullOrWhiteSpace($value)) {
+    return $Default
+  }
+
+  return $value
+}
+
 function Wait-DadRadarHealth([object]$Config, [int]$Attempts = 40) {
   for ($attempt = 1; $attempt -le $Attempts; $attempt += 1) {
     if ($null -ne (Get-DadRadarHealth $Config)) {
@@ -180,7 +202,7 @@ function Request-DadRadarRestart(
   [int]$Attempts = 60
 ) {
   $before = Get-DadRadarHealth $Config
-  $beforeInstance = if ($null -ne $before) { [string]$before.instanceId } else { "" }
+  $beforeInstance = Get-OptionalProperty $before "instanceId" ""
 
   Write-Section "Requesting Dad Radar background restart"
   Write-DeploymentVersion $Config $ExpectedSha
@@ -191,8 +213,8 @@ function Request-DadRadarRestart(
     $current = Get-DadRadarHealth $Config
 
     if ($null -ne $current) {
-      $currentVersion = [string]$current.version
-      $currentInstance = [string]$current.instanceId
+      $currentVersion = Get-OptionalProperty $current "version" ""
+      $currentInstance = Get-OptionalProperty $current "instanceId" ""
       $instanceChanged = [string]::IsNullOrWhiteSpace($beforeInstance) -or $currentInstance -ne $beforeInstance
 
       if (
@@ -330,9 +352,11 @@ function Show-Status([object]$Config) {
 
   $health = Get-DadRadarHealth $Config
   if ($null -ne $health) {
+    $runningVersion = Get-OptionalProperty $health "version" "UNKNOWN"
+    $serverInstance = Get-OptionalProperty $health "instanceId" "UNKNOWN"
     Write-Host "Health:        HEALTHY"
-    Write-Host "Running SHA:   $([string]$health.version)"
-    Write-Host "Server instance: $([string]$health.instanceId)"
+    Write-Host "Running SHA:   $runningVersion"
+    Write-Host "Server instance: $serverInstance"
   }
   else {
     Write-Host "Health:        UNREACHABLE"
