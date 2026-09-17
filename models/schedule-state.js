@@ -1169,15 +1169,24 @@
             now - eventEnd(lastFlight)
           ) / 60000;
 
+        const unconfirmedHoldMinutes =
+          lastFlight.isCommute
+            ? options.legLockTimeoutMinutes
+            : options.unconfirmedArrivalMinutes;
+
         if (
           !lastFlight.confirmedArrivalAt &&
           minutesSinceArrival <=
-            options
-              .unconfirmedArrivalMinutes
+            unconfirmedHoldMinutes
         ) {
           return createFlightState(
             lastFlight,
-            "TRACKING_LOST",
+            lastFlight.isCommute
+              ? inferCommuteMode(
+                  lastFlight,
+                  options
+                )
+              : "TRACKING_LOST",
             now,
             options
           );
