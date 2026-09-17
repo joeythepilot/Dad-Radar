@@ -1,8 +1,8 @@
 @import url("./split-flap-matte.css?v=1");
 
-/* Geometry only for the ticker. The screen renders only the internal paper transport behind the future physical faceplate. */
+/* Geometry only for the ticker. The screen renders only the generated raster paper transport behind the future physical faceplate. */
 .center-map-stack {
-  grid-template-rows: minmax(0, 87fr) minmax(0, 13fr) !important;
+  grid-template-rows: minmax(0, 89fr) minmax(0, 11fr) !important;
   row-gap: var(--panel-gap);
 }
 .weekly-trip-ticker {
