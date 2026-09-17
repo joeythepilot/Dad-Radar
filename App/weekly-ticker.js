@@ -111,7 +111,7 @@
         }
         const wrapped = wrapTickerText(item);
         lines.push(...wrapped.slice(0, -1));
-        row = wrapped.at(-1) ?? "";
+        row = wrapped.length ? wrapped[wrapped.length - 1] : "";
       }
       if (row) lines.push(row);
       return lines.length ? lines : wrapTickerText(summary.text ?? DEFAULT_TEXT);
