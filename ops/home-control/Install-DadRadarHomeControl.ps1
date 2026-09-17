@@ -14,6 +14,7 @@ $RemoteTarget = Join-Path $OpsRoot "DadRadarRemote.ps1"
 $RefreshTarget = Join-Path $OpsRoot "Refresh-DadRadarDisplay.ps1"
 $DisplayTaskName = "Dad Radar Remote Display Refresh"
 $ServerTaskName = "Dad Radar Family Beta"
+$RestartBrokerTaskName = "Dad Radar Remote Restart Broker"
 $RunnerServiceAccount = "NT AUTHORITY\NETWORK SERVICE"
 $Branch = "agent/mobile-companion"
 $Remote = "origin"
@@ -109,6 +110,38 @@ function Invoke-NpmScript([string]$NpmPath, [string]$WorkingDirectory, [string]$
   }
 }
 
+function Register-RestartBrokerTask([string]$PowerShellPath) {
+  $brokerCommand = @'
+Start-Sleep -Seconds 6
+$taskTool = Join-Path $env:SystemRoot 'System32\schtasks.exe'
+& $taskTool /Run /TN 'Dad Radar Family Beta'
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+exit 0
+'@
+
+  $brokerBytes = [System.Text.Encoding]::Unicode.GetBytes($brokerCommand)
+  $brokerEncoded = [Convert]::ToBase64String($brokerBytes)
+  $brokerArguments = "-NoProfile -ExecutionPolicy Bypass -EncodedCommand $brokerEncoded"
+  $brokerAction = New-ScheduledTaskAction -Execute $PowerShellPath -Argument $brokerArguments
+  $brokerPrincipal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+  $brokerSettings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -StartWhenAvailable -ExecutionTimeLimit (New-TimeSpan -Minutes 2)
+
+  Unregister-ScheduledTask -TaskName $RestartBrokerTaskName -Confirm:$false -ErrorAction SilentlyContinue
+  Register-ScheduledTask `
+    -TaskName $RestartBrokerTaskName `
+    -Action $brokerAction `
+    -Principal $brokerPrincipal `
+    -Settings $brokerSettings `
+    -Description "Waits for the current Dad Radar SYSTEM host to exit, then starts the canonical Dad Radar task for a managed remote restart." | Out-Null
+
+  $registered = Get-ScheduledTask -TaskName $RestartBrokerTaskName -ErrorAction SilentlyContinue
+  if (-not $registered) {
+    throw "Dad Radar managed restart broker task was not registered."
+  }
+
+  Write-Host "[PASS] Managed SYSTEM restart broker registered: $RestartBrokerTaskName"
+}
+
 function Ensure-BrokerAwareServerTask(
   [string]$NpmPath,
   [string]$RepoPath,
@@ -140,6 +173,10 @@ $resolvedRepo = Resolve-RepoPath $RepoPath
 $gitPath = Require-Command "git.exe"
 $nodePath = Require-Command "node.exe"
 $npmPath = Require-Command "npm.cmd"
+$powerShellPath = Join-Path $PSHOME "powershell.exe"
+if (-not (Test-Path -LiteralPath $powerShellPath -PathType Leaf)) {
+  $powerShellPath = Require-Command "powershell.exe"
+}
 
 if (-not (Test-Path -LiteralPath (Join-Path $resolvedRepo ".git") -PathType Container)) {
   throw "RepoPath is not a Git checkout: $resolvedRepo"
@@ -194,9 +231,15 @@ Grant-RunnerModifyAccess $resolvedRepo
 Grant-RunnerModifyAccess $OpsRoot
 Ensure-SystemGitSafeDirectory $gitPath $resolvedRepo
 
+# The low-privilege runner writes a restart request only. The currently running
+# Dad Radar host is SYSTEM, so it can start this separate fixed broker task before
+# exiting. The broker waits until the old task is gone, then starts the canonical
+# Dad Radar task again under Task Scheduler management.
+Register-RestartBrokerTask $powerShellPath
+
 # Always replace the existing SYSTEM task with Dad Radar's canonical definition.
-# Older family-beta tasks may have the right executable but lack RestartOnFailure,
-# which would strand Dad Radar offline after a broker-requested process exit.
+# RestartOnFailure remains useful for real crashes, but intentional remote restarts
+# use the separate managed broker above and no longer depend on this policy firing.
 Ensure-BrokerAwareServerTask $npmPath $resolvedRepo $serverHostScript $restartRequestPath
 
 $config = [ordered]@{
@@ -214,11 +257,6 @@ $config = [ordered]@{
 }
 
 $config | ConvertTo-Json | Set-Content -LiteralPath $ConfigPath -Encoding utf8
-
-$powerShellPath = Join-Path $PSHOME "powershell.exe"
-if (-not (Test-Path -LiteralPath $powerShellPath -PathType Leaf)) {
-  $powerShellPath = (Get-Command powershell.exe).Source
-}
 
 $taskArguments = "-NoProfile -ExecutionPolicy Bypass -File `"$RefreshTarget`""
 $taskAction = New-ScheduledTaskAction -Execute $powerShellPath -Argument $taskArguments
@@ -243,6 +281,7 @@ Write-Host "[PASS] Local control scripts installed in $OpsRoot"
 Write-Host "[PASS] Local non-secret config written to $ConfigPath"
 Write-Host "[PASS] Network Service modify access prepared for Dad Radar and home-control state"
 Write-Host "[PASS] Dad Radar checkout added to Git system safe.directory"
+Write-Host "[PASS] Managed SYSTEM restart broker registered: $RestartBrokerTaskName"
 Write-Host "[PASS] SYSTEM startup task verified: family-beta-host.js with restart-on-failure"
 Write-Host "[PASS] Interactive display task registered: $DisplayTaskName"
 Write-Host "[PASS] Running-server deployment marker seeded: $currentSha"
