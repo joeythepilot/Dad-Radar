@@ -54,6 +54,62 @@ function createMasterStateService(options) {
     persist();
   }
 
+  function operationalWindowIncludes(event, now = clock()) {
+    if (event?.kind !== "flight") return false;
+    const start = Date.parse(event?.times?.startUtc ?? event?.startUtc ?? "");
+    const end = Date.parse(event?.times?.endUtc ?? event?.endUtc ?? "");
+    if (!Number.isFinite(start)) return false;
+    if (start - now > 12 * 60 * 60 * 1000) return false;
+    if (Number.isFinite(end) && now - end > 6 * 60 * 60 * 1000) return false;
+    return true;
+  }
+
+  function priorOperationalFor(event) {
+    if (!Array.isArray(schedule?.events)) return null;
+    const id = event?.id;
+    const prior = schedule.events.find(candidate =>
+      id !== null && id !== undefined && String(candidate?.id) === String(id));
+    return prior?.operational ?? null;
+  }
+
+  async function enrichCalendar(value) {
+    if (!value || !Array.isArray(value.events) || typeof options.getOperational !== "function") {
+      return value;
+    }
+    const events = await Promise.all(value.events.map(async event => {
+      if (!operationalWindowIncludes(event)) return event;
+      const previousOperational = priorOperationalFor(event);
+      try {
+        const operational = await options.getOperational(event);
+        const effectiveOperational = operational ?? previousOperational;
+        if (!effectiveOperational) return event;
+        return {
+          ...event,
+          operational: effectiveOperational,
+          ...(effectiveOperational.actualIn
+            ? {confirmedArrivalAt: effectiveOperational.actualIn}
+            : {})
+        };
+      } catch (error) {
+        options.report?.("flightaware-operational-error", {
+          eventId: event?.id ?? null,
+          origin: event?.origin ?? null,
+          destination: event?.destination ?? null,
+          message: error?.message ?? String(error)
+        });
+        if (!previousOperational) return event;
+        return {
+          ...event,
+          operational: previousOperational,
+          ...(previousOperational.actualIn
+            ? {confirmedArrivalAt: previousOperational.actualIn}
+            : {})
+        };
+      }
+    }));
+    return {...value, events};
+  }
+
   const context = {
     console: options.console || console,
     dadRadarServerMode: true,
@@ -90,6 +146,7 @@ function createMasterStateService(options) {
     },
     dadRadarCalendarApi: {getUpcomingEvents(args) {
       if (!calendarPending) calendarPending = Promise.resolve().then(() => options.getCalendar(args))
+        .then(enrichCalendar)
         .then(value => {
           schedule = value;
           sequenceHistory.backfill(schedule?.events);
