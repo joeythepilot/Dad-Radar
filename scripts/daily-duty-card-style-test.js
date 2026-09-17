@@ -26,6 +26,8 @@ assert(moduleSource.includes("/assets/ui/today-duty-card-v2.png"), "The renderer
 assert(moduleSource.includes("daily-schedule-footer"), "The renderer exposes a live bottom status field.");
 assert(moduleSource.includes("daily-schedule-now"), "The renderer explicitly removes the old NOW web-badge.");
 assert(moduleSource.includes("buildDutyCardView"), "The renderer consumes the dedicated duty-card view model.");
+assert(moduleSource.includes("data-family-full"), "The physical duty-card renderer must recognize Mobile Full mode.");
+assert(moduleSource.includes("rowCapacity"), "Mobile Full must request the physical card's full ruled-row capacity.");
 assert(css.includes(".daily-schedule-card-art"), "Duty-card geometry is anchored to the raster artwork.");
 assert(css.includes("background: transparent"), "The live overlay stays transparent so CSS does not repaint the physical card.");
 assert(!css.includes("linear-gradient") && !css.includes("radial-gradient"), "CSS does not fabricate card material, lighting, or aging.");
