@@ -103,7 +103,11 @@ async function runTests() {
     await drainResponse(worker);
     const api = await fetch(`${baseUrl}/api/health`);
     assert.match(api.headers.get("cache-control"), /no-store/);
-    await drainResponse(api);
+    const health = await api.json();
+    assert.equal(health.flightData.filedRoute.provider, "flightaware");
+    assert.equal(health.flightData.operationalStatus.provider, "flightaware",
+      "Health distinguishes FlightAware operational status from filed-route enrichment.");
+    assert.equal(typeof health.flightData.operationalStatus.configured, "boolean");
 
     const collisionServer = startServer({
       port: address.port,
