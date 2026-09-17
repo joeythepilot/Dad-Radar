@@ -44,4 +44,17 @@ assert(mobileLayoutCss.includes("--family-duty-date-width"), "Mobile Full must w
 assert(mobileLayoutCss.includes("--family-duty-time-column-width"), "Mobile Full must reserve enough width for 11:30 AM/PM without clipping the suffix.");
 assert(mobileLayoutCss.includes("text-overflow: clip !important"), "Mobile Full physical-card fields must not replace valid date/time text with ellipses.");
 
+function percentVariable(name) {
+  const match = mobileLayoutCss.match(new RegExp(`${name}:\\s*([0-9.]+)%`));
+  assert(match, `Mobile Full must define ${name} as a percentage.`);
+  return Number(match[1]);
+}
+
+const contextTop = percentVariable("--family-duty-context-top");
+const contextHeight = percentVariable("--family-duty-context-height");
+assert(
+  contextTop + contextHeight <= 36.5,
+  `Mobile Full Current Status window must end above the printed assignment divider; got ${contextTop + contextHeight}%.`
+);
+
 console.log("Today's Duty physical-card source contract tests passed.");
