@@ -34,5 +34,8 @@ assert(!css.includes("linear-gradient") && !css.includes("radial-gradient"), "CS
 assert(build.includes('"App/daily-duty-card.js"'), "The modern browser bundle includes the physical-card renderer.");
 assert(mobileLayout.includes("is-physical-duty-card"), "Mobile Full must detect the physical Today’s Duty card before applying narrow-panel reflow.");
 assert(mobileLayoutCss.includes("family-duty-narrow:not(.is-physical-duty-card)"), "Legacy narrow-panel CSS must explicitly exclude the physical Today’s Duty card.");
+assert(mobileLayoutCss.includes("--family-duty-row-font-size"), "Mobile Full must define a smaller physical-card row type scale.");
+assert(mobileLayoutCss.includes("--family-duty-context-font-size"), "Mobile Full must define a smaller physical-card context type scale.");
+assert(mobileLayoutCss.includes("html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-entry"), "Mobile Full must apply its compact type scale only to the physical duty card.");
 
 console.log("Today's Duty physical-card source contract tests passed.");
