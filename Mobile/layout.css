@@ -43,12 +43,12 @@ html.family-full-portrait .destination-poster-image { position:absolute; top:0; 
    and its calibrated text windows. The desktop physical card remains unchanged. */
 html[data-family-full] .daily-schedule-panel.is-physical-duty-card {
   --family-duty-date-font-size: clamp(4.5px, 0.52vw, 6.5px);
-  --family-duty-context-font-size: clamp(6.5px, 0.74vw, 9px);
+  --family-duty-context-font-size: clamp(6.2px, 0.70vw, 8.5px);
   --family-duty-row-font-size: clamp(5.2px, 0.60vw, 8px);
   --family-duty-footer-font-size: clamp(5.2px, 0.58vw, 7.5px);
-  --family-duty-context-top: 21.4%;
+  --family-duty-context-top: 19.8%;
   --family-duty-context-height: 16.4%;
-  --family-duty-context-safety-pad: 0.28em;
+  --family-duty-context-safety-pad: 0.14em;
   --family-duty-date-width: 23%;
   --family-duty-time-column-width: 31%;
 }
@@ -67,14 +67,17 @@ html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedu
 }
 html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-context strong {
   display: block !important;
+  box-sizing: border-box !important;
   width: 100% !important;
-  max-height: 2.65em !important;
+  height: 100% !important;
+  max-height: none !important;
   padding-top: var(--family-duty-context-safety-pad) !important;
+  padding-bottom: 0.08em !important;
   overflow: hidden !important;
   -webkit-box-orient: initial !important;
   -webkit-line-clamp: unset !important;
   font-size: var(--family-duty-context-font-size) !important;
-  line-height: 1.16 !important;
+  line-height: 1.08 !important;
   letter-spacing: 0.05px !important;
 }
 html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-entry {
