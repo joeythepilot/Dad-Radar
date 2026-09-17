@@ -1,8 +1,8 @@
 name: Map hardware beta verification
 on:
   push:
-    branches: [agent/mobile-companion, agent/map-roll-verification]
-    paths: ['App/**', 'UI/**', 'Mobile/**', 'assets/hardware/**', 'assets/ticker/**', 'scripts/**', 'index.html', 'package*.json', '.github/workflows/map-hardware-beta.yml']
+    branches: [agent/mobile-companion, agent/map-roll-verification, agent/split-flap-matte-repair]
+    paths: ['App/**', 'UI/**', 'Mobile/**', 'assets/hardware/**', 'assets/ticker/**', 'assets/split-flap/**', 'scripts/**', 'index.html', 'package*.json', '.github/workflows/map-hardware-beta.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -33,6 +33,8 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
+      - name: Split-flap visual regression
+        run: node scripts/split-flap-visual-regression-test.js
       - name: Complete application regression suite
         shell: bash
         run: |
