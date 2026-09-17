@@ -115,6 +115,35 @@ function testManualCommute() {
   );
 }
 
+function testMisspelledCommuteMarker() {
+  const result = parsePilotEvent(
+    createEvent({
+      summary:
+        "COMMMUTE AA3963 AVL->ORD",
+      description: "",
+      start: {
+        dateTime:
+          "2026-09-17T15:00:00-04:00"
+      },
+      end: {
+        dateTime:
+          "2026-09-17T17:00:00-04:00"
+      }
+    })
+  );
+
+  assert.equal(
+    result.kind,
+    "flight",
+    "A common extra-M typo in COMMUTE must still produce a flight."
+  );
+  assert.equal(result.isCommute, true);
+  assert.equal(result.carrierCode, "AA");
+  assert.equal(result.flightNumber, "3963");
+  assert.equal(result.origin, "AVL");
+  assert.equal(result.destination, "ORD");
+}
+
 function testNoteDrivenCommute() {
   const result = parsePilotEvent(
     createEvent({
@@ -346,6 +375,7 @@ function testFullSchedule() {
 function runTests() {
   testRosterFlightTimeZones();
   testManualCommute();
+  testMisspelledCommuteMarker();
   testNoteDrivenCommute();
   testDeadheadSummary();
   testDeadheadDescriptionMarker();
