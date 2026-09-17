@@ -24,7 +24,6 @@ async function runTests() {
   const responses = [
     response("instance-a", "sha-a"),
     response("instance-a", "sha-a"),
-    response("instance-b", "sha-b"),
     response("instance-b", "sha-b")
   ];
 
@@ -65,7 +64,11 @@ async function runTests() {
   );
   assert.equal(reloads, 1);
 
-  assert.equal(requests.length, 4);
+  assert.equal(
+    requests.length,
+    3,
+    "once reload is requested, the old page should stop polling"
+  );
   for (const request of requests) {
     assert.equal(request.url, "/api/health");
     assert.equal(request.options.cache, "no-store");
