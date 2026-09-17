@@ -28,8 +28,11 @@ assert(moduleSource.includes("daily-schedule-now"), "The renderer explicitly rem
 assert(moduleSource.includes("buildDutyCardView"), "The renderer consumes the dedicated duty-card view model.");
 assert(moduleSource.includes("data-family-full"), "The physical duty-card renderer must recognize Mobile Full mode.");
 assert(moduleSource.includes("rowCapacity"), "Mobile Full must request the physical card's full ruled-row capacity.");
+assert(moduleSource.includes("daily-schedule-operational-stamp"), "The physical-card renderer must create a live operational stamp for delayed rows.");
 assert(moduleSource.includes("daily-schedule-operational-stamp"), "The physical-card renderer must render live operational revision stamps.");
 assert(css.includes(".daily-schedule-card-art"), "Duty-card geometry is anchored to the raster artwork.");
+assert(css.includes(".daily-schedule-operational-stamp"), "The operational stamp has dedicated physical-overlay geometry.");
+assert(css.includes("rgba(139, 32, 25"), "The operational stamp uses aged red dispatch ink.");
 assert(css.includes("background: transparent"), "The live overlay stays transparent so CSS does not repaint the physical card.");
 assert(css.includes(".daily-schedule-operational-stamp"), "Today’s Duty must include geometry for the operational revision stamp.");
 assert(css.includes("#9b2f24"), "Operational delay stamps use the muted red dispatch-ink treatment.");
