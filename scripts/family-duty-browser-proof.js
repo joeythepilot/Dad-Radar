@@ -6,12 +6,26 @@ async function checkFamilyDuty(page, screenshotPath) {
   const panel = page.locator('html[data-family-full] .daily-schedule-panel');
   if (!await panel.count()) return;
   const data = await panel.evaluate(node => ({
-    width: node.clientWidth, narrow: node.classList.contains('family-duty-narrow'),
+    width: node.clientWidth,
+    physical: node.classList.contains('is-physical-duty-card'),
+    narrow: node.classList.contains('family-duty-narrow'),
     tabindex: node.getAttribute('tabindex'),
     text: [...node.querySelectorAll('.daily-schedule-label,.daily-schedule-time,.daily-schedule-tag,#daily-schedule-date,h2:not(.visually-hidden)')]
       .map(n => ({text:n.textContent.trim(),width:n.clientWidth,scroll:n.scrollWidth}))
   }));
   if (data.width >= 300) return;
+
+  // The raster dispatch card is calibrated artwork. Mobile Full must scale the
+  // entire physical card instead of turning its overlays into a scrolling web
+  // list. The legacy narrow reflow remains valid only for non-physical panels.
+  if (data.physical) {
+    assert.equal(data.narrow, false, 'Physical Today’s Duty card must not enter legacy narrow reflow');
+    assert.equal(data.tabindex, null, 'Physical Today’s Duty card must not become a scrolling tab stop');
+    assert(data.text.some(x => x.text.includes('→')), 'Proof includes real rendered route labels');
+    if (screenshotPath) await panel.screenshot({path:screenshotPath.replace(/\.png$/, '-duty-detail.png')});
+    return;
+  }
+
   assert(data.narrow, 'Narrow Full duty panel must use its measured housing width');
   assert.equal(data.tabindex, '0', 'The scrolling duty housing must be keyboard reachable');
   assert(data.text.some(x => x.text.includes('→')), 'Proof includes real rendered route labels');
