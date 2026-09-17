@@ -102,9 +102,140 @@
       );
     }
 
+    function routeDestination(label) {
+      const text = String(label ?? "");
+      const parts = text
+        .split(/\s*[→>-]+\s*/)
+        .filter(Boolean);
+
+      if (parts.length < 2) {
+        return "";
+      }
+
+      return parts[parts.length - 1]
+        .split(" · ")[0]
+        .trim()
+        .toUpperCase();
+    }
+
+    function footerTextFor(
+      entries,
+      context,
+      homeAirport
+    ) {
+      const allEntries = Array.isArray(entries)
+        ? entries
+        : [];
+
+      const finalEntry = allEntries.length
+        ? allEntries[allEntries.length - 1]
+        : null;
+
+      if (!finalEntry) {
+        return /HOME/i.test(
+          String(context ?? "")
+        )
+          ? "HOME TODAY"
+          : "NO DUTY ITEMS TODAY";
+      }
+
+      if (finalEntry.kind === "layover") {
+        return String(
+          finalEntry.label ?? "LAYOVER"
+        ).toUpperCase();
+      }
+
+      if (finalEntry.kind === "duty-free") {
+        return "HOME DAY";
+      }
+
+      if (finalEntry.kind === "flight") {
+        const destination =
+          routeDestination(
+            finalEntry.label
+          );
+
+        if (
+          destination &&
+          destination ===
+            String(
+              homeAirport ?? "AVL"
+            ).toUpperCase()
+        ) {
+          return "HOME TONIGHT";
+        }
+
+        if (destination) {
+          return `LAST STOP · ${destination}`;
+        }
+      }
+
+      return String(
+        finalEntry.label ??
+        "TODAY'S DUTY"
+      ).toUpperCase();
+    }
+
+    function buildDutyCardView(
+      dailySchedule,
+      viewportWidth,
+      providedOptions = {}
+    ) {
+      const allEntries = Array.isArray(
+        dailySchedule?.entries
+      )
+        ? dailySchedule.entries
+        : [];
+
+      const visibleEntries =
+        selectVisibleEntries(
+          allEntries,
+          viewportWidth
+        );
+
+      return {
+        dateLabel:
+          dailySchedule?.dateLabel ??
+          "TODAY",
+        timeZoneLabel:
+          dailySchedule?.timeZoneLabel ??
+          "",
+        context:
+          dailySchedule?.context ??
+          "UPDATING TODAY'S SCHEDULE",
+        rows: visibleEntries.map(
+          (entry, index) => ({
+            number: index + 1,
+            route: [
+              entry?.label,
+              entry?.tag
+            ]
+              .filter(Boolean)
+              .join(" · "),
+            time:
+              entry?.time ?? "--:--",
+            status: [
+              "completed",
+              "current",
+              "upcoming"
+            ].includes(entry?.status)
+              ? entry.status
+              : "upcoming"
+          })
+        ),
+        footerText: footerTextFor(
+          allEntries,
+          dailySchedule?.context,
+          providedOptions.homeAirport
+        ),
+        totalEntries: allEntries.length
+      };
+    }
+
     return {
       entryCapacity,
-      selectVisibleEntries
+      selectVisibleEntries,
+      buildDutyCardView
     };
   }
 );
