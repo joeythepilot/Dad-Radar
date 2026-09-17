@@ -1,0 +1,56 @@
+name: Home control contract
+
+on:
+  push:
+    paths:
+      - "ops/home-control/**"
+      - "package.json"
+      - ".github/workflows/home-control-contract.yml"
+  pull_request:
+    paths:
+      - "ops/home-control/**"
+      - "package.json"
+      - ".github/workflows/home-control-contract.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  windows-contract:
+    runs-on: windows-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify source security contract
+        shell: cmd
+        run: node ops\home-control\home-control-contract-test.js
+
+      - name: Parse control scripts with Windows PowerShell 5.1
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $files = @(
+            'ops\home-control\DadRadarRemote.ps1',
+            'ops\home-control\Refresh-DadRadarDisplay.ps1',
+            'ops\home-control\Install-DadRadarHomeControl.ps1'
+          )
+
+          foreach ($file in $files) {
+            $tokens = $null
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile(
+              (Resolve-Path $file),
+              [ref]$tokens,
+              [ref]$errors
+            ) | Out-Null
+
+            if ($errors.Count -gt 0) {
+              Write-Host "PowerShell syntax errors in $file"
+              $errors | ForEach-Object { Write-Host $_.Message }
+              exit 1
+            }
+
+            Write-Host "PASS: $file"
+          }
