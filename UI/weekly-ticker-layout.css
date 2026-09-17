@@ -1,4 +1,6 @@
-/* Geometry only. All visible ticker frame, paper, rollers and lettering are raster artwork; refined paper/type lives in the raster asset files loaded by the proven ticker renderer. */
+@import url("./split-flap-matte.css?v=1");
+
+/* Geometry only for the ticker. Visible ticker frame, paper, rollers and lettering remain raster artwork. */
 .center-map-stack {
   grid-template-rows: minmax(0, 76fr) minmax(0, 24fr) !important;
   row-gap: var(--panel-gap);
