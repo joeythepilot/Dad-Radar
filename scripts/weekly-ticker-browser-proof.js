@@ -27,6 +27,12 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
       resources.some(name => name.includes("weekly-ticker-glyphs-v5.png"));
   }, expectedText, {timeout: 4000, polling: 25});
 
+  await page.waitForFunction(() => {
+    const panel = document.querySelector(".daily-schedule-panel.is-physical-duty-card");
+    const art = panel?.querySelector(".daily-schedule-card-art");
+    return Boolean(art && art.complete && art.naturalWidth > 0);
+  }, null, {timeout:4000, polling:25});
+
   await page.waitForTimeout(120);
 
   const data = await page.evaluate(expected => {
@@ -57,6 +63,8 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
     const lower = document.querySelector(".lower-display-grid");
     const posterStack = document.querySelector(".left-module-stack");
     const instruments = document.querySelector(".instrument-rail");
+    const dutyPanel = document.querySelector(".daily-schedule-panel");
+    const dutyArt = dutyPanel?.querySelector(".daily-schedule-card-art") ?? null;
     const lowerStyle = getComputedStyle(lower);
     const tickerStyle = getComputedStyle(ticker);
     const canvasStyle = getComputedStyle(canvas);
@@ -67,10 +75,20 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
       lowerRowGap:parseFloat(lowerStyle.rowGap) || 0,
       canvasPixels:{width:canvas.width,height:canvas.height},
       scrollAxis:canvas.dataset.scrollAxis,
+      feedDirection:canvas.dataset.feedDirection,
       paperGeometry:window.dadRadarWeeklyTicker ? window.dadRadarWeeklyTicker.PAPER : null,
       stack:rect(stack),mapPanel:rect(mapPanel),ticker:rect(ticker),lower:rect(lower),
       posterStack:posterStack ? rect(posterStack) : null,
       instruments:instruments ? rect(instruments) : null,
+      duty:dutyPanel ? {
+        physical:dutyPanel.classList.contains("is-physical-duty-card"),
+        artSrc:dutyArt?.getAttribute("src") ?? "",
+        artPixels:dutyArt ? {width:dutyArt.naturalWidth,height:dutyArt.naturalHeight} : null,
+        context:dutyPanel.querySelector("#daily-schedule-context")?.textContent?.trim() ?? "",
+        footer:dutyPanel.querySelector("#daily-schedule-footer")?.textContent?.trim() ?? "",
+        rowCount:dutyPanel.querySelectorAll("#daily-schedule-list .daily-schedule-entry").length,
+        nowBadgeCount:dutyPanel.querySelectorAll(".daily-schedule-now").length
+      } : null,
       rasterContrast:{
         paper:sample(context,180,80,1140,5),
         topRail:sample(context,180,25,1140,10),
@@ -95,7 +113,8 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
 
   assert.equal(data.aria, expectedText, "Ticker shows the family-readable weekly overnight/home summary");
   assert.deepEqual(data.canvasPixels, {width:1500,height:144}, "Ticker uses its high-resolution backing canvas");
-  assert.equal(data.scrollAxis, "vertical", "Ticker paper feed moves top-to-bottom rather than crawling sideways");
+  assert.equal(data.scrollAxis, "vertical", "Ticker remains a vertical paper transport rather than crawling sideways");
+  assert.equal(data.feedDirection, "up", "Ticker feeds upward so chronological information arrives in the natural reading order");
   assert(data.paperGeometry && (data.paperGeometry.right-data.paperGeometry.left)/1500>=.85,
     "Paper occupies nearly the full map-width mechanism opening");
   assert(data.rasterContrast.paper.luma > 150, "Paper remains readable instead of disappearing into the cabinet");
@@ -105,6 +124,16 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
     "Ivory paper remains clearly distinct from the dark top machine rail");
   assert(data.rasterContrast.paper.luma > data.rasterContrast.leftMechanism.luma + 55,
     "Paper remains clearly distinct from the visible end mechanism");
+
+  assert(data.duty?.physical, "Today's Duty is rendered as the approved physical dispatch card");
+  assert.equal(data.duty.artSrc, "/assets/ui/today-duty-card-v2.png", "Today's Duty uses the approved full-quality raster asset");
+  assert.deepEqual(data.duty.artPixels, {width:2214,height:1000}, "Today's Duty keeps the exact 2.214:1 physical card artwork");
+  assert.equal(data.duty.context, "DADDY IS FLYING TO COLUMBUS, OHIO", "The family live-status sentence remains on the physical card");
+  assert.equal(data.duty.nowBadgeCount, 0, "The old NOW web badge is gone");
+  if (label.endsWith("-desktop")) {
+    assert.equal(data.duty.rowCount, 5, "The 1920x1080 physical card keeps all five duty rows visible");
+    assert.equal(data.duty.footer, "HOME TONIGHT", "The physical card gives the family a simple end-of-day status");
+  }
 
   assert(Math.abs(data.ticker.left-data.mapPanel.left)<=1 && Math.abs(data.ticker.right-data.mapPanel.right)<=1,
     "Ticker occupies only the center-map column");
