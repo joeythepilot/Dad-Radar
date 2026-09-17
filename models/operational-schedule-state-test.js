@@ -1,7 +1,7 @@
 "use strict";
 
 const assert = require("node:assert/strict");
-const {buildDailySchedule, resolveScheduleState} = require("./schedule-state");
+const {buildDailySchedule, resolveScheduleState} = require("./operational-schedule-state");
 
 const PLANNED_START = "2026-08-04T13:00:00.000Z";
 const PLANNED_END = "2026-08-04T15:00:00.000Z";
