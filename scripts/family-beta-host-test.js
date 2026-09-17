@@ -6,10 +6,13 @@ const os = require("node:os");
 const path = require("node:path");
 
 const {
+  PROJECT_ROOT,
   createLogger,
   createRestartRequestWatcher,
+  launchTaskRestartBroker,
   resolvePort,
   rotateLog,
+  runTaskRestartBroker,
   waitForManualServer
 } = require("./family-beta-host");
 
@@ -178,10 +181,119 @@ function testRestartMarkerWatcher() {
   assert.equal(restarts.length, 1);
 }
 
+function testDetachedRestartBrokerLaunch() {
+  assert.equal(
+    typeof launchTaskRestartBroker,
+    "function",
+    "background host must expose the deterministic Task Scheduler restart broker launcher"
+  );
+
+  let invocation = null;
+  let unrefCalls = 0;
+  const child = {
+    unref() {
+      unrefCalls += 1;
+    }
+  };
+
+  const result = launchTaskRestartBroker({
+    spawn(command, args, options) {
+      invocation = {
+        command,
+        args,
+        options
+      };
+      return child;
+    },
+    execPath: "C:\\Program Files\\nodejs\\node.exe",
+    hostScript: "C:\\Dad-Radar\\scripts\\family-beta-host.js",
+    cwd: "C:\\Dad-Radar"
+  });
+
+  assert.equal(result, child);
+  assert.equal(
+    invocation.command,
+    "C:\\Program Files\\nodejs\\node.exe"
+  );
+  assert.deepEqual(
+    invocation.args,
+    [
+      "C:\\Dad-Radar\\scripts\\family-beta-host.js",
+      "--restart-broker"
+    ]
+  );
+  assert.deepEqual(
+    invocation.options,
+    {
+      cwd: "C:\\Dad-Radar",
+      detached: true,
+      stdio: "ignore",
+      windowsHide: true
+    }
+  );
+  assert.equal(unrefCalls, 1);
+}
+
+async function testRestartBrokerRetriesUntilHealthy() {
+  assert.equal(
+    typeof runTaskRestartBroker,
+    "function",
+    "background host must expose the Task Scheduler restart broker"
+  );
+
+  let taskRuns = 0;
+  let healthChecks = 0;
+  const waits = [];
+
+  const restarted = await runTaskRestartBroker({
+    port: 4173,
+    attempts: 4,
+    initialDelayMs: 25,
+    intervalMs: 50,
+    delay: async (milliseconds) => {
+      waits.push(milliseconds);
+    },
+    runTask: () => {
+      taskRuns += 1;
+      return true;
+    },
+    healthCheck: async ({ port }) => {
+      assert.equal(port, 4173);
+      healthChecks += 1;
+      return healthChecks >= 2;
+    },
+    log: () => {}
+  });
+
+  assert.equal(restarted, true);
+  assert.equal(taskRuns, 2);
+  assert.equal(healthChecks, 2);
+  assert.deepEqual(
+    waits,
+    [25, 50, 50]
+  );
+}
+
+function testRemoteRestartIsWiredToBroker() {
+  const hostSource = fs.readFileSync(
+    path.join(__dirname, "family-beta-host.js"),
+    "utf8"
+  );
+
+  assert.match(
+    hostSource,
+    /function forceRestart[\s\S]*launchTaskRestartBroker/,
+    "remote restart handler must launch the deterministic Task Scheduler broker before exiting"
+  );
+}
+
 Promise.resolve()
   .then(testManualTakeover)
   .then(testLogging)
   .then(testRestartMarkerWatcher)
+  .then(testDetachedRestartBrokerLaunch)
+  .then(testRestartBrokerRetriesUntilHealthy)
+  .then(testRemoteRestartIsWiredToBroker)
   .then(() => {
     console.log(
       "Family beta background-host tests passed."
