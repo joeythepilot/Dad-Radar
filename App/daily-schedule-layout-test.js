@@ -92,6 +92,31 @@ assert.deepEqual(
   "Mobile Full should show the same full-day assignment list as the desktop physical card."
 );
 
+const mixedDutyFreeDay = {
+  dateLabel: "THU SEP 17",
+  timeZoneLabel: "EASTERN TIME",
+  context: "DADDY IS TAXIING FOR CHICAGO, ILLINOIS",
+  entries: [
+    {time:"ALL DAY",label:"HOME · DAY OFF",tag:"OFF DUTY",status:"current",kind:"duty-free"},
+    {time:"11:30 AM",label:"AVL → ORD",tag:"COMMUTE",status:"current",kind:"flight"},
+    {time:"6:27 PM",label:"ORD → CMH",tag:"FLT 3917",status:"upcoming",kind:"flight"},
+    {time:"8:50 PM",label:"CMH → ORD",tag:"FLT 3917",status:"upcoming",kind:"flight"},
+    {time:"11:30 PM",label:"ORD → CMI",tag:"FLT 3375",status:"upcoming",kind:"flight"}
+  ]
+};
+const mixedView = buildDutyCardView(mixedDutyFreeDay, 1024, {homeAirport:"AVL", rowCapacity:5});
+assert.deepEqual(
+  mixedView.rows.map((row) => row.route),
+  [
+    "AVL → ORD · COMMUTE",
+    "ORD → CMH · FLT 3917",
+    "CMH → ORD · FLT 3917",
+    "ORD → CMI · FLT 3375"
+  ],
+  "A stale all-day day-off placeholder must not consume a Today’s Duty row when real flying exists."
+);
+assert.equal(mixedView.totalEntries, 4, "The physical card should count only the real assignment rows on a flying day.");
+
 console.log(
   "Daily schedule layout tests passed."
 );
