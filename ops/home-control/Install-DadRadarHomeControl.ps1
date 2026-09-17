@@ -83,6 +83,19 @@ function Test-ServerTaskUsesBrokerHost([object]$Task, [string]$ExpectedHostScrip
   return $false
 }
 
+function Test-ServerTaskHasRestartPolicy([object]$Task) {
+  if (-not $Task -or -not $Task.Settings) {
+    return $false
+  }
+
+  try {
+    return ([int]$Task.Settings.RestartCount) -gt 0
+  }
+  catch {
+    return $false
+  }
+}
+
 function Invoke-NpmScript([string]$NpmPath, [string]$WorkingDirectory, [string]$ScriptName) {
   Push-Location $WorkingDirectory
   try {
@@ -102,13 +115,7 @@ function Ensure-BrokerAwareServerTask(
   [string]$ExpectedHostScript,
   [string]$RestartRequestPath
 ) {
-  $task = Get-ScheduledTask -TaskName $ServerTaskName -ErrorAction SilentlyContinue
-  if (Test-ServerTaskUsesBrokerHost $task $ExpectedHostScript) {
-    Write-Host "[PASS] SYSTEM startup task already uses family-beta-host.js"
-    return
-  }
-
-  Write-Host "[INFO] Repairing Dad Radar SYSTEM startup task for brokered remote restarts..."
+  Write-Host "[INFO] Installing canonical Dad Radar SYSTEM startup task for brokered remote restarts..."
   Remove-Item -LiteralPath $RestartRequestPath -Force -ErrorAction SilentlyContinue
 
   Invoke-NpmScript $NpmPath $RepoPath "beta:autostart:install"
@@ -119,8 +126,12 @@ function Ensure-BrokerAwareServerTask(
   if (-not (Test-ServerTaskUsesBrokerHost $updatedTask $ExpectedHostScript)) {
     throw "Dad Radar SYSTEM startup task was not updated to family-beta-host.js."
   }
+  if (-not (Test-ServerTaskHasRestartPolicy $updatedTask)) {
+    throw "Dad Radar SYSTEM startup task is missing restart-on-failure policy."
+  }
 
-  Write-Host "[PASS] SYSTEM startup task repaired and broker-aware host activated"
+  Write-Host "[PASS] SYSTEM startup task uses family-beta-host.js"
+  Write-Host "[PASS] SYSTEM startup task restart-on-failure policy is active"
 }
 
 Assert-Administrator
@@ -183,9 +194,9 @@ Grant-RunnerModifyAccess $resolvedRepo
 Grant-RunnerModifyAccess $OpsRoot
 Ensure-SystemGitSafeDirectory $gitPath $resolvedRepo
 
-# Existing family-beta installations can predate the broker-aware background host.
-# Repair those through Dad Radar's canonical task installer, then explicitly restart
-# the task so Task Scheduler is running the new action rather than an old process.
+# Always replace the existing SYSTEM task with Dad Radar's canonical definition.
+# Older family-beta tasks may have the right executable but lack RestartOnFailure,
+# which would strand Dad Radar offline after a broker-requested process exit.
 Ensure-BrokerAwareServerTask $npmPath $resolvedRepo $serverHostScript $restartRequestPath
 
 $config = [ordered]@{
@@ -232,7 +243,7 @@ Write-Host "[PASS] Local control scripts installed in $OpsRoot"
 Write-Host "[PASS] Local non-secret config written to $ConfigPath"
 Write-Host "[PASS] Network Service modify access prepared for Dad Radar and home-control state"
 Write-Host "[PASS] Dad Radar checkout added to Git system safe.directory"
-Write-Host "[PASS] SYSTEM startup task verified: family-beta-host.js"
+Write-Host "[PASS] SYSTEM startup task verified: family-beta-host.js with restart-on-failure"
 Write-Host "[PASS] Interactive display task registered: $DisplayTaskName"
 Write-Host "[PASS] Running-server deployment marker seeded: $currentSha"
 Write-Host "[PASS] Current known-good SHA recorded: $currentSha"
