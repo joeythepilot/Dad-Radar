@@ -193,6 +193,11 @@ async function getOperationalStatus(event, providedOptions = {}) {
       break;
     } catch (error) {
       if (error?.status === 404) continue;
+      const fallbackRecord = cached?.record ?? null;
+      cacheSet(cache, key, {
+        record: fallbackRecord,
+        retryAfter: now + operationalCacheTtl(event, fallbackRecord, now)
+      });
       throw error;
     }
   }
