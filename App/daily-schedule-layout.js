@@ -46,7 +46,8 @@
 
     function selectVisibleEntries(
       providedEntries,
-      viewportWidth
+      viewportWidth,
+      capacityOverride
     ) {
       const entries = Array.isArray(
         providedEntries
@@ -54,9 +55,14 @@
         ? providedEntries
         : [];
 
-      const capacity = entryCapacity(
-        viewportWidth
-      );
+      const requestedCapacity =
+        Math.floor(Number(capacityOverride));
+
+      const capacity =
+        Number.isFinite(requestedCapacity) &&
+        requestedCapacity > 0
+          ? requestedCapacity
+          : entryCapacity(viewportWidth);
 
       if (entries.length <= capacity) {
         return entries.slice();
@@ -190,7 +196,8 @@
       const visibleEntries =
         selectVisibleEntries(
           allEntries,
-          viewportWidth
+          viewportWidth,
+          providedOptions.rowCapacity
         );
 
       return {
