@@ -18,6 +18,7 @@ assert.deepEqual(
     feedStep:ticker.FEED_STEP_PX,
     feedCycle:ticker.FEED_CYCLE_MS,
     feedMove:ticker.FEED_MOVE_MS,
+    feedDirection:ticker.FEED_DIRECTION,
     itemSeparator:ticker.ITEM_SEPARATOR,
     glyphDrawWidth:ticker.GLYPH_DRAW_WIDTH,
     glyphDrawHeight:ticker.GLYPH_DRAW_HEIGHT,
@@ -34,6 +35,7 @@ assert.deepEqual(
     feedStep:16,
     feedCycle:2200,
     feedMove:460,
+    feedDirection:"up",
     itemSeparator:" • ",
     glyphDrawWidth:32,
     glyphDrawHeight:42,
@@ -111,4 +113,4 @@ assert.deepEqual(weekAhead.items,[
 
 assert.equal(ticker.buildWeeklyTripTicker({events:[]},{...options,now:"2026-09-14T16:00:00Z"}).text,"WEEK AHEAD: HOME ALL WEEK");
 assert.equal(ticker.buildWeeklyTripTicker({events:[flight("out","AVL","ORD","2026-09-14T12:00:00Z","2026-09-14T14:00:00Z"),flight("home","ORD","AVL","2026-09-14T20:00:00Z","2026-09-14T22:00:00Z")]},{...options,now:"2026-09-14T16:00:00Z"}).text,"WEEK AHEAD: HOME EACH NIGHT");
-console.log("Weekly ticker family overview contract tests passed: overnights, return-home time, week-ahead home nights, and no duplicated daily flight detail.");
+console.log("Weekly ticker family overview contract tests passed: overnights, return-home time, week-ahead home nights, reverse vertical feed, and no duplicated daily flight detail.");
