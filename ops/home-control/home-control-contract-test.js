@@ -59,6 +59,7 @@ assert.match(installer, /npmPath\s*=\s*\$npmPath/, "installer must persist the e
 assert.match(workflow, /issues:\s*[\s\S]*types:\s*\[opened\]/, "control workflow must trigger only on opened issues");
 assert.match(workflow, /startsWith\(github\.event\.issue\.title, '\[DADRADAR\]'\)/, "workflow must ignore non-Dad-Radar issues");
 assert.match(workflow, /self-hosted[\s\S]*Windows[\s\S]*X64[\s\S]*dad-radar-home/, "workflow must target the dedicated Windows home runner label");
+assert.match(workflow, /shell:\s*powershell[^\r\n]*-ExecutionPolicy\s+Bypass/i, "home runner workflow must bypass restrictive machine execution policy per process");
 assert.match(workflow, /C:\\DadRadarOps\\DadRadarRemote\.ps1/, "workflow must call the fixed local executor");
 assert.match(workflow, /DADRADAR_ISSUE_TITLE/, "issue title must be passed as data through an environment variable");
 assert.match(workflow, /DADRADAR_ISSUE_BODY/, "issue body must be passed as data through an environment variable");
