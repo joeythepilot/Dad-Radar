@@ -19,6 +19,10 @@ const {
 const {
   getRadarImage
 } = require("./weather-radar-service");
+const {
+  createServerInstanceId,
+  readDeploymentVersion
+} = require("./deployment-version");
 
 const {createAirportSurfaceService} = require("./airport-surface-service");
 const airportSurface = createAirportSurfaceService({report: addDiagnostic});
@@ -34,6 +38,10 @@ const projectRoot = path.join(
   __dirname,
   ".."
 );
+const deploymentVersion =
+  readDeploymentVersion();
+const serverInstanceId =
+  createServerInstanceId();
 let shutterTestToken = null;
 
 const displayHtml = fs
@@ -86,6 +94,8 @@ app.get("/api/health", (request, response) => {
   response.json({
     ok: true,
     service: "Dad Radar",
+    version: deploymentVersion,
+    instanceId: serverInstanceId,
     flightData: {
       primaryProvider: "adsb.lol",
       providers: {
