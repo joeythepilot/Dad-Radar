@@ -4,6 +4,10 @@ App/dad-radar-browser.js
 .env.tmp
 credentials.json
 token.json
+token.expired-*.json
+token.invalid-*.json
+*.bundle
+actions-runner/
 runtime/
 App/map-roll-browser.js
 artifacts/
