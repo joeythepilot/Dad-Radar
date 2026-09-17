@@ -29,12 +29,17 @@ async function checkFamilyDuty(page, screenshotPath) {
       if (!context || !status) return null;
 
       const original = status.textContent;
+      const fitter = window.dadRadarDailyDutyCard?.fitStatus;
+      const hasFitter = typeof fitter === 'function';
+
       status.textContent = 'DADDY IS COMMUTING TO CHICAGO, ILLINOIS';
+      if (hasFitter) fitter(node, status);
 
       const panelBounds = node.getBoundingClientRect();
       const contextBounds = context.getBoundingClientRect();
       const statusBounds = status.getBoundingClientRect();
       const result = {
+        hasFitter,
         panelTop: panelBounds.top,
         panelHeight: panelBounds.height,
         contextTop: contextBounds.top,
@@ -42,14 +47,17 @@ async function checkFamilyDuty(page, screenshotPath) {
         statusTop: statusBounds.top,
         statusBottom: statusBounds.bottom,
         statusClientHeight: status.clientHeight,
-        statusScrollHeight: status.scrollHeight
+        statusScrollHeight: status.scrollHeight,
+        fontSize: getComputedStyle(status).fontSize
       };
 
       status.textContent = original;
+      if (hasFitter) fitter(node, status);
       return result;
     });
 
     assert(statusGeometry, 'Physical Today’s Duty card exposes the live Current Status field');
+    assert(statusGeometry.hasFitter, 'Mobile Full must use the production Current Status auto-fitter');
     const printedStatusBottom = statusGeometry.panelTop + statusGeometry.panelHeight * 0.365;
     assert(
       statusGeometry.contextBottom <= printedStatusBottom + 1,
