@@ -37,5 +37,7 @@ assert(mobileLayoutCss.includes("family-duty-narrow:not(.is-physical-duty-card)"
 assert(mobileLayoutCss.includes("--family-duty-row-font-size"), "Mobile Full must define a smaller physical-card row type scale.");
 assert(mobileLayoutCss.includes("--family-duty-context-font-size"), "Mobile Full must define a smaller physical-card context type scale.");
 assert(mobileLayoutCss.includes("html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-entry"), "Mobile Full must apply its compact type scale only to the physical duty card.");
+assert(mobileLayoutCss.includes("--family-duty-context-top"), "Mobile Full must give the status copy a lower safe top inset so glyph ascenders are not clipped.");
+assert(mobileLayoutCss.includes("top: var(--family-duty-context-top) !important"), "Mobile Full must apply the status safe inset to the physical duty card context window.");
 
 console.log("Today's Duty physical-card source contract tests passed.");
