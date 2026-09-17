@@ -127,6 +127,11 @@
     }
     function startOf(event) { return toDate(event?.times?.startUtc ?? event?.startUtc); }
     function endOf(event) { return toDate(event?.times?.endUtc ?? event?.endUtc); }
+    function returnHomeTime(event) {
+      return toDate(event?.operational?.actualIn) ??
+        toDate(event?.operational?.estimatedIn) ??
+        endOf(event);
+    }
     function usable(event) { return event && event.status !== "cancelled" && startOf(event) && endOf(event); }
     function sorted(events) { return (Array.isArray(events) ? events : []).filter(usable).slice().sort((a,b)=>startOf(a)-startOf(b)); }
 
@@ -198,7 +203,7 @@
         items.push(`${weekday(startOf(layover),options.timeZone)} - ${locationFor(airport,options)}`);
       });
       items.push(trip.homeFlight
-        ? `${weekday(endOf(trip.homeFlight),options.timeZone)} - HOME ${formatTime(endOf(trip.homeFlight),options.timeZone)}`
+        ? `${weekday(endOf(trip.homeFlight),options.timeZone)} - HOME ${formatTime(returnHomeTime(trip.homeFlight),options.timeZone)}`
         : "RETURN HOME - TBD");
       return items;
     }
@@ -214,7 +219,7 @@
         });
         if(trip.homeFlight){
           const key=dateKey(endOf(trip.homeFlight),options.timeZone);
-          if(key && key>=todayKey && key<=endKey) homeReturnByKey.set(key,formatTime(endOf(trip.homeFlight),options.timeZone));
+          if(key && key>=todayKey && key<=endKey) homeReturnByKey.set(key,formatTime(returnHomeTime(trip.homeFlight),options.timeZone));
         }
       });
 
