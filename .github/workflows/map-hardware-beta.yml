@@ -2,7 +2,7 @@ name: Map hardware beta verification
 on:
   push:
     branches: [agent/mobile-companion, agent/map-roll-verification]
-    paths: ['App/**', 'UI/**', 'Mobile/**', 'assets/hardware/**', 'assets/ticker/**', 'assets/split-flap/**', 'scripts/**', 'index.html', 'package*.json', '.github/workflows/map-hardware-beta.yml']
+    paths: ['App/**', 'UI/**', 'Mobile/**', 'assets/hardware/**', 'assets/ticker/**', 'assets/split-flap/**', 'ops/home-control/**', 'scripts/**', 'index.html', 'package*.json', '.github/workflows/map-hardware-beta.yml']
   workflow_dispatch:
 permissions:
   contents: read
