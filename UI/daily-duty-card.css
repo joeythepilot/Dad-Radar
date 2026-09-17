@@ -1,0 +1,196 @@
+/*
+  Today’s Duty physical dispatch card.
+  Material, aging, printed rules, and labels are all raster artwork.
+  This file positions live data only.
+*/
+.daily-schedule-panel.is-physical-duty-card {
+  position: relative;
+  display: block !important;
+  padding: 0 !important;
+  overflow: hidden;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  isolation: isolate;
+}
+
+.daily-schedule-panel.is-physical-duty-card::after {
+  content: none !important;
+  display: none !important;
+}
+
+.daily-schedule-card-art {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  user-select: none;
+}
+
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-heading {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  pointer-events: none;
+}
+
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-heading h2 {
+  position: absolute !important;
+}
+
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-heading span {
+  position: absolute;
+  top: 6.3%;
+  right: 5.2%;
+  width: 14.6%;
+  margin: 0;
+  color: #3e3428;
+  font-family: "Courier New", monospace;
+  font-size: clamp(9px, 0.72vw, 13px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.5px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-context {
+  position: absolute;
+  z-index: 2;
+  top: 20.8%;
+  left: 5.1%;
+  right: 5.1%;
+  height: 13.8%;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-context strong {
+  display: -webkit-box;
+  width: 100%;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  color: #3e3428;
+  font-family: "Courier New", monospace;
+  font-size: clamp(12px, 0.92vw, 17px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0.25px;
+  text-overflow: ellipsis;
+  white-space: normal;
+}
+
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-list {
+  position: absolute;
+  z-index: 2;
+  top: 45.2%;
+  left: 7.4%;
+  right: 5%;
+  height: 39%;
+  display: grid;
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  list-style: none;
+}
+
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-entry {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 27%;
+  align-items: center;
+  column-gap: 4%;
+  padding: 0;
+  overflow: hidden;
+  color: #493c2c;
+  font-family: "Courier New", monospace;
+  font-size: clamp(10px, 0.78vw, 14px);
+  line-height: 1;
+  letter-spacing: 0.15px;
+  white-space: nowrap;
+}
+
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-entry::before {
+  content: none !important;
+  display: none !important;
+}
+
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-label,
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-time {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-label {
+  font-weight: 700;
+}
+
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-time {
+  color: #574936;
+  font-weight: 700;
+  text-align: left;
+}
+
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-entry.is-completed {
+  opacity: 0.58;
+}
+
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-entry.is-current {
+  color: #2f271d;
+  background: transparent !important;
+  font-weight: 700;
+}
+
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-entry.is-upcoming {
+  opacity: 0.88;
+}
+
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-tag {
+  display: none !important;
+}
+
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-empty {
+  grid-row: 1 / -1;
+  display: flex;
+  align-items: center;
+  color: #574936;
+  font-family: "Courier New", monospace;
+  font-size: clamp(11px, 0.78vw, 14px);
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.daily-schedule-footer {
+  position: absolute;
+  z-index: 2;
+  left: 12.8%;
+  right: 5.2%;
+  bottom: 5.4%;
+  margin: 0;
+  overflow: hidden;
+  color: #3e3428;
+  font-family: "Courier New", monospace;
+  font-size: clamp(10px, 0.76vw, 14px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.35px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+}
