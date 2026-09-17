@@ -46,14 +46,19 @@ html[data-family-full] .daily-schedule-panel.is-physical-duty-card {
   --family-duty-context-font-size: clamp(7px, 0.82vw, 10px);
   --family-duty-row-font-size: clamp(5.5px, 0.66vw, 8.5px);
   --family-duty-footer-font-size: clamp(5.5px, 0.62vw, 8px);
+  --family-duty-context-top: 21.8%;
 }
 html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-heading span {
   font-size: var(--family-duty-date-font-size) !important;
   letter-spacing: 0.15px !important;
 }
+html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-context {
+  top: var(--family-duty-context-top) !important;
+  height: 14.8% !important;
+}
 html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-context strong {
   font-size: var(--family-duty-context-font-size) !important;
-  line-height: 1.04 !important;
+  line-height: 1.12 !important;
   letter-spacing: 0.1px !important;
 }
 html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-entry {
