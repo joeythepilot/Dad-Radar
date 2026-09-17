@@ -194,3 +194,70 @@
   white-space: nowrap;
   pointer-events: none;
 }
+
+
+/* Live operational revision stamped onto the dispatch card. */
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-entry {
+  position: relative;
+}
+
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-entry:has(.daily-schedule-operational-stamp) {
+  grid-template-columns: minmax(0, 1fr) 22%;
+  column-gap: 3%;
+  padding-right: 27%;
+}
+
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-operational-stamp {
+  position: absolute;
+  z-index: 3;
+  right: 0.4%;
+  top: 50%;
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 0.12em 0.25em;
+  border: 1.5px solid currentColor;
+  color: #9b2f24;
+  font-family: "Courier New", monospace;
+  font-size: clamp(7px, 0.58vw, 10px);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: 0.12px;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transform: translateY(-50%) rotate(-2.1deg);
+  opacity: 0.88;
+  filter: contrast(0.92);
+  pointer-events: none;
+}
+
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-operational-stamp::before,
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-operational-stamp::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border: 0.6px solid currentColor;
+  opacity: 0.34;
+  transform: translate(0.4px, -0.3px);
+}
+
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-operational-stamp::after {
+  inset: 2px 0.5px 0.5px 2px;
+  opacity: 0.16;
+  transform: translate(-0.5px, 0.4px);
+}
+
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-operational-stamp-label,
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-operational-stamp-detail {
+  position: relative;
+  z-index: 1;
+}
+
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-operational-stamp-detail {
+  font-size: 0.88em;
+  letter-spacing: 0.25px;
+}
