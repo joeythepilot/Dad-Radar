@@ -2,7 +2,8 @@ const assert = require("node:assert/strict");
 
 const {
   entryCapacity,
-  selectVisibleEntries
+  selectVisibleEntries,
+  buildDutyCardView
 } = require("./daily-schedule-layout");
 
 const entries = [
@@ -44,6 +45,36 @@ assert.deepEqual(
   entries.map((entry) => entry.id),
   "The HP 23es layout should show the full duty list when it fits."
 );
+
+assert.equal(
+  typeof buildDutyCardView,
+  "function",
+  "Today's Duty exposes a physical-card view model."
+);
+
+const fiveLegDuty = {
+  dateLabel: "THU SEP 17",
+  timeZoneLabel: "EASTERN TIME",
+  context: "DADDY IS FLYING TO COLUMBUS, OHIO",
+  entries: [
+    {time:"6:10 AM",label:"AVL → CLT",tag:"FLT 4101",status:"completed",kind:"flight"},
+    {time:"8:05 AM",label:"CLT → CMH",tag:"FLT 4102",status:"current",kind:"flight"},
+    {time:"10:45 AM",label:"CMH → ORD",tag:"FLT 4103",status:"upcoming",kind:"flight"},
+    {time:"1:20 PM",label:"ORD → GRB",tag:"FLT 4104",status:"upcoming",kind:"flight"},
+    {time:"4:15 PM",label:"GRB → AVL",tag:"COMMUTE",status:"upcoming",kind:"flight"}
+  ]
+};
+
+const cardView = buildDutyCardView(fiveLegDuty, 1920, {homeAirport:"AVL"});
+assert.equal(cardView.context, fiveLegDuty.context, "The family live-status sentence remains the visual priority.");
+assert.equal(cardView.rows.length, 5, "A five-leg day keeps all five readable assignment rows on the HP 23es display.");
+assert.deepEqual(cardView.rows[1], {
+  number:2,
+  route:"CLT → CMH · FLT 4102",
+  time:"8:05 AM",
+  status:"current"
+}, "Duty-card rows combine route and tag while keeping time in its dedicated field.");
+assert.equal(cardView.footerText, "HOME TONIGHT", "A final leg to the home airport gives the family a simple end-of-day status.");
 
 console.log(
   "Daily schedule layout tests passed."
