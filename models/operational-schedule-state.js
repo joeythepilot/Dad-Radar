@@ -279,7 +279,30 @@
         if (!event || event.kind !== "flight" || !operational(event) || entry.time === "ALL DAY") {
           return entry;
         }
-        return {...entry, time: formatTime(bestDeparture(event), timeZone)};
+        const op = operational(event);
+        const delay = finiteMinutes(op?.departureDelayMinutes);
+        const revisedOut = toDate(op?.estimatedOut);
+        const plannedOut = toDate(op?.scheduledOut) ?? plannedStart(event);
+        const hasProjectedDelay =
+          !toDate(op?.actualOut) &&
+          revisedOut &&
+          plannedOut &&
+          (
+            (delay !== null && delay > 5) ||
+            (revisedOut - plannedOut) / 60000 > 5 ||
+            /DELAY/.test(String(op?.status ?? "").toUpperCase())
+          );
+        return {
+          ...entry,
+          time: formatTime(bestDeparture(event), timeZone),
+          ...(hasProjectedDelay ? {
+            operationalStamp: {
+              kind: "delay",
+              label: `EST ${formatTime(revisedOut, timeZone)}`,
+              detail: delay !== null ? `+${delay} MIN` : "DELAYED"
+            }
+          } : {})
+        };
       });
       return {
         ...timeline,
