@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Execute allowlisted Dad Radar home operation
-        shell: powershell
+        shell: powershell -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
         env:
           DADRADAR_ISSUE_TITLE: ${{ github.event.issue.title }}
           DADRADAR_ISSUE_BODY: ${{ github.event.issue.body }}
