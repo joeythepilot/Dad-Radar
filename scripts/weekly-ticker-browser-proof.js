@@ -72,8 +72,8 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
       posterStack:posterStack ? rect(posterStack) : null,
       instruments:instruments ? rect(instruments) : null,
       rasterContrast:{
-        paper:sample(context,180,44,1140,5),
-        topRail:sample(context,180,7,1140,10),
+        paper:sample(context,180,80,1140,5),
+        topRail:sample(context,180,25,1140,10),
         leftMechanism:sample(context,8,38,58,66)
       },
       tickerPaint:{backgroundImage:tickerStyle.backgroundImage,backgroundColor:tickerStyle.backgroundColor,
@@ -86,6 +86,12 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
         before:getComputedStyle(canvas,"::before").content,after:getComputedStyle(canvas,"::after").content}
     };
   }, expectedText);
+
+  const first = await canvas.screenshot();
+  if (label === "chromium-ticker-desktop" || label === "webkit-ticker-desktop") {
+    fs.writeFileSync(path.join(output, `${label}-weekly-ticker-a.png`), first);
+  }
+  console.log(`${label}: ticker raster samples ${JSON.stringify(data.rasterContrast)}`);
 
   assert.equal(data.aria, expectedText, "Ticker shows the family-readable upcoming-trip summary");
   assert.deepEqual(data.canvasPixels, {width:1500,height:144}, "Ticker uses a shallow high-resolution backing canvas");
@@ -146,13 +152,11 @@ async function checkWeeklyTicker(page, compact, label, output, expectedText) {
     assert(["none","normal"].includes(paint.after), "No CSS pseudo-element ticker artwork");
   }
 
-  const first = await canvas.screenshot();
   await page.waitForTimeout(2400);
   const second = await canvas.screenshot();
   assert(!first.equals(second), "Ticker paper/text advances vertically between electromechanical feed steps while the mechanism stays fixed");
 
   if (label === "chromium-ticker-desktop" || label === "webkit-ticker-desktop") {
-    fs.writeFileSync(path.join(output, `${label}-weekly-ticker-a.png`), first);
     fs.writeFileSync(path.join(output, `${label}-weekly-ticker-b.png`), second);
   }
 
