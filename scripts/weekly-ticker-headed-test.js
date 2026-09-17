@@ -35,9 +35,20 @@ const expected = weeklyTicker.buildWeeklyTripTicker(schedule, {
 }).text;
 
 const state = {
-  status:"HOME", message:"DADDY IS HOME", locationAirport:"AVL", flight:null,
+  status:"EN ROUTE", message:"DADDY IS FLYING TO COLUMBUS, OHIO", locationAirport:"CMH", flight:null,
   sequenceHistory:{totalDistanceNm:1468,completedLegCount:6,estimatedLegCount:6,legs:[]},
-  dailySchedule:{dateLabel:"TODAY",timeZoneLabel:"EASTERN TIME",context:"DADDY IS HOME TODAY",entries:[]}
+  dailySchedule:{
+    dateLabel:"THU SEP 17",
+    timeZoneLabel:"EASTERN TIME",
+    context:"DADDY IS FLYING TO COLUMBUS, OHIO",
+    entries:[
+      {id:"duty-1",kind:"flight",status:"completed",time:"6:10 AM",label:"AVL → CLT",tag:"FLT 4101"},
+      {id:"duty-2",kind:"flight",status:"current",time:"8:05 AM",label:"CLT → CMH",tag:"FLT 4102"},
+      {id:"duty-3",kind:"flight",status:"upcoming",time:"10:45 AM",label:"CMH → ORD",tag:"FLT 4103"},
+      {id:"duty-4",kind:"flight",status:"upcoming",time:"1:20 PM",label:"ORD → GRB",tag:"FLT 4104"},
+      {id:"duty-5",kind:"flight",status:"upcoming",time:"4:15 PM",label:"GRB → AVL",tag:"COMMUTE"}
+    ]
+  }
 };
 const stamp = new Date().toISOString();
 const payload = {ok:true,revision:1,publishedAt:stamp,calendarOk:true,liveOk:true,calendarAt:stamp,liveAt:stamp,resolved:{mode:"HOME",state,event:null}};
@@ -99,7 +110,7 @@ const server = http.createServer((request,response) => {
           assert.deepEqual(errors,[],`${label}: browser errors`);
           results.push({label,passed:true,evidence});
           await page.close();
-          console.log(`${label}: weekly ticker passed`);
+          console.log(`${label}: weekly ticker and physical duty card passed`);
         }
       } finally {
         await browser.close();
