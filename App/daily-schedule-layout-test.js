@@ -25,7 +25,7 @@ assert.deepEqual(
     1024
   ).map((entry) => entry.id),
   ["three", "four"],
-  "The iPad layout should prioritize the current and next duty items."
+  "The legacy iPad layout should prioritize the current and next duty items."
 );
 
 assert.deepEqual(
@@ -75,6 +75,22 @@ assert.deepEqual(cardView.rows[1], {
   status:"current"
 }, "Duty-card rows combine route and tag while keeping time in its dedicated field.");
 assert.equal(cardView.footerText, "HOME TONIGHT", "A final leg to the home airport gives the family a simple end-of-day status.");
+
+const mobileFullCardView = buildDutyCardView(
+  fiveLegDuty,
+  1024,
+  {homeAirport:"AVL", rowCapacity:5}
+);
+assert.equal(
+  mobileFullCardView.rows.length,
+  5,
+  "Mobile Full must use the physical card's five ruled rows instead of truncating the day to two items."
+);
+assert.deepEqual(
+  mobileFullCardView.rows.map((row) => row.route),
+  cardView.rows.map((row) => row.route),
+  "Mobile Full should show the same full-day assignment list as the desktop physical card."
+);
 
 console.log(
   "Daily schedule layout tests passed."
