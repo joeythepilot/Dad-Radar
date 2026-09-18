@@ -29,8 +29,8 @@ jobs:
           from urllib.request import urlretrieve
           from PIL import Image
 
-          source = Path("/tmp/SR_50M.tif")
-          url = "https://raw.githubusercontent.com/nvkelso/natural-earth-raster/master/50m_rasters/SR_50M/SR_50M.tif"
+          source = Path("/tmp/GRAY_HR_SR.tif")
+          url = "https://raw.githubusercontent.com/nvkelso/natural-earth-raster/master/10m_rasters/GRAY_HR_SR/GRAY_HR_SR.tif"
           urlretrieve(url, source)
 
           west, east, south, north = -135.0, -55.0, 5.0, 62.0
