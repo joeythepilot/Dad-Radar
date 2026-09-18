@@ -51,6 +51,7 @@ html[data-family-full] .daily-schedule-panel.is-physical-duty-card {
   --family-duty-context-safety-pad: 0.14em;
   --family-duty-date-width: 23%;
   --family-duty-time-column-width: 31%;
+  --family-duty-stamp-font-size: clamp(3.8px, 0.44vw, 5.8px);
 }
 html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-heading span {
   right: 3.8% !important;
@@ -91,6 +92,28 @@ html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedu
   overflow: hidden !important;
   text-overflow: clip !important;
   white-space: nowrap !important;
+}
+html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-operational-stamp {
+  right: 0.8% !important;
+  top: 50% !important;
+  width: 25.5% !important;
+  max-height: 82% !important;
+  padding: 0.02em 0.12em !important;
+  border-width: 0.75px !important;
+  font-size: var(--family-duty-stamp-font-size) !important;
+  line-height: 0.88 !important;
+  letter-spacing: 0 !important;
+  transform: translateY(-50%) rotate(-1.2deg) !important;
+  overflow: hidden !important;
+}
+html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-operational-stamp::before,
+html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-operational-stamp::after {
+  inset: 0.5px !important;
+  border-width: 0.4px !important;
+}
+html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-operational-stamp-detail {
+  font-size: 0.82em !important;
+  letter-spacing: 0 !important;
 }
 html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-footer {
   font-size: var(--family-duty-footer-font-size) !important;
