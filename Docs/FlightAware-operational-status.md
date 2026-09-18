@@ -121,7 +121,7 @@ The planned Calendar timestamps remain available in `calendarPlan`, so a current
 
 ### Today’s Duty operational stamp
 
-When FlightAware reports a projected departure delay greater than the normal grace period and the flight has not yet pushed from the gate, Today’s Duty keeps the revised departure time in the row and adds a muted red dispatch-style stamp containing the estimated departure and delay amount, for example `EST 11:07 PM / +37 MIN`.
+When FlightAware reports a projected departure delay greater than the normal grace period and the flight has not yet pushed from the gate, Today’s Duty keeps the revised departure time in the row and adds a muted red dispatch-style stamp written for the family audience, for example `DELAYED / 37 MINUTES`. The revised clock time remains in the row itself so the stamp does not repeat dispatch shorthand.
 
 The stamp is live data, not raster artwork, because its text changes with FlightAware. Its visual treatment deliberately resembles an imperfect rubber-stamp revision applied to the existing physical dispatch card. Once FlightAware reports actual OUT, the projected-delay stamp is removed; the row continues to follow actual/revised operational timing through the normal state model.
 
