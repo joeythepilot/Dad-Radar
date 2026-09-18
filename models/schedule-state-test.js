@@ -251,6 +251,38 @@ function testBoardingOverridesGroundCalendarOverlap() {
   assert.equal(resolveScheduleState(schedule, {now, preferredEventId: active.id}).event.id, active.id, "An explicitly locked delayed flight keeps priority.");
 }
 
+function testConfirmedArrivalReleasesPreferredLegToStartedNextFlight() {
+  const arrived = createFlight({
+    id: "ord-cmh",
+    origin: "ORD",
+    destination: "CMH",
+    flightNumber: "3917",
+    confirmedArrivalAt: "2026-09-18T01:01:00.000Z",
+    times: {
+      startUtc: "2026-09-17T22:27:00.000Z",
+      endUtc: "2026-09-18T00:01:00.000Z"
+    }
+  });
+  const next = createFlight({
+    id: "cmh-ord",
+    origin: "CMH",
+    destination: "ORD",
+    flightNumber: "3917",
+    times: {
+      startUtc: "2026-09-18T00:50:00.000Z",
+      endUtc: "2026-09-18T02:35:00.000Z"
+    }
+  });
+  const result = resolveScheduleState(createSchedule([arrived, next]), {
+    now: "2026-09-18T01:18:00.000Z",
+    preferredEventId: arrived.id
+  });
+  assert.equal(result.event.id, next.id,
+    "A confirmed arrival must release the preferred-leg lock once the next work flight has started.");
+  assert.equal(result.state.flight.origin, "CMH");
+  assert.equal(result.state.flight.destination, "ORD");
+}
+
 function testClockAloneCannotConfirmArrival() {
   const result = resolveScheduleState(
     createSchedule([
@@ -919,7 +951,8 @@ function runTests() {
   testDeadheadFamilyLanguage();
   testLayover();
   testRecentlyArrived();
-  testClockAloneCannotConfirmArrival();
+  testConfirmedArrivalReleasesPreferredLegToStartedNextFlight();
+testClockAloneCannotConfirmArrival();
   testCancelledFlightIsIgnored();
   testAwayLocationPersistsAfterArrivalHold();
   testSameDayBaseSitIsNotLayover();
