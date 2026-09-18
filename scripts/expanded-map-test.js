@@ -38,7 +38,8 @@ for (const country of [
 
 assert.match(mapSource, /id="land-paper"/);
 assert.match(mapSource, /id="land-clip"/);
-assert.match(mapSource, /data:image\/png;base64,/);
+assert.doesNotMatch(mapSource, /data:image\/png;base64,/);
+assert.match(mapSource, /north-america-caribbean-relief-hires\.jpg\?v=terrain-hires-3/);
 assert.match(mapSource, /class="state-boundary"/);
 assert.match(
   mapSource,
@@ -55,7 +56,7 @@ assert(mapSource.indexOf('class="great-lakes"') > mapSource.indexOf('class="stat
 assert.doesNotMatch(mapSource, /stroke-dasharray/);
 assert.match(
   dashboardSource,
-  /north-america-caribbean-vintage\.svg\?v=great-lakes-8/
+  /north-america-caribbean-vintage\.svg\?v=terrain-hires-3/
 );
 assert.doesNotMatch(dashboardSource, /map-us-detail/);
 
