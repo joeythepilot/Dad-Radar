@@ -168,7 +168,19 @@ function createSequenceHistoryService(storage, options = {}) {
     if (!candidates.length) return publicSummary(state);
     for (const event of candidates) {
       const key = eventKey(event);
-      if (!key || state.legs.some(leg => leg.eventKey === key)) continue;
+      if (!key) continue;
+
+      // A leg can already exist because DadRadar tracked it in flight but never
+      // observed the brief ARRIVED/LANDED state before advancing. Once the
+      // scheduled leg is in the past, reconcile that stored leg as complete
+      // instead of leaving the family-facing counter permanently behind.
+      const existingLeg = state.legs.find(leg => leg.eventKey === key);
+      if (existingLeg) {
+        existingLeg.completed = true;
+        existingLeg.endUtc = eventTime(event, "endUtc") ?? existingLeg.endUtc;
+        continue;
+      }
+
       const miles = greatCircleForEvent(event);
       state.legs.push({
         eventKey: key,

@@ -101,6 +101,37 @@ now += 49 * 3600000;
 summary = service.read();
 assert.equal(summary.legCount, 0, "Sequence expires after 48 hours without work-flight activity.");
 
+// A tracked leg must not remain incomplete forever just because the display
+// missed the brief ARRIVED/LANDED phase before moving on.
+let missedArrivalNow = Date.parse("2026-09-13T22:30:00Z");
+const missedArrivalService = createSequenceHistoryService({}, {now: () => missedArrivalNow});
+const missedArrivalLeg = {
+  id: "missed-arrival-1",
+  kind: "flight",
+  travelRole: "operating",
+  isCommute: false,
+  isDeadhead: false,
+  flightNumber: "4334",
+  origin: "ORD",
+  destination: "BMI",
+  times: {
+    startUtc: "2026-09-13T22:00:00Z",
+    endUtc: "2026-09-13T23:00:00Z"
+  }
+};
+let missedArrivalSummary = missedArrivalService.update(resolved(missedArrivalLeg, [
+  {latitude: 41.97, longitude: -87.9, recordedAt: "2026-09-13T22:30:00Z"},
+  {latitude: 41.0, longitude: -88.6, recordedAt: "2026-09-13T22:45:00Z"}
+], "EN_ROUTE"));
+assert.equal(missedArrivalSummary.completedLegCount, 0);
+
+missedArrivalNow = Date.parse("2026-09-14T01:30:00Z");
+missedArrivalSummary = missedArrivalService.backfill([missedArrivalLeg]);
+assert.equal(missedArrivalSummary.legCount, 1, "Past reconciliation must not duplicate an already tracked leg.");
+assert.equal(missedArrivalSummary.completedLegCount, 1, "A past tracked leg is complete even if ARRIVED was missed.");
+assert.equal(missedArrivalSummary.estimatedLegCount, 0, "Reconciliation preserves real tracked mileage.");
+assert.equal(missedArrivalSummary.legs[0].track.length, 2, "Reconciliation preserves the recorded track.");
+
 // A newly installed tracker can recover a just-completed trip from calendar history.
 const recoveryNow = Date.parse("2026-09-14T01:30:00Z");
 const recovered = createSequenceHistoryService({}, {now: () => recoveryNow});
