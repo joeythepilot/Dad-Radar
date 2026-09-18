@@ -98,9 +98,9 @@ function resolve(op, options = {}, overrides = {}) {
     "Today's Duty shows the current estimated OUT time.");
   assert.deepEqual(daily.entries[0].operationalStamp, {
     kind: "delay",
-    label: "EST 10:15 AM",
-    detail: "+75 MIN"
-  }, "A projected FlightAware departure delay becomes a red dispatch stamp on the affected duty row.");
+    label: "DELAYED",
+    detail: "75 MINUTES"
+  }, "A projected FlightAware departure delay becomes a child-friendly red dispatch stamp on the affected duty row.");
   assert.equal(daily.context,
     "DADDY'S FLIGHT TO WILKES-BARRE/SCRANTON, PENNSYLVANIA IS 75 MIN LATE");
 }
