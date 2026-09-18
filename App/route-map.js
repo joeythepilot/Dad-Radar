@@ -119,8 +119,23 @@ let resizeTimer = null;
 let lastTelemetryMapRenderAt = 0;
 let persistedTrackFlightKey = null;
 let persistedActualTrack = [];
+let lastAppliedCamera = null;
+let stabilizeTelemetryCamera = false;
 
 const TELEMETRY_MAP_INTERVAL_MS = 125;
+const CURRENT_MAP_PATH =
+  String(
+    globalThis.location?.pathname ??
+      ""
+  );
+const MOBILE_CAMERA_STABILIZATION =
+  CURRENT_MAP_PATH === "/mobile" ||
+  CURRENT_MAP_PATH.startsWith(
+    "/mobile/"
+  );
+const MOBILE_CAMERA_BLEND = 0.34;
+const MOBILE_CAMERA_DEADBAND_RATIO =
+  0.00065;
 
 function clamp(value, minimum, maximum) {
   return Math.max(
@@ -1123,30 +1138,111 @@ function cameraForSurfaceProximity(
   };
 }
 
+function stabilizedCamera(camera) {
+  if (
+    !MOBILE_CAMERA_STABILIZATION ||
+    !stabilizeTelemetryCamera ||
+    !lastAppliedCamera
+  ) {
+    lastAppliedCamera = {
+      ...camera
+    };
+    return camera;
+  }
+
+  const positionDeadband =
+    Math.max(
+      0.02,
+      camera.width *
+        MOBILE_CAMERA_DEADBAND_RATIO
+    );
+
+  const sizeDeadband =
+    Math.max(
+      0.02,
+      camera.width *
+        MOBILE_CAMERA_DEADBAND_RATIO
+    );
+
+  const blendValue = (
+    previous,
+    next,
+    deadband
+  ) =>
+    Math.abs(next - previous) <=
+      deadband
+      ? previous
+      : previous +
+        (
+          next - previous
+        ) * MOBILE_CAMERA_BLEND;
+
+  const rendered = {
+    x: blendValue(
+      lastAppliedCamera.x,
+      camera.x,
+      positionDeadband
+    ),
+    y: blendValue(
+      lastAppliedCamera.y,
+      camera.y,
+      positionDeadband
+    ),
+    width: blendValue(
+      lastAppliedCamera.width,
+      camera.width,
+      sizeDeadband
+    ),
+    height: blendValue(
+      lastAppliedCamera.height,
+      camera.height,
+      sizeDeadband
+    )
+  };
+
+  rendered.zoom =
+    BASE_VIEW_BOX.width /
+    rendered.width;
+
+  lastAppliedCamera = rendered;
+
+  return rendered;
+}
+
 function applyCamera(camera) {
   if (!elements.svg) {
-    return;
+    return camera;
   }
+
+  const renderedCamera =
+    stabilizedCamera(camera);
 
   elements.svg.setAttribute(
     "viewBox",
     [
-      camera.x.toFixed(1),
-      camera.y.toFixed(1),
-      camera.width.toFixed(1),
-      camera.height.toFixed(1)
+      renderedCamera.x.toFixed(2),
+      renderedCamera.y.toFixed(2),
+      renderedCamera.width.toFixed(2),
+      renderedCamera.height.toFixed(2)
     ].join(" ")
   );
 
-  positionCompass(camera);
-  scaleReferenceCities(camera);
-  weatherCamera = camera;
-  if (elements.weatherImage && weatherTimer === null) {
-    weatherTimer = window.setTimeout(() => {
-      weatherTimer = null;
-      refreshWeatherRadar();
-    }, 250);
+  positionCompass(renderedCamera);
+  scaleReferenceCities(renderedCamera);
+  weatherCamera = renderedCamera;
+
+  if (
+    elements.weatherImage &&
+    weatherTimer === null
+  ) {
+    weatherTimer =
+      window.setTimeout(() => {
+        weatherTimer = null;
+        refreshWeatherRadar();
+      }, 250);
   }
+
+  return renderedCamera;
 }
 
 function resetCamera() {
@@ -1565,14 +1661,15 @@ function renderLivePositionOnly(flight) {
       regionalAltitude(flight)
     );
 
-  applyCamera(camera);
+  const renderedCamera =
+    applyCamera(camera);
 
   positionAircraftMarker(
     livePosition,
     hasLiveHeading
       ? liveHeading - 90
       : 0,
-    1 / camera.zoom
+    1 / renderedCamera.zoom
   );
 
   updateRouteLabels(flight);
@@ -1600,7 +1697,8 @@ function renderGroundLocation(state) {
   const camera =
     domesticOverviewCamera();
 
-  applyCamera(camera);
+  const renderedCamera =
+    applyCamera(camera);
 
   const point = project(
     airport.longitude,
@@ -1611,7 +1709,7 @@ function renderGroundLocation(state) {
     elements.destinationMarker,
     point,
     { x: 66, y: -64 },
-    1 / camera.zoom
+    1 / renderedCamera.zoom
   );
 
   if (elements.destinationMarker) {
@@ -1785,10 +1883,11 @@ function renderRegionalRouteMap(state) {
       regionalAltitude(flight)
     );
 
-  applyCamera(camera);
+  const renderedCamera =
+    applyCamera(camera);
 
   const inverseZoom =
-    1 / camera.zoom;
+    1 / renderedCamera.zoom;
 
   const plannedRouteDash =
     `${(
@@ -1938,12 +2037,20 @@ window.addEventListener(
         Date.now();
     }
 
-    renderRouteMap(
-      event.detail?.state
-    );
-    syncRouteMapReadyState(
-      event.detail?.state
-    );
+    stabilizeTelemetryCamera =
+      telemetryOnly;
+
+    try {
+      renderRouteMap(
+        event.detail?.state
+      );
+      syncRouteMapReadyState(
+        event.detail?.state
+      );
+    } finally {
+      stabilizeTelemetryCamera =
+        false;
+    }
   }
 );
 

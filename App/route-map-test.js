@@ -107,7 +107,12 @@ class FakeElement {
   }
 }
 
-function createHarness(flight, state = null, surfaceApi = null) {
+function createHarness(
+  flight,
+  state = null,
+  surfaceApi = null,
+  pathname = ""
+) {
   const ids = [
     "route-map-svg",
     "map-route-shadow",
@@ -137,9 +142,13 @@ function createHarness(flight, state = null, surfaceApi = null) {
     );
 
   const listeners = {};
+  const browserLocation = {
+    pathname
+  };
 
   const context = {
     console,
+    location: browserLocation,
     dadRadarAirports:
       airportCatalog,
     dadRadarAirportSurface: surfaceApi,
@@ -148,6 +157,7 @@ function createHarness(flight, state = null, surfaceApi = null) {
         elements[id] ?? null
     },
     window: {
+      location: browserLocation,
       addEventListener:
         (name, handler) => {
           listeners[name] = handler;
@@ -229,6 +239,221 @@ function testTelemetryMapRenderingIsThrottled() {
     ROUTE_MAP_SOURCE,
     /event\.detail\?\.telemetryOnly/,
     "The route map should distinguish lightweight telemetry frames."
+  );
+}
+
+function testMobileTelemetryCameraIsStabilized() {
+  const flight =
+    flightAtAltitude(12000);
+
+  const mobile =
+    createHarness(
+      flight,
+      null,
+      null,
+      "/mobile"
+    );
+
+  const before =
+    viewBox(
+      mobile.elements[
+        "route-map-svg"
+      ]
+    );
+
+  const lowFlight = {
+    ...flight,
+    altitude: 3000
+  };
+
+  const directTarget =
+    viewBox(
+      createHarness(
+        lowFlight
+      ).elements[
+        "route-map-svg"
+      ]
+    );
+
+  mobile.listeners[
+    "dad-radar:visual-state-change"
+  ]({
+    detail: {
+      telemetryOnly: true,
+      state: {
+        flight: lowFlight
+      }
+    }
+  });
+
+  const stabilized =
+    viewBox(
+      mobile.elements[
+        "route-map-svg"
+      ]
+    );
+
+  assert(
+    stabilized[2] <
+      before[2],
+    "Mobile telemetry should still move toward the tighter descent camera."
+  );
+
+  assert(
+    stabilized[2] >
+      directTarget[2],
+    "Mobile telemetry should ease toward a new zoom target instead of snapping the viewBox."
+  );
+}
+
+function jpegDimensions(buffer) {
+  let offset = 2;
+
+  while (
+    offset + 9 <
+    buffer.length
+  ) {
+    if (
+      buffer[offset] !== 0xff
+    ) {
+      offset += 1;
+      continue;
+    }
+
+    offset += 1;
+
+    while (
+      buffer[offset] === 0xff
+    ) {
+      offset += 1;
+    }
+
+    const marker =
+      buffer[offset];
+    offset += 1;
+
+    if (
+      marker === 0xd8 ||
+      marker === 0xd9
+    ) {
+      continue;
+    }
+
+    if (
+      marker === 0xda
+    ) {
+      break;
+    }
+
+    if (
+      offset + 1 >=
+      buffer.length
+    ) {
+      break;
+    }
+
+    const length =
+      buffer.readUInt16BE(
+        offset
+      );
+
+    if (
+      [
+        0xc0, 0xc1, 0xc2, 0xc3,
+        0xc5, 0xc6, 0xc7,
+        0xc9, 0xca, 0xcb,
+        0xcd, 0xce, 0xcf
+      ].includes(marker)
+    ) {
+      return {
+        height:
+          buffer.readUInt16BE(
+            offset + 3
+          ),
+        width:
+          buffer.readUInt16BE(
+            offset + 5
+          )
+      };
+    }
+
+    offset += length;
+  }
+
+  throw new Error(
+    "JPEG dimensions unavailable."
+  );
+}
+
+function testHighResolutionTerrainLayer() {
+  const terrainPath =
+    path.join(
+      __dirname,
+      "..",
+      "assets",
+      "maps",
+      "north-america-caribbean-relief-hires.jpg"
+    );
+
+  const terrain =
+    fs.readFileSync(
+      terrainPath
+    );
+
+  const dimensions =
+    jpegDimensions(terrain);
+
+  assert(
+    dimensions.width >= 4000 &&
+    dimensions.height >= 3000,
+    "Regional terrain must retain enough source detail for close route-camera views."
+  );
+
+  const vectorAsset =
+    fs.readFileSync(
+      path.join(
+        __dirname,
+        "..",
+        "assets",
+        "maps",
+        "north-america-caribbean-vintage.svg"
+      ),
+      "utf8"
+    );
+
+  assert.doesNotMatch(
+    vectorAsset,
+    /data:image\/png;base64/,
+    "The vector geography must not carry the old 570x560 embedded relief raster."
+  );
+
+  assert.match(
+    vectorAsset,
+    /north-america-caribbean-relief-hires\.jpg/,
+    "The vector geography must use the high-resolution terrain source."
+  );
+
+  assert.match(
+    DASHBOARD_SOURCE,
+    /north-america-caribbean-vintage\.svg\?v=terrain-hires-3/,
+    "The main display must bust the cached low-resolution map asset."
+  );
+
+  const mobileSource =
+    fs.readFileSync(
+      path.join(
+        __dirname,
+        "..",
+        "Mobile",
+        "index.html"
+      ),
+      "utf8"
+    );
+
+  assert.match(
+    mobileSource,
+    /north-america-caribbean-vintage\.svg\?v=terrain-hires-3/,
+    "Compact mobile must bust the cached low-resolution map asset."
   );
 }
 
@@ -972,6 +1197,8 @@ function runTests() {
   testReferenceCitiesStayReadableWhileZoomed();
   testAshevilleIsPermanentHomeReference();
   testTelemetryMapRenderingIsThrottled();
+  testMobileTelemetryCameraIsStabilized();
+  testHighResolutionTerrainLayer();
   testRouteAutoFitAndPlacards();
   testAirportEndpointIcons();
   testBillingsRouteIsKnown();
