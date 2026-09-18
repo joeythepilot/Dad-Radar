@@ -943,13 +943,25 @@
               )
             : preferredEnd;
 
+        const startedLaterFlight =
+          preferredEvent?.confirmedArrivalAt
+            ? events.find(
+                (event) =>
+                  event.kind === "flight" &&
+                  eventIdentity(event) !== String(preferredEventId) &&
+                  eventStart(event) > preferredStart &&
+                  eventStart(event) <= now
+              ) ?? null
+            : null;
+
         if (
           preferredEvent?.kind ===
             "flight" &&
           preferredStart &&
           preferredStart <= now &&
           lockExpiresAt &&
-          now <= lockExpiresAt
+          now <= lockExpiresAt &&
+          !startedLaterFlight
         ) {
           return preferredEvent;
         }
