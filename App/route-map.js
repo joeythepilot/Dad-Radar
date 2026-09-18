@@ -819,6 +819,81 @@ function sequenceHistoryCameraPoints(state) {
   return points;
 }
 
+function fitCameraAroundAnchor(points, anchor) {
+  if (
+    !Number.isFinite(anchor?.x) ||
+    !Number.isFinite(anchor?.y)
+  ) {
+    return fitCameraToPoints(points);
+  }
+
+  const usablePoints = points.filter(
+    (point) =>
+      Number.isFinite(point?.x) &&
+      Number.isFinite(point?.y)
+  );
+
+  if (!usablePoints.length) {
+    return fitCameraToPoints([anchor]);
+  }
+
+  const maxHorizontal =
+    Math.max(
+      1,
+      ...usablePoints.map((point) =>
+        Math.abs(point.x - anchor.x)
+      )
+    );
+
+  const maxVertical =
+    Math.max(
+      1,
+      ...usablePoints.map((point) =>
+        Math.abs(point.y - anchor.y)
+      )
+    );
+
+  let width =
+    Math.max(
+      16,
+      maxHorizontal * 2 * 1.24
+    );
+
+  let height =
+    Math.max(
+      16,
+      maxVertical * 2 * 1.3
+    );
+
+  const aspectRatio =
+    viewportAspectRatio();
+
+  if (width / height < aspectRatio) {
+    width = height * aspectRatio;
+  } else {
+    height = width / aspectRatio;
+  }
+
+  const minimumWidth =
+    BASE_VIEW_BOX.width /
+    MAX_CAMERA_ZOOM;
+
+  if (width < minimumWidth) {
+    width = minimumWidth;
+    height = width / aspectRatio;
+  }
+
+  return {
+    x: anchor.x - width / 2,
+    y: anchor.y - height / 2,
+    width,
+    height,
+    zoom:
+      BASE_VIEW_BOX.width /
+      width
+  };
+}
+
 function fitCameraToPoints(points) {
   const usablePoints =
     points.filter(
@@ -1657,20 +1732,32 @@ function renderRegionalRouteMap(state) {
     flight.heading !== "" &&
     Number.isFinite(liveHeading);
 
-  const routeCamera =
-    fitCameraToPoints([
-      ...sampleCurve(curve),
-      ...(actualTrack?.points ?? []),
-      ...sequenceHistoryCameraPoints(state),
-      livePosition
-    ]);
-
   const aircraftPoint =
     livePosition ??
     curvePoint(
       curve,
       displayProgress
     );
+
+  const historyCameraPoints =
+    sequenceHistoryCameraPoints(state);
+
+  const cameraPoints = [
+    ...sampleCurve(curve),
+    ...(actualTrack?.points ?? []),
+    ...historyCameraPoints,
+    livePosition
+  ];
+
+  const routeCamera =
+    historyCameraPoints.length
+      ? fitCameraAroundAnchor(
+          cameraPoints,
+          aircraftPoint
+        )
+      : fitCameraToPoints(
+          cameraPoints
+        );
 
   const camera =
     cameraForSurfaceProximity(
