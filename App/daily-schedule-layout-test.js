@@ -103,14 +103,14 @@ const stampedDuty = {
       tag:"FLT 3375",
       status:"upcoming",
       kind:"flight",
-      operationalStamp:{kind:"delay",label:"EST 11:07 PM",detail:"+37 MIN"}
+      operationalStamp:{kind:"delay",label:"DELAYED",detail:"37 MINUTES"}
     }
   ]
 };
 const stampedView = buildDutyCardView(stampedDuty, 1024, {homeAirport:"AVL", rowCapacity:5});
 assert.deepEqual(
   stampedView.rows[0].operationalStamp,
-  {kind:"delay",label:"EST 11:07 PM",detail:"+37 MIN"},
+  {kind:"delay",label:"DELAYED",detail:"37 MINUTES"},
   "The physical-card view model preserves the live operational stamp for the renderer."
 );
 
