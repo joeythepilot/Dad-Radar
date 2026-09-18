@@ -695,6 +695,736 @@ function testVisualStateDrivesAircraftMotion() {
   );
 }
 
+function testActualTrackPreservesSlowFinalTelemetry() {
+  const flight = {
+    flightNumber: "3917",
+    origin: "ORD",
+    destination: "CMH",
+    latitude: 40.001358,
+    longitude: -82.875122,
+    heading: 90,
+    progress: 99,
+    actualTrack: [
+      {latitude: 41.97689, longitude: -87.89888},
+      {latitude: 40.80, longitude: -85.20},
+      {latitude: 40.20, longitude: -83.55},
+      {latitude: 40.0500, longitude: -83.0500},
+      {latitude: 40.0400, longitude: -83.0200},
+      {latitude: 40.0300, longitude: -82.9900},
+      {latitude: 40.0200, longitude: -82.9600},
+      {latitude: 40.0100, longitude: -82.9300},
+      {latitude: 40.001358, longitude: -82.875122}
+    ]
+  };
+
+  const {elements, context} = createHarness(flight);
+  const finalPoint = context.project(-82.875122, 40.001358);
+  const pathData = elements["map-route-progress"].attributes.d;
+
+  assert.match(
+    pathData,
+    new RegExp(`${finalPoint.x.toFixed(1)} ${finalPoint.y.toFixed(1)}const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+const vm = require("node:vm");
+const airportCatalog = require(
+  "../data/airport-catalog"
+);
+
+const ROUTE_MAP_SOURCE =
+  fs.readFileSync(
+    path.join(
+      __dirname,
+      "route-map.js"
+    ),
+    "utf8"
+  );
+
+const DASHBOARD_SOURCE =
+  fs.readFileSync(
+    path.join(
+      __dirname,
+      "..",
+      "index.html"
+    ),
+    "utf8"
+  );
+
+class FakePart {
+  constructor() {
+    this.attributes = {};
+  }
+
+  setAttribute(name, value) {
+    this.attributes[name] =
+      String(value);
+  }
+
+}
+
+class FakeElement {
+  constructor(
+    width = 875,
+    height = 610
+  ) {
+    this.attributes = {};
+    this.style = {};
+    this.hidden = false;
+    this.textContent = "";
+    this.parts = {
+      ".airport-leader":
+        new FakePart(),
+      ".airport-placard":
+        new FakePart()
+    };
+    this.rectangle = {
+      width,
+      height
+    };
+    this.classList = {
+      values: new Set(),
+      add: (...names) => {
+        names.forEach(
+          (name) =>
+            this.classList
+              .values
+              .add(name)
+        );
+      },
+      remove: (...names) => {
+        names.forEach(
+          (name) =>
+            this.classList
+              .values
+              .delete(name)
+        );
+      },
+      toggle: (name, force) => {
+        if (force) {
+          this.classList
+            .values
+            .add(name);
+        } else {
+          this.classList
+            .values
+            .delete(name);
+        }
+      }
+    };
+  }
+
+  setAttribute(name, value) {
+    this.attributes[name] =
+      String(value);
+  }
+
+  removeAttribute(name) {
+    delete this.attributes[name];
+  }
+
+  querySelector(selector) {
+    return this.parts[selector] ??
+      null;
+  }
+
+  getBoundingClientRect() {
+    return this.rectangle;
+  }
+}
+
+function createHarness(flight, state = null, surfaceApi = null) {
+  const ids = [
+    "route-map-svg",
+    "map-route-shadow",
+    "map-route-line",
+    "map-route-progress",
+    "map-origin-marker",
+    "map-destination-marker",
+    "map-aircraft-marker",
+    "map-compass-rose",
+    "map-origin",
+    "map-origin-city",
+    "map-destination",
+    "map-destination-city",
+    "map-loading-message",
+    "map-route-status",
+    "route-map-shell"
+  ];
+
+  const elements =
+    Object.fromEntries(
+      ids.map(
+        (id) => [
+          id,
+          new FakeElement()
+        ]
+      )
+    );
+
+  const listeners = {};
+
+  const context = {
+    console,
+    dadRadarAirports:
+      airportCatalog,
+    dadRadarAirportSurface: surfaceApi,
+    document: {
+      getElementById: (id) =>
+        elements[id] ?? null
+    },
+    window: {
+      addEventListener:
+        (name, handler) => {
+          listeners[name] = handler;
+        },
+      clearTimeout,
+      setTimeout
+    },
+    dadRadarState:
+      state ?? { flight }
+  };
+
+  vm.runInNewContext(
+    ROUTE_MAP_SOURCE,
+    context
+  );
+
+  return {
+    elements,
+    listeners,
+    context
+  };
+}
+
+function testGroundLocationUsesDomesticOverview() {
+  const { elements } =
+    createHarness(null, {
+      flight: null,
+      locationAirport: "GSP",
+      message:
+        "DADDY IS ON THE GROUND IN GREER, SOUTH CAROLINA"
+    });
+
+  const camera = viewBox(
+    elements["route-map-svg"]
+  );
+
+  assert.ok(
+    camera[2] < 1100,
+    "A domestic ground state should use the U.S. overview instead of the full international map."
+  );
+  assert.equal(
+    elements["map-loading-message"].hidden,
+    true,
+    "The ground location should be marked without covering the center of the map."
+  );
+  assert.equal(
+    elements["map-destination"].textContent,
+    "GSP"
+  );
+  assert.equal(
+    elements["map-destination-marker"].attributes.visibility,
+    "visible"
+  );
+}
+
+function testReferenceCitiesStayReadableWhileZoomed() {
+  assert.match(
+    ROUTE_MAP_SOURCE,
+    /scaleReferenceCities\(camera\)/,
+    "Reference-city labels should counter-scale as the map zooms."
+  );
+}
+
+function testAshevilleIsPermanentHomeReference() {
+  assert.match(
+    ROUTE_MAP_SOURCE,
+    /\["ASHEVILLE",\s*35\.6,\s*-82\.55,\s*"home"\]/,
+    "Asheville should remain visible as Dad Radar's home reference city."
+  );
+}
+
+function testTelemetryMapRenderingIsThrottled() {
+  assert.match(
+    ROUTE_MAP_SOURCE,
+    /TELEMETRY_MAP_INTERVAL_MS\s*=\s*\n?\s*125/,
+    "Heavy map rendering should be throttled during live interpolation."
+  );
+  assert.match(
+    ROUTE_MAP_SOURCE,
+    /event\.detail\?\.telemetryOnly/,
+    "The route map should distinguish lightweight telemetry frames."
+  );
+}
+
+function viewBox(element) {
+  return element.attributes
+    .viewBox
+    .split(" ")
+    .map(Number);
+}
+
+function flightAtAltitude(
+  altitude,
+  overrides = {}
+) {
+  return {
+    origin: "DFW",
+    destination: "BIL",
+    latitude: 39.8,
+    longitude: -103.4,
+    heading: 325,
+    progress: 52,
+    altitude,
+    ...overrides
+  };
+}
+
+function testDetailedMapAsset() {
+  const assetPath = path.join(
+    __dirname,
+    "..",
+    "assets",
+    "maps",
+    "contiguous-us-vintage.svg"
+  );
+
+  const asset =
+    fs.readFileSync(
+      assetPath,
+      "utf8"
+    );
+
+  const jurisdictionCount =
+    asset.match(
+      /data-fips=/g
+    )?.length ?? 0;
+
+  assert.equal(
+    jurisdictionCount,
+    49,
+    "The vector map should include the 48 contiguous states and D.C."
+  );
+
+  assert.match(
+    asset,
+    /nation-outline/
+  );
+}
+
+function testRouteAutoFitAndPlacards() {
+  const { elements } =
+    createHarness({
+      origin: "ORD",
+      destination: "GSO",
+      destinationCity:
+        "GREENSBORO",
+      latitude: 39.2,
+      longitude: -83.8,
+      heading: 165,
+      progress: 60
+    });
+
+  const camera =
+    viewBox(
+      elements["route-map-svg"]
+    );
+
+  assert.ok(
+    camera[2] < 800,
+    "A regional route should zoom beyond the national view."
+  );
+
+  assert.ok(
+    elements["map-route-line"]
+      .attributes.d
+  );
+
+  assert.equal(
+    elements["map-aircraft-marker"]
+      .attributes.visibility,
+    "visible"
+  );
+
+  assert.equal(
+    elements["map-destination"]
+      .textContent,
+    "GSO"
+  );
+
+  const originLeader =
+    elements["map-origin-marker"]
+      .parts[".airport-leader"]
+      .attributes;
+
+  const destinationLeader =
+    elements["map-destination-marker"]
+      .parts[".airport-leader"]
+      .attributes;
+
+  assert.notEqual(
+    Number(originLeader.y2),
+    0,
+    "The origin placard should sit clear of the route tangent."
+  );
+
+  assert.notEqual(
+    Number(destinationLeader.y2),
+    0,
+    "The destination placard should sit clear of the route tangent."
+  );
+
+  assert.ok(
+    Math.hypot(
+      Number(originLeader.x1),
+      Number(originLeader.y1)
+    ) >= 15,
+    "The placard leader should begin outside the airport icon."
+  );
+}
+
+function testAirportEndpointIcons() {
+  const airportSymbols =
+    DASHBOARD_SOURCE.match(
+      /class="airport-symbol"/g
+    ) ?? [];
+
+  const runwaySymbols =
+    DASHBOARD_SOURCE.match(
+      /class="airport-symbol-runway"/g
+    ) ?? [];
+
+  assert.equal(
+    airportSymbols.length,
+    2,
+    "Both route endpoints should have an airport icon."
+  );
+
+  assert.equal(
+    runwaySymbols.length,
+    2,
+    "Each airport icon should include a primary runway symbol."
+  );
+}
+
+function testBillingsRouteIsKnown() {
+  const { elements } =
+    createHarness({
+      origin: "DFW",
+      destination: "BIL",
+      destinationCity:
+        "BILLINGS",
+      latitude: 41.2,
+      longitude: -103.5,
+      heading: 320,
+      progress: 55
+    });
+
+  assert.ok(
+    elements["map-route-line"]
+      .attributes.d
+  );
+  assert.equal(
+    elements["map-destination"]
+      .textContent,
+    "BIL"
+  );
+
+  assert.equal(
+    elements["map-origin-city"]
+      .attributes.textLength,
+    "114",
+    "Long airport names should fit within their placards."
+  );
+
+  assert.equal(
+    elements["map-origin-city"]
+      .attributes.lengthAdjust,
+    "spacingAndGlyphs"
+  );
+
+  assert.equal(
+    elements["map-destination-city"]
+      .attributes.textLength,
+    undefined,
+    "Short airport names should keep their natural letter spacing."
+  );
+}
+
+function testCatalogSuppliesUnlistedRoute() {
+  const { elements } =
+    createHarness({
+      origin: "SEA",
+      destination: "MCI",
+      destinationCity:
+        "Kansas City",
+      progress: 40
+    });
+
+  assert.ok(
+    elements["map-route-line"]
+      .attributes.d,
+    "Any cataloged contiguous-U.S. route should render without a hand-maintained coordinate entry."
+  );
+  assert.equal(
+    elements["map-origin-city"]
+      .textContent,
+    "SEATTLE"
+  );
+  assert.equal(
+    elements["map-destination-city"]
+      .textContent,
+    "KANSAS CITY"
+  );
+}
+
+function testFiledRouteFixesShapeTheTrack() {
+  const directHarness =
+    createHarness({
+      origin: "ORD",
+      destination: "AVL",
+      progress: 48
+    });
+
+  const directPath =
+    directHarness.elements[
+      "map-route-line"
+    ].attributes.d;
+
+  assert.equal(
+    directHarness.elements[
+      "map-route-status"
+    ].textContent,
+    "FILED ROUTE PENDING"
+  );
+
+  const filedHarness =
+    createHarness({
+      origin: "ORD",
+      destination: "AVL",
+      progress: 48,
+      filedRoute: {
+        routeText:
+          "ORD5 EARND HMV AVL",
+        routeDistance: 536,
+        fixes: [
+          {
+            name: "EARND",
+            latitude: 40.72,
+            longitude: -85.2
+          },
+          {
+            name: "HMV",
+            latitude: 36.44,
+            longitude: -82.13
+          }
+        ]
+      }
+    });
+
+  const filedPath =
+    filedHarness.elements[
+      "map-route-line"
+    ].attributes.d;
+
+  assert.equal(
+    filedHarness.elements[
+      "map-route-status"
+    ].textContent,
+    "FILED ROUTE • LIVE TRACK"
+  );
+
+  assert.notEqual(
+    filedPath,
+    directPath,
+    "Decoded filed-route fixes should replace the decorative direct arc."
+  );
+  assert.ok(
+    (
+      filedPath.match(/\bC\b/g) ?? []
+    ).length >= 3,
+    "The filed route should be drawn as a smooth multi-fix path."
+  );
+
+  const fallbackPath =
+    createHarness({
+      origin: "ORD",
+      destination: "AVL",
+      progress: 48,
+      filedRoute: {
+        fixes: [
+          {
+            name: "UNKNOWN",
+            latitude: null,
+            longitude: null
+          }
+        ]
+      }
+    }).elements["map-route-line"]
+      .attributes.d;
+
+  assert.match(
+    fallbackPath,
+    /\bQ\b/,
+    "An undecodable route should retain the existing direct-curve fallback."
+  );
+}
+
+function testUnknownAirportLiveFallback() {
+  const { elements } =
+    createHarness({
+      origin: "ORD",
+      destination: "XYZ",
+      destinationCity: "UNKNOWN",
+      latitude: 39,
+      longitude: -82,
+      heading: 90
+    });
+
+  assert.equal(
+    elements["map-aircraft-marker"]
+      .attributes.visibility,
+    "visible"
+  );
+
+  assert.equal(
+    elements["map-route-line"]
+      .attributes.d,
+    ""
+  );
+
+  assert.equal(
+    elements["map-destination"]
+      .textContent,
+    "XYZ"
+  );
+}
+
+function testObservedTrackReplacesEstimatedProgress() {
+  const { elements } = createHarness({
+    origin: "DFW",
+    destination: "BIL",
+    latitude: 39.8,
+    longitude: -103.4,
+    heading: 324,
+    progress: 52,
+    actualTrack: [
+      {
+        latitude: 33.1,
+        longitude: -97.0
+      },
+      {
+        latitude: 36.2,
+        longitude: -100.5
+      },
+      {
+        latitude: 39.8,
+        longitude: -103.4
+      }
+    ]
+  });
+
+  assert.match(
+    elements["map-route-line"]
+      .attributes.d,
+    /\bQ\b/,
+    "The planned route should remain the direct vintage arc."
+  );
+
+  assert.match(
+    elements["map-route-progress"]
+      .attributes.d,
+    /\bC\b/,
+    "Observed FR24 positions should draw the actual breadcrumb track."
+  );
+
+  assert.equal(
+    elements["map-route-progress"]
+      .style.strokeDasharray,
+    "none"
+  );
+
+  assert.notEqual(
+    elements["map-route-line"]
+      .style.strokeDasharray,
+    "none",
+    "The planned route should remain dashed."
+  );
+
+  assert.equal(
+    elements["map-route-shadow"]
+      .style.strokeDasharray,
+    elements["map-route-line"]
+      .style.strokeDasharray,
+    "The planned-route shadow must use the same dash pattern instead of visually filling the gaps."
+  );
+
+  const [dashLength, dashGap] =
+    elements["map-route-line"]
+      .style.strokeDasharray
+      .split(/\s+/)
+      .map(Number);
+
+  assert.ok(
+    dashGap >= dashLength * 2,
+    "The planned route needs clearly separated short dashes rather than an almost-solid line."
+  );
+}
+
+function testVisualStateDrivesAircraftMotion() {
+  const initialFlight = {
+    origin: "ORD",
+    destination: "GSO",
+    latitude: 40,
+    longitude: -84,
+    heading: 145,
+    progress: 55
+  };
+
+  const {
+    elements,
+    listeners
+  } = createHarness(initialFlight);
+
+  const originalTransform =
+    elements["map-aircraft-marker"]
+      .attributes.transform;
+
+  assert.equal(
+    typeof listeners[
+      "dad-radar:visual-state-change"
+    ],
+    "function"
+  );
+
+  listeners[
+    "dad-radar:visual-state-change"
+  ]({
+    detail: {
+      state: {
+        flight: {
+          ...initialFlight,
+          latitude: 38,
+          longitude: -82.5,
+          heading: 160,
+          progress: 70
+        }
+      }
+    }
+  });
+
+  assert.notEqual(
+    elements["map-aircraft-marker"]
+      .attributes.transform,
+    originalTransform
+  );
+}
+
+),
+    "The active actual track must keep its final telemetry point through slow approach/taxi samples."
+  );
+}
+
 function testActualTrackSurvivesTransientHistoryGap() {
   const flight = {
     flightNumber: "3941",
@@ -947,6 +1677,7 @@ function runTests() {
   testUnknownAirportLiveFallback();
   testObservedTrackReplacesEstimatedProgress();
   testVisualStateDrivesAircraftMotion();
+  testActualTrackPreservesSlowFinalTelemetry();
   testActualTrackSurvivesTransientHistoryGap();
   testSurfaceZoomIsContinuous();
   testSurfaceZoomAtBothRouteEnds();
