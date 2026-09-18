@@ -180,6 +180,54 @@ function renderReferenceCities() {
   }).join("");
 }
 
+function referenceCityPresentationScale() {
+  if (
+    !MOBILE_CAMERA_STABILIZATION
+  ) {
+    return 1;
+  }
+
+  const rectangle =
+    elements.svg
+      ?.getBoundingClientRect
+      ?.();
+
+  const renderedWidth =
+    Number(rectangle?.width);
+
+  if (
+    !Number.isFinite(
+      renderedWidth
+    ) ||
+    renderedWidth <= 0
+  ) {
+    return 1;
+  }
+
+  const compactMobile =
+    CURRENT_MAP_PATH === "/mobile";
+
+  const targetPixels =
+    compactMobile
+      ? 8.5
+      : 10;
+
+  const nominalFontSize = 11;
+
+  return clamp(
+    (
+      targetPixels /
+      nominalFontSize
+    ) *
+      (
+        BASE_VIEW_BOX.width /
+        renderedWidth
+      ),
+    1,
+    4.25
+  );
+}
+
 function scaleReferenceCities(camera) {
   if (
     !elements.cityLayer ||
@@ -189,7 +237,15 @@ function scaleReferenceCities(camera) {
     return;
   }
 
-  const inverseZoom = 1 / camera.zoom;
+  const inverseZoom =
+    1 / camera.zoom;
+
+  const presentationScale =
+    referenceCityPresentationScale();
+
+  const cityScale =
+    inverseZoom *
+    presentationScale;
 
   elements.cityLayer
     .querySelectorAll(
@@ -206,7 +262,7 @@ function scaleReferenceCities(camera) {
       city.setAttribute(
         "transform",
         `translate(${x} ${y}) ` +
-        `scale(${inverseZoom.toFixed(4)})`
+        `scale(${cityScale.toFixed(4)})`
       );
     });
 }

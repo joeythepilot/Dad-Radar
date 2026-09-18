@@ -219,6 +219,57 @@ function testReferenceCitiesStayReadableWhileZoomed() {
     /scaleReferenceCities\(camera\)/,
     "Reference-city labels should counter-scale as the map zooms."
   );
+
+  const fullMobile =
+    createHarness(
+      flightAtAltitude(12000),
+      null,
+      null,
+      "/mobile/full"
+    );
+
+  fullMobile.elements[
+    "route-map-svg"
+  ].rectangle.width = 600;
+
+  const fullBoost =
+    fullMobile.context
+      .referenceCityPresentationScale();
+
+  assert(
+    fullBoost > 1.5,
+    "Full mobile should compensate for the cabinet being scaled down inside a phone viewport."
+  );
+
+  const renderedFontPixels =
+    11 *
+    fullBoost *
+    600 /
+    1200;
+
+  assert(
+    renderedFontPixels >= 9.5,
+    "Full-mobile city labels should remain visibly readable instead of collapsing to tiny map print."
+  );
+
+  const desktop =
+    createHarness(
+      flightAtAltitude(12000),
+      null,
+      null,
+      "/"
+    );
+
+  desktop.elements[
+    "route-map-svg"
+  ].rectangle.width = 600;
+
+  assert.equal(
+    desktop.context
+      .referenceCityPresentationScale(),
+    1,
+    "Desktop keeps the existing city-label presentation scale."
+  );
 }
 
 function testAshevilleIsPermanentHomeReference() {
