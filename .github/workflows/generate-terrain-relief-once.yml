@@ -28,6 +28,7 @@ jobs:
           from pathlib import Path
           from urllib.request import urlretrieve
           from PIL import Image
+          Image.MAX_IMAGE_PIXELS = None
 
           source = Path("/tmp/GRAY_HR_SR.tif")
           url = "https://raw.githubusercontent.com/nvkelso/natural-earth-raster/master/10m_rasters/GRAY_HR_SR/GRAY_HR_SR.tif"
