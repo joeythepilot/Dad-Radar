@@ -292,14 +292,22 @@
             (revisedOut - plannedOut) / 60000 > 5 ||
             /DELAY/.test(String(op?.status ?? "").toUpperCase())
           );
+        const estimatedDelayMinutes =
+          revisedOut && plannedOut
+            ? Math.max(0, Math.round((revisedOut - plannedOut) / 60000))
+            : null;
+        const displayDelayMinutes =
+          delay !== null ? delay : estimatedDelayMinutes;
         return {
           ...entry,
           time: formatTime(bestDeparture(event), timeZone),
           ...(hasProjectedDelay ? {
             operationalStamp: {
               kind: "delay",
-              label: `EST ${formatTime(revisedOut, timeZone)}`,
-              detail: delay !== null ? `+${delay} MIN` : "DELAYED"
+              label: "DELAYED",
+              detail: displayDelayMinutes === 1
+                ? "1 MINUTE"
+                : `${displayDelayMinutes} MINUTES`
             }
           } : {})
         };
