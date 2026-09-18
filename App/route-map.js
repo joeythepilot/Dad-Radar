@@ -389,19 +389,38 @@ function buildActualTrack(flight) {
 }
 
 function deduplicateRoutePoints(points) {
-  return points.filter(
-    (point, index, allPoints) =>
-      point &&
-      (
-        index === 0 ||
-        Math.hypot(
-          point.x -
-            allPoints[index - 1].x,
-          point.y -
-            allPoints[index - 1].y
-        ) >= 1
-      )
-  );
+  const usable = points.filter(Boolean);
+  const kept = [];
+
+  for (const point of usable) {
+    const previous = kept[kept.length - 1];
+
+    if (
+      !previous ||
+      Math.hypot(
+        point.x - previous.x,
+        point.y - previous.y
+      ) >= 1
+    ) {
+      kept.push(point);
+    }
+  }
+
+  const finalPoint = usable[usable.length - 1];
+  const lastKept = kept[kept.length - 1];
+
+  if (
+    finalPoint &&
+    (
+      !lastKept ||
+      finalPoint.x !== lastKept.x ||
+      finalPoint.y !== lastKept.y
+    )
+  ) {
+    kept.push(finalPoint);
+  }
+
+  return kept;
 }
 
 function smoothRoutePath(points) {
