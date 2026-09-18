@@ -903,9 +903,19 @@ function testPersistentSequenceTracksStayInsideRegionalCamera() {
   const {elements, context} = createHarness(flight, state);
   const camera = viewBox(elements["route-map-svg"]);
   const columbus = context.project(-82.8919, 39.998);
+  const chicago = context.project(-87.9073, 41.9742);
+  const cameraCenter = {
+    x: camera[0] + camera[2] / 2,
+    y: camera[1] + camera[3] / 2
+  };
   assert(
     columbus.x >= camera[0] && columbus.x <= camera[0] + camera[2],
     "The regional camera must keep previous persistent sequence tracks in frame instead of clipping Columbus offscreen when the current leg is ORD-CMI."
+  );
+  assert(
+    Math.abs(cameraCenter.x - chicago.x) < 1 &&
+    Math.abs(cameraCenter.y - chicago.y) < 1,
+    "Persistent history may widen the camera, but a delayed ORD-CMI leg must stay centered on ORD/Chicago rather than on the old tracks."
   );
 }
 
