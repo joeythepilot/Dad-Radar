@@ -13,8 +13,6 @@ const outputPath = path.join(
   "maps",
   "north-america-caribbean-vintage.svg"
 );
-const reliefAssetHref =
-  "/assets/maps/north-america-caribbean-relief-hires.jpg?v=terrain-hires-3";
 
 const bounds = {
   west: -135,
@@ -129,9 +127,6 @@ const svg = `<?xml version="1.0" encoding="UTF-8"?>
   <g class="countries" fill-rule="evenodd">
     ${landPaths}
   </g>
-  <g class="terrain-relief" clip-path="url(#land-clip)">
-    <image href="${reliefAssetHref}" x="315" y="45" width="570" height="560" preserveAspectRatio="none"/>
-  </g>
   <g class="state-boundaries" fill="none">
     ${statePaths}
   </g>
@@ -140,7 +135,6 @@ const svg = `<?xml version="1.0" encoding="UTF-8"?>
   </g>
   <style>
     .country{fill:url(#land-paper);stroke:#6a583d;stroke-width:1.25;vector-effect:non-scaling-stroke}
-    .terrain-relief{opacity:.42;mix-blend-mode:multiply}
     .great-lakes{fill:#71827b;stroke:#5f6254;stroke-width:.3}
     .state-boundary{stroke:#665438;stroke-width:.82;opacity:.82;vector-effect:non-scaling-stroke}
   </style>

@@ -15,7 +15,8 @@ assert.doesNotMatch(build, /targets:\s*\{[\s\S]*?ios\s*:/, "The retired tablet-s
 assert.match(bundle, /loadVisibleDestinationPoster/, "Destination poster recovery remains in the browser bundle.");
 assert.match(bundle, /showDestinationPosterBackground/, "Approved poster rendering remains in the browser bundle.");
 assert.match(bundle, /dadRadarWeeklyTicker/, "Weekly ticker remains in the browser bundle.");
-assert.match(html, /north-america-caribbean-vintage\.svg\?v=terrain-hires-3/, "The sharpened map artwork remains wired into the display.");
+assert.match(html, /north-america-caribbean-vintage\.svg\?v=terrain-direct-4/, "The sharpened map artwork remains wired into the display.");
+assert.match(html, /class="map-terrain-relief"[\s\S]*?north-america-caribbean-relief-hires\.jpg\?v=terrain-direct-4/, "Terrain loads directly in the live SVG rather than through a nested SVG image.");
 assert.match(html, /id="destination-poster"[\s\S]*?hidden[\s\S]*?id="destination-poster-fallback"[\s\S]*?aria-live=/, "Poster fallback remains present at boot.");
 
 console.log("Modern browser bundle integrity tests passed.");

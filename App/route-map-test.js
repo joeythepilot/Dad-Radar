@@ -427,16 +427,22 @@ function testHighResolutionTerrainLayer() {
     "The vector geography must not carry the old 570x560 embedded relief raster."
   );
 
-  assert.match(
+  assert.doesNotMatch(
     vectorAsset,
     /north-america-caribbean-relief-hires\.jpg/,
-    "The vector geography must use the high-resolution terrain source."
+    "The child SVG must not load terrain as a nested image."
   );
 
   assert.match(
     DASHBOARD_SOURCE,
-    /north-america-caribbean-vintage\.svg\?v=terrain-hires-3/,
-    "The main display must bust the cached low-resolution map asset."
+    /class="map-terrain-relief"[\s\S]*?north-america-caribbean-relief-hires\.jpg\?v=terrain-direct-4/,
+    "The main display must mount terrain directly in the live map SVG."
+  );
+
+  assert.match(
+    DASHBOARD_SOURCE,
+    /north-america-caribbean-vintage\.svg\?v=terrain-direct-4/,
+    "The main display must bust the cached nested-terrain map asset."
   );
 
   const mobileSource =
@@ -452,8 +458,14 @@ function testHighResolutionTerrainLayer() {
 
   assert.match(
     mobileSource,
-    /north-america-caribbean-vintage\.svg\?v=terrain-hires-3/,
-    "Compact mobile must bust the cached low-resolution map asset."
+    /class="map-terrain-relief"[\s\S]*?north-america-caribbean-relief-hires\.jpg\?v=terrain-direct-4/,
+    "Compact mobile must mount terrain directly in the live map SVG."
+  );
+
+  assert.match(
+    mobileSource,
+    /north-america-caribbean-vintage\.svg\?v=terrain-direct-4/,
+    "Compact mobile must bust the cached nested-terrain map asset."
   );
 }
 

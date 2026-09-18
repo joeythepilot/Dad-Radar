@@ -39,7 +39,7 @@ for (const country of [
 assert.match(mapSource, /id="land-paper"/);
 assert.match(mapSource, /id="land-clip"/);
 assert.doesNotMatch(mapSource, /data:image\/png;base64,/);
-assert.match(mapSource, /north-america-caribbean-relief-hires\.jpg\?v=terrain-hires-3/);
+assert.doesNotMatch(mapSource, /north-america-caribbean-relief-hires\.jpg/);
 assert.match(mapSource, /class="state-boundary"/);
 assert.match(
   mapSource,
@@ -56,7 +56,12 @@ assert(mapSource.indexOf('class="great-lakes"') > mapSource.indexOf('class="stat
 assert.doesNotMatch(mapSource, /stroke-dasharray/);
 assert.match(
   dashboardSource,
-  /north-america-caribbean-vintage\.svg\?v=terrain-hires-3/
+  /north-america-caribbean-vintage\.svg\?v=terrain-direct-4/
+);
+assert.match(
+  dashboardSource,
+  /class="map-terrain-relief"[\s\S]*?north-america-caribbean-relief-hires\.jpg\?v=terrain-direct-4/,
+  "Terrain must be a direct sibling layer in the live map SVG."
 );
 assert.doesNotMatch(dashboardSource, /map-us-detail/);
 
