@@ -2809,9 +2809,8 @@ h1 {
 
 .map-city-reference circle {
   fill: #4c3925;
-  stroke: #ead8a8;
-  stroke-width: 0.8;
-  vector-effect: non-scaling-stroke;
+  stroke: rgba(234, 216, 168, 0.82);
+  stroke-width: 0.65px;
 }
 
 .map-city-reference text {
@@ -2819,21 +2818,21 @@ h1 {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.7px;
-  paint-order: stroke;
-  stroke: #ead8a8;
-  stroke-width: 2.5px;
-  vector-effect: non-scaling-stroke;
+  letter-spacing: 0.45px;
+  paint-order: stroke fill;
+  stroke: rgba(234, 216, 168, 0.78);
+  stroke-width: 1.35px;
+  stroke-linejoin: round;
 }
 
 .map-city-reference-home circle {
   fill: #8d3429;
-  stroke-width: 1.2;
+  stroke-width: 0.85px;
 }
 
 .map-city-reference-home text {
   fill: #713027;
   font-size: 12px;
-  letter-spacing: 1px;
-  stroke-width: 3px;
+  letter-spacing: 0.65px;
+  stroke-width: 1.55px;
 }

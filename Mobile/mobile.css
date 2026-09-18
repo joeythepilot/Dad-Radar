@@ -29,8 +29,10 @@ main .map-card.vintage-map-panel .route-map-shell { position: absolute; inset: 0
 main .map-card .route-map-svg { display: block; width: 100%; height: 100%; }
 .map-caption { display: none; }
 .map-weather-image { opacity: .72; mix-blend-mode: multiply; }
-.map-city-reference circle { fill: #4c3925; stroke: #ead8a8; stroke-width: .8; vector-effect: non-scaling-stroke; }
-.map-city-reference text { fill: #4c3925; font: bold 11px Georgia; paint-order: stroke; stroke: #ead8a8; stroke-width: 2.5; vector-effect: non-scaling-stroke; }
+.map-city-reference circle { fill: #4c3925; stroke: rgba(234,216,168,.82); stroke-width: .65px; }
+.map-city-reference text { fill: #4c3925; font: bold 11px Georgia; letter-spacing: .45px; paint-order: stroke fill; stroke: rgba(234,216,168,.78); stroke-width: 1.35px; stroke-linejoin: round; }
+.map-city-reference-home circle { fill: #8d3429; stroke-width: .85px; }
+.map-city-reference-home text { fill: #713027; font-size: 12px; letter-spacing: .65px; stroke-width: 1.55px; }
 .flight-rail { position: absolute; inset: 0 auto 0 0; width: var(--board-width); display: flex; flex-direction: column; gap: 6px; }
 .flight-card, .duty-panel, .arrival, .freshness { color: var(--cream); background: #211b15ed; border: 1px solid #a58a5e; box-shadow: 0 2px 5px #0005; }
 .flight-card {
