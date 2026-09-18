@@ -25,6 +25,7 @@ require("./adsb-lol-service").getLiveFlightSnapshot = async () => {
 };
 require("./flightradar24-service").getLiveFlightSnapshot = async () => {throw new Error("Paid fallback should not be needed");};
 require("./flightaware-route-service").getFiledRoute = async () => null;
+require("./flightaware-operational-service").getOperationalStatus = async () => null;
 require("./weather-radar-service").getRadarImage = async () => {
   if (radarError) throw new Error("Fixture radar outage");
   return {buffer: Buffer.from("fixture"), contentType: "image/png", cached: false};
