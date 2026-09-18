@@ -49,6 +49,10 @@ assert(mobileLayoutCss.includes("--family-duty-context-safety-pad"), "Mobile Ful
 assert(mobileLayoutCss.includes("--family-duty-date-width"), "Mobile Full must widen the physical-card date field so THU SEP 17 fits without ellipsis.");
 assert(mobileLayoutCss.includes("--family-duty-time-column-width"), "Mobile Full must reserve enough width for 11:30 AM/PM without clipping the suffix.");
 assert(mobileLayoutCss.includes("text-overflow: clip !important"), "Mobile Full physical-card fields must not replace valid date/time text with ellipses.");
+assert(mobileLayoutCss.includes("--family-duty-stamp-font-size"), "Mobile Full must give the operational delay stamp its own compact type scale.");
+assert(mobileLayoutCss.includes("html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-operational-stamp"), "Mobile Full must calibrate the operational stamp separately from the desktop card.");
+assert(mobileLayoutCss.includes("max-height: 82% !important"), "Mobile Full delay stamp must stay vertically inside its ruled row.");
+assert(mobileLayoutCss.includes("rotate(-1.2deg)"), "Mobile Full delay stamp rotation must be shallow enough to avoid clipping.");
 
 function percentVariable(name) {
   const match = mobileLayoutCss.match(new RegExp(`${name}:\\s*([0-9.]+)%`));
