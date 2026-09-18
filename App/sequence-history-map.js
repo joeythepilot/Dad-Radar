@@ -34,6 +34,21 @@
     };
   }
 
+  function airportPoint(code) {
+    const airport =
+      global.dadRadarAirports
+        ?.lookupAirport?.(code);
+
+    if (!airport) {
+      return null;
+    }
+
+    return routePoint({
+      latitude: airport.latitude,
+      longitude: airport.longitude
+    });
+  }
+
   function routePoint(raw) {
     const latitude = Number(raw?.latitude ?? raw?.lat);
     const longitude = Number(raw?.longitude ?? raw?.lon);
@@ -84,9 +99,20 @@
 
     for (const leg of legs) {
       if (isCurrentLeg(leg, state)) continue;
-      const points = deduplicate((Array.isArray(leg.track) ? leg.track : [])
-        .map(routePoint).filter(Boolean));
-      if (points.length < 2) continue;
+      const recordedPoints =
+        deduplicate(
+          (Array.isArray(leg.track) ? leg.track : [])
+            .map(routePoint)
+            .filter(Boolean)
+        );
+
+      if (recordedPoints.length < 2) continue;
+
+      const points = deduplicate([
+        airportPoint(leg.origin),
+        ...recordedPoints,
+        airportPoint(leg.destination)
+      ].filter(Boolean));
       const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
       path.setAttribute("d", smoothPath(points));
       path.setAttribute("class", "map-sequence-history-leg");
