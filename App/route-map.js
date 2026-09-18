@@ -209,8 +209,8 @@ function referenceCityPresentationScale() {
 
   const targetPixels =
     compactMobile
-      ? 8.5
-      : 10;
+      ? 5.75
+      : 6.5;
 
   const nominalFontSize = 11;
 
@@ -224,7 +224,7 @@ function referenceCityPresentationScale() {
         renderedWidth
       ),
     1,
-    4.25
+    2.25
   );
 }
 

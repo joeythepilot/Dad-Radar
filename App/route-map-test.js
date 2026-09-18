@@ -237,8 +237,9 @@ function testReferenceCitiesStayReadableWhileZoomed() {
       .referenceCityPresentationScale();
 
   assert(
-    fullBoost > 1.5,
-    "Full mobile should compensate for the cabinet being scaled down inside a phone viewport."
+    fullBoost > 1 &&
+    fullBoost < 1.5,
+    "Full mobile should compensate modestly for cabinet scaling without turning city names into billboards."
   );
 
   const renderedFontPixels =
@@ -248,8 +249,37 @@ function testReferenceCitiesStayReadableWhileZoomed() {
     1200;
 
   assert(
-    renderedFontPixels >= 9.5,
-    "Full-mobile city labels should remain visibly readable instead of collapsing to tiny map print."
+    renderedFontPixels >= 6 &&
+    renderedFontPixels <= 7,
+    "Full-mobile city labels should read as restrained map print rather than oversized interface text."
+  );
+
+  const compactMobile =
+    createHarness(
+      flightAtAltitude(12000),
+      null,
+      null,
+      "/mobile"
+    );
+
+  compactMobile.elements[
+    "route-map-svg"
+  ].rectangle.width = 600;
+
+  const compactBoost =
+    compactMobile.context
+      .referenceCityPresentationScale();
+
+  const compactFontPixels =
+    11 *
+    compactBoost *
+    600 /
+    1200;
+
+  assert(
+    compactFontPixels >= 5.5 &&
+    compactFontPixels <= 6.25,
+    "Compact-mobile city labels should remain legible while staying subordinate to flight information."
   );
 
   const desktop =
