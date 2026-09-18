@@ -786,6 +786,39 @@ function nearestRouteProgress(
   return clamp(bestProgress, 0, 1);
 }
 
+function sequenceHistoryCameraPoints(state) {
+  const history = state?.sequenceHistory;
+  const legs = Array.isArray(history?.legs) ? history.legs : [];
+  const currentEventKey = history?.currentEventKey ?? null;
+  const points = [];
+
+  for (const leg of legs) {
+    if (currentEventKey && leg?.eventKey === currentEventKey) {
+      continue;
+    }
+
+    for (const raw of Array.isArray(leg?.track) ? leg.track : []) {
+      const latitude = Number(raw?.latitude ?? raw?.lat);
+      const longitude = Number(raw?.longitude ?? raw?.lon);
+
+      if (
+        !Number.isFinite(latitude) ||
+        !Number.isFinite(longitude) ||
+        latitude < MAP_BOUNDS.south ||
+        latitude > MAP_BOUNDS.north ||
+        longitude < MAP_BOUNDS.west ||
+        longitude > MAP_BOUNDS.east
+      ) {
+        continue;
+      }
+
+      points.push(project(longitude, latitude));
+    }
+  }
+
+  return points;
+}
+
 function fitCameraToPoints(points) {
   const usablePoints =
     points.filter(
@@ -1628,6 +1661,7 @@ function renderRegionalRouteMap(state) {
     fitCameraToPoints([
       ...sampleCurve(curve),
       ...(actualTrack?.points ?? []),
+      ...sequenceHistoryCameraPoints(state),
       livePosition
     ]);
 
