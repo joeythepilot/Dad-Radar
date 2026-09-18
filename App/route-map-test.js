@@ -859,6 +859,56 @@ function testAirportCameraIntegration() {
   assert(low[2] < high[2], "The integrated low-airport camera uses height above DEN, not sea level.");
 }
 
+function testPersistentSequenceTracksStayInsideRegionalCamera() {
+  const flight = {
+    origin: "ORD",
+    destination: "CMI",
+    progress: 0,
+    altitude: null
+  };
+  const state = {
+    flight,
+    sequenceHistory: {
+      currentEventKey: "current-3375",
+      legs: [
+        {
+          eventKey: "ord-cmh",
+          origin: "ORD",
+          destination: "CMH",
+          track: [
+            {latitude: 41.9742, longitude: -87.9073},
+            {latitude: 40.7, longitude: -84.8},
+            {latitude: 39.998, longitude: -82.8919}
+          ]
+        },
+        {
+          eventKey: "cmh-ord",
+          origin: "CMH",
+          destination: "ORD",
+          track: [
+            {latitude: 39.998, longitude: -82.8919},
+            {latitude: 40.8, longitude: -85.2},
+            {latitude: 41.9742, longitude: -87.9073}
+          ]
+        },
+        {
+          eventKey: "current-3375",
+          origin: "ORD",
+          destination: "CMI",
+          track: []
+        }
+      ]
+    }
+  };
+  const {elements, context} = createHarness(flight, state);
+  const camera = viewBox(elements["route-map-svg"]);
+  const columbus = context.project(-82.8919, 39.998);
+  assert(
+    columbus.x >= camera[0] && columbus.x <= camera[0] + camera[2],
+    "The regional camera must keep previous persistent sequence tracks in frame instead of clipping Columbus offscreen when the current leg is ORD-CMI."
+  );
+}
+
 function testShortFlightFraming() {
   const flight = {origin: "ORD", destination: "MSN", latitude: 42.45, longitude: -88.6,
     altitude: 12225, heading: 320, progress: 45};
@@ -871,6 +921,7 @@ function testShortFlightFraming() {
 }
 
 function runTests() {
+  testPersistentSequenceTracksStayInsideRegionalCamera();
   testShortFlightFraming();
   testAirportCameraIntegration();
   testDetailedMapAsset();
