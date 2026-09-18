@@ -34,21 +34,6 @@
     };
   }
 
-  function airportPoint(code) {
-    const airport =
-      global.dadRadarAirports
-        ?.lookupAirport?.(code);
-
-    if (!airport) {
-      return null;
-    }
-
-    return routePoint({
-      latitude: airport.latitude,
-      longitude: airport.longitude
-    });
-  }
-
   function routePoint(raw) {
     const latitude = Number(raw?.latitude ?? raw?.lat);
     const longitude = Number(raw?.longitude ?? raw?.lon);
@@ -59,8 +44,37 @@
   }
 
   function deduplicate(points) {
-    return points.filter((point, index, all) => point &&
-      (index === 0 || Math.hypot(point.x - all[index - 1].x, point.y - all[index - 1].y) >= 1));
+    const usable = points.filter(Boolean);
+    const kept = [];
+
+    for (const point of usable) {
+      const previous = kept[kept.length - 1];
+      if (
+        !previous ||
+        Math.hypot(
+          point.x - previous.x,
+          point.y - previous.y
+        ) >= 1
+      ) {
+        kept.push(point);
+      }
+    }
+
+    const finalPoint = usable[usable.length - 1];
+    const lastKept = kept[kept.length - 1];
+
+    if (
+      finalPoint &&
+      (
+        !lastKept ||
+        finalPoint.x !== lastKept.x ||
+        finalPoint.y !== lastKept.y
+      )
+    ) {
+      kept.push(finalPoint);
+    }
+
+    return kept;
   }
 
   function smoothPath(points) {
@@ -99,20 +113,13 @@
 
     for (const leg of legs) {
       if (isCurrentLeg(leg, state)) continue;
-      const recordedPoints =
-        deduplicate(
-          (Array.isArray(leg.track) ? leg.track : [])
-            .map(routePoint)
-            .filter(Boolean)
-        );
+      const points = deduplicate(
+        (Array.isArray(leg.track) ? leg.track : [])
+          .map(routePoint)
+          .filter(Boolean)
+      );
 
-      if (recordedPoints.length < 2) continue;
-
-      const points = deduplicate([
-        airportPoint(leg.origin),
-        ...recordedPoints,
-        airportPoint(leg.destination)
-      ].filter(Boolean));
+      if (points.length < 2) continue;
       const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
       path.setAttribute("d", smoothPath(points));
       path.setAttribute("class", "map-sequence-history-leg");
