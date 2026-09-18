@@ -88,9 +88,17 @@ listeners["dad-radar:visual-state-change"]({
             origin: "ORD",
             destination: "CMH",
             track: [
-              {latitude: 41.55, longitude: -87.45},
+              {latitude: 41.97689, longitude: -87.89888},
               {latitude: 40.80, longitude: -85.20},
-              {latitude: 40.20, longitude: -83.55}
+              {latitude: 40.20, longitude: -83.55},
+              // Slow final approach/taxi samples. Each individual move projects
+              // under the simplifier threshold, but the cumulative tail is real.
+              {latitude: 40.0500, longitude: -83.0500},
+              {latitude: 40.0400, longitude: -83.0200},
+              {latitude: 40.0300, longitude: -82.9900},
+              {latitude: 40.0200, longitude: -82.9600},
+              {latitude: 40.0100, longitude: -82.9300},
+              {latitude: 40.001358, longitude: -82.875122}
             ]
           },
           {
@@ -110,26 +118,26 @@ const layer = fakeDocument.getElementById("map-sequence-history-layer");
 assert(layer, "Sequence history creates its SVG layer.");
 assert.equal(layer.children.length, 1, "Only prior legs are rendered as persistent history.");
 
-function project(code) {
-  const airport = airportCatalog.lookupAirport(code);
-  const x = 315 + (airport.longitude + 135) / 80 * 570;
-  const y = 45 + (62 - airport.latitude) / 57 * 560;
-  return {x, y};
+function projectPoint(latitude, longitude) {
+  return {
+    x: 315 + (longitude + 135) / 80 * 570,
+    y: 45 + (62 - latitude) / 57 * 560
+  };
 }
 
-const origin = project("ORD");
-const destination = project("CMH");
+const recordedStart = projectPoint(41.97689, -87.89888);
+const recordedEnd = projectPoint(40.001358, -82.875122);
 const pathData = layer.children[0].attributes.d;
 
 assert.match(
   pathData,
-  new RegExp(`^M ${origin.x.toFixed(1)} ${origin.y.toFixed(1)}\\b`),
-  "Persistent history starts at the actual origin airport even if ADS-B began later."
+  new RegExp(`^M ${recordedStart.x.toFixed(1)} ${recordedStart.y.toFixed(1)}\\b`),
+  "Persistent history begins at the first recorded telemetry point."
 );
 assert.match(
   pathData,
-  new RegExp(`${destination.x.toFixed(1)} ${destination.y.toFixed(1)}$`),
-  "Persistent history reaches the destination airport even if ADS-B ended before the gate."
+  new RegExp(`${recordedEnd.x.toFixed(1)} ${recordedEnd.y.toFixed(1)}$`),
+  "Persistent history must preserve the final recorded telemetry point even through a long sequence of sub-threshold slow moves."
 );
 
 console.log("Sequence history map endpoint tests passed.");
