@@ -178,13 +178,16 @@ async function checkWeeklyTicker(page, compact, label, output, expectedModules) 
   await page.evaluate(next=>{
     document.getElementById("weekly-overnight-bank").dadRadarWeeklyOvernight.setModules(next,{animate:true,rollover:false});
   },changed);
-  await page.waitForTimeout(220);
+  await page.waitForFunction(() => document.getElementById("weekly-overnight-bank")?.dataset.animating === "true",
+    null,{timeout:1200,polling:20});
+  await page.waitForTimeout(120);
   const during = await bank.screenshot();
   assert(!first.equals(during),"Overnight wheels visibly rotate when a schedule value changes");
 
-  await page.waitForTimeout(1200);
+  await page.waitForFunction(() => document.getElementById("weekly-overnight-bank")?.dataset.animating === "false",
+    null,{timeout:2600,polling:20});
   const after = await bank.screenshot();
-  assert(!during.equals(after),"Mechanical wheel animation settles into its final state");
+  assert(!first.equals(after),"Mechanical wheel animation settles into a changed final state");
   assert.equal(await page.locator(".weekly-overnight-bay").first().getAttribute("aria-label"),
     changed[0].day+" overnight DFW","Changed bay updates its accessible overnight value");
 
