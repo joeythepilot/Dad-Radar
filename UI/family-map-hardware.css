@@ -5,9 +5,8 @@ html[data-family-full] body {
   text-size-adjust: 100%;
 }
 html[data-family-full] .vintage-map-panel .route-map-shell .sequence-mileage-badge {
-  transform: scale(var(--family-hardware-scale, 1));
+  transform: scale(var(--family-hardware-scale, 1)) translate(-3.33%, 5.73%);
   transform-origin: left bottom;
-  bottom: var(--family-sequence-bottom, 14px) !important;
 }
 html[data-family-full] .vintage-map-panel .route-map-shell .sequence-mileage-value {
   font-size: var(--map-clock-font, 20px) !important;

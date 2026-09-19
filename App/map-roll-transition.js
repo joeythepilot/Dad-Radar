@@ -19,7 +19,7 @@
   if (familyFull && !root.document.querySelector("link[data-dad-radar-family-hardware]")) {
     const link = root.document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "/UI/family-map-hardware.css?v=bottom-left-tracker-1";
+    link.href = "/UI/family-map-hardware.css?v=corner-tracker-1";
     link.dataset.dadRadarFamilyHardware = "true";
     root.document.head.appendChild(link);
   }

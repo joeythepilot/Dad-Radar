@@ -10,14 +10,14 @@
   vector-effect: non-scaling-stroke;
 }
 
-/* Approved housing anchors to the lower-left map bezel. */
+/* Seat the visible metal against the bezel; compensate for the PNG viewport gutters. */
 .vintage-map-panel .route-map-shell .sequence-mileage-badge {
-  position: absolute; z-index: 56; left: var(--map-hardware-inset, 18px); bottom: 14px !important;
+  position: absolute; z-index: 56; left: 0; bottom: 0 !important;
   width: var(--map-sequence-width, 196px) !important; max-width: none !important;
   aspect-ratio: 631 / 262; padding: 0 !important;
   border: 0; background: none; box-shadow: none;
   font-family: "Courier New", monospace;
-  pointer-events: none; transform: none; isolation: isolate;
+  pointer-events: none; transform: translate(-3.33%, 5.73%); isolation: isolate;
 }
 .sequence-housing-art { display: block; width: 100%; height: auto; pointer-events: none; }
 .sequence-mileage-badge::before, .sequence-mileage-badge::after { content: none; }

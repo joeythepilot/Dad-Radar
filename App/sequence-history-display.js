@@ -12,7 +12,7 @@
     if (document.querySelector("link[data-dad-radar-sequence-history]")) return;
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "./UI/sequence-history.css?v=bottom-left-tracker-1";
+    link.href = "./UI/sequence-history.css?v=corner-tracker-1";
     link.dataset.dadRadarSequenceHistory = "true";
     document.head.appendChild(link);
   }
