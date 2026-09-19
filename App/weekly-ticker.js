@@ -398,7 +398,7 @@
       if(!root.document.querySelector("link[data-dad-radar-weekly-ticker]")){
         const link=root.document.createElement("link");
         link.rel="stylesheet";
-        link.href="/UI/weekly-ticker-layout.css?v=10-warm-light";
+        link.href="/UI/weekly-ticker-layout.css?v=11-warm-light";
         link.dataset.dadRadarWeeklyTicker="true";
         root.document.head.appendChild(link);
       }

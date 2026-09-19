@@ -27,7 +27,7 @@
   height: 100%;
   object-fit: fill;
   /* Lower the paper exposure for the bright kiosk monitor; preserve its grain. */
-  filter: brightness(0.78) saturate(0.92);
+  filter: brightness(0.76) sepia(0.16) saturate(1.05);
   pointer-events: none;
   user-select: none;
 }
