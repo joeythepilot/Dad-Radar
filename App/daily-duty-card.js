@@ -2,7 +2,7 @@
   "use strict";
 
   const CARD_ASSET = "/assets/ui/today-duty-card-v2.png";
-  const CARD_CSS = "/UI/daily-duty-card.css?v=1";
+  const CARD_CSS = "/UI/daily-duty-card.css?v=2";
   const STATUS_FIT_STEP_PX = 0.25;
   const STATUS_MIN_FONT_PX = 4;
 

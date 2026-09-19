@@ -1,7 +1,7 @@
 /*
   Today’s Duty physical dispatch card.
   Material, aging, printed rules, and labels are all raster artwork.
-  This file positions live data only.
+  Live data stays separate; exposure correction affects only the paper artwork.
 */
 .daily-schedule-panel.is-physical-duty-card {
   position: relative;
@@ -26,6 +26,8 @@
   width: 100%;
   height: 100%;
   object-fit: fill;
+  /* Lower the paper exposure for the bright kiosk monitor; preserve its grain. */
+  filter: brightness(0.78) saturate(0.92);
   pointer-events: none;
   user-select: none;
 }
