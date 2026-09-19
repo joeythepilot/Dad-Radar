@@ -27,12 +27,11 @@ const schedule = {events:[
   {id:"xna-night",kind:"layover",status:"confirmed",airport:"XNA",times:{startUtc:at(73),endUtc:at(92)}},
   {id:"home-flight",kind:"flight",status:"confirmed",origin:"XNA",destination:"AVL",isCommute:true,times:{startUtc:at(94),endUtc:at(97)}}
 ]};
-const expected = weeklyTicker.buildWeeklyTripTicker(schedule, {
+const expectedModules = weeklyTicker.buildWeeklyOvernightModules(schedule, {
   now: referenceNow,
   homeAirport: "AVL",
-  timeZone: "America/New_York",
-  airports
-}).text;
+  timeZone: "America/New_York"
+});
 
 const state = {
   status:"EN ROUTE", message:"DADDY IS FLYING TO COLUMBUS, OHIO", locationAirport:"CMH", flight:null,
@@ -106,11 +105,11 @@ const server = http.createServer((request,response) => {
           // startup delay itself.
           if (!compact) await page.waitForSelector("#dashboard:not([hidden])",{timeout:12000});
           const label = `${engine}-ticker-${name}`;
-          const evidence = await checkWeeklyTicker(page,compact,label,output,expected);
+          const evidence = await checkWeeklyTicker(page,compact,label,output,expectedModules);
           assert.deepEqual(errors,[],`${label}: browser errors`);
           results.push({label,passed:true,evidence});
           await page.close();
-          console.log(`${label}: weekly ticker and physical duty card passed`);
+          console.log(`${label}: weekly overnight bank and physical duty card passed`);
         }
       } finally {
         await browser.close();
