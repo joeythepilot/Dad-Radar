@@ -12,7 +12,7 @@
     if (document.querySelector("link[data-dad-radar-sequence-history]")) return;
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "./UI/sequence-history.css?v=sequence-v7";
+    link.href = "./UI/sequence-history.css?v=approved-artwork-1";
     link.dataset.dadRadarSequenceHistory = "true";
     document.head.appendChild(link);
   }
@@ -35,7 +35,21 @@
     detailElement = document.createElement("span");
     detailElement.className = "sequence-mileage-detail";
 
-    // Exactly the same cropped image used beneath the two clocks.
+    // Frame the housing alone: the supplied canvas also includes a small
+    // fragment of a different circular object below it. Keep PNG bytes intact.
+    const svgNamespace = "http://www.w3.org/2000/svg";
+    const art = document.createElementNS(svgNamespace, "svg");
+    art.setAttribute("class", "sequence-housing-art");
+    art.setAttribute("viewBox", "16 24 631 262");
+    art.setAttribute("preserveAspectRatio", "xMidYMid meet");
+    art.setAttribute("aria-hidden", "true");
+    const image = document.createElementNS(svgNamespace, "image");
+    image.setAttribute("href", "./assets/hardware/instrument-active-sequence.png");
+    image.setAttribute("width", "663");
+    image.setAttribute("height", "318");
+    art.appendChild(image);
+
+    // Keep the existing small brass support in its original map position.
     const rod = document.createElement("img");
     rod.className = "sequence-support-rod";
     rod.src = "/assets/hardware/brass-clock-rod.png?v=1";
@@ -43,7 +57,7 @@
     rod.setAttribute("aria-hidden", "true");
     rod.setAttribute("draggable", "false");
 
-    badge.append(rod, label, valueElement, detailElement);
+    badge.append(rod, art, label, valueElement, detailElement);
     shell.appendChild(badge);
     return badge;
   }

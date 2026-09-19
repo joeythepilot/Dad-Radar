@@ -10,85 +10,33 @@
   vector-effect: non-scaling-stroke;
 }
 
-/* Stationary sequence readout with the same small image-based rod as the clocks. */
-.sequence-mileage-badge {
-  position: absolute;
-  z-index: 56;
-  left: 50%;
-  bottom: 14px;
-  width: 196px;
-  max-width: 34%;
-  box-sizing: border-box;
-  overflow: visible;
-  padding: 7px 11px 8px;
-  border: 1px solid #72552d;
-  border-radius: 4px;
-  background: linear-gradient(180deg, rgba(38,35,29,.99), rgba(17,17,15,.995));
-  color: #d2ae6a;
-  box-shadow:
-    0 -9px 17px rgba(18,11,7,.48),
-    0 -3px 6px rgba(18,11,7,.34),
-    inset 0 1px 0 rgba(255,222,154,.07),
-    inset 0 0 14px rgba(0,0,0,.62);
-  font-family: "Courier New", monospace;
-  pointer-events: none;
-  transform: translateX(-50%);
-  isolation: isolate;
-}
-
-/* Keep the rejected oversized bracket disabled. Mount with the raster rod only. */
-.sequence-mileage-badge::before,
-.sequence-mileage-badge::after { content: none; }
-
-.sequence-mileage-badge.is-empty { opacity: .9; }
-.sequence-mileage-label,
-.sequence-mileage-detail,
-.sequence-mileage-value {
-  display: block;
-  text-align: center;
-  max-width: 100%;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: clip;
-}
-.sequence-mileage-label,
-.sequence-mileage-detail {
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 1px;
-}
-.sequence-mileage-label { color: #8f7447; }
-.sequence-mileage-value {
-  margin-top: 2px;
-  font-size: 20px;
-  line-height: 1.05;
-  letter-spacing: .4px;
-  color: #d6b474;
-  text-shadow: 0 0 3px rgba(213,164,84,.10);
-}
-.sequence-mileage-detail { margin-top: 3px; color: #78623d; }
-
-@media (max-width: 900px) {
-  .sequence-mileage-badge {
-    bottom: 10px;
-    width: 166px;
-    max-width: 36%;
-    padding: 6px 8px 7px;
-  }
-  .sequence-mileage-value { font-size: 16px; }
-  .sequence-mileage-label,
-  .sequence-mileage-detail { font-size: 8px; letter-spacing: .65px; }
-}
-
-/* Aperture-based sizing also wins over the full-family viewport overrides. */
+/* Approved housing remains at the existing counter mount. */
 .vintage-map-panel .route-map-shell .sequence-mileage-badge {
-  width: var(--map-sequence-width,196px) !important; max-width: none !important;
-  bottom: 14px !important; padding: 7px 11px 8px !important;
+  position: absolute; z-index: 56; left: 50%; bottom: 14px !important;
+  width: var(--map-sequence-width, 196px) !important; max-width: none !important;
+  aspect-ratio: 631 / 262; padding: 0 !important;
+  border: 0; background: none; box-shadow: none;
+  font-family: "Courier New", monospace;
+  pointer-events: none; transform: translateX(-50%); isolation: isolate;
 }
-.vintage-map-panel .route-map-shell .sequence-mileage-value { font-size:20px !important; }
-.vintage-map-panel .route-map-shell .sequence-mileage-label,
-.vintage-map-panel .route-map-shell .sequence-mileage-detail { font-size:9px !important; letter-spacing:.4px; color:#a68d60; }
-.vintage-map-panel .route-map-shell .sequence-mileage-detail { white-space:normal; overflow-wrap:break-word; }
+.sequence-housing-art { display: block; width: 100%; height: auto; pointer-events: none; }
+.sequence-mileage-badge::before, .sequence-mileage-badge::after { content: none; }
+.sequence-mileage-label, .sequence-mileage-value, .sequence-mileage-detail {
+  position: absolute; left: 12%; width: 76%; margin: 0;
+  display: flex; align-items: center; justify-content: center;
+  text-align: center; font-weight: 700;
+  white-space: nowrap;
+}
+.vintage-map-panel .route-map-shell .sequence-mileage-label {
+  top: 6%; height: 19%; font-size: 9px !important; letter-spacing: .4px; color: #ccb783;
+}
+.vintage-map-panel .route-map-shell .sequence-mileage-value {
+  top: 33%; height: 30%; font-size: 20px !important; letter-spacing: .4px; color: #dbc28d;
+}
+.vintage-map-panel .route-map-shell .sequence-mileage-detail {
+  top: 78%; height: 15%; font-size: 8px !important; letter-spacing: 0; color: #ccb783;
+  line-height: 1.05; overflow-wrap: break-word;
+}
 
 /* Reuse the clock rod artwork at the same four-pixel width. The 18px image
    bridges the unchanged 14px gap, with its ends tucked behind housing and bezel. */

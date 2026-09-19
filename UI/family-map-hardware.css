@@ -4,14 +4,6 @@ html[data-family-full] body {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
-html[data-family-full] .vintage-map-panel .route-map-shell .clock-block {
-  transform: scale(var(--family-hardware-scale, 1));
-  transform-origin: left bottom;
-}
-html[data-family-full] .vintage-map-panel .route-map-shell .eta-block {
-  transform: scale(var(--family-hardware-scale, 1));
-  transform-origin: right bottom;
-}
 html[data-family-full] .vintage-map-panel .route-map-shell .sequence-mileage-badge {
   transform: translateX(-50%) scale(var(--family-hardware-scale, 1));
   transform-origin: center bottom;
@@ -23,8 +15,4 @@ html[data-family-full] .vintage-map-panel .route-map-shell .sequence-mileage-val
 html[data-family-full] .vintage-map-panel .route-map-shell .sequence-mileage-label,
 html[data-family-full] .vintage-map-panel .route-map-shell .sequence-mileage-detail {
   font-size: var(--map-clock-label, 9px) !important;
-}
-/* Scale the rods with their housings, not twice with the measured gap. */
-html[data-family-full] .vintage-map-panel .route-map-shell .clock-support-rod {
-  height: 22px;
 }

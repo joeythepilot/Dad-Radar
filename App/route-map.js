@@ -1456,13 +1456,20 @@ function positionAirportMarker(
       placement.y
     ) || 1;
 
+  const fitting = marker.querySelector(".airport-leader-fitting");
   if (leader) {
     const leaderStart = 16;
-
+    // The approved plaques are shallower than the previous 132 × 72 housing.
+    // Meet their visible edge along the existing leader, keeping route/camera
+    // placement unchanged. Legacy/compact markers retain their old endpoint.
+    const plaqueEdge = fitting ? Math.min(
+      63.5 / Math.abs(placement.x / placementLength),
+      19.4 / Math.abs(placement.y / placementLength)
+    ) - 1 : 35;
     const leaderLength =
       Math.max(
         34,
-        placementLength - 35
+        placementLength - plaqueEdge
       );
 
     leader.setAttribute(
@@ -1500,6 +1507,12 @@ function positionAirportMarker(
         leaderLength
       ).toFixed(1)
     );
+  }
+
+  if (fitting && leader) {
+    const angle = Math.atan2(placement.y, placement.x) * 180 / Math.PI;
+    fitting.setAttribute("transform",
+      `translate(${leader.getAttribute("x2")} ${leader.getAttribute("y2")}) rotate(${angle + 180})`);
   }
 
   if (placard) {

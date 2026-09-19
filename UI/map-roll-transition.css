@@ -21,51 +21,6 @@
   padding: 0 !important; border: 0; border-radius: 0; background: transparent !important; box-shadow: none !important;
   backdrop-filter: none !important; pointer-events: none; transform: none !important; filter: none !important; animation: none !important;
 }
-.vintage-map-panel .route-map-shell .clock-block,
-.vintage-map-panel .route-map-shell .eta-block {
-  position: absolute; grid-column: auto; grid-row: auto; z-index: 3;
-  bottom: var(--map-clock-bottom) !important; width: var(--map-clock-width) !important; min-width: 0 !important; max-width: none !important;
-  box-sizing: border-box; overflow: visible; padding: 7px var(--map-clock-pad-x) 8px !important;
-  border: 1px solid #72552d; border-radius: 4px;
-  background: linear-gradient(180deg, #26231d, #11110f); color: #cfaa65; isolation: isolate;
-}
-.vintage-map-panel .route-map-shell .clock-block {
-  left: var(--map-hardware-inset) !important; right: auto !important;
-  box-shadow: 8px 9px 16px #120b077a, 2px 3px 5px #120b0757, inset 0 1px 0 #ffde9a12, inset 0 0 14px #0009;
-}
-.vintage-map-panel .route-map-shell .eta-block {
-  right: var(--map-hardware-inset) !important; left: auto !important;
-  box-shadow: -8px 9px 16px #120b077a, -2px 3px 5px #120b0757, inset 0 1px 0 #ffde9a12, inset 0 0 14px #0009;
-}
-/* The side arms and screw heads are retired. Only supplied raster art mounts
-   these clocks; no generated metal, collars, caps, or CSS-painted hardware. */
-.route-map-shell .clock-block::before, .route-map-shell .eta-block::before,
-.route-map-shell .clock-block::after, .route-map-shell .eta-block::after {
-  content: none !important; display: none !important;
-}
-.vintage-map-panel .route-map-shell .clock-support-rod {
-  position: absolute; z-index: -1; pointer-events: none; user-select: none;
-  left: 50%; top: calc(100% - 1px); transform: translateX(-50%);
-  width: 4px; min-width: 4px; max-width: 4px;
-  height: calc(var(--map-clock-bottom) + 4px); max-height: none;
-  display: block; object-fit: fill; padding: 0; margin: 0;
-  border: 0; border-radius: 0; background: none; box-shadow: none;
-}
-.vintage-map-panel .route-map-shell .clock-block .small-label,
-.vintage-map-panel .route-map-shell .eta-block .small-label,
-.vintage-map-panel .route-map-shell .clock-block .eta-zone,
-.vintage-map-panel .route-map-shell .eta-block .eta-zone,
-.vintage-map-panel .route-map-shell .clock-value,
-.vintage-map-panel .route-map-shell .eta-value {
-  display: block; max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: clip;
-  letter-spacing: .4px !important; text-shadow: 0 0 3px #d5a4541a;
-}
-.vintage-map-panel .route-map-shell .clock-block .small-label,
-.vintage-map-panel .route-map-shell .eta-block .small-label { font-size: var(--map-clock-label) !important; color: #b59a67 !important; }
-.vintage-map-panel .route-map-shell .clock-value,
-.vintage-map-panel .route-map-shell .eta-value { font-size: var(--map-clock-font) !important; line-height: 1.1 !important; color: #d6b474 !important; }
-.vintage-map-panel .route-map-shell .clock-block .eta-zone,
-.vintage-map-panel .route-map-shell .eta-block .eta-zone { font-size: var(--map-clock-label) !important; color: #a68d60 !important; }
 
 .map-roll-splice {
   position: absolute; z-index: 4; left: 0; right: 0; top: 100%; height: 14px; margin-top: -7px; opacity: 0; pointer-events: none;

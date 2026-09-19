@@ -8,14 +8,13 @@ const manifest = require("../assets/hardware/brass-clock-rod.json");
 assert.equal(crypto.createHash("sha256").update(fs.readFileSync(asset)).digest("hex"), manifest.asset_sha256);
 
 async function checkClockRods(page) {
-  const clocks = page.locator('.route-map-shell .clock-block, .route-map-shell .eta-block');
-  if (!await clocks.count()) {
+  if (!await page.locator('.twin-clock-panel').count()) {
     assert.equal(await page.locator('.clock-support-rod,.sequence-support-rod').count(), 0, 'Compact gets no new hardware');
     return;
   }
   await page.waitForFunction(() => {
-    const rods = [...document.querySelectorAll('.clock-support-rod,.sequence-support-rod')];
-    return rods.length === 3 && rods.every(n => n.complete && n.naturalWidth === 12 && n.naturalHeight === 64);
+    const rods = [...document.querySelectorAll('.sequence-support-rod')];
+    return rods.length === 1 && rods.every(n => n.complete && n.naturalWidth === 12 && n.naturalHeight === 64);
   }, null, {timeout:2000});
   const evidence = await page.evaluate(() => {
     const rect = n => {
@@ -45,9 +44,9 @@ async function checkClockRods(page) {
         .map(n => ({text:n.textContent,align:getComputedStyle(n).textAlign,width:n.clientWidth,scroll:n.scrollWidth}))};
   });
   assert.deepEqual(evidence.before, evidence.withoutRods, 'Rods do not move or resize clocks, map or leg counter');
-  assert.equal(evidence.clockRods, 2, 'Keep the two existing clock rods');
+  assert.equal(evidence.clockRods, 0, 'The superseded clock housings have no map rods');
   assert.equal(evidence.sequenceRods, 1, 'One small rod beneath the leg counter');
-  assert.equal(new Set(evidence.rods.map(rod => rod.src)).size, 1, 'All three rods use the exact same asset URL');
+  assert.equal(new Set(evidence.rods.map(rod => rod.src)).size, 1, 'Keep the original sequence rod asset URL');
   assert.equal(evidence.sequenceText.length, 3, 'Check all three sequence text elements');
   for (const line of evidence.sequenceText) {
     assert.equal(line.align, 'center', 'Center the sequence label, mileage and leg-count text');

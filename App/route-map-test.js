@@ -682,9 +682,9 @@ function testAirportEndpointIcons() {
       /class="airport-symbol"/g
     ) ?? [];
 
-  const runwaySymbols =
+  const medallionImages =
     DASHBOARD_SOURCE.match(
-      /class="airport-symbol-runway"/g
+      /href="\.\/assets\/hardware\/airport-anchor-medallion\.png"/g
     ) ?? [];
 
   assert.equal(
@@ -694,9 +694,9 @@ function testAirportEndpointIcons() {
   );
 
   assert.equal(
-    runwaySymbols.length,
+    medallionImages.length,
     2,
-    "Each airport icon should include a primary runway symbol."
+    "Each airport icon should use the approved medallion artwork."
   );
 }
 

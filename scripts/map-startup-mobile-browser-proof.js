@@ -27,7 +27,7 @@ async function checkFullHardware(page) {
   });
   if (!data) return;
   assert(!data.stacked, 'Full family hardware must never form the old oversized stack');
-  assert.equal(data.modules.length,3, 'All three live readouts stay available');
+  assert.equal(data.modules.length,1, 'Only the sequence readout remains on the map; clocks have their own upper bay');
   for (const m of data.modules) {
     assert(m.width/data.width <= .31, `${m.name} occupies no more than 31% of map width`);
     assert(m.top >= data.top + .70*data.height, `${m.name} must stay in the lower 30%, not over the middle of the map`);
@@ -36,8 +36,8 @@ async function checkFullHardware(page) {
   const coverage=data.modules.reduce((a,m)=>a+m.width*m.height,0)/(data.width*data.height);
   assert(coverage<=.20, `Readouts cover ${(coverage*100).toFixed(1)}% of map; maximum is 20%`);
   const widths=data.modules.map(m=>m.width);
-  assert(Math.abs(widths[0]-184*data.scale)<1 && Math.abs(widths[2]-196*data.scale)<1,
-    'Existing housings share one proportional scale, not just smaller text');
+  assert(Math.abs(widths[0]-196*data.scale)<1,
+    'The sequence housing retains its existing proportional scale');
   return {...data,coverage};
 }
 

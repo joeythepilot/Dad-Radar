@@ -33,7 +33,8 @@ const browserSources = [
   "App/sequence-history-display.js",
   "App/weekly-ticker.js",
   "App/main.js",
-  "App/daily-duty-card.js"
+  "App/daily-duty-card.js",
+  "App/approved-map-artwork.js"
 ];
 
 function readSource(relativePath) {

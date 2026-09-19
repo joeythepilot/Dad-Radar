@@ -1,0 +1,34 @@
+/* Layout and live ink only. Physical surfaces are the approved PNGs. */
+.panel-shell {
+  grid-template-columns: minmax(0, 82fr) minmax(0, 18fr);
+  column-gap: 0;
+}
+.panel-shell > .flight-strip-module { grid-column: 1; grid-row: 1; margin-right: var(--panel-gap); }
+.panel-shell > .lower-display-grid { grid-column: 1 / -1; grid-row: 2; }
+.twin-clock-panel { grid-column: 2; grid-row: 1; min-width: 0; min-height: 0; position: relative; }
+.twin-clock-art { display: block; width: 100%; height: 100%; overflow: hidden; }
+.twin-clock-value {
+  fill: #382b1e;
+  font: bold 142px "Courier New", monospace;
+  letter-spacing: 0;
+}
+/* The existing tile artwork scales into its shorter top-left bay. */
+html:not([data-family-full]) .flight-strip-module {
+  --flap-width: clamp(24px, 3.5vw, 67.2px);
+  --flap-height: clamp(37.44px, 5.46vw, 104.832px);
+  --route-section-gap: clamp(14px, 2vw, 38.4px);
+}
+html:not([data-family-full]) .flight-strip-module .flap-character {
+  font-size: clamp(20px, 2.75vw, 52.8px) !important;
+}
+/* Full portrait already reflows gauges below the map; align to that same rail. */
+html.family-full-portrait .dashboard .panel-shell {
+  grid-template-columns: minmax(0, 72fr) minmax(0, 28fr);
+  grid-template-rows: var(--twin-clock-height, 61px) minmax(0, 1fr) !important;
+}
+.route-map-svg .airport-placard-art { filter: none; }
+.route-map-svg .airport-placard-role {
+  fill: #ead6a5; font-size: 5.5px; letter-spacing: 1px; stroke: none;
+}
+.route-map-svg .airport-code { fill: #f5e4b7; font-size: 19px; letter-spacing: .7px; }
+.route-map-svg .airport-city { fill: #e4c994; font-size: 6.7px; letter-spacing: .4px; }

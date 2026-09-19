@@ -1,0 +1,41 @@
+{
+  "source": "DadRadar-map-update-assets-manifest.txt (2026-09-19), six active Library files",
+  "files": [
+    {
+      "file": "airport-anchor-medallion.png",
+      "sha256": "058d9b2817f3d5ee6c2accac46963a0948a5c1b72d07fa8bc3017fbfa7035c3d",
+      "width": 283,
+      "height": 273
+    },
+    {
+      "file": "airport-leader-end-fitting.png",
+      "sha256": "602f5810cbf78aedf9d8bba8cf526a8a987a3196674021774ee232812c593c24",
+      "width": 322,
+      "height": 168
+    },
+    {
+      "file": "airport-plaque-departure-navy.png",
+      "sha256": "1f39ac2a66db00bcb3a632b4481628028034f67abe775e67c0cf62d9534b9c9e",
+      "width": 855,
+      "height": 280
+    },
+    {
+      "file": "airport-plaque-destination-maroon.png",
+      "sha256": "1408241fd698f73aff9b4230fc77e3ed994461c9232d6a59575f7849f1137ce3",
+      "width": 969,
+      "height": 344
+    },
+    {
+      "file": "instrument-active-sequence.png",
+      "sha256": "7dc20784c902d102a93b06fbcfa9788cdd9284139025090d878872bf29e1665a",
+      "width": 663,
+      "height": 318
+    },
+    {
+      "file": "instrument-twin-clock-panel-final.png",
+      "sha256": "1b2207d573492e750d1aa7be599723b2e725c18cb2591d2ab2e6782eece0236f",
+      "width": 1738,
+      "height": 829
+    }
+  ]
+}
