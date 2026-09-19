@@ -12,7 +12,7 @@
     if (document.querySelector("link[data-dad-radar-sequence-history]")) return;
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "./UI/sequence-history.css?v=approved-artwork-1";
+    link.href = "./UI/sequence-history.css?v=bottom-left-tracker-1";
     link.dataset.dadRadarSequenceHistory = "true";
     document.head.appendChild(link);
   }
@@ -49,15 +49,7 @@
     image.setAttribute("height", "318");
     art.appendChild(image);
 
-    // Keep the existing small brass support in its original map position.
-    const rod = document.createElement("img");
-    rod.className = "sequence-support-rod";
-    rod.src = "/assets/hardware/brass-clock-rod.png?v=1";
-    rod.alt = "";
-    rod.setAttribute("aria-hidden", "true");
-    rod.setAttribute("draggable", "false");
-
-    badge.append(rod, art, label, valueElement, detailElement);
+    badge.append(art, label, valueElement, detailElement);
     shell.appendChild(badge);
     return badge;
   }

@@ -123,6 +123,13 @@ const server = http.createServer((req,res) => {
      return Math.abs(Math.hypot(+leader.getAttribute('x2'),+leader.getAttribute('y2'))-(d-edge+1));
    });
    assert(edgeError<.2,'Fitting socket attaches to the new shallow plaque edge');
+   const mount=await page.locator('.sequence-mileage-badge').evaluate(n=>{
+     const r=n.getBoundingClientRect(),map=n.parentElement.getBoundingClientRect();
+     return {left:r.left-map.left,bottom:map.bottom-r.bottom};
+   });
+   assert(mount.left>=0&&mount.left<=20,`${name}: leg tracker anchors to map left edge`);
+   assert(mount.bottom>=0&&mount.bottom<=20,`${name}: leg tracker stays near lower bezel`);
+   assert.equal(await page.locator('.sequence-support-rod').count(),0,`${name}: no brass leg beneath tracker`);
    const sequenceInk=await page.locator('.sequence-mileage-detail').evaluate(n=>{
      const range=document.createRange();range.selectNodeContents(n);
      const r=range.getBoundingClientRect(),w=n.getBoundingClientRect();

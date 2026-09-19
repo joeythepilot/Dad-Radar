@@ -10,14 +10,14 @@
   vector-effect: non-scaling-stroke;
 }
 
-/* Approved housing remains at the existing counter mount. */
+/* Approved housing anchors to the lower-left map bezel. */
 .vintage-map-panel .route-map-shell .sequence-mileage-badge {
-  position: absolute; z-index: 56; left: 50%; bottom: 14px !important;
+  position: absolute; z-index: 56; left: var(--map-hardware-inset, 18px); bottom: 14px !important;
   width: var(--map-sequence-width, 196px) !important; max-width: none !important;
   aspect-ratio: 631 / 262; padding: 0 !important;
   border: 0; background: none; box-shadow: none;
   font-family: "Courier New", monospace;
-  pointer-events: none; transform: translateX(-50%); isolation: isolate;
+  pointer-events: none; transform: none; isolation: isolate;
 }
 .sequence-housing-art { display: block; width: 100%; height: auto; pointer-events: none; }
 .sequence-mileage-badge::before, .sequence-mileage-badge::after { content: none; }
@@ -36,15 +36,4 @@
 .vintage-map-panel .route-map-shell .sequence-mileage-detail {
   top: 78%; height: 15%; font-size: 8px !important; letter-spacing: 0; color: #ccb783;
   line-height: 1.05; overflow-wrap: break-word;
-}
-
-/* Reuse the clock rod artwork at the same four-pixel width. The 18px image
-   bridges the unchanged 14px gap, with its ends tucked behind housing and bezel. */
-.vintage-map-panel .route-map-shell .sequence-support-rod {
-  position: absolute; z-index: -1; pointer-events: none; user-select: none;
-  left: 50%; top: calc(100% - 1px); transform: translateX(-50%);
-  width: 4px; min-width: 4px; max-width: 4px;
-  height: 18px; max-height: none;
-  display: block; object-fit: fill; padding: 0; margin: 0;
-  border: 0; border-radius: 0; background: none; box-shadow: none;
 }

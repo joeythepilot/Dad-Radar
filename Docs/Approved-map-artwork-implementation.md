@@ -8,7 +8,7 @@ Installed all six PNGs from the active Library manifest in `assets/hardware/`, p
 - Live text is fitted inside the baked-in windows, with no duplicate visible labels. Long ETA states and hidden/reveal/resizing are covered.
 - At 1920 × 1080, clock/rail width is approximately 341px and clock/split-flap height approximately 198px. Original lower grid and gauge positions are preserved. The existing split-flap artwork scales into the top-left bay.
 - Navy departure and maroon destination artwork replace the old plaques; the supplied medallions and leader fittings use the existing marker placement and camera scaling.
-- Active-sequence artwork replaces the CSS housing at its existing bottom-center mount, retaining the small brass rod and existing data formatting. Its live text scales to the available face.
+- Active-sequence artwork replaces the CSS housing at the bottom-left map bezel, retaining existing data formatting. The brass support rod is removed per the follow-up request. Its live text scales to the available face.
 - Superseded separate clock markup and dedicated map-clock housing CSS were removed. Neither retired individual-clock PNG is actively referenced.
 - The six source PNGs are unchanged. SVG viewports exclude transparent twin-clock side gutters and unrelated source-image fragments outside the sequence housing/medallion. No hardware is regenerated or painted with CSS.
 - Full-family portrait uses the natural twin-clock height for the top row; the existing lower portrait arrangement remains.

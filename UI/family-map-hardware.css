@@ -1,12 +1,12 @@
 /* Full-family only. Existing instruments scale with their map aperture.
-   The desktop cabinet, Compact page, raster rods and transport are unchanged. */
+   The desktop cabinet, Compact page, transport are unchanged. */
 html[data-family-full] body {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
 html[data-family-full] .vintage-map-panel .route-map-shell .sequence-mileage-badge {
-  transform: translateX(-50%) scale(var(--family-hardware-scale, 1));
-  transform-origin: center bottom;
+  transform: scale(var(--family-hardware-scale, 1));
+  transform-origin: left bottom;
   bottom: var(--family-sequence-bottom, 14px) !important;
 }
 html[data-family-full] .vintage-map-panel .route-map-shell .sequence-mileage-value {
