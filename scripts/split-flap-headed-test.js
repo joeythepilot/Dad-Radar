@@ -95,7 +95,10 @@ const server = http.createServer((request, response) => {
 
   try {
     for (const [engine, type] of [["chromium", chromium], ["webkit", webkit]]) {
-      const browser = await type.launch({headless: true});
+      if(process.env.DADRADAR_BROWSER_ENGINE && process.env.DADRADAR_BROWSER_ENGINE!==engine)continue;
+      const browser = await type.launch({headless: true,
+        ...(engine==="chromium" && process.env.DADRADAR_BROWSER_EXECUTABLE
+          ? {executablePath:process.env.DADRADAR_BROWSER_EXECUTABLE,args:["--no-sandbox","--disable-dev-shm-usage"]} : {})});
 
       try {
         const page = await browser.newPage({
@@ -137,9 +140,28 @@ const server = http.createServer((request, response) => {
 
         assert.match(
           evidence.backgroundImage,
-          /split-flap-tile-matte-v2\.svg/,
-          `${engine}: matte split-flap asset should be active`
+          /split-flap-tile\.png/,
+          `${engine}: original photoreal split-flap asset should be active`
         );
+        const imageSize=await page.evaluate(async()=>{
+          const image=new Image();image.src='/assets/split-flap/split-flap-tile.png';await image.decode();
+          return [image.naturalWidth,image.naturalHeight];
+        });
+        assert.deepEqual(imageSize,[637,640],`${engine}: original PNG decodes at its full resolution`);
+        // Exercise the real flip; moving halves must not revert to the drawn substitute.
+        await page.waitForFunction(()=>!document.querySelector('.flap-character')._animationRunning);
+        await page.evaluate(()=>{
+          const cell=document.querySelector('.flap-character');
+          window.splitFlapArtworkProof=flipFlapOnce(cell,'Z');
+        });
+        const moving=await page.locator('.flap-flip-top,.flap-flip-bottom').evaluateAll(nodes=>nodes.map(n=>{
+          const s=getComputedStyle(n);return {image:s.backgroundImage,size:s.backgroundSize,animation:s.animationName};
+        }));
+        assert.equal(moving.length,2,`${engine}: both moving halves exist during a flip`);
+        assert(moving.every(s=>/split-flap-tile\.png/.test(s.image)&&s.size==='100% 200%'&&s.animation!=='none'),
+          `${engine}: animated halves use matching halves of the original photograph`);
+        await page.evaluate(()=>window.splitFlapArtworkProof);
+        assert.equal(await page.locator('.flap-character').first().getAttribute('data-value'),'Z',`${engine}: flip settles on the new character`);
         assert.equal(
           evidence.seamHeight,
           "1px",

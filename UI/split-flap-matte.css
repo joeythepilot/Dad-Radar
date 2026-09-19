@@ -1,13 +1,13 @@
 /*
  * Dad Radar split-flap material correction.
- * Keep the proven flip mechanics; replace the bronze/backlit treatment with
- * matte graphite cards in a dark electromechanical cavity.
+ * Preserve the original photographed mechanism and the proven flip mechanics.
+ * The unlit PNG supplies the physical cards; overlays supply calibrated warm light.
  */
 
 .flap-character,
 .flap-half {
   background-color: #1d1c1a !important;
-  background-image: url("../assets/split-flap/split-flap-tile-matte-v2.svg") !important;
+  background-image: url("../assets/split-flap/split-flap-tile.png") !important;
   background-blend-mode: normal !important;
 }
 
@@ -30,7 +30,7 @@
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.014) !important;
 }
 
-/* Only a whisper of grazing light; the SVG carries the matte card texture. */
+/* Only a whisper of grazing light; the original PNG carries the physical texture. */
 .flap-character::after {
   inset: 1px 3px !important;
   border-radius: 2px !important;
