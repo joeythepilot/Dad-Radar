@@ -294,13 +294,13 @@
             bay.dayAnimation=null;
           }
           drawText(context,bay.day,rect.x+rect.width/2,rect.y+rect.height/2+1,
-            '700 16px "Courier New", monospace',"#3b2b1d");
+            '700 24px "Courier New", monospace',"#3b2b1d");
           context.restore();
           return;
         }
         if(now<animation.start){
           drawText(context,animation.from,rect.x+rect.width/2,rect.y+rect.height/2+1,
-            '700 16px "Courier New", monospace',"#3b2b1d");
+            '700 24px "Courier New", monospace',"#3b2b1d");
           context.restore();
           return;
         }
@@ -310,10 +310,10 @@
         const incomingScale=Math.max(0.06,Math.sin(progress*Math.PI/2));
         drawText(context,animation.from,rect.x+rect.width/2,
           rect.y+rect.height/2+progress*rect.height*0.42,
-          '700 16px "Courier New", monospace',"#3b2b1d",outgoingScale,1-progress*0.35);
+          '700 24px "Courier New", monospace',"#3b2b1d",outgoingScale,1-progress*0.35);
         drawText(context,animation.to,rect.x+rect.width/2,
           rect.y+rect.height/2-(1-progress)*rect.height*0.42,
-          '700 16px "Courier New", monospace',"#3b2b1d",incomingScale,0.65+progress*0.35);
+          '700 24px "Courier New", monospace',"#3b2b1d",incomingScale,0.65+progress*0.35);
         context.restore();
       }
 
