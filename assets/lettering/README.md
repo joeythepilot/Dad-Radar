@@ -1,6 +1,6 @@
 # DadRadar Industrial Ink
 
-The weekly day windows, weekly overnight wheels, instrument wheels, and two clock
+The split-flap cards, weekly day windows, weekly overnight wheels, instrument wheels, and two clock
 windows use shared condensed letter outlines with fixed screen-print texture.
 Hardware PNGs and placement are unchanged. Existing schedule, telemetry and clock
 controllers still own every live value.
@@ -27,3 +27,9 @@ Run `npm test` for deterministic printing and live-state checks. The Chromium an
 WebKit browser proofs exercise actual apertures, changing values, wheel motion,
 reduced motion and resizing. Local engine selection is explicit through
 `DADRADAR_BROWSER_ENGINE`; do not report unrun engines as covered.
+
+Split-flap letters also stay vector SVG. Both clipped halves use the same physical
+slot/character wear seed, with separate SVG definition IDs for each live instance.
+The existing em sizing and flip transforms place and animate that shared print face.
+Warm light spills downward from the upper housing; the original unlit hardware PNG
+and letter ink remain independent of the illumination overlay.

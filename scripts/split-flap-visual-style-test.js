@@ -9,7 +9,7 @@ const assetPath = path.join(root, "assets", "split-flap", "split-flap-tile.png")
 
 const layout = fs.readFileSync(layoutPath, "utf8");
 assert(
-  layout.includes('@import url("./split-flap-matte.css?v=4-original-art");'),
+  layout.includes('@import url("./split-flap-matte.css?v=5-printed-incandescent");'),
   "full layout must import the matte split-flap override"
 );
 assert(fs.existsSync(mattePath), "matte split-flap stylesheet must exist");

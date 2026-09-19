@@ -263,6 +263,22 @@ function displayFlapCharacter(character) {
     : character;
 }
 
+let splitFlapInkSlot=0;
+let splitFlapPrintInstance=0;
+
+function paintSplitFlapGlyph(glyph,character,slot) {
+  const svg=document.createElementNS("http://www.w3.org/2000/svg","svg");
+  svg.setAttribute("viewBox","0 0 100 100");
+  svg.setAttribute("aria-hidden","true");
+  const print=window.dadRadarPrintedInk.svg(document,displayFlapCharacter(character),{
+    height:76,cellWidth:90,ink:"#e8e1d3",material:"paper",
+    seed:`split-flap-${slot}`,idPrefix:`split-flap-print-${++splitFlapPrintInstance}`
+  });
+  print.element.setAttribute("transform","translate(5 12)");
+  svg.appendChild(print.element);
+  glyph.replaceChildren(svg);
+}
+
 
 function balanceFlightBoard() {
   flightBoardBalanceFrame = null;
@@ -361,7 +377,8 @@ function scheduleFlightBoardBalance() {
 function createFlapHalf(
   position,
   character,
-  extraClasses = ""
+  extraClasses = "",
+  inkSlot = ""
 ) {
   const half =
     document.createElement("span");
@@ -378,9 +395,8 @@ function createFlapHalf(
     document.createElement("span");
 
   glyph.className = "flap-glyph";
-
-  glyph.textContent =
-    displayFlapCharacter(character);
+  half.dataset.inkSlot=inkSlot;
+  paintSplitFlapGlyph(glyph,character,inkSlot);
 
   half.appendChild(glyph);
 
@@ -400,8 +416,7 @@ function setFlapHalfCharacter(
     half.querySelector(".flap-glyph");
 
   if (glyph) {
-    glyph.textContent =
-      displayFlapCharacter(character);
+    paintSplitFlapGlyph(glyph,character,half.dataset.inkSlot);
   }
 }
 
@@ -417,6 +432,7 @@ function createFlapCharacter(
 
   cell.dataset.value =
     character;
+  cell.dataset.inkSlot=String(++splitFlapInkSlot);
 
   cell.setAttribute(
     "aria-hidden",
@@ -427,14 +443,16 @@ function createFlapCharacter(
     createFlapHalf(
       "top",
       character,
-      "flap-static-top"
+      "flap-static-top",
+      cell.dataset.inkSlot
     );
 
   const staticBottom =
     createFlapHalf(
       "bottom",
       character,
-      "flap-static-bottom"
+      "flap-static-bottom",
+      cell.dataset.inkSlot
     );
 
   cell.append(
@@ -605,14 +623,16 @@ function flipFlapOnce(
       createFlapHalf(
         "top",
         currentCharacter,
-        "flap-moving flap-flip-top"
+        "flap-moving flap-flip-top",
+        cell.dataset.inkSlot
       );
 
     const movingBottom =
       createFlapHalf(
         "bottom",
         nextCharacter,
-        "flap-moving flap-flip-bottom"
+        "flap-moving flap-flip-bottom",
+        cell.dataset.inkSlot
       );
 
     cell.append(

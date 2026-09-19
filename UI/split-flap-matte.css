@@ -21,6 +21,15 @@
     0 1px 0 rgba(0, 0, 0, 0.46) !important;
 }
 
+/* Outlined printed ink follows the existing em size and full-card coordinates.
+   Each stationary/moving half clips the same face at the mechanical joint. */
+.flap-glyph > svg {
+  display: block;
+  width: 1em;
+  height: 1em;
+  overflow: visible;
+}
+
 /* Hairline card break instead of the previous heavy illuminated bar. */
 .flap-character::before {
   right: 8% !important;
@@ -30,15 +39,15 @@
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.014) !important;
 }
 
-/* Only a whisper of grazing light; the original PNG carries the physical texture. */
+/* Warm incandescent spill grazes the original card texture from above. */
 .flap-character::after {
   inset: 1px 3px !important;
   border-radius: 2px !important;
   background:
     linear-gradient(
       180deg,
-      rgba(235, 213, 177, 0.085) 0%,
-      rgba(235, 213, 177, 0.028) 30%,
+      rgba(247, 192, 111, 0.16) 0%,
+      rgba(241, 184, 103, 0.055) 35%,
       transparent 62%,
       transparent 84%,
       rgba(0, 0, 0, 0.055) 100%
@@ -50,12 +59,12 @@
 .flight-board::after {
   border-color: rgba(205, 177, 121, 0.09) !important;
   box-shadow:
-    inset 0 2px 5px rgba(240, 213, 166, 0.075),
+    inset 0 2px 7px rgba(250, 199, 122, 0.14),
     inset 0 -10px 22px rgba(0, 0, 0, 0.55) !important;
   background:
-    radial-gradient(ellipse 100% 110% at 50% -20%,
-      rgba(238, 211, 166, 0.17) 0%,
-      rgba(238, 211, 166, 0.075) 42%,
+    radial-gradient(ellipse 100% 110% at 50% -12%,
+      rgba(249, 196, 117, 0.30) 0%,
+      rgba(244, 185, 97, 0.12) 42%,
       transparent 78%),
     linear-gradient(180deg, transparent 65%, rgba(0, 0, 0, 0.08)) !important;
 }

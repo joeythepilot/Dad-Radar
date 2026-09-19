@@ -39,7 +39,8 @@
     const defs=node(document,"defs");group.appendChild(defs);
     plan.glyphs.forEach((glyph,index)=>{
       if(!glyph.path)return;
-      const id=`ink-${String(options.seed||"ink").replace(/[^a-z0-9-]/gi,"-")}-${index}-${glyph.character.charCodeAt(0)}`;
+      // Matching physical halves share a wear seed but need distinct DOM IDs.
+      const id=`ink-${String(options.idPrefix||options.seed||"ink").replace(/[^a-z0-9-]/gi,"-")}-${index}-${glyph.character.charCodeAt(0)}`;
       const mask=node(document,"mask",{id,maskUnits:"userSpaceOnUse",x:-4,y:-4,width:glyph.width+8,height:110,"mask-type":"luminance"});
       mask.appendChild(node(document,"rect",{x:-4,y:-4,width:glyph.width+8,height:110,fill:"white"}));
       glyph.marks.forEach(mark=>mask.appendChild(node(document,"ellipse",{cx:mark.x,cy:mark.y,rx:mark.rx,ry:mark.ry,fill:"black",opacity:mark.opacity})));

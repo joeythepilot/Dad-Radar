@@ -150,6 +150,9 @@ const server = http.createServer((request, response) => {
         assert.deepEqual(imageSize,[637,640],`${engine}: original PNG decodes at its full resolution`);
         // Exercise the real flip; moving halves must not revert to the drawn substitute.
         await page.waitForFunction(()=>!document.querySelector('.flap-character')._animationRunning);
+        await page.evaluate(()=>flipFlapOnce(document.querySelector('.flap-character'),'A'));
+        assert.equal(await page.locator('.flap-character').first().locator('.flap-glyph svg [data-printed-ink="A"]').count(),2,
+          `${engine}: both stationary halves use outlined ink rather than browser font text`);
         await page.evaluate(()=>{
           const cell=document.querySelector('.flap-character');
           window.splitFlapArtworkProof=flipFlapOnce(cell,'Z');
@@ -160,8 +163,30 @@ const server = http.createServer((request, response) => {
         assert.equal(moving.length,2,`${engine}: both moving halves exist during a flip`);
         assert(moving.every(s=>/split-flap-tile\.png/.test(s.image)&&s.size==='100% 200%'&&s.animation!=='none'),
           `${engine}: animated halves use matching halves of the original photograph`);
+        const printMotion=await page.locator('.flap-character').first().evaluate(cell=>{
+          const texture=selector=>[...cell.querySelectorAll(selector+' mask ellipse')].map(n=>n.outerHTML).join('');
+          return {
+            outgoing:cell.querySelector('.flap-flip-top [data-printed-ink]')?.getAttribute('data-printed-ink'),
+            incoming:cell.querySelector('.flap-flip-bottom [data-printed-ink]')?.getAttribute('data-printed-ink'),
+            topMatches:texture('.flap-static-top')===texture('.flap-flip-top'),
+            bottomMatches:texture('.flap-static-bottom')===texture('.flap-flip-bottom')
+          };
+        });
+        assert.deepEqual(printMotion,{outgoing:'A',incoming:'Z',topMatches:true,bottomMatches:true},
+          `${engine}: fixed ink wear moves with both matching halves`);
         await page.evaluate(()=>window.splitFlapArtworkProof);
         assert.equal(await page.locator('.flap-character').first().getAttribute('data-value'),'Z',`${engine}: flip settles on the new character`);
+        const settled=await page.locator('.flap-character').first().evaluate(cell=>{
+          const prints=[...cell.querySelectorAll('[data-printed-ink]')];
+          const ids=[...document.querySelectorAll('mask[id],linearGradient[id]')].map(n=>n.id);
+          const texture=n=>[...n.querySelectorAll('mask ellipse')].map(e=>e.outerHTML).join('');
+          return {characters:prints.map(n=>n.getAttribute('data-printed-ink')),
+            matching:prints.length===2&&texture(prints[0])===texture(prints[1]),
+            unique:ids.length===new Set(ids).size,
+            browserText:[...cell.querySelectorAll('.flap-glyph')].some(n=>n.textContent.trim())};
+        });
+        assert.deepEqual(settled,{characters:['Z','Z'],matching:true,unique:true,browserText:false},
+          `${engine}: settled halves join one printed character without duplicate SVG IDs or font text`);
         assert.equal(
           evidence.seamHeight,
           "1px",
