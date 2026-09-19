@@ -112,7 +112,7 @@ const server = http.createServer((req,res) => {
      const paths=[...document.querySelectorAll('image,img')].map(n=>n.getAttribute('href')||n.getAttribute('src')).filter(s=>s&&/assets\/hardware\/(airport-|instrument-)/.test(s));
      return Promise.all([...new Set(paths)].map(src=>new Promise(resolve=>{const i=new Image();i.onload=()=>resolve({src,w:i.naturalWidth,h:i.naturalHeight});i.onerror=()=>resolve({src,w:0});i.src=src;})));
    });
-   assert.equal(assets.length,6);assert(assets.every(a=>a.w>0),'All six approved PNGs decode');
+   assert.equal(assets.length,7);assert(assets.every(a=>a.w>0),'Approved map and wheel PNGs decode');
    const fitting=await page.locator('.airport-leader-fitting').first().getAttribute('transform');
    assert.match(fitting,/translate\(.+\) rotate\(/,'End fitting follows positioned leader');
    const edgeError=await page.locator('.airport-leader-fitting').first().evaluate(n=>{
@@ -136,6 +136,7 @@ const server = http.createServer((req,res) => {
      return {text:n.textContent,contained:r.left>=w.left-1&&r.right<=w.right+1&&r.top>=w.top-1&&r.bottom<=w.bottom+1};
    });
    assert(sequenceInk.contained,`${name}: sequence detail stays within its metal footer: ${sequenceInk.text}`);
+   await require("./instrument-wheels-browser-proof").checkInstrumentWheels(page,name);
    await page.screenshot({path:path.join(output,`${name}.png`),fullPage:true});
    assert.deepEqual(errors,[],`${name}: no browser or missing asset errors`);
    if(name==='kiosk') {

@@ -1,0 +1,20 @@
+/* The PNG supplies all physical drums, recesses, trim, wear, and lighting. */
+.instrument-slot .gauge-readout.instrument-wheel-readout {
+  left: 30%; right: 30%; bottom: 10%;
+  display: block; padding: 0; border: 0; border-radius: 0;
+  background: none; box-shadow: none; line-height: 0;
+}
+.instrument-slot .altimeter-readout.instrument-wheel-readout {
+  left: 16.35%; right: 16.35%;
+}
+.instrument-wheel-face { display: block; width: 100%; height: auto; overflow: hidden; }
+.instrument-wheel-digits text {
+  font-family: "Courier New", monospace; font-size: 108px; font-weight: bold;
+  fill: #e2cda7; letter-spacing: -3px;
+}
+.instrument-wheel-readout > .instrument-label,
+.instrument-wheel-readout > .instrument-value,
+.instrument-wheel-readout > .instrument-unit {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap;
+}

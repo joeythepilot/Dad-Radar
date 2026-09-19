@@ -1,0 +1,8 @@
+{
+  "asset": "instrument-wheel-inserts.png",
+  "sha256": "c061b4cd1546e0df8e2d1c44bd7871021931f8141bca181a00b639d9d9d91630",
+  "width": 1222,
+  "height": 1287,
+  "source": "User-approved blank mechanical inserts with KT, degree, and FT labels; background extracted using image generation to remove baked checkerboard.",
+  "layout": "Top: 3 drums, middle: 3 drums, bottom: 5 drums. SVG viewports select each housing without recompressing the PNG."
+}
