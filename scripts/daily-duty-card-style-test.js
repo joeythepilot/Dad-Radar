@@ -5,7 +5,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const root = path.resolve(__dirname, "..");
-const asset = path.join(root, "assets", "ui", "today-duty-card-v2.png");
+const asset = path.join(root, "assets", "ui", "today-duty-card-weekly-paper.png");
 const modulePath = path.join(root, "App", "daily-duty-card.js");
 const cssPath = path.join(root, "UI", "daily-duty-card.css");
 const mobileLayoutPath = path.join(root, "Mobile", "layout.js");
@@ -22,7 +22,7 @@ const css = fs.readFileSync(cssPath, "utf8");
 const mobileLayout = fs.readFileSync(mobileLayoutPath, "utf8");
 const mobileLayoutCss = fs.readFileSync(mobileLayoutCssPath, "utf8");
 
-assert(moduleSource.includes("/assets/ui/today-duty-card-v2.png"), "The renderer installs the approved physical card raster.");
+assert(moduleSource.includes("/assets/ui/today-duty-card-weekly-paper.png"), "The renderer installs the approved physical card raster.");
 assert(moduleSource.includes("daily-schedule-footer"), "The renderer exposes a live bottom status field.");
 assert(moduleSource.includes("daily-schedule-now"), "The renderer explicitly removes the old NOW web-badge.");
 assert(moduleSource.includes("buildDutyCardView"), "The renderer consumes the dedicated duty-card view model.");

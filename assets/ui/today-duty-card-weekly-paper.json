@@ -1,0 +1,10 @@
+{
+  "asset": "today-duty-card-weekly-paper.png",
+  "sha256": "ba7889f7c0b324da665bf9369c34fe83ed7608e9214bb1b1bffb4a964d483d7c",
+  "source": "Image edit of today-duty-card-v2.png using upper paper window of assets/hardware/weekly-overnight/weekly-overnight-module.png as material reference. Printed layout retained. Column labels aligned to existing live data: TIME left, ROUTE right.",
+  "rendering": "Brightness 0.92 and saturation 1.13 calibrate the generated paper midtone to the reference; source PNG is unmodified.",
+  "size": [
+    1864,
+    843
+  ]
+}
