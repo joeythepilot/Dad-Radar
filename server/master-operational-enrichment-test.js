@@ -93,6 +93,13 @@ async function run() {
     assert.equal(afterFailure.events[0].times.startUtc, plannedStart);
 
     operationalFailure = false;
+
+    // Enter the active delayed leg first so the controller establishes its
+    // normal continuity lock. This reproduces a real working flight.
+    clock = Date.parse("2026-09-17T23:30:00Z");
+    await master.refreshCalendar();
+    assert.equal(master.read().resolved.mode, "DELAYED");
+
     actualIn = "2026-09-18T01:07:00Z";
     clock = Date.parse("2026-09-18T01:08:00Z");
     await master.refreshCalendar();
@@ -102,6 +109,16 @@ async function run() {
       "FlightAware actual IN becomes an internal confirmed gate arrival.");
     assert.equal(arrivedCalendar.events[0].times.endUtc, plannedEnd,
       "Confirmed operational arrival remains separate from planned Calendar time.");
+    assert.equal(master.read().resolved.mode, "ARRIVED");
+
+    // Once the normal arrival hold expires, a definitive airline gate-in
+    // must release the old leg instead of pinning ARRIVED for the 8-hour lock.
+    clock = Date.parse("2026-09-18T02:00:00Z");
+    await master.refreshCalendar();
+    const afterArrivalHold = master.read().resolved;
+    assert.equal(afterArrivalHold.mode, "LAYOVER",
+      "A confirmed gate arrival hands off from ARRIVED to the ground/layover state.");
+    assert.equal(afterArrivalHold.state.locationAirport, "CMH");
   } finally {
     master.stop();
     fs.rmSync(dir, {recursive: true, force: true});
