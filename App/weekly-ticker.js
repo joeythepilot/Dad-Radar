@@ -275,7 +275,7 @@
     const OPERATIONAL_DAY_ROLLOVER_HOUR = 6;
     const MODULE_DESIGN_WIDTH = 149;
     const MODULE_DESIGN_HEIGHT = 122;
-    const MODULE_ASSET = "/assets/hardware/weekly-overnight/weekly-overnight-module.png";
+    const MODULE_ASSET = "/assets/hardware/weekly-overnight/weekly-overnight-module.png?v=dark-readability-2";
     const DAY_WINDOW = Object.freeze({x:10,y:8,width:129,height:42});
     const WHEEL_WINDOWS = Object.freeze([
       Object.freeze({x:14,y:57,width:27,height:50}),
