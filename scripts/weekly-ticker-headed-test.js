@@ -81,10 +81,15 @@ const server = http.createServer((request,response) => {
   const results = [];
   try {
     for (const [engine,type] of [["chromium",chromium],["webkit",webkit]]) {
-      const browser = await type.launch({headless:true});
+      if(process.env.DADRADAR_BROWSER_ENGINE && process.env.DADRADAR_BROWSER_ENGINE!==engine)continue;
+      const browser = await type.launch({headless:true,
+        ...(engine==="chromium" && process.env.DADRADAR_BROWSER_EXECUTABLE
+          ? {executablePath:process.env.DADRADAR_BROWSER_EXECUTABLE,args:["--no-sandbox","--disable-dev-shm-usage"]} : {})});
       try {
-        for (const [name,width,height,compact] of [
+        for (const [name,width,height,compact,density=1] of [
           ["desktop",1920,1080,false],
+          ["desktop-hidpi",1920,1080,false,2],
+          ["desktop-fractional",2560,1440,false,1.25],
           ["full-landscape",844,390,false],
           ["full-portrait",390,844,false],
           ["full-tablet",1024,768,false],
@@ -92,12 +97,13 @@ const server = http.createServer((request,response) => {
         ]) {
           const page = await browser.newPage({
             viewport:{width,height},
+            deviceScaleFactor:density,
             serviceWorkers:"block",
             hasTouch:name !== "desktop"
           });
           const assertBrowserSettled = observeBrowserErrors(page);
           await page.route("**/*", route => route.request().url().startsWith(origin) || route.request().url().startsWith("blob:") ? route.continue() : route.abort());
-          const url = name === "desktop" ? "/" : compact ? "/mobile?layout=compact" : "/mobile/full?layout=full";
+          const url = name.startsWith("desktop") ? "/" : compact ? "/mobile?layout=compact" : "/mobile/full?layout=full";
           await page.goto(origin + url,{waitUntil:"load"});
           // The product intentionally keeps its normal 3s startup sequence. A
           // loaded WebKit runner can take several extra seconds to paint that
@@ -106,6 +112,15 @@ const server = http.createServer((request,response) => {
           if (!compact) await page.waitForSelector("#dashboard:not([hidden])",{timeout:12000});
           const label = `${engine}-ticker-${name}`;
           const evidence = await checkWeeklyTicker(page,compact,label,output,expectedModules);
+          if(name==="desktop-hidpi"){
+            await page.setViewportSize({width:2560,height:1440});
+            await page.waitForFunction(()=>[...document.querySelectorAll(".weekly-overnight-module-canvas")].every(canvas=>{
+              const rect=canvas.getBoundingClientRect();
+              return canvas.width>=Math.ceil(rect.width*devicePixelRatio) && canvas.height>=Math.ceil(rect.height*devicePixelRatio);
+            }));
+            assert.equal(await page.locator(".weekly-overnight-bay").first().getAttribute("aria-label"),
+              expectedModules[0].day+" overnight DFW","Resizing preserves the settled schedule value");
+          }
           await assertBrowserSettled(label);
           results.push({label,passed:true,evidence});
           await page.close();

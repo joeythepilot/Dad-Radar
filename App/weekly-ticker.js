@@ -360,6 +360,17 @@
 
       function drawBay(bay,now) {
         if(!bay.context)return;
+        // Keep the approved 149x122 drawing coordinates, but rasterize text
+        // at display resolution (at least 2x for smooth small letter edges).
+        const rect=bay.canvas.getBoundingClientRect();
+        const density=Math.max(2,Number(root.devicePixelRatio)||1);
+        const width=Math.ceil((rect.width||MODULE_DESIGN_WIDTH)*density);
+        const height=Math.ceil((rect.height||MODULE_DESIGN_HEIGHT)*density);
+        if(bay.canvas.width!==width || bay.canvas.height!==height){
+          bay.canvas.width=width;
+          bay.canvas.height=height;
+        }
+        bay.context.setTransform(width/MODULE_DESIGN_WIDTH,0,0,height/MODULE_DESIGN_HEIGHT,0,0);
         bay.context.clearRect(0,0,MODULE_DESIGN_WIDTH,MODULE_DESIGN_HEIGHT);
         drawDay(bay,now);
         for(let index=0;index<4;index+=1)drawWheel(bay,index,now);
@@ -383,10 +394,15 @@
       }
 
       function requestAnimationRender() {
-        if(animationFrame===null){
+        if(!destroyed && animationFrame===null){
           animationFrame=root.requestAnimationFrame(renderAnimations);
         }
       }
+
+      // Redraw settled text too when layout, browser zoom or display density changes.
+      const resizeObserver=root.ResizeObserver ? new root.ResizeObserver(requestAnimationRender) : null;
+      resizeObserver?.observe(bank);
+      root.addEventListener("resize",requestAnimationRender);
 
       function setModules(nextModules,{animate=true,rollover=false}={}) {
         if(!Array.isArray(nextModules)||nextModules.length!==OVERNIGHT_MODULE_COUNT)return;
@@ -503,6 +519,8 @@
         destroy(){
           destroyed=true;
           root.removeEventListener("pointerdown",unlockAudio);
+          root.removeEventListener("resize",requestAnimationRender);
+          resizeObserver?.disconnect();
           if(refreshInterval!==null)root.clearInterval(refreshInterval);
           if(rolloverPoll!==null)root.clearInterval(rolloverPoll);
           if(animationFrame!==null)root.cancelAnimationFrame(animationFrame);

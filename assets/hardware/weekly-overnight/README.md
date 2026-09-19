@@ -20,3 +20,11 @@ The previous 149 x 122 production PNG matched the saved `dadradar_weekly_module_
 (SHA-256 `af819c9593a86787f9c58eb27fe416f7d6522546aebe2f4706f198edd96940b4`).
 That reduced copy remains recoverable in Git history. Do not substitute it for the high-resolution source.
 This asset-only replacement preserves the existing live canvas coordinates, weekday font size, animation, and layout.
+
+## Live text resolution
+
+The text overlay uses the same 149 x 122 logical coordinates and 24 px weekday font.
+Its backing bitmap follows the displayed bay size and device pixel ratio, with a
+minimum 2x rendering density for smooth letter edges. A context transform keeps
+weekday labels, wheel characters, clipping, and animations in their original positions.
+Layout changes and window resizes redraw settled text without restarting wheel motion.

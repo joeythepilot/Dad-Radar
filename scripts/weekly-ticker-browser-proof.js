@@ -71,7 +71,8 @@ async function checkWeeklyTicker(page, compact, label, output, expectedModules) 
       bayRects:bays.map(rect),
       bayLabels:bays.map(bay=>bay.getAttribute("aria-label")),
       artPixels:arts.map(art=>({width:art.naturalWidth,height:art.naturalHeight,src:art.getAttribute("src")})),
-      canvasPixels:canvases.map(canvas=>({width:canvas.width,height:canvas.height})),
+      pixelRatio:window.devicePixelRatio,
+      canvasPixels:canvases.map(canvas=>({width:canvas.width,height:canvas.height,rect:rect(canvas)})),
       duty:dutyPanel ? {
         physical:dutyPanel.classList.contains("is-physical-duty-card"),
         artSrc:dutyArt?.getAttribute("src") ?? "",
@@ -105,8 +106,10 @@ async function checkWeeklyTicker(page, compact, label, output, expectedModules) 
     "Every bay loads the original 1192x976 artwork without changing layout dimensions");
   assert(data.artPixels.every(item=>item.src.includes("/assets/hardware/weekly-overnight/weekly-overnight-module.png")),
     "All seven bays reuse the approved production artwork");
-  assert(data.canvasPixels.every(item=>item.width===149 && item.height===122),
-    "Every live mechanical overlay uses the exact 149x122 design coordinate system");
+  assert(data.canvasPixels.every(item=>
+    item.width>=Math.ceil(item.rect.width*Math.max(2,data.pixelRatio)) &&
+    item.height>=Math.ceil(item.rect.height*Math.max(2,data.pixelRatio))),
+    "Live text has enough backing pixels for each displayed bay and its screen density");
 
   const widths=data.bayRects.map(item=>item.width);
   const minWidth=Math.min(...widths),maxWidth=Math.max(...widths);
