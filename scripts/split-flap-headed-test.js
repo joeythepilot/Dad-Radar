@@ -4,6 +4,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const http = require("node:http");
+const {observeBrowserErrors} = require("./browser-error-proof");
 const {chromium, webkit} = require("playwright");
 
 const root = path.resolve(__dirname, "..");
@@ -101,8 +102,7 @@ const server = http.createServer((request, response) => {
           viewport: {width: 1920, height: 1080},
           serviceWorkers: "block"
         });
-        const errors = [];
-        page.on("pageerror", error => errors.push(error.message));
+        const assertBrowserSettled = observeBrowserErrors(page);
         await page.route("**/*", route => {
           const requestUrl = route.request().url();
           return requestUrl.startsWith(origin) || requestUrl.startsWith("blob:")
@@ -170,7 +170,7 @@ const server = http.createServer((request, response) => {
             evidence.boardBorderColor === "rgba(205, 177, 121, 0.09)",
           `${engine}: board edge light should remain at the restrained calibrated value`
         );
-        assert.deepEqual(errors, [], `${engine}: browser errors`);
+        await assertBrowserSettled(engine);
 
         await page.locator(".flight-strip-module").screenshot({
           path: path.join(output, `split-flap-matte-${engine}.png`)

@@ -1,5 +1,6 @@
 "use strict";
 // All flight data is fictional. No credentials, provider calls, or deployment.
+const {observeBrowserErrors} = require("./browser-error-proof");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -66,7 +67,7 @@ const server = http.createServer((req,res) => {
  ]) {
    console.log('Checking '+name);
    const page=await browser.newPage({viewport:{width,height}}),errors=[];
-   page.on('pageerror',e=>errors.push(e.message));
+   const assertBrowserSettled = observeBrowserErrors(page);
    page.on('response',r=>{
      if(r.status()>=400) errors.push(`${r.status()} ${r.url()}`);
    });
@@ -138,7 +139,8 @@ const server = http.createServer((req,res) => {
    assert(sequenceInk.contained,`${name}: sequence detail stays within its metal footer: ${sequenceInk.text}`);
    await require("./instrument-wheels-browser-proof").checkInstrumentWheels(page,name);
    await page.screenshot({path:path.join(output,`${name}.png`),fullPage:true});
-   assert.deepEqual(errors,[],`${name}: no browser or missing asset errors`);
+   await assertBrowserSettled(name);
+   assert.deepEqual(errors,[],`${name}: no missing asset errors`);
    if(name==='kiosk') {
      await page.setViewportSize({width:1366,height:768});
      await page.waitForTimeout(100);

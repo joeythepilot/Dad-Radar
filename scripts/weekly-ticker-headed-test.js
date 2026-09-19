@@ -6,6 +6,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const http = require("node:http");
 const {chromium, webkit} = require("playwright");
+const {observeBrowserErrors} = require("./browser-error-proof");
 const {checkWeeklyTicker} = require("./weekly-ticker-browser-proof");
 const weeklyTicker = require("../App/weekly-ticker");
 const airports = require("../data/airport-catalog");
@@ -94,8 +95,7 @@ const server = http.createServer((request,response) => {
             serviceWorkers:"block",
             hasTouch:name !== "desktop"
           });
-          const errors = [];
-          page.on("pageerror", error => errors.push(error.message));
+          const assertBrowserSettled = observeBrowserErrors(page);
           await page.route("**/*", route => route.request().url().startsWith(origin) || route.request().url().startsWith("blob:") ? route.continue() : route.abort());
           const url = name === "desktop" ? "/" : compact ? "/mobile?layout=compact" : "/mobile/full?layout=full";
           await page.goto(origin + url,{waitUntil:"load"});
@@ -106,7 +106,7 @@ const server = http.createServer((request,response) => {
           if (!compact) await page.waitForSelector("#dashboard:not([hidden])",{timeout:12000});
           const label = `${engine}-ticker-${name}`;
           const evidence = await checkWeeklyTicker(page,compact,label,output,expectedModules);
-          assert.deepEqual(errors,[],`${label}: browser errors`);
+          await assertBrowserSettled(label);
           results.push({label,passed:true,evidence});
           await page.close();
           console.log(`${label}: weekly overnight bank and physical duty card passed`);

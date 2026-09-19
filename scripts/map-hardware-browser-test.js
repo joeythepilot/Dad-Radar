@@ -4,6 +4,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const http = require("node:http");
+const {observeBrowserErrors} = require("./browser-error-proof");
 const {chromium, webkit} = require("playwright");
 const {checkInitialReplay,checkFullHardware,checkDiagnosticRoundTrip} = require("./map-startup-mobile-browser-proof");
 const root = path.resolve(__dirname, "..");
@@ -188,7 +189,7 @@ async function transportProof(page, label) {
           ['full-touch-landscape',880,404,false],['full-touch-small',667,375,false]
         ]) {
           const page=await browser.newPage({viewport:{width,height},serviceWorkers:'block',isMobile:name.includes('touch'),hasTouch:name.includes('touch'),deviceScaleFactor:name.includes('touch')?2:1});
-          const errors=[];page.on('pageerror',error=>errors.push(error.message));
+          const assertBrowserSettled = observeBrowserErrors(page);
           await page.addInitScript(audioProbe);
           await page.route('**/*',route=>route.request().url().startsWith(origin)||route.request().url().startsWith('blob:')?route.continue():route.abort());
           const url=name==='desktop'?'/':compact?'/mobile?layout=compact':'/mobile/full?layout=full';
@@ -210,7 +211,7 @@ async function transportProof(page, label) {
             await checkDiagnosticRoundTrip(page);
             await transportProof(page,label);
           }
-          assert.deepEqual(errors,[],`${label}: browser errors`);
+          await assertBrowserSettled(label);
           report.push({label,passed:true,geometry:measured,proportions});
           await page.close();console.log(`${label}: geometry and ${name==='desktop'||name==='compact-portrait'?'transport':'layout'} passed`);
         }
