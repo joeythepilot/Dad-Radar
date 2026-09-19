@@ -611,7 +611,9 @@
       function renderAnimations(now) {
         animationFrame=null;
         bays.forEach(bay=>drawBay(bay,now));
-        if(!destroyed && hasActiveAnimation(now)){
+        const active=!destroyed && hasActiveAnimation(now);
+        bank.dataset.animating=active ? "true" : "false";
+        if(active){
           animationFrame=root.requestAnimationFrame(renderAnimations);
         }
       }
@@ -683,9 +685,11 @@
         }));
 
         if(anyMotion){
+          bank.dataset.animating="true";
           playMotor(Math.min(1300,Math.max(520,maxEnd)));
           requestAnimationRender();
         } else {
+          bank.dataset.animating="false";
           bays.forEach(bay=>drawBay(bay,now));
         }
       }
