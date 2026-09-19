@@ -482,6 +482,21 @@
       return true;
     }
 
+    // A confirmed airline gate-in is authoritative completion evidence.
+    // Do not let the continuity lock hold a completed leg in ARRIVED for
+    // the full legLockTimeout window after FlightAware has actual IN.
+    const operationalGateIn = validDate(
+      lockedEvent?.operational?.actualIn
+    );
+
+    if (
+      operationalGateIn &&
+      operationalGateIn <= now
+    ) {
+      lockedFlightEventKey = null;
+      return true;
+    }
+
     const lockedStart = validDate(
       lockedEvent?.times?.startUtc ??
       lockedEvent?.startUtc
