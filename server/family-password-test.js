@@ -28,6 +28,8 @@ const {updateSettings} = require('../scripts/mobile-setup');
   let clock = Date.now();
   const options = {sessionFile: path.join(directory, 'sessions.json'), now: () => clock};
   const app = express();
+  app.locals.displayRevision = {instanceId:"test-instance",version:"test-version"};
+  app.get("/api/health", (_q,r) => r.json({privateProviderConfiguration:true}));
   app.get('/mobile', (_q, r) => r.send('PRIVATE FAMILY FLIGHT'));
   app.get('/api/calendar/upcoming', (_q, r) => r.json({ok: true, private: 'schedule'}));
   app.get('/api/state', (_q, r) => r.json({ok: true, private: 'shared state'}));
@@ -58,7 +60,7 @@ const {updateSettings} = require('../scripts/mobile-setup');
     await start();
     assert.equal((await request('/mobile')).headers.get('location'), '/family/login');
     assert.equal((await request('/mobile/full')).headers.get('location'), '/family/login');
-    for (const url of ['/api/state', '/api/calendar/upcoming', '/api/weather/radar', '/Mobile/test.js']) {
+    for (const url of ['/api/state', '/api/health', '/api/calendar/upcoming', '/api/weather/radar', '/Mobile/test.js']) {
       const r = await request(url, {headers: {'Cf-Access-Jwt-Assertion': 'forged'}});
       assert.equal(r.status, 401); assert.equal(r.headers.get('X-Dad-Radar-Login'), '/family/login');
       assert(!JSON.stringify(await r.json()).includes('schedule'));
@@ -83,6 +85,9 @@ const {updateSettings} = require('../scripts/mobile-setup');
     assert.equal((await request('/api/calendar/upcoming', {headers})).status, 200);
     assert.equal((await request('/api/state', {headers})).status, 200);
     assert.equal((await request('/Mobile/test.js', {headers})).headers.get('cache-control'), 'private, no-store');
+    const displayHealth = await request('/api/health', {headers});
+    assert.equal(displayHealth.status, 200);
+    assert.deepEqual(await displayHealth.json(), {ok:true,instanceId:"test-instance",version:"test-version"});
     for (const url of ['/api/diagnostics/recent', '/API/diagnostics/recent']) assert.equal((await request(url, {headers})).status, 404);
     assert.equal((await request('/api/flights/lookup', {method: 'POST', headers: {...headers, Origin: 'https://evil.test'}})).status, 403);
     assert.equal((await request('/api/flights/lookup', {method: 'POST', headers: {...headers, Origin: config.origin}})).status, 200);

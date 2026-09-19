@@ -104,6 +104,14 @@ async function runTests() {
     const api = await fetch(`${baseUrl}/api/health`);
     assert.match(api.headers.get("cache-control"), /no-store/);
     const health = await api.json();
+    for (const route of ["/", "/display", "/index.html", "/mobile", "/mobile/full"]) {
+      const page = await fetch(`${baseUrl}${route}`);
+      assert.match(page.headers.get("cache-control"), /no-store/, `${route}: never retain stale HTML`);
+      const body = await page.text();
+      assert(body.includes(`name="dad-radar-instance" content="${health.instanceId}"`), `${route}: page carries its serving instance`);
+      assert(body.includes(`name="dad-radar-version" content="${health.version || ""}"`), `${route}: page carries deployment version`);
+      assert.match(body, /<script defer src="\/App\/deployment-refresh.js\?v=page-version-1"><\/script>/, `${route}: independent refresh watchdog`);
+    }
     assert.equal(health.flightData.filedRoute.provider, "flightaware");
     assert.equal(health.flightData.operationalStatus.provider, "flightaware",
       "Health distinguishes FlightAware operational status from filed-route enrichment.");

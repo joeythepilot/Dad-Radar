@@ -80,6 +80,12 @@ function createMobileGateway(app, config, options = {}) {
     if (!['GET','HEAD'].includes(request.method) && request.get('Origin')!==config.origin) {response.status(403).end();return;}
     // The remote companion needs viewing and lookup only, not diagnostics.
     const pathname=request.path.toLowerCase();
+    // Authenticated display refresh only; do not expose the full health diagnostics.
+    if (pathname === '/api/health' && ['GET','HEAD'].includes(request.method)) {
+      const revision = app.locals.displayRevision;
+      if (!revision) {response.status(503).json({ok:false});return;}
+      response.json({ok:true,version:revision.version,instanceId:revision.instanceId});return;
+    }
     if(pathname==='/api' || pathname.startsWith('/api/')) {
       const allowed = pathname==='/api/flights/lookup' ? request.method==='POST' :
         ['GET','HEAD'].includes(request.method) && (/^\/api\/airports\/[a-z0-9]{3,4}\/surface$/.test(pathname) || ['/api/state','/api/calendar/upcoming','/api/weather/radar'].includes(pathname));

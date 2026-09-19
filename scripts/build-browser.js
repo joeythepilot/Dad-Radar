@@ -27,7 +27,6 @@ const browserSources = [
   "App/altitude-chime.js",
   "App/split-flap-state.js",
   "App/daily-schedule-layout.js",
-  "App/deployment-refresh.js",
   "App/poster-image-loader.js",
   "App/airport-surface-map.js",
   "App/sequence-history-display.js",

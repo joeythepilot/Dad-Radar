@@ -20,7 +20,7 @@
       typeof root.fetch === "function" &&
       typeof root.setInterval === "function" &&
       root.location &&
-      typeof root.location.reload === "function"
+      typeof root.location.replace === "function"
     ) {
       api.startDeploymentRefreshWatcher();
     }
@@ -44,49 +44,69 @@
 
       const reload =
         providedOptions.reload ??
-        (() => root.location.reload());
+        ((deployment) => {
+          const url = new URL(root.location.href);
+          url.searchParams.set("_dadRadarDeployment", deployment);
+          root.location.replace(url.href);
+        });
 
-      let baselineInstanceId = null;
+      function pageMarker(name) {
+        return root.document?.querySelector(`meta[name="dad-radar-${name}"]`)?.content || null;
+      }
+
+      let baselineInstanceId = providedOptions.loadedInstanceId ?? pageMarker("instance");
+      let baselineVersion = providedOptions.loadedVersion ?? pageMarker("version");
+      let checking = false;
       let reloadRequested = false;
 
       async function check() {
-        if (reloadRequested) {
+        if (reloadRequested || checking) {
           return false;
         }
 
+        checking = true;
+        const controller = typeof root.AbortController === "function" ? new root.AbortController() : null;
+        let timeout;
         try {
-          const response = await fetchImpl(
-            "/api/health",
-            { cache: "no-store" }
-          );
-
-          if (!response?.ok) {
-            return false;
-          }
-
-          const payload = await response.json();
+          const request = async () => {
+            const response = await fetchImpl(
+              "/api/health",
+              { cache: "no-store", ...(controller ? {signal: controller.signal} : {}) }
+            );
+            if (!response?.ok) return null;
+            return response.json();
+          };
+          const payload = await Promise.race([
+            request(),
+            new Promise((_, reject) => {
+              timeout = root.setTimeout(() => {
+                if (controller) controller.abort();
+                reject(new Error("Health check timed out"));
+              }, providedOptions.timeoutMs ?? 5000);
+            })
+          ]);
           const instanceId = String(
             payload?.instanceId ?? ""
           ).trim();
 
-          if (!instanceId) {
-            return false;
-          }
-
-          if (baselineInstanceId === null) {
-            baselineInstanceId = instanceId;
-            return false;
-          }
-
-          if (instanceId === baselineInstanceId) {
+          const version = String(payload?.version ?? "").trim();
+          if (!instanceId && !version) return false;
+          const changed = (baselineInstanceId && instanceId && baselineInstanceId !== instanceId) ||
+            (baselineVersion && version && baselineVersion !== version);
+          if (!changed) {
+            if (instanceId) baselineInstanceId = instanceId;
+            if (version) baselineVersion = version;
             return false;
           }
 
           reloadRequested = true;
-          reload();
+          reload(version || instanceId);
           return true;
         } catch (_error) {
           return false;
+        } finally {
+          root.clearTimeout(timeout);
+          checking = false;
         }
       }
 
@@ -127,10 +147,15 @@
         intervalMs
       );
 
-      return Object.freeze({
-        timerId,
-        watcher
-      });
+      const wake = () => { void watcher.check(); };
+      const visible = () => { if (!root.document.hidden) wake(); };
+      if (root.addEventListener) {
+        root.addEventListener("online", wake);
+        root.addEventListener("pageshow", wake);
+        root.addEventListener("focus", wake);
+      }
+      if (root.document?.addEventListener) root.document.addEventListener("visibilitychange", visible);
+      return Object.freeze({ timerId, watcher });
     }
 
     return {

@@ -48,9 +48,16 @@ const deploymentVersion =
   readDeploymentVersion();
 const serverInstanceId =
   createServerInstanceId();
+app.locals.displayRevision = Object.freeze({version: deploymentVersion, instanceId: serverInstanceId});
 let shutterTestToken = null;
 
-const displayHtml = fs
+function stampDisplayHtml(html) {
+  return html.replace("</head>",
+    `<meta name="dad-radar-instance" content="${serverInstanceId}">\n` +
+    `<meta name="dad-radar-version" content="${deploymentVersion || ""}">\n</head>`);
+}
+
+const displayHtml = stampDisplayHtml(fs
   .readFileSync(
     path.join(projectRoot, "index.html"),
     "utf8"
@@ -64,7 +71,7 @@ const displayHtml = fs
       "  >",
       "</head>"
     ].join("\n")
-  );
+  ));
 
 const PUBLIC_DIRECTORIES = [
   "Mobile",
@@ -211,7 +218,7 @@ app.get(["/mobile/full", "/mobile/full/"], (_request, response) => {
 
 app.get(["/mobile", "/mobile/"], (_request, response) => {
   response.set("Cache-Control", "private, no-store");
-  response.sendFile(path.join(projectRoot, "Mobile", "index.html"));
+  response.type("html").send(stampDisplayHtml(fs.readFileSync(path.join(projectRoot, "Mobile", "index.html"), "utf8")));
 });
 
 for (const directory of
@@ -233,13 +240,13 @@ for (const directory of
 }
 
 app.get("/", (_request, response) => {
-  response.type("html").send(displayHtml);
+  response.set("Cache-Control", "private, no-store").type("html").send(displayHtml);
 });
 
 app.get(
   ["/index.html", "/display"],
   (_request, response) => {
-    response.type("html").send(displayHtml);
+    response.set("Cache-Control", "private, no-store").type("html").send(displayHtml);
   }
 );
 

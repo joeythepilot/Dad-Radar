@@ -87,6 +87,39 @@ async function runTests() {
   assert.equal(await failingWatcher.check(), false);
   assert.equal(failedReloads, 0);
 
+  let staleReloads = 0;
+  const staleWatcher = createDeploymentRefreshWatcher({
+    loadedInstanceId: "old-page-instance", loadedVersion: "sha-old",
+    fetch: async () => response("instance-new", "sha-new"),
+    reload: () => staleReloads++
+  });
+  assert.equal(await staleWatcher.check(), true, "A stale page must reload on its first successful health check");
+  assert.equal(staleReloads, 1);
+  let version = "sha-a";
+  const versionWatcher = createDeploymentRefreshWatcher({
+    fetch: async () => response("same-instance", version), reload: () => {}
+  });
+  assert.equal(await versionWatcher.check(), false);
+  version = "sha-b";
+  assert.equal(await versionWatcher.check(), true, "Version changes also invalidate a loaded page");
+  let calls = 0;
+  const recovery = createDeploymentRefreshWatcher({
+    loadedInstanceId: "old", timeoutMs: 20,
+    fetch: async () => { calls++; return calls === 1 ? new Promise(() => {}) : response("new"); },
+    reload: () => {}
+  });
+  const stalled = recovery.check();
+  assert.equal(await recovery.check(), false, "Overlapping checks are suppressed");
+  assert.equal(calls, 1);
+  assert.equal(await stalled, false, "Hung checks time out without refreshing to an offline page");
+  assert.equal(await recovery.check(), true, "Polling recovers after a stalled request");
+  let bad = true;
+  const unavailable = createDeploymentRefreshWatcher({
+    loadedInstanceId: "old", fetch: async () => bad ? {ok:false} : response("new"), reload: () => {}
+  });
+  assert.equal(await unavailable.check(), false);
+  bad = false;
+  assert.equal(await unavailable.check(), true, "Deployment downtime does not discard the loaded page baseline");
   console.log("Deployment refresh watcher tests passed.");
 }
 
