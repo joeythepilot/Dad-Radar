@@ -9,9 +9,11 @@ async function checkInstrumentWheels(page, name) {
     const r=n.getBoundingClientRect(),g=n.closest('.instrument').getBoundingClientRect();
     return {inside:r.left>=g.left&&r.right<=g.right&&r.top>g.top+g.height*.6&&r.bottom<g.bottom,
       ratio:r.width/r.height,expected:n.viewBox.baseVal.width/300,
-      digits:[...n.querySelectorAll('.instrument-wheel-digits text')].every(t=>{const b=t.getBBox();return b.width<106;})};
+      digits:[...n.querySelectorAll('.instrument-wheel-digits [data-printed-ink]')].every(t=>{const b=t.getBBox();return b.width>0&&b.width<106;})};
   }));
   geometry.forEach(g=>{assert(g.inside,`${name}: embedded within lower gauge face`);assert(Math.abs(g.ratio-g.expected)<.02,'Artwork preserves aspect ratio');assert(g.digits,'Numerals fit drums');});
+  assert.equal(await page.locator('.instrument-wheel-digits [data-printed-ink]').count(),11,'Every gauge digit uses printed vector lettering');
+  assert(await page.locator('.instrument-wheel-digits mask ellipse').count()>100,'Real glyph masks provide fixed ink texture');
   const image = await page.evaluate(async () => {
     const im=new Image();im.src='/assets/hardware/instrument-wheel-inserts.png';await im.decode();
     const canvas=document.createElement('canvas');canvas.width=im.width;canvas.height=im.height;
@@ -31,7 +33,7 @@ async function checkInstrumentWheels(page, name) {
   await set('10','000','10,000');
   await page.waitForTimeout(450);
   assert.deepEqual(await readings(),['010','000','10000']);
-  assert.deepEqual(await faces.evaluateAll(ns=>ns.map(n=>[...n.querySelectorAll('.instrument-wheel-digits')].map(d=>d.textContent).join(''))),['010','000','10000'],'Rapid updates settle on newest value');
+  assert.deepEqual(await faces.evaluateAll(ns=>ns.map(n=>[...n.querySelectorAll('.instrument-wheel-digits')].map(d=>d.firstElementChild.getAttribute('data-printed-ink')).join(''))),['010','000','10000'],'Rapid updates settle on newest value');
   await set('---','---','-----');
   assert.deepEqual(await readings(),['---','---','-----']);
   await page.emulateMedia({reducedMotion:'reduce'});

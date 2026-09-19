@@ -42,9 +42,11 @@
     host.appendChild(face);
     let previous = null;
     function paint(wheel, character, offset) {
-      const text = svg("text", {x:wheel.x, y:187+offset, "text-anchor":"middle"});
-      text.textContent = character;
-      wheel.drum.appendChild(text);
+      const print=root.dadRadarPrintedInk.svg(document,character,{
+        height:79,cellWidth:80,ink:"#e2cda7",material:"wheel",seed:`${spec.id}-${wheel.x}-${character}`
+      });
+      print.element.setAttribute("transform",`translate(${wheel.x-print.width/2} ${108+offset})`);
+      wheel.drum.appendChild(print.element);
     }
     function update() {
       const next = format(source.textContent, wheels.length);

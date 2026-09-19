@@ -1,0 +1,18 @@
+"use strict";
+const assert=require("node:assert/strict");
+const ink=require("./printed-ink");
+const options={height:100,cellWidth:70,seed:"weekly-2-wheel-1",material:"wheel"};
+const first=ink.layout("8",options);
+assert.deepEqual(ink.layout("8",options),first,"Printing wear stays fixed across repaints");
+assert.notDeepEqual(ink.layout("8",{...options,seed:"weekly-3-wheel-1"}),first,"Separate physical wheels have their own ink wear");
+assert.equal(first.glyphs.length,1);
+assert(first.glyphs[0].path.length>40,"A real outlined numeral is used instead of a platform font");
+assert(first.glyphs[0].marks.some(mark=>mark.opacity>.5),"The ink includes small pinholes");
+assert(first.glyphs[0].marks.some(mark=>mark.opacity<.3),"The ink includes uneven coverage");
+assert.equal(ink.layout("12:34 PM",options).width,560,"Clock characters retain stable cell spacing");
+const next=ink.layout("12:35 PM",options);
+assert.deepEqual(ink.layout("12:34 PM",options).glyphs.slice(0,4),next.glyphs.slice(0,4),"Unchanged clock characters retain the same texture when time advances");
+const narrow=ink.layout("AWAITING UPDATED ARRIVAL TIME",{...options,maxWidth:1010});
+assert(narrow.width<=1010 && narrow.height<100,"Long arrival messages shrink inside the existing aperture");
+assert.equal(ink.layout("",options).glyphs.length,0);
+console.log("Printed ink tests passed: fixed wear, outlined type, clock spacing and aperture fitting.");

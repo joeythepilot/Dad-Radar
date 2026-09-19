@@ -30,6 +30,8 @@ const browserSources = [
   "App/poster-image-loader.js",
   "App/airport-surface-map.js",
   "App/sequence-history-display.js",
+  "App/printed-glyphs.js",
+  "App/printed-ink.js",
   "App/weekly-ticker.js",
   "App/main.js",
   "App/daily-duty-card.js",

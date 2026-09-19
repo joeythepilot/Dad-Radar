@@ -102,6 +102,13 @@ const server = http.createServer((req,res) => {
      const ink=await page.locator('#eta-value').evaluate(n=>({box:((r)=>({x:r.x,y:r.y,width:r.width,height:r.height}))(n.getBBox()),text:n.textContent}));
      assert.equal(ink.text,eta);assert(ink.box.x>=360&&ink.box.x+ink.box.width<=1415,'ETA remains within parchment width');
      assert(ink.box.y>=535&&ink.box.y+ink.box.height<=715,'ETA avoids plaques/frame');
+     const printed=await page.locator('[data-clock-print="eta-value"]').evaluate(n=>{
+       const b=n.getBBox(),t=n.transform.baseVal.consolidate().matrix;
+       return {text:n.getAttribute('data-printed-ink'),x:b.x+t.e,y:b.y+t.f,width:b.width,height:b.height};
+     });
+     assert.equal(printed.text,eta,'Printed arrival lettering follows the authoritative live value');
+     assert(printed.width>0&&printed.x>=360&&printed.x+printed.width<=1415&&printed.y>=535&&printed.y+printed.height<=715,
+       'Actual printed glyphs fit the clock aperture, including long arrival messages');
    }
    await page.evaluate(()=>updateDashboard(dadRadarVisualState));
    const timeBefore=await page.locator('#clock-value').textContent();
@@ -142,6 +149,7 @@ const server = http.createServer((req,res) => {
    await assertBrowserSettled(name);
    assert.deepEqual(errors,[],`${name}: no missing asset errors`);
    if(name==='kiosk') {
+     await require('./printed-ink-browser-proof').checkPrintedInk(page);
      await page.setViewportSize({width:1366,height:768});
      await assertBrowserSettled('kiosk after resize');
      const centered=await page.locator('#eta-value').evaluate(n=>{

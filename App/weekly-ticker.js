@@ -265,17 +265,17 @@
       const unlockAudio=()=>{ensureAudio();};
       root.addEventListener("pointerdown",unlockAudio,{passive:true});
 
-      function drawText(context,text,x,y,font,fill,scaleY=1,alpha=1) {
+      function drawText(context,text,x,y,fontSize,fill,scaleY=1,alpha=1,seed="weekly") {
         if(scaleY<=0.01 || alpha<=0.01)return;
         context.save();
         context.globalAlpha=alpha;
         context.translate(x,y);
         context.scale(1,scaleY);
-        context.fillStyle=fill;
-        context.font=font;
-        context.textAlign="center";
-        context.textBaseline="middle";
-        context.fillText(text,0,0);
+        const day=fontSize===24;
+        root.dadRadarPrintedInk.draw(context,text,0,0,{
+          height:day?18:17,cellWidth:day?14.4:22,ink:fill,seed,
+          material:day?"paper":"wheel"
+        });
         context.restore();
       }
 
@@ -294,13 +294,13 @@
             bay.dayAnimation=null;
           }
           drawText(context,bay.day,rect.x+rect.width/2,rect.y+rect.height/2+1,
-            '700 24px "Courier New", monospace',"#3b2b1d");
+            24,"#3b2b1d",1,1,`day-${bay.element.dataset.index}`);
           context.restore();
           return;
         }
         if(now<animation.start){
           drawText(context,animation.from,rect.x+rect.width/2,rect.y+rect.height/2+1,
-            '700 24px "Courier New", monospace',"#3b2b1d");
+            24,"#3b2b1d",1,1,`day-${bay.element.dataset.index}`);
           context.restore();
           return;
         }
@@ -310,14 +310,14 @@
         const incomingScale=Math.max(0.06,Math.sin(progress*Math.PI/2));
         drawText(context,animation.from,rect.x+rect.width/2,
           rect.y+rect.height/2+progress*rect.height*0.42,
-          '700 24px "Courier New", monospace',"#3b2b1d",outgoingScale,1-progress*0.35);
+          24,"#3b2b1d",outgoingScale,1-progress*0.35,`day-${bay.element.dataset.index}`);
         drawText(context,animation.to,rect.x+rect.width/2,
           rect.y+rect.height/2-(1-progress)*rect.height*0.42,
-          '700 24px "Courier New", monospace',"#3b2b1d",incomingScale,0.65+progress*0.35);
+          24,"#3b2b1d",incomingScale,0.65+progress*0.35,`day-${bay.element.dataset.index}`);
         context.restore();
       }
 
-      function drawWheelFace(context,rect,character,angle) {
+      function drawWheelFace(context,rect,character,angle,seed) {
         const scale=Math.max(0.055,Math.cos(angle));
         const yOffset=Math.sin(angle)*rect.height*0.34;
         const alpha=0.55+0.45*scale;
@@ -326,7 +326,7 @@
         context.rect(rect.x,rect.y,rect.width,rect.height);
         context.clip();
         drawText(context,character,rect.x+rect.width/2,rect.y+rect.height/2+yOffset,
-          '700 22px "Arial Narrow", "Helvetica Neue", sans-serif',"#eee0bb",scale,alpha);
+          22,"#eee0bb",scale,alpha,seed);
         context.restore();
       }
 
@@ -334,16 +334,17 @@
         const context=bay.context;
         const rect=WHEEL_WINDOWS[index];
         const animation=bay.wheelAnimations[index];
+        const seed=`weekly-${bay.element.dataset.index}-wheel-${index}`;
         if(!animation || now>=animation.start+animation.duration){
           if(animation){
             bay.characters[index]=animation.to;
             bay.wheelAnimations[index]=null;
           }
-          drawWheelFace(context,rect,bay.characters[index],0);
+          drawWheelFace(context,rect,bay.characters[index],0,seed);
           return;
         }
         if(now<animation.start){
-          drawWheelFace(context,rect,animation.from,0);
+          drawWheelFace(context,rect,animation.from,0,seed);
           return;
         }
 
@@ -354,16 +355,16 @@
         const fraction=travel-step;
         const current=sequence[step];
         const next=sequence[Math.min(sequence.length-1,step+1)];
-        drawWheelFace(context,rect,current,fraction*Math.PI/2);
-        drawWheelFace(context,rect,next,-Math.PI/2+fraction*Math.PI/2);
+        drawWheelFace(context,rect,current,fraction*Math.PI/2,seed);
+        drawWheelFace(context,rect,next,-Math.PI/2+fraction*Math.PI/2,seed);
       }
 
       function drawBay(bay,now) {
         if(!bay.context)return;
         // Keep the approved 149x122 drawing coordinates, but rasterize text
-        // at display resolution (at least 2x for smooth small letter edges).
+        // at high display resolution, retaining the fine fixed print texture.
         const rect=bay.canvas.getBoundingClientRect();
-        const density=Math.max(2,Number(root.devicePixelRatio)||1);
+        const density=Math.max(4,Number(root.devicePixelRatio)||1);
         const width=Math.ceil((rect.width||MODULE_DESIGN_WIDTH)*density);
         const height=Math.ceil((rect.height||MODULE_DESIGN_HEIGHT)*density);
         if(bay.canvas.width!==width || bay.canvas.height!==height){
