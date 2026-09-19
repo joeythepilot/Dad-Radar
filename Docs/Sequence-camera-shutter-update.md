@@ -1,3 +1,5 @@
+> Historical decisions, specifications or ideas. For the running build, use [Current build handoff](Current-build-handoff.md). Superseded details here do not authorize restoring older behavior.
+
 # Active-sequence history, descent camera and map shutters
 
 September 13, 2026 cumulative follow-up to the server-master and flight-leg association repairs.

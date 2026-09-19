@@ -39,7 +39,7 @@
   <!-- Loads last and owns the new three-column layout. -->
   <link
     rel="stylesheet"
-    href="./UI/layout-side-rail.css?v=ipad-es5-19"
+    href="./UI/layout-side-rail.css?v=cleanup-1"
   >
   <link rel="stylesheet" href="./UI/approved-map-artwork.css?v=1">
   <link rel="stylesheet" href="./UI/instrument-wheels.css?v=1">
@@ -1048,153 +1048,10 @@
   </div>
 
 
-  <!--
-    This intentionally uses ES5 syntax so an older iPad can
-    report a startup failure instead of remaining frozen on
-    the initialization screen.
-  -->
-  <script>
-    (function installDadRadarBootDiagnostic() {
-      "use strict";
-
-      var VERSION = "IPAD-ES5-8";
-      var timeoutId = null;
-      var hasFinished = false;
-
-      function installLegacyLayoutMarker() {
-        var supportsModernLayout = false;
-
-        try {
-          supportsModernLayout =
-            window.CSS &&
-            typeof window.CSS.supports ===
-              "function" &&
-            window.CSS.supports(
-              "width",
-              "clamp(1px, 2vw, 3px)"
-            ) &&
-            window.CSS.supports(
-              "aspect-ratio",
-              "1 / 1"
-            );
-        } catch (error) {
-          supportsModernLayout = false;
-        }
-
-        if (!supportsModernLayout) {
-          document.documentElement
-            .setAttribute(
-              "data-dad-radar-legacy",
-              "true"
-            );
-        }
-      }
-
-      installLegacyLayoutMarker();
-
-      function statusElement() {
-        return document.querySelector(
-          ".status-message"
-        );
-      }
-
-      function fail(message) {
-        var element;
-
-        if (hasFinished) {
-          return;
-        }
-
-        element = statusElement();
-
-        if (element) {
-          element.textContent =
-            "STARTUP ERROR · " +
-            String(
-              message ||
-              "UNKNOWN SAFARI FAILURE"
-            )
-              .toUpperCase()
-              .slice(0, 120) +
-            " · " + VERSION;
-        }
-
-        document.documentElement
-          .setAttribute(
-            "data-dad-radar-boot-error",
-            "true"
-          );
-      }
-
-      function ready() {
-        hasFinished = true;
-
-        if (timeoutId !== null) {
-          window.clearTimeout(timeoutId);
-        }
-      }
-
-      window.__dadRadarBoot = {
-        fail: fail,
-        ready: ready,
-        version: VERSION
-      };
-
-      window.addEventListener(
-        "error",
-        function handleBootError(event) {
-          if (
-            event.target &&
-            event.target.tagName === "SCRIPT"
-          ) {
-            fail("BROWSER BUNDLE DID NOT LOAD");
-            return;
-          }
-
-          if (event.message) {
-            fail(
-              event.message +
-              (event.lineno
-                ? " AT LINE " +
-                  event.lineno
-                : "")
-            );
-          }
-        },
-        true
-      );
-
-      window.addEventListener(
-        "unhandledrejection",
-        function handleBootRejection(event) {
-          var reason = event.reason;
-
-          fail(
-            reason && reason.message
-              ? reason.message
-              : "UNHANDLED STARTUP FAILURE"
-          );
-        }
-      );
-
-      timeoutId = window.setTimeout(
-        function reportStartupTimeout() {
-          var dashboard =
-            document.getElementById(
-              "dashboard"
-            );
-
-          if (!dashboard || dashboard.hidden) {
-            fail("APPLICATION DID NOT START");
-          }
-        },
-        12000
-      );
-    })();
-  </script>
+  <script src="./App/boot-diagnostic.js?v=1"></script>
 
   <script
-    src="./App/dad-radar-browser.js?v=weekly-paper-1"
+    src="./App/dad-radar-browser.js?v=cleanup-1"
     onerror="window.__dadRadarBoot.fail('BROWSER BUNDLE DID NOT LOAD')"
   ></script>
 

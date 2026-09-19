@@ -8,7 +8,7 @@
 
 **Tech Stack:** Node.js CommonJS, existing Express server, FlightAware AeroAPI v4, Google Calendar schedule parser, existing schedule/live state models, GitHub Actions and home Windows regression gate.
 
-**Spec:** `docs/superpowers/specs/2026-09-17-flightaware-operational-status-design.md`
+**Spec:** `Docs/superpowers/specs/2026-09-17-flightaware-operational-status-design.md`
 
 ## Global Constraints
 

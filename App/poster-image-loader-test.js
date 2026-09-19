@@ -1,38 +1,31 @@
 const assert = require("node:assert/strict");
-const fs = require("node:fs");
-const path = require("node:path");
 
 const {
   createPosterImageLoader,
   posterAssetUrl
 } = require("./poster-image-loader");
 
-const MAIN_SOURCE = fs.readFileSync(
-  path.join(__dirname, "main.js"),
-  "utf8"
-);
-
 function testPosterAssetUrl() {
   assert.equal(
     posterAssetUrl(
       "./assets/poster.png",
       {
-        version: "ipad-poster-2"
+        version: "poster-2"
       }
     ),
-    "./assets/poster.png?v=ipad-poster-2"
+    "./assets/poster.png?v=poster-2"
   );
 
   assert.equal(
     posterAssetUrl(
       "./assets/poster.png?size=full",
       {
-        version: "ipad-poster-2",
+        version: "poster-2",
         attempt: 1,
         nonce: 42
       }
     ),
-    "./assets/poster.png?size=full&v=ipad-poster-2&retry=42-1"
+    "./assets/poster.png?size=full&v=poster-2&retry=42-1"
   );
 }
 
@@ -44,7 +37,7 @@ function createHarness(options = {}) {
 
   const loader =
     createPosterImageLoader({
-      version: "ipad-poster-2",
+      version: "poster-2",
       attemptTimeoutMs:
         options.attemptTimeoutMs ?? 0,
       nonce: () => 99,
@@ -117,7 +110,7 @@ function testFailedPosterRetriesWithFreshUrls() {
 
   assert.equal(
     harness.images[0].src,
-    "./assets/ord.png?v=ipad-poster-2"
+    "./assets/ord.png?v=poster-2"
   );
 
   harness.images[0].onerror();
@@ -131,7 +124,7 @@ function testFailedPosterRetriesWithFreshUrls() {
 
   assert.equal(
     harness.images[1].src,
-    "./assets/ord.png?v=ipad-poster-2&retry=99-1"
+    "./assets/ord.png?v=poster-2&retry=99-1"
   );
 
   harness.images[1].onerror();
@@ -145,7 +138,7 @@ function testFailedPosterRetriesWithFreshUrls() {
 
   assert.equal(
     harness.images[2].src,
-    "./assets/ord.png?v=ipad-poster-2&retry=99-2"
+    "./assets/ord.png?v=poster-2&retry=99-2"
   );
 
   harness.images[2].onload();
@@ -212,27 +205,12 @@ function testFinalFailureUsesFallback() {
   );
 }
 
-function testPosterUsesBothRenderingPaths() {
-  assert.match(
-    MAIN_SOURCE,
-    /showDestinationPosterBackground\([\s\S]*?loadVisibleDestinationPoster\(/,
-    "Approved posters should retain the Safari background while loading the real image for Chromium."
-  );
-
-  assert.match(
-    MAIN_SOURCE,
-    /showDestinationPosterBackground\(\s*poster,\s*posterIdentity,\s*flight,\s*airportCode\s*\)/,
-    "Poster rendering should receive the identity and flight context needed by both paths."
-  );
-}
-
 function runTests() {
   testPosterAssetUrl();
   testFailedPosterRetriesWithFreshUrls();
   testHungPosterRetriesAfterTimeout();
   testNewPosterCancelsOldRequest();
   testFinalFailureUsesFallback();
-  testPosterUsesBothRenderingPaths();
 
   console.log(
     "Poster image loader tests passed."

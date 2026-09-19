@@ -1,4 +1,4 @@
-// Legacy entry point retained for cached family pages. There is only one controller.
+// Compact-family entry point for the shared map controller and hardware styles.
 (function () {
   'use strict';
   if (document.querySelector('script[data-map-roll-shared]')) return;

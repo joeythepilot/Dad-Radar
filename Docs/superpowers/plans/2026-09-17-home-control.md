@@ -8,7 +8,7 @@
 
 **Tech Stack:** PowerShell 5+/Windows Scheduled Tasks, Git, Node/npm, GitHub Actions self-hosted Windows runner, GitHub Issues.
 
-**Spec:** `docs/superpowers/specs/2026-09-17-home-control-design.md`
+**Spec:** `Docs/superpowers/specs/2026-09-17-home-control-design.md`
 
 ## Global Constraints
 

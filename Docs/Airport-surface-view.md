@@ -24,7 +24,7 @@ The arrival-time overlays, regional filed route, weather, accumulated actual fli
 
 ## Validation
 
-- Full `npm test` passes, including the ES5 browser build, provider HTTP integration, Calendar controller, map, mobile, and Access authorization tests.
+- Full `npm test` passes, including the modern browser build, provider HTTP integration, Calendar controller, map, mobile, and Access authorization tests.
 - New tests replay the ORD–BIL FR24 ADSB fallback report at zero and two knots through adapter, live-state model and airport selection, including stale/estimated/missing-data rejection. The arrival controller also checks that FR24 ground arrival switches to free follow-up only.
 - New tests replay stationary/moving Taxi-Out, stale or missing coordinates, takeoff, destination ground reports, extended taxi-in, transponder silence, flight replacement, unknown altitude and DEN field elevation.
 - SVG replay verifies local projection scale, geometry rendering, unfilled centerlines, raw-position placement despite regional animation, stale-position hold and endpoint transitions.

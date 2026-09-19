@@ -1,8 +1,8 @@
 name: Map hardware beta verification
 on:
   push:
-    branches: [agent/mobile-companion, agent/map-roll-verification]
-    paths: ['App/**', 'UI/**', 'Mobile/**', 'server/**', 'services/**', 'models/**', 'config/**', 'assets/hardware/**', 'assets/ticker/**', 'assets/split-flap/**', 'ops/home-control/**', 'scripts/**', 'index.html', 'package*.json', '.github/workflows/map-hardware-beta.yml']
+    branches: [agent/mobile-companion]
+    paths: ['App/**', 'UI/**', 'Mobile/**', 'server/**', 'services/**', 'models/**', 'config/**', 'assets/**', 'data/**', 'ops/home-control/**', 'scripts/**', 'index.html', 'package*.json', '.github/workflows/map-hardware-beta.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -51,7 +51,7 @@ jobs:
           retention-days: 7
   browser:
     runs-on: macos-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
@@ -68,9 +68,7 @@ jobs:
           npm install --no-save --package-lock=false playwright@1.63.0
           npx playwright install chromium webkit
           mkdir -p artifacts/map-hardware
-          node scripts/weekly-ticker-headed-test.js 2>&1 | tee artifacts/map-hardware/browser.log
-          node scripts/split-flap-headed-test.js 2>&1 | tee -a artifacts/map-hardware/browser.log
-          node scripts/map-hardware-headed-test.js 2>&1 | tee -a artifacts/map-hardware/browser.log
+          npm run test:browser 2>&1 | tee artifacts/map-hardware/browser.log
       - name: Keep exact-SHA verification evidence
         if: always()
         run: |
@@ -80,5 +78,7 @@ jobs:
         if: always()
         with:
           name: map-hardware-beta-${{ github.sha }}
-          path: artifacts/map-hardware/
+          path: |
+            artifacts/map-hardware/
+            artifacts/approved-artwork/
           retention-days: 7

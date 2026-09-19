@@ -1,3 +1,5 @@
+> Historical decisions, specifications or ideas. For the running build, use [Current build handoff](Current-build-handoff.md). Superseded details here do not authorize restoring older behavior.
+
 # Sequence counter: matching small rod and centered text
 
 Family beta only, on `agent/mobile-companion`.

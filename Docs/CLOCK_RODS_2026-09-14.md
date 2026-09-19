@@ -1,3 +1,5 @@
+> Historical decisions, specifications or ideas. For the running build, use [Current build handoff](Current-build-handoff.md). Superseded details here do not authorize restoring older behavior.
+
 # Tiny brass clock supports, family beta
 
 Only the Current Time and ETA attachments change. The existing clock housing

@@ -1,3 +1,5 @@
+> Historical decisions, specifications or ideas. For the running build, use [Current build handoff](Current-build-handoff.md). Superseded details here do not authorize restoring older behavior.
+
 # Family-beta map repair recovery
 
 Scope: `agent/mobile-companion` only. No production deployment, release package,
@@ -49,7 +51,7 @@ conversation's own tool history.
 ## Installation boundary
 
 These are source and automated browser checks, not hands-on validation of the
-home PC or the older iPad. The home server still needs the beta update installed,
+home PC or the family tablet. The home server still needs the beta update installed,
 the browser bundle rebuilt, and its existing beta host restarted. Keep local
 calendar credentials, provider keys, saved state, and family access settings.
 Final perceived sound balance and physical-device approval remain owner checks.

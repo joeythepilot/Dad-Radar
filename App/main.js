@@ -920,9 +920,6 @@ function showDestinationPosterFallback(
   destinationPanel?.style.removeProperty(
     "--destination-poster-image"
   );
-  destinationStage?.classList.remove(
-    "has-poster-background"
-  );
 }
 
 function loadVisibleDestinationPoster(
@@ -957,7 +954,7 @@ function loadVisibleDestinationPoster(
         ?.posterAssetUrl?.(
           poster.source,
           {
-            version: "ipad-poster-6",
+            version: "poster-8",
             attempt,
             nonce: requestNonce
           }
@@ -991,7 +988,7 @@ function loadVisibleDestinationPoster(
 
       destinationPanel?.style.setProperty(
         "--destination-poster-image",
-        `url("${source}")`
+        `url("${destinationPoster.currentSrc || destinationPoster.src}")`
       );
     };
 
@@ -1034,62 +1031,6 @@ function loadVisibleDestinationPoster(
   }
 
   attemptLoad(0);
-}
-
-function showDestinationPosterBackground(
-  poster,
-  posterIdentity,
-  flight,
-  airportCode
-) {
-  const source =
-    globalThis.dadRadarPosterImages
-      ?.posterAssetUrl?.(
-        poster.source,
-        {
-          version: "ipad-poster-7"
-        }
-      ) ?? poster.source;
-
-  destinationPanel?.style.setProperty(
-    "--destination-poster-image",
-    `url("${source}")`
-  );
-  destinationStage?.classList.add(
-    "has-poster-background"
-  );
-
-  if (destinationPoster) {
-    destinationPoster.hidden = true;
-    destinationPoster.setAttribute(
-      "hidden",
-      ""
-    );
-    destinationPoster.style.display =
-      "none";
-  }
-
-  if (destinationPosterFallback) {
-    destinationPosterFallback.hidden =
-      true;
-    destinationPosterFallback.setAttribute(
-      "hidden",
-      ""
-    );
-    destinationPosterFallback.style.display =
-      "none";
-  }
-
-  // Keep the CSS background as a legacy-Safari safety
-  // net, while also loading the real image element for
-  // Chromium and other browsers. Either rendering path
-  // can display the same approved poster independently.
-  loadVisibleDestinationPoster(
-    poster,
-    posterIdentity,
-    flight,
-    airportCode
-  );
 }
 
 function updateDestinationPoster(flight) {
@@ -1140,7 +1081,8 @@ function updateDestinationPoster(flight) {
   }
 
   if (poster && destinationPoster) {
-    showDestinationPosterBackground(
+    showDestinationPosterFallback(flight, airportCode);
+    loadVisibleDestinationPoster(
       poster,
       posterIdentity,
       flight,

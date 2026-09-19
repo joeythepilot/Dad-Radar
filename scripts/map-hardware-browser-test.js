@@ -70,7 +70,16 @@ function checkGeometry(data) {
   assert(data.map.width >= 240 && data.map.height >= 140,"map retains usable dimensions");
   assert(data.pageWidth <= data.viewport+1,"no horizontal page overflow");
   for (const hardware of data.hardware) {
-    const r=hardware.rect,m=data.map;
+    const m=data.map;
+    // The approved tracker seats its visible housing against the frame by
+    // compensating for transparent artwork margins. Measure that housing.
+    const r={...hardware.rect};
+    if (hardware.selector === '.sequence-mileage-badge') {
+      r.left += r.width * .0333;
+      r.bottom -= r.height * .0573;
+      assert(r.left >= m.left && r.left <= m.left + 2, 'tracker meets left frame');
+      assert(r.bottom <= m.bottom && r.bottom >= m.bottom - 2, 'tracker meets lower frame');
+    }
     assert(r.left>=m.left-1 && r.right<=m.right+1 && r.top>=m.top-1 && r.bottom<=m.bottom+1,`${hardware.selector} fits chart aperture: ${JSON.stringify(data)}`);
     assert(hardware.art || hardware.shadow!=="none",`${hardware.selector} has supplied physical artwork or its existing cast shadow`);
     if (hardware.selector === '.sequence-mileage-badge') {

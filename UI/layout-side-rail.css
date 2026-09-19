@@ -290,13 +290,6 @@
   overflow: hidden !important;
 }
 
-.destination-stage.has-poster-background {
-  background-image:
-    var(--destination-poster-image);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-}
 
 
 .destination-poster-image {
@@ -1085,20 +1078,16 @@
       var(--flap-gap)
     );
 
-  --route-section-gap:
-    26px;
 }
 
 
-@supports (width: clamp(1px, 2vw, 3px)) {
-  .flight-strip-module {
-    --route-section-gap:
-      clamp(
-        26px,
-        1.7vw,
-        32px
-      );
-  }
+.flight-strip-module {
+  --route-section-gap:
+    clamp(
+      26px,
+      1.7vw,
+      32px
+    );
 }
 
 .flight-strip-labels,
@@ -1202,10 +1191,6 @@
 
 
 .instrument-slot .instrument {
-  /* Safari 12 has no aspect-ratio support. At the 1024px family-beta
-     viewport, 13vw produces a 133px square that fits each rail slot. */
-  width: 13vw !important;
-  height: 13vw !important;
 
   max-width: 96% !important;
   max-height: 96% !important;
@@ -1218,15 +1203,13 @@
 }
 
 
-@supports (aspect-ratio: 1 / 1) {
-  .instrument-slot .instrument {
-    width: auto !important;
-    height: 96% !important;
+.instrument-slot .instrument {
+  width: auto !important;
+  height: 96% !important;
 
-    aspect-ratio:
-      1 / 1
-      !important;
-  }
+  aspect-ratio:
+    1 / 1
+    !important;
 }
 
 
@@ -1269,153 +1252,6 @@
 
 .instrument-panel {
   display: none !important;
-}
-
-
-/* =========================================================
-   First-generation iPad Air hard fallback
-
-   Safari 12 reports partial support for several modern CSS
-   features while resolving their dependent geometry to zero.
-   The ES5 boot script marks that engine so these two visual
-   modules use explicit, dependency-free dimensions.
-   ========================================================= */
-
-html[data-dad-radar-legacy="true"]
-  .flight-strip-labels,
-html[data-dad-radar-legacy="true"]
-  .flight-board-row {
-  display: flex !important;
-  align-items: center !important;
-  gap: 0 !important;
-  column-gap: 0 !important;
-  transform: none !important;
-}
-
-
-html[data-dad-radar-legacy="true"]
-  .flight-strip-labels > span:first-child,
-html[data-dad-radar-legacy="true"]
-  #flight-number {
-  width: 186px !important;
-  min-width: 186px !important;
-  max-width: 186px !important;
-  flex: 0 0 186px !important;
-}
-
-
-html[data-dad-radar-legacy="true"]
-  .flight-strip-labels > span:last-child,
-html[data-dad-radar-legacy="true"]
-  #status-value {
-  width: 374px !important;
-  min-width: 374px !important;
-  max-width: 374px !important;
-  flex: 0 0 374px !important;
-}
-
-
-html[data-dad-radar-legacy="true"]
-  .flight-strip-route-labels,
-html[data-dad-radar-legacy="true"]
-  .flap-route-section {
-  min-width: 0 !important;
-  height: 100% !important;
-  flex: 1 1 auto !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 0 !important;
-  column-gap: 0 !important;
-}
-
-
-html[data-dad-radar-legacy="true"]
-  .flight-strip-route-labels > span,
-html[data-dad-radar-legacy="true"]
-  .flap-route-section > .flap-cell {
-  width: 139px !important;
-  min-width: 139px !important;
-  max-width: 139px !important;
-  flex: 0 0 139px !important;
-}
-
-
-html[data-dad-radar-legacy="true"]
-  .flight-strip-route-labels > span + span,
-html[data-dad-radar-legacy="true"]
-  .flap-route-section > .flap-cell + .flap-cell {
-  margin-left: 26px !important;
-}
-
-
-html[data-dad-radar-legacy="true"]
-  .flap-character {
-  width: 45px !important;
-  min-width: 45px !important;
-  max-width: 45px !important;
-  height: 70px !important;
-  min-height: 70px !important;
-  max-height: 70px !important;
-  flex: 0 0 45px !important;
-}
-
-
-html[data-dad-radar-legacy="true"]
-  .flap-character + .flap-character {
-  margin-left: 2px !important;
-}
-
-
-html[data-dad-radar-legacy="true"]
-  .instrument-slot {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-
-html[data-dad-radar-legacy="true"]
-  .instrument-slot .instrument {
-  position: relative !important;
-  display: block !important;
-  width: 132px !important;
-  min-width: 132px !important;
-  max-width: 132px !important;
-  height: 132px !important;
-  min-height: 132px !important;
-  max-height: 132px !important;
-  flex: 0 0 132px !important;
-}
-
-
-html[data-dad-radar-legacy="true"]
-  .instrument-slot .airspeed-layer,
-html[data-dad-radar-legacy="true"]
-  .instrument-slot .heading-layer,
-html[data-dad-radar-legacy="true"]
-  .instrument-slot .altimeter-layer {
-  position: absolute !important;
-  top: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  width: 132px !important;
-  height: 132px !important;
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-
-html[data-dad-radar-legacy="true"]
-  .instrument-slot .instrument-internal-light {
-  top: 8px !important;
-  right: auto !important;
-  bottom: auto !important;
-  left: 8px !important;
-  width: 116px !important;
-  height: 116px !important;
-  opacity: 0.19 !important;
 }
 
 

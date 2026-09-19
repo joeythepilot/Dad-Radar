@@ -12,15 +12,13 @@ html[data-family-full] .flight-board { min-width: 0; min-height: 0; padding: 3px
 html[data-family-full] .flight-board-row { display: flex !important; align-items: center !important; justify-content: space-between; gap: 0 !important; transform: none !important; }
 html[data-family-full] #flight-number { width: var(--flight-flap-group-width) !important; min-width: 0 !important; max-width: none !important; flex: 0 0 var(--flight-flap-group-width) !important; }
 html[data-family-full] #status-value { width: var(--status-flap-group-width) !important; min-width: 0 !important; max-width: none !important; flex: 0 0 var(--status-flap-group-width) !important; }
-html[data-family-full] .flap-route-section { width: var(--family-route-width); flex: 0 0 var(--family-route-width) !important; display: flex !important; align-items: center; justify-content: center; gap: 0 !important; }
+html[data-family-full] .flap-route-section { width: var(--family-route-width); flex: 0 0 var(--family-route-width) !important; display: flex !important; align-items: center; justify-content: center; gap: var(--route-section-gap) !important; }
 html[data-family-full] .flap-route-section > .flap-cell { width: var(--airport-flap-group-width) !important; min-width: 0 !important; max-width: none !important; flex: 0 0 var(--airport-flap-group-width) !important; }
-html[data-family-full] .flap-route-section > .flap-cell + .flap-cell { margin-left: var(--route-section-gap) !important; }
 html[data-family-full] .flap-character { width: var(--flap-width) !important; min-width: var(--flap-width) !important; max-width: var(--flap-width) !important; height: var(--flap-height) !important; min-height: var(--flap-height) !important; max-height: var(--flap-height) !important; flex: 0 0 var(--flap-width) !important; font-size: var(--family-flap-font-size) !important; border-radius: var(--family-flap-radius) !important; }
-html[data-family-full] .flap-character + .flap-character { margin-left: var(--flap-gap) !important; }
 
 /* Portrait Full keeps every module at a readable size, with vertical scrolling
    instead of shrinking the entire cabinet into a 16:9 postage stamp. */
-html.family-full-portrait .display-viewer { display:block; overflow-x:hidden; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+html.family-full-portrait .display-viewer { display:block; overflow-x:hidden; overflow-y:auto; }
 html.family-full-portrait .dashboard { max-height:none; }
 html.family-full-portrait .panel-shell { grid-template-rows:88px minmax(0,1fr) !important; }
 html.family-full-portrait .lower-display-grid {
@@ -124,7 +122,7 @@ html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedu
    physical Today’s Duty card is excluded so its calibrated overlays stay fixed. */
 html[data-family-full] .daily-schedule-panel.family-duty-narrow:not(.is-physical-duty-card) {
   display:block !important; overflow-x:hidden; overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
+
 }
 html[data-family-full] .family-duty-narrow:not(.is-physical-duty-card):focus { outline:2px solid #e9bf75; outline-offset:-3px; }
 html[data-family-full] .family-duty-narrow:not(.is-physical-duty-card) .daily-schedule-heading { flex-wrap:wrap; row-gap:4px; }

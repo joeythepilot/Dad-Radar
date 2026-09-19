@@ -1,3 +1,5 @@
+> Historical decisions, specifications or ideas. For the running build, use [Current build handoff](Current-build-handoff.md). Superseded details here do not authorize restoring older behavior.
+
 Version 0.1
 Project foundation complete.
 

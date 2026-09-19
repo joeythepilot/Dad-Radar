@@ -1,3 +1,5 @@
+> Historical decisions, specifications or ideas. For the running build, use [Current build handoff](Current-build-handoff.md). Superseded details here do not authorize restoring older behavior.
+
 # Mobile readout proportions and startup diagnostic replay
 
 Scope: family beta on agent/mobile-companion; no production packaging.

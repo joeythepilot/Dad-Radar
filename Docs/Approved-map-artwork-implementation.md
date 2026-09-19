@@ -49,12 +49,12 @@ Installed all six PNGs from the active Library manifest in `assets/hardware/`, p
 - `assets/hardware/approved-map-artwork.json`
 - `assets/hardware/instrument-active-sequence.png`
 - `assets/hardware/instrument-twin-clock-panel-final.png`
-- `docs/superpowers/plans/2026-09-19-approved-map-artwork.md`
+- `Docs/superpowers/plans/2026-09-19-approved-map-artwork.md`
 - `index.html`
 - `package.json`
 - `scripts/approved-artwork-browser-test.js`
 - `scripts/approved-artwork-test.js`
-- `scripts/browser-compatibility-test.js`
+- `scripts/browser-bundle-test.js`
 - `scripts/build-browser.js`
 - `scripts/clock-rods-browser-proof.js`
 - `scripts/map-hardware-browser-test.js`

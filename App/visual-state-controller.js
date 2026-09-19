@@ -4,9 +4,6 @@
   const DEFAULT_INTERPOLATION_MS =
     52 * 1000;
 
-  const VISUAL_FRAME_INTERVAL_MS =
-    1000 / 20;
-
   const MOTION_FIELDS = Object.freeze([
     "airspeed",
     "groundSpeed",
@@ -339,7 +336,6 @@
     );
 
     let startedAt = null;
-    let lastRenderedAt = null;
 
     const renderFrame = (timestamp) => {
       if (startedAt === null) {
@@ -353,19 +349,6 @@
         0,
         1
       );
-
-      if (
-        lastRenderedAt !== null &&
-        timestamp - lastRenderedAt <
-          VISUAL_FRAME_INTERVAL_MS &&
-        progress < 1
-      ) {
-        animationFrameId =
-          requestFrame(renderFrame);
-        return;
-      }
-
-      lastRenderedAt = timestamp;
 
       publishVisualState(
         interpolateState(

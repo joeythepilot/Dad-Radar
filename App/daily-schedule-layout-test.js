@@ -25,7 +25,7 @@ assert.deepEqual(
     1024
   ).map((entry) => entry.id),
   ["three", "four"],
-  "The legacy iPad layout should prioritize the current and next duty items."
+  "The narrow display layout should prioritize the current and next duty items."
 );
 
 assert.deepEqual(

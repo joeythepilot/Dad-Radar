@@ -1,6 +1,6 @@
 # Dad Radar authoritative build handoff
 
-Updated September 17, 2026.
+Updated September 19, 2026.
 
 This file is intentionally a **current-state handoff**, not a running historical transcript. Older implementation history remains available in Git history and focused documents under `Docs/`.
 
@@ -160,6 +160,18 @@ The current regional map includes:
 
 The current map transport canon uses the continuous map roll. Do not reintroduce shutters.
 
+## Approved display and browser baseline
+
+The combined twin-clock artwork sits above the instrument rail. The active-sequence housing meets the lower-left map bezel without a support leg. Three gauges contain the approved 3/3/5-digit wheel readouts. Keep the current split-flap lamp strength and weekly-paper duty-card treatment; real-monitor paper feedback remains pending.
+
+The seven overnight modules roll at 06:00 local. The discarded paper-ticker renderer is retired; the established `weekly-ticker.js` module name remains for the current overnight-bank interface.
+
+`App/boot-diagnostic.js` independently reports startup failures. `App/deployment-refresh.js` checks deployment SHA/server instance every ten seconds and on wake/reconnect. It preserves the route/query/fragment, tolerates outages, and avoids reload loops. A running-server restart is not proof the physical kiosk visibly refreshed.
+
+Current Chrome/Edge and Safari/WebKit use the same responsive layout. No retired device layout mode or device-specific frame-rate throttle remains. Retain useful current-browser access, audio-unlock and reduced-motion behavior.
+
+See `Docs/Approved-map-artwork-implementation.md`, `Docs/Instrument-wheel-readouts.md`, `Docs/Display-update-refresh.md`, and `Docs/Repository-cleanup-2026-09-19.md` for the source and verification records.
+
 ## Today's Duty
 
 The primary/Full view uses a physical raster dispatch card with live overlays.
@@ -184,7 +196,7 @@ Family password authentication and gateway isolation are implemented. Secrets, p
 
 Useful endpoints/scripts:
 
-- `/api/health`: version/instance/provider configuration, no secrets
+- `/api/health`: local version/instance/provider configuration; signed-in family viewers receive only `ok`, `version` and `instanceId`
 - `/api/state`: read-only authoritative master state
 - `/api/calendar/upcoming`: internally parsed/enriched schedule
 - `/api/diagnostics/recent`: sanitized local diagnostics
@@ -219,9 +231,9 @@ Read these before changing provider/state behavior:
 - `Docs/FlightAware-operational-status.md`
 - `Docs/Flight-leg-association-repair.md`
 - `Docs/Airport-surface-view.md`
-- `docs/superpowers/specs/2026-09-17-flightaware-operational-status-design.md`
+- `Docs/superpowers/specs/2026-09-17-flightaware-operational-status-design.md`
 
-## Immediate verification after the FlightAware feature lands
+## Operational field-verification checklist
 
 After final deployment to `MAXWELLHOUSE`:
 

@@ -96,7 +96,7 @@
     else bar.appendChild(label);
     if (!full && !document.querySelector('script[data-dad-radar-map-roll-mobile]')) {
       var mapRoll = document.createElement('script');
-      mapRoll.src = '/Mobile/map-roll-legacy.js?v=7';
+      mapRoll.src = '/Mobile/map-roll-entry.js?v=1';
       mapRoll.setAttribute('data-dad-radar-map-roll-mobile', 'true');
       document.body.appendChild(mapRoll);
     }

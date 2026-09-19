@@ -320,12 +320,17 @@ function testCalendarRefreshPreservesLiveMotion() {
   );
 }
 
-function testFrameRateIsSafeForLegacyIpad() {
-  assert.match(
-    SOURCE,
-    /VISUAL_FRAME_INTERVAL_MS\s*=\s*\n?\s*1000\s*\/\s*20/,
-    "Live telemetry should use a smooth but legacy-iPad-safe frame rate."
-  );
+function testMotionAdvancesOnBrowserFrames() {
+  const harness = createHarness(liveState());
+  harness.dispatchState(targetState());
+  harness.runNextFrame(1000);
+  const first = harness.visualEvents.at(-1).detail.state.flight.altitude;
+  harness.runNextFrame(1016);
+  const second = harness.visualEvents.at(-1).detail.state.flight.altitude;
+  assert(second < first, "Each browser frame advances an active descent.");
+  harness.runNextFrame(2000);
+  assert.equal(harness.visualEvents.at(-1).detail.state.flight.altitude, 10000);
+  assert.equal(harness.frames.size, 0, "The completed transition stops scheduling frames.");
 }
 
 function runTests() {
@@ -333,7 +338,7 @@ function runTests() {
   testSameSnapshotDoesNotRestartMotion();
   testReducedMotionUpdatesImmediately();
   testCalendarRefreshPreservesLiveMotion();
-  testFrameRateIsSafeForLegacyIpad();
+  testMotionAdvancesOnBrowserFrames();
 
   console.log(
     "Visual state controller tests passed."

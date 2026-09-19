@@ -1,3 +1,5 @@
+> Historical decisions, specifications or ideas. For the running build, use [Current build handoff](Current-build-handoff.md). Superseded details here do not authorize restoring older behavior.
+
 # Dad Radar Project Decisions
 
 This document records important design and engineering decisions.
@@ -236,7 +238,6 @@ It exists so future work always builds on previous decisions instead of repeatin
 
 ✓ In a non-flight state, Flight and From remain visible as blank mechanical tiles. To displays the last confirmed airport when one exists—`AVL` for Home and the confirmed airport for Layover—and Status displays the compact state label. Unknown location leaves To blank rather than inventing an airport.
 
-✓ The first-generation iPad Air on iOS 12.5.5 receives an ES5 browser bundle plus explicit CSS fallbacks for unsupported `clamp()`, flex-gap, and `aspect-ratio` behavior. Versioned browser assets bypass stale Safari caches, and a visible startup diagnostic replaces silent initialization failures.
 
 ## 2026-08-14
 
@@ -244,6 +245,6 @@ It exists so future work always builds on previous decisions instead of repeatin
 
 ✓ The Windows family-beta host runs through a named Task Scheduler task under the local system account. It starts after every Windows boot without a terminal or user sign-in, has no execution time limit, and retries after an unexpected failure.
 
-✓ The background host rebuilds the legacy iPad browser bundle before serving Dad Radar, writes a bounded local operational log under `runtime/`, and can wait for a manually started server before taking over the configured port.
+✓ The background host rebuilds the browser bundle before serving Dad Radar, writes a bounded local operational log under `runtime/`, and can wait for a manually started server before taking over the configured port.
 
 ✓ The desktop monitor may turn off and Windows may remain locked, but the PC must not sleep while serving the upstairs iPad. Raspberry Pi power behavior remains part of the physical-build phase.

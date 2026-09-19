@@ -1,3 +1,5 @@
+> Historical decisions, specifications or ideas. For the running build, use [Current build handoff](Current-build-handoff.md). Superseded details here do not authorize restoring older behavior.
+
 # Weekly ticker presentation repair — 2026-09-14
 
 Scope: family beta / local staging only.

@@ -68,14 +68,14 @@ const server = http.createServer((req,res) => {
    const page=await browser.newPage({viewport:{width,height}}),errors=[];
    page.on('pageerror',e=>errors.push(e.message));
    page.on('response',r=>{
-     // Existing poster CSS fallback resolves relative to /UI; the foreground
-     // poster succeeds. Record separately, outside this artwork patch.
-     if(r.status()>=400&&!new URL(r.url()).pathname.startsWith('/UI/assets/destinations/')) errors.push(`${r.status()} ${r.url()}`);
+     if(r.status()>=400) errors.push(`${r.status()} ${r.url()}`);
    });
    await page.goto(`http://127.0.0.1:${server.address().port}${route}`);
    await page.waitForSelector('#dashboard:not([hidden])').catch(async e=>{console.log(await page.evaluate(()=>({url:location.href,boot:document.querySelector('.status-message')?.textContent,html:document.documentElement.outerHTML.slice(0,700)})));throw e;});
    await page.waitForFunction(()=>document.querySelector('#eta-value').textContent==='7:42 PM');
    await page.waitForFunction(()=>document.querySelector('#destination-poster').naturalWidth>0);
+   assert.equal(await page.locator('.destination-stage').evaluate(node=>getComputedStyle(node).backgroundImage), 'none',
+     'The loaded poster must have one foreground rendering path.');
    assert.equal(await page.locator('.twin-clock-panel').count(),1,'Approved single twin-clock housing must exist');
    assert.equal(await page.locator('.clock-block,.eta-block,.clock-support-rod').count(),0,'Old housings and mounts removed');
    const geometry=await page.evaluate(()=>{

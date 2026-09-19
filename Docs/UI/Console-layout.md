@@ -1,181 +1,19 @@
-# Dad Radar Console Layout
+# Current console layout
 
-## Purpose
+The HP 23es 1920 × 1080 cabinet is the primary visual reference. The current layout is implemented by `index.html`, `UI/approved-map-artwork.css`, the supporting `UI/` styles and `Mobile/layout.css`.
 
-This document defines the physical layout of the Dad Radar console.
+| Area | Current treatment |
+| --- | --- |
+| Upper main bay | Permanent Flight, From, To and Status split-flap fields with warm concealed-lamp illumination |
+| Upper right | One approved twin-clock panel, aligned to the instrument rail width and split-flap bay height, with live current time and ETA |
+| Lower left | Destination poster above the physical Today’s Duty card |
+| Center | Regional/airport map with continuous vertical roll, approved airport plaques and leader fittings |
+| Below map | Seven equal mechanical overnight modules; today at left, daily rollover at 06:00 local |
+| Map lower-left edge | Active-sequence/leg housing seated against the bezel without a support leg |
+| Right rail | Three live gauges with existing needles and 3/3/5-digit rolling readouts |
 
-It is the master reference for how every visual module fits together.
+The duty card uses `assets/ui/today-duty-card-weekly-paper.png` with live blank-window overlays and `brightness(0.92) saturate(1.13)`. Keep the original card asset and provenance. The paper treatment still needs real-monitor feedback before any further adjustment.
 
-Any future UI work should conform to this layout unless the Design Canon is intentionally revised.
+Full-family views reuse this artwork and live state; portrait allows scrolling and adapts module arrangement. Compact is a separate presentation of the same server state. Use current-browser geometry tests and screenshots instead of inferring layout from historical sketches.
 
----
-
-# Design Intent
-
-The console should feel like a restored airline dispatch console from the golden age of aviation.
-
-It is not a computer monitor.
-
-It is not a dashboard.
-
-It is an object that belongs in a living room and feels equally at home beside a leather chair, a record player, and a shelf of travel books.
-
-The display should invite curiosity without demanding attention.
-
----
-
-# Primary Display Zones
-
-The console is divided into six permanent modules.
-
-```
-┌───────────────────────────────────────────────────────────────┐
-│                     Split-Flap Flight Board                   │
-├───────────────────┬───────────────────────────────────────────┤
-│                   │                                           │
-│ Destination       │             Moving Map                    │
-│ Poster            │                                           │
-│ Today's Duty      │                                           │
-├───────────────────┴───────────────────────────────────────────┤
-│ Flight Instruments                  │ Power / Status Module   │
-└─────────────────────────────────────┴─────────────────────────┘
-```
-
-These module locations are considered permanent.
-
-Future versions may improve the contents of each module, but the overall composition should remain recognizable.
-
----
-
-# Visual Hierarchy
-
-The eye should naturally move in this order:
-
-1. Split-Flap Flight Board
-2. Moving Map
-3. Destination Poster
-4. Today's Duty
-5. Flight Instruments
-6. Power / Status Module
-
-No module should compete for attention.
-
----
-
-# Module Responsibilities
-
-## Split-Flap Flight Board
-
-Primary flight information.
-
-Always visible.
-
-Highest priority.
-
-The four active fields use a 4 : 3 : 3 : 8.5 grid for FLIGHT, FROM, TO, and STATUS. This follows the actual character counts, keeps the flight number close to the left edge, and preserves a clear visual break between TO and STATUS.
-
-The final physical faceplate covers the entire upper monitor area except the split-flap tile openings. The software must therefore keep the mechanical row visible in every state and may never replace it with a full-width text message. In non-flight states, Flight and From use blank tiles, To shows the last confirmed airport when one exists, and Status shows the compact state label.
-
----
-
-## Moving Map
-
-Shows where Dad is right now.
-
-Animated only when necessary.
-
-Should feel calm rather than busy.
-
----
-
-## Destination Poster
-
-Provides personality.
-
-Displays vintage travel artwork for the current destination or layover.
-
-Should rotate slowly between approved artwork when appropriate.
-
----
-
-## Today's Duty
-
-Provides a compact textual view of Daddy's complete Eastern Time schedule for the current day.
-
-The poster-and-schedule column occupies 27 percent of the lower console. Within that column, the poster receives 75 percent of the height and Today's Duty receives 25 percent, providing legible family-room viewing without cropping the poster artwork.
-
-The current activity receives the strongest emphasis. Completed items recede, while upcoming items remain readable.
-
-Context uses Delaney's natural family language, such as “Daddy is flying to Greensboro,” rather than operational jargon.
-
-The panel is derived from the same normalized Calendar schedule as the primary state and must not become a second source of truth.
-
----
-
-## Flight Instruments
-
-Adds aviation character.
-
-Supports immersion.
-
-Decorative unless live aircraft data becomes available.
-
----
-
-## Power / Status Module
-
-Communicates console state.
-
-Examples:
-
-• Online
-
-• Offline
-
-• Syncing
-
-• Last Updated
-
-• Power Indicator
-
-This module should remain visually understated.
-
----
-
-# Layout Principles
-
-Every module should have breathing room.
-
-Consistent spacing.
-
-Consistent borders.
-
-Minimal ornamentation.
-
-Nothing should appear randomly placed.
-
-The composition should feel balanced from every viewing distance.
-
----
-
-# Future Expansion
-
-Additional modules should only be added if they clearly improve the family experience.
-
-The layout should resist feature creep.
-
-Empty space is preferable to clutter.
-
----
-
-# Success Criteria
-
-Someone walking into the room should immediately recognize:
-
-• This is aviation.
-
-• This is beautifully made.
-
-• This belongs here.
-
-Only after looking closer should they begin discovering the details.
+See [approved artwork](../Approved-map-artwork-implementation.md), [instrument readouts](../Instrument-wheel-readouts.md) and [current handoff](../Current-build-handoff.md). Physical faceplate construction may require a future alignment adjustment approved by Joey.

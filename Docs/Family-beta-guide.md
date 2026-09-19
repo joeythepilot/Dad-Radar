@@ -1,6 +1,6 @@
 # Dad Radar Family Beta Guide
 
-The family beta runs Dad Radar on the downstairs Windows desktop and uses the upstairs iPad as a dedicated display over the private home network. The desktop owns Google Calendar authorization and the Flightradar24 token. Those credentials are never sent to the iPad.
+The family beta runs Dad Radar on the downstairs Windows desktop and uses the upstairs iPad as a dedicated display over the private home network. The desktop owns Google Calendar authorization and any optional provider credentials. Those credentials are never sent to the iPad.
 
 ## What the beta includes
 
@@ -46,7 +46,7 @@ npm.cmd install
 npm.cmd run beta:autostart:restart
 ```
 
-The restart command rebuilds the legacy iPad browser bundle and restarts the background server. Windows may request permission. There is no need to reinstall the startup task after an ordinary code update unless the repository or Node.js installation is moved.
+The restart command rebuilds the browser bundle and restarts the background server. Windows may request permission. There is no need to reinstall the startup task after an ordinary code update unless the repository or Node.js installation is moved.
 
 If `.env` does not already exist, copy `.env.example` to `.env`, then add the real values:
 
@@ -207,11 +207,9 @@ For each unexpected result, record the local time, flight number, expected resul
 - The background log is available at `runtime\family-beta.log`; Dad Radar does not intentionally record configured token values there.
 - In Windows Firewall, allow Node.js on Private networks only.
 
-### The old iPad stops at startup or loses the flap and gauges
+### A display stops at startup
 
-- Completely close the existing Safari tab, then reopen the address printed by `beta:address`. Dad Radar versions its browser bundle and stylesheets so Safari cannot reuse the incompatible copy.
-- The first-generation iPad Air on iOS 12.5.5 uses a dedicated ES5 bundle and legacy CSS dimensions for the split-flap and instruments.
-- If startup still fails, photograph the full `STARTUP ERROR` line. Include its `IPAD-ES5-8` version marker in the report; do not include credentials or token text.
+Use a current Chrome, Edge, or Safari browser. Display pages automatically check for deployments and refresh after the server returns. If a startup error remains, capture the `STARTUP ERROR` line and report the time and display layout; never include credentials or tokens. See [Display update refresh](Display-update-refresh.md).
 
 ### Dad Radar loads but has no schedule
 
