@@ -143,9 +143,16 @@ const server = http.createServer((req,res) => {
    assert.deepEqual(errors,[],`${name}: no missing asset errors`);
    if(name==='kiosk') {
      await page.setViewportSize({width:1366,height:768});
-     await page.waitForTimeout(100);
-     const centered=await page.locator('#eta-value').evaluate(n=>Math.abs(n.getBBox().x+n.getBBox().width/2-887)<1);
-     assert(centered,'Live ETA remains centered on an existing page after resize');
+     await assertBrowserSettled('kiosk after resize');
+     const centered=await page.locator('#eta-value').evaluate(n=>{
+       const box=n.getBBox(),matrix=n.getScreenCTM();
+       return {anchor:+n.getAttribute('x'),align:getComputedStyle(n).textAnchor,
+         pixelError:Math.abs(box.x+box.width/2-887)*Math.abs(matrix.a)};
+     });
+     // SVG ink bearings differ across platform fonts. Compare visible pixels,
+     // as the other geometry assertions do, while preserving the exact anchor.
+     assert.equal(centered.anchor,887);assert.equal(centered.align,'middle');
+     assert(centered.pixelError<1,`Live ETA remains centered after resize: ${JSON.stringify(centered)}`);
      await page.locator('.twin-clock-panel').evaluate(n=>n.style.display='none');
      await page.locator('#eta-value').evaluate(n=>n.textContent='AWAITING UPDATED ARRIVAL TIME');
      await page.waitForTimeout(30);
