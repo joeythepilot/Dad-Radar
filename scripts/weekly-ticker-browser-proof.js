@@ -115,8 +115,8 @@ async function checkWeeklyTicker(page, compact, label, output, expectedModules) 
   assert(Math.abs(totalWidth-data.bank.width)<=2,"Seven equal bays consume the entire ticker opening");
 
   assert(data.duty?.physical, "Today's Duty is rendered as the approved physical dispatch card");
-  assert.equal(data.duty.artSrc, "/assets/ui/today-duty-card-v2.png", "Today's Duty uses the approved full-quality raster asset");
-  assert.deepEqual(data.duty.artPixels, {width:2214,height:1000}, "Today's Duty keeps the exact 2.214:1 physical card artwork");
+  assert.equal(data.duty.artSrc, "/assets/ui/today-duty-card-weekly-paper.png", "Today's Duty uses the approved weekly-paper raster asset");
+  assert.deepEqual(data.duty.artPixels, {width:1864,height:843}, "Today's Duty keeps the exact approved weekly-paper pixels");
   assert.equal(data.duty.context, "DADDY IS FLYING TO COLUMBUS, OHIO", "The family live-status sentence remains on the physical card");
   assert.equal(data.duty.nowBadgeCount, 0, "The old NOW web badge is gone");
   if (label.endsWith("-desktop")) {
