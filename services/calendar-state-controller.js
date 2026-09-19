@@ -491,7 +491,8 @@
 
     if (
       operationalGateIn &&
-      operationalGateIn <= now
+      operationalGateIn <= now &&
+      !followingGroundArrival()
     ) {
       lockedFlightEventKey = null;
       return true;
