@@ -8,8 +8,11 @@ function layover(id,airport,startUtc,endUtc){return{id,kind:"layover",status:"co
 const overnightAsset=path.join(__dirname,"..","assets","hardware","weekly-overnight","weekly-overnight-module.png");
 assert(fs.existsSync(overnightAsset),"Reusable weekly overnight module artwork is present.");
 const overnightPng=fs.readFileSync(overnightAsset);
-assert.equal(overnightPng.readUInt32BE(16),149,"Weekly overnight module production width is exactly 149 px.");
-assert.equal(overnightPng.readUInt32BE(20),122,"Weekly overnight module production height is exactly 122 px.");
+assert.equal(overnightPng.readUInt32BE(16),1192,"Weekly overnight artwork retains the original 1192 px width.");
+assert.equal(overnightPng.readUInt32BE(20),976,"Weekly overnight artwork retains the original 976 px height.");
+assert.equal(require("node:crypto").createHash("sha256").update(overnightPng).digest("hex"),
+  "ac97916a25af2ed2a5780e4a63857f53527738ae997e8b09667f9101f35e681e",
+  "Production artwork is the unchanged approved high-resolution original.");
 assert.equal(ticker.OVERNIGHT_MODULE_COUNT,7,"Weekly overnight bank has seven equal bays.");
 assert.equal(ticker.OPERATIONAL_DAY_ROLLOVER_HOUR,6,"Weekly overnight bank rolls to a new day at 06:00 local display time.");
 

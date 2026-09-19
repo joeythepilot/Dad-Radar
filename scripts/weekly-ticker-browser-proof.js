@@ -101,8 +101,8 @@ async function checkWeeklyTicker(page, compact, label, output, expectedModules) 
   }
 
   assert.equal(data.bayRects.length,7,"Seven physical overnight bays are present");
-  assert(data.artPixels.every(item=>item.width===149 && item.height===122),
-    "Every bay uses the exact 149x122 production hardware asset");
+  assert(data.artPixels.every(item=>item.width===1192 && item.height===976),
+    "Every bay loads the original 1192x976 artwork without changing layout dimensions");
   assert(data.artPixels.every(item=>item.src.includes("/assets/hardware/weekly-overnight/weekly-overnight-module.png")),
     "All seven bays reuse the approved production artwork");
   assert(data.canvasPixels.every(item=>item.width===149 && item.height===122),

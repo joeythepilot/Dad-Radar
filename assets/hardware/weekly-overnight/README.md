@@ -4,9 +4,19 @@ This folder contains the reusable physical artwork for the seven-bay weekly over
 
 Production asset:
 - `weekly-overnight-module.png`
-- visible hardware bounds: 149 x 122 px at the 1920 x 1080 DadRadar layout
+- source resolution: 1192 x 976 px (8x the 149 x 122 logical design coordinates)
+- display size remains controlled by the existing seven equal bays, not source pixels
 - transparent PNG
 - reused seven times side-by-side
 - day label and four overnight characters remain live/dynamic and are not baked into the artwork
 
 Do not resize, crop, pad, or distort the production asset in source control. Layout code should place seven equal 1fr bays across the existing ticker opening.
+
+## Original artwork provenance
+
+Restored byte-for-byte from `dadradar_weekly_module_dark_HQ_1192x976.png` on 2026-09-19.
+SHA-256: `ac97916a25af2ed2a5780e4a63857f53527738ae997e8b09667f9101f35e681e`.
+The previous 149 x 122 production PNG matched the saved `dadradar_weekly_module_dark_FINAL_149x122.png`
+(SHA-256 `af819c9593a86787f9c58eb27fe416f7d6522546aebe2f4706f198edd96940b4`).
+That reduced copy remains recoverable in Git history. Do not substitute it for the high-resolution source.
+This asset-only replacement preserves the existing live canvas coordinates, weekday font size, animation, and layout.
