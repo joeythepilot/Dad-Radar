@@ -33,7 +33,7 @@
 
   <link
     rel="stylesheet"
-    href="./UI/map.css?v=graphite-history-3"
+    href="./UI/map.css?v=home-paper-4"
   >
 
   <!-- Loads last and owns the new three-column layout. -->
@@ -202,6 +202,11 @@
             <!-- Ignore transparent side gutters for physical alignment; PNG bytes stay intact. -->
             <image href="./assets/hardware/instrument-twin-clock-panel-final.png"
                    x="0" y="0" width="1738" height="829" preserveAspectRatio="xMidYMid meet"></image>
+            <!-- Exposure tint stays within the two photographed paper apertures. -->
+            <g fill="rgba(90,56,15,0.12)" pointer-events="none" aria-hidden="true">
+              <rect class="clock-paper-tone" x="346" y="152" width="1083" height="189" rx="16"></rect>
+              <rect class="clock-paper-tone" x="346" y="533" width="1083" height="188" rx="16"></rect>
+            </g>
             <text id="clock-value" class="twin-clock-value" x="887" y="252"
                   text-anchor="middle" dominant-baseline="middle" aria-label="Current time">--:--</text>
             <text id="eta-value" class="twin-clock-value" x="887" y="630"
@@ -1062,7 +1067,7 @@
   <script src="./App/boot-diagnostic.js?v=1"></script>
 
   <script
-    src="./App/dad-radar-browser.js?v=compact-sound-1"
+    src="./App/dad-radar-browser.js?v=home-paper-1"
     onerror="window.__dadRadarBoot.fail('BROWSER BUNDLE DID NOT LOAD')"
   ></script>
 

@@ -42,6 +42,21 @@
   border: 0;
 }
 
+/* A gentle exposure tint inside the paper aperture only. Original texture,
+   brass, lower wheels and the live ink canvas remain unchanged. */
+.weekly-overnight-bay::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  left: 7.72%;
+  right: 7.72%;
+  top: 7.38%;
+  bottom: 60.66%;
+  border-radius: 2.5% / 8%;
+  background: rgba(90, 56, 15, 0.12);
+  pointer-events: none;
+}
+
 .weekly-overnight-module-art {
   object-fit: fill;
   user-select: none;

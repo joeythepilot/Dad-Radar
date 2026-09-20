@@ -26,8 +26,8 @@
   width: 100%;
   height: 100%;
   object-fit: fill;
-  /* Match the sampled cream midtone of the weekly day-window artwork. */
-  filter: brightness(0.92) saturate(1.13);
+  /* Home-monitor calibration: richer cream without dimming live lettering. */
+  filter: brightness(0.84) saturate(1.16);
   pointer-events: none;
   user-select: none;
 }

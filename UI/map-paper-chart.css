@@ -3,8 +3,10 @@
 @font-face{font-family:"DadRadar Chart Antique";src:url("../assets/maps/chart-antique-italic.woff") format("woff");font-style:italic;font-weight:400;font-display:swap}
 .route-map-shell { background:#deceb0!important; }
 .map-water-fill { fill:#658ba4!important; }
+/* Exposure belongs to the printed sheet, never its live ink or hardware. */
+.map-vector-geography { filter:brightness(.88) sepia(.12) saturate(1.08); }
 .map-terrain-relief { opacity:.48!important;filter:grayscale(1) contrast(1.22) sepia(.32)!important;mix-blend-mode:multiply!important; }
-.map-aged-paper { mix-blend-mode:multiply;opacity:.48;filter:saturate(.6) brightness(1.08);pointer-events:none; }
+.map-aged-paper { mix-blend-mode:multiply;opacity:.64;filter:saturate(.85) brightness(.94);pointer-events:none; }
 .map-paper-grain { opacity:.14!important; }
 .map-age-stain { display:none; }
 .route-map-shell::before { background:none!important; }
@@ -25,8 +27,8 @@
 .chart-home circle { stroke:#743c2f;stroke-width:1; }
 .chart-home .chart-home-center { fill:#743c2f;stroke:none; }
 .chart-home-leader { stroke:#743c2f;stroke-width:.6; }
-.airport-surface-layer { background:#f6eed9!important;isolation:isolate; }
-.airport-surface-layer::before { content:"";position:absolute;inset:0;pointer-events:none;background:url("../assets/maps/aged-chart-paper.png?v=1") center/100% 100% no-repeat;opacity:.48;filter:saturate(.6) brightness(1.08);mix-blend-mode:multiply; }
+.airport-surface-layer { background:#dbc69b!important;isolation:isolate; }
+.airport-surface-layer::before { content:"";position:absolute;inset:0;pointer-events:none;background:url("../assets/maps/aged-chart-paper.png?v=1") center/100% 100% no-repeat;opacity:.64;filter:saturate(.85) brightness(.94);mix-blend-mode:multiply; }
 .airport-surface-svg { position:relative; }
 .airport-surface-apron { fill:#c5b795!important;stroke:#9a8b6e!important; }
 .airport-surface-terminal { fill:#82755d!important;stroke:#5e5340!important; }
