@@ -1,6 +1,6 @@
 # FlightAware Operational Status
 
-Updated September 17, 2026.
+Updated September 20, 2026.
 
 ## Purpose
 
@@ -139,8 +139,13 @@ Operational calls are cached independently of Calendar refresh:
 - 3–12 hours: 30 minutes;
 - 1–3 hours: 10 minutes;
 - within 1 hour before OUT: 2 minutes;
-- after OUT before IN: 5 minutes;
+- after actual OUT: pause routine operational requests during taxi/cruise, retaining the last operational record;
+- resume within 30 minutes of estimated ON/IN (scheduled arrival if estimates are unavailable), or earlier when the same leg reaches approach/landing/taxi-in or 85% progress;
+- resumed arrival checks use the existing 5-minute cache until actual IN;
+- after actual IN: stop routine operational polling for that leg;
 - terminal result: 6 hours.
+
+ADSB.lol remains the primary movement provider throughout, with the existing FR24 fallback. Arrival polling also resumes by time when tracking coverage is missing; an unavailable arrival time keeps operational checks enabled. Known diversions and actual ON keep arrival checks enabled. A restart reacquires operational status, and a changed Calendar leg identity starts a fresh polling cycle. Retained timing estimates can age during the pause; filed-route enrichment is separate and unchanged.
 
 All displays consume the same home-server master state, so adding another family device does not multiply FlightAware requests.
 

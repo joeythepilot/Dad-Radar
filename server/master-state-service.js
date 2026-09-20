@@ -68,8 +68,38 @@ function createMasterStateService(options) {
     if (!Array.isArray(schedule?.events)) return null;
     const id = event?.id;
     const prior = schedule.events.find(candidate =>
-      id !== null && id !== undefined && String(candidate?.id) === String(id));
+      id !== null && id !== undefined && String(candidate?.id) === String(id) &&
+      sequenceHistory.eventKey(candidate) === sequenceHistory.eventKey(event));
     return prior?.operational ?? null;
+  }
+
+  function operationalPollingDue(event, previous) {
+    const now = clock();
+    const occurred = value => {
+      const time = Date.parse(value ?? "");
+      return Number.isFinite(time) && time <= now;
+    };
+    if (occurred(previous?.actualIn)) return false;
+    if (!occurred(previous?.actualOut)) return true;
+    if (occurred(previous?.actualOn) || previous?.diverted) return true;
+
+    // OUT hands movement tracking to ADS-B. Retained operational data still
+    // supplies airline timing until the arrival checks resume.
+    const resolved = envelope.resolved;
+    if (resolved?.event && sequenceHistory.eventKey(resolved.event) === sequenceHistory.eventKey(event)) {
+      const phase = String(resolved.state?.livePhase ?? resolved.mode ?? "").toUpperCase();
+      if (["APPROACH", "LANDING", "TAXI_IN", "ARRIVED", "LANDED", "DIVERTED"].includes(phase)) return true;
+      if (Number(resolved.state?.flight?.progress) >= 85) return true;
+    }
+
+    const times = values => values.map(value => Date.parse(value ?? "")).filter(Number.isFinite);
+    const estimates = times([previous?.estimatedOn, previous?.estimatedIn]);
+    const arrivals = estimates.length ? estimates : times([
+      previous?.scheduledOn, previous?.scheduledIn, event?.times?.endUtc ?? event?.endUtc
+    ]);
+    // The clock is also a recovery path when destination ADS-B coverage is poor.
+    // With no usable arrival time, keep checking rather than pause indefinitely.
+    return !arrivals.length || now >= Math.min(...arrivals) - 30 * 60 * 1000;
   }
 
   function calendarPlanFor(event) {
@@ -96,8 +126,10 @@ function createMasterStateService(options) {
       return value;
     }
     const events = await Promise.all(value.events.map(async event => {
-      if (!operationalWindowIncludes(event)) return event;
       const previousOperational = priorOperationalFor(event);
+      if (!operationalWindowIncludes(event) || !operationalPollingDue(event, previousOperational)) {
+        return withOperational(event, previousOperational);
+      }
       try {
         const operational = await options.getOperational(event);
         return withOperational(event, operational ?? previousOperational);

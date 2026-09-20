@@ -47,8 +47,10 @@ The operational cache cadence is deliberately conservative:
 - 3 to 12 hours before: at most one lookup every 30 minutes;
 - 1 to 3 hours before: at most one every 10 minutes;
 - within 1 hour before departure and before OUT: at most one every 2 minutes;
-- after actual OUT and before actual IN: at most one every 5 minutes;
-- after actual IN or cancellation: terminal data is retained for hours rather than polled continuously.
+- after actual OUT: pause routine operational queries while ADS-B supplies movement;
+- within 30 minutes of expected arrival, or earlier on approach/landing/taxi-in or 85% progress: resume operational queries at most once every 5 minutes;
+- after actual IN: retain the result and stop routine operational queries for that leg;
+- cancellation: terminal data is retained for hours rather than polled continuously.
 
 A provider failure never counts as departure or arrival evidence. The master state keeps the last good operational record when one exists and otherwise falls back to Calendar/ADS-B logic.
 
