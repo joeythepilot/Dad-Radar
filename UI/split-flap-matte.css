@@ -39,20 +39,21 @@
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.014) !important;
 }
 
-/* One small recessed incandescent source above each flap. The upper-edge
-   highlight and soft pool are clipped to that mechanism. */
+/* A recessed incandescent source above each flap. A broad, low-contrast
+   highlight feathers into the pool, clipped to its own mechanism. */
 .flap-character::after {
   inset: 1px 3px !important;
   border-radius: 2px !important;
   opacity: 1;
   transition: opacity 180ms ease;
   background:
-    radial-gradient(ellipse 24% 8% at 50% 3%,
-      rgba(255, 221, 167, 0.48) 0%,
-      rgba(255, 204, 129, 0.18) 42%,
+    radial-gradient(ellipse 36% 14% at 50% 3%,
+      rgba(255, 221, 167, 0.30) 0%,
+      rgba(255, 204, 129, 0.15) 38%,
+      rgba(255, 204, 129, 0.045) 68%,
       transparent 100%),
-    radial-gradient(ellipse 62% 72% at 50% 7%,
-      rgba(247, 190, 108, 0.24) 0%,
+    radial-gradient(ellipse 68% 76% at 50% 7%,
+      rgba(247, 190, 108, 0.22) 0%,
       rgba(242, 181, 96, 0.10) 36%,
       rgba(231, 165, 77, 0.025) 65%,
       transparent 92%) !important;
