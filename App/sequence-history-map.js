@@ -6,6 +6,15 @@
   const svg = document.getElementById("route-map-svg");
   const routeShadow = document.getElementById("map-route-shadow");
   let layer = null;
+  let airportMarkers = [];
+
+  function fitAirportMarkers() {
+    if (!svg) return;
+    const width = svg.viewBox?.baseVal?.width || 1200;
+    const renderedWidth = svg.getBoundingClientRect?.().width || 1200;
+    const radius = 3 * width / renderedWidth;
+    airportMarkers.forEach(marker => marker.setAttribute("r", radius.toFixed(4)));
+  }
 
   function ensureLayer() {
     if (layer?.isConnected) return layer;
@@ -109,6 +118,8 @@
     const target = ensureLayer();
     if (!target) return;
     target.replaceChildren();
+    airportMarkers = [];
+    const visited = new Map();
     const legs = Array.isArray(state?.sequenceHistory?.legs) ? state.sequenceHistory.legs : [];
 
     for (const leg of legs) {
@@ -125,8 +136,34 @@
       path.setAttribute("class", "map-sequence-history-leg");
       path.dataset.eventId = leg.eventId ?? "";
       target.appendChild(path);
+      // Only reference airports belonging to a recorded historical leg. An
+      // interrupted leg must not claim its planned destination was visited.
+      for (const code of [leg.origin, ...(leg.completed ? [leg.destination] : [])]) {
+        const airport = global.dadRadarAirports?.lookupAirport(code);
+        const point = airport && routePoint(airport);
+        if (point) visited.set(airport.code, point);
+      }
     }
+    for (const [code, point] of visited) {
+      const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      circle.setAttribute("class", "map-sequence-history-airport");
+      circle.setAttribute("cx", point.x.toFixed(4));
+      circle.setAttribute("cy", point.y.toFixed(4));
+      circle.dataset.airport = code;
+      target.appendChild(circle);
+      airportMarkers.push(circle);
+    }
+    fitAirportMarkers();
   }
+
+  // The camera may change after the state event during arrival framing or
+  // resizing. Keep the reference circles at the same physical print size.
+  if (svg && typeof global.MutationObserver === "function") {
+    new global.MutationObserver(fitAirportMarkers).observe(svg, {
+      attributes: true, attributeFilter: ["viewBox"]
+    });
+  }
+  global.addEventListener("resize", fitAirportMarkers);
 
   global.addEventListener("dad-radar:visual-state-change", event => {
     render(event.detail?.state ?? null);

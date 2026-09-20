@@ -140,7 +140,7 @@
       document.body.appendChild(script);
     });
     loadScript('/App/descent-camera.js?v=1')
-      .then(() => loadScript('/App/sequence-history-map.js?v=2'));
+      .then(() => loadScript('/App/sequence-history-map.js?v=3-graphite'));
   });
 
   startCalendarStateController();render();

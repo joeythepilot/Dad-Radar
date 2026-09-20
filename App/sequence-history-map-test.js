@@ -85,6 +85,7 @@ listeners["dad-radar:visual-state-change"]({
           {
             eventKey: "old-leg",
             eventId: "ord-cmh",
+            completed: true,
             origin: "ORD",
             destination: "CMH",
             track: [
@@ -116,7 +117,10 @@ listeners["dad-radar:visual-state-change"]({
 
 const layer = fakeDocument.getElementById("map-sequence-history-layer");
 assert(layer, "Sequence history creates its SVG layer.");
-assert.equal(layer.children.length, 1, "Only prior legs are rendered as persistent history.");
+const historyPaths=()=>layer.children.filter(n=>n.attributes.class==='map-sequence-history-leg');
+const airports=()=>layer.children.filter(n=>n.attributes.class==='map-sequence-history-airport');
+assert.equal(historyPaths().length, 1, "Only prior legs are rendered as persistent history.");
+assert.deepEqual(airports().map(n=>n.dataset.airport).sort(),['CMH','ORD'],'Visited airports receive open reference circles');
 
 function projectPoint(latitude, longitude) {
   return {
@@ -127,7 +131,7 @@ function projectPoint(latitude, longitude) {
 
 const recordedStart = projectPoint(41.97689, -87.89888);
 const recordedEnd = projectPoint(40.001358, -82.875122);
-const pathData = layer.children[0].attributes.d;
+const pathData = historyPaths()[0].attributes.d;
 
 assert.match(
   pathData,
@@ -140,4 +144,22 @@ assert.match(
   "Persistent history must preserve the final recorded telemetry point even through a long sequence of sub-threshold slow moves."
 );
 
-console.log("Sequence history map endpoint tests passed.");
+for(const node of airports()) {
+ const location=airportCatalog.getAirportCoordinates(node.dataset.airport);
+ const p=projectPoint(location.latitude,location.longitude);
+ assert(Math.abs(Number(node.attributes.cx)-p.x)<.001&&Math.abs(Number(node.attributes.cy)-p.y)<.001,'Airport circles use catalog coordinates, not the start/end of a partial track');
+}
+const track=[{latitude:41.97689,longitude:-87.89888},{latitude:40.001358,longitude:-82.875122}];
+listeners['dad-radar:visual-state-change']({detail:{state:{sequenceHistory:{currentEventKey:'live',legs:[
+ {eventKey:'first',origin:'ORD',destination:'CMH',completed:true,track},
+ {eventKey:'second',origin:'CMH',destination:'ORD',completed:true,track:track.slice().reverse()},
+ {eventKey:'interrupted',origin:'ORD',destination:'BWI',completed:false,track},
+ {eventKey:'unknown',origin:'ZZZZ',destination:'ZZZZ',completed:true,track},
+ {eventKey:'estimated',origin:'MIA',destination:'SJU',completed:true,track:[]},
+ {eventKey:'live',origin:'LAX',destination:'SEA',completed:true,track}
+]}}}});
+assert.deepEqual(airports().map(n=>n.dataset.airport).sort(),['CMH','ORD'],'Shared airports are marked once; current, unknown, unrecorded and unfinished destinations are not invented');
+assert.equal(historyPaths().length,4,'Recorded prior tracks remain present');
+listeners['dad-radar:visual-state-change']({detail:{state:{sequenceHistory:{legs:[]}}}});
+assert.equal(layer.children.length,0,'An empty sequence clears history and airport circles');
+console.log("Sequence history track endpoints and visited-airport tests passed.");

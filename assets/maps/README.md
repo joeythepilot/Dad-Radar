@@ -12,6 +12,8 @@ The approved aged-relief study is applied to every live regional chart and airpo
 
 Asheville is a persistent home reference at its actual city coordinates, independent of the route or flight status. It takes priority over normal city density limits and tries alternate placements around plaques. It remains geographically clipped when outside the camera, and never changes the flight camera to force itself onto another region. The generic chart title is removed. The compass retains its existing vector design and placement, with the softening filter removed for crisp scaling.
 
+Historical recorded tracks use a fine graphite-gray dashed stroke. Their opacity is applied once to the whole history layer, so overlapping legs do not accumulate darker ink. Open reference circles mark the catalog locations of airports belonging to recorded prior legs; an unfinished leg does not mark its planned destination. Shared airports are marked once, and circle size stays fixed as the camera changes. The same styling loads in compact mobile. `scripts/graphite-history-browser-test.js` checks the actual rendering, prior/current separation and resize behavior.
+
 Routes, aircraft/airport coordinates, camera rules, roll transport, weather, telemetry and airport selection remain owned by the existing controllers. OpenStreetMap runway/taxiway/terminal/apron geometry and attribution are unchanged. Open runway/taxiway paths retain `fill:none`.
 
 ## Geographic library and sources

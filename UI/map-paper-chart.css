@@ -37,3 +37,11 @@
 .airport-surface-label { font-family:"DadRadar Chart Antique",sans-serif!important;font-weight:400!important;fill:#403629!important;stroke:#e7d7b2!important; }
 .airport-surface-caption { font-family:"DadRadar Chart Antique",serif!important;text-shadow:none!important; }
 .map-roll-regional-sheet,.map-roll-surface-sheet { background:#deceb0!important; }
+
+/* A single graphite ink layer prevents overlapping prior legs darkening. */
+.map-sequence-history-layer { pointer-events:none;opacity:.62; }
+.map-sequence-history-leg,.map-sequence-history-airport {
+  fill:none;stroke:#514f48;stroke-width:1.1;stroke-linecap:round;
+  stroke-linejoin:round;vector-effect:non-scaling-stroke;
+}
+.map-sequence-history-leg { stroke-dasharray:3.5 4; }

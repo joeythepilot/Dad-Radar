@@ -1,15 +1,5 @@
 /* Dad Radar active work-sequence trail and mileage */
 
-.map-sequence-history-layer { pointer-events: none; }
-.map-sequence-history-leg {
-  fill: none;
-  stroke: rgba(76, 48, 32, 0.72);
-  stroke-width: 4.2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  vector-effect: non-scaling-stroke;
-}
-
 /* Seat the visible metal against the bezel; compensate for the PNG viewport gutters. */
 .vintage-map-panel .route-map-shell .sequence-mileage-badge {
   position: absolute; z-index: 56; left: 0; bottom: 0 !important;
