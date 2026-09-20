@@ -29,6 +29,7 @@ const browserSources = [
   "App/daily-schedule-layout.js",
   "App/poster-image-loader.js",
   "data/map-labels.js",
+  "App/chart-glyphs.js",
   "App/map-cartography.js",
   "App/airport-surface-map.js",
   "App/sequence-history-display.js",

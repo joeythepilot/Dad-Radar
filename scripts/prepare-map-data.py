@@ -83,6 +83,8 @@ for l in labels:
   x,y=overrides[l['text']];l.update(x=315+(x+135)/80*570,y=45+(62-y)/57*560)
 for text,x,y,angle in [('Lake Michigan',-86.65,43.2,-76),('Lake Erie',-81.5,42.2,-20),('Lake Ontario',-77.45,43.55,-8),('Lake Superior',-88.5,47.5,0),('Lake Huron',-82.3,44.8,-65),('Gulf of Mexico',-90,24,0),('Caribbean Sea',-74,14,0),('Pacific Ocean',-126,28,-68),('Atlantic Ocean',-65,34,-60)]:add(text,'water',x,y,0,angle=angle)
 for text,x,y,angle in [('Appalachian Mountains',-80.3,37.8,-49),('Rocky Mountains',-111,45,-58),('Sierra Nevada',-119,37,-60),('Sierra Madre',-106,26,-62),('Cascade Range',-121.8,45,-78),('Ozark Plateau',-92,36.8,0)]:add(text,'terrain',x,y,2,angle=angle)
+for label in labels:
+ if label['text']=='ASHEVILLE' and label['kind']=='city':label['permanent']=True
 raw=json.dumps(j,separators=(',',':')).encode();(dest/'map-geography.json.gz').write_bytes(gzip.compress(raw,mtime=0))
 body=json.dumps(labels,separators=(',',':'),ensure_ascii=True)
 (dest/'map-labels.js').write_text('/* Natural Earth geographic labels; provenance: assets/maps/README.md. */\n(function(root,data){if(typeof module==="object"&&module.exports)module.exports=data;else root.dadRadarMapLabels=data;})(typeof globalThis!=="undefined"?globalThis:this,'+body+');\n')

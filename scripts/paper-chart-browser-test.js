@@ -73,15 +73,20 @@ async function inspect(page,name) {
     const paper=document.querySelector('#map-aged-paper');
     return {rect:r.toJSON(),viewBox:{x:v.x,y:v.y,width:v.width,height:v.height},
       paper:Object.fromEntries(['x','y','width','height'].map(k=>[k,Number(paper.getAttribute(k))])),
-      fonts:[document.fonts.check('12px "DadRadar Chart Serif"'),document.fonts.check('700 12px "DadRadar Chart Serif"'),document.fonts.check('12px "DadRadar Chart Sans"')],
-      labels:[...document.querySelectorAll('.chart-label text,.chart-sheet-title text')].map(n=>({text:n.textContent,rect:n.getBoundingClientRect().toJSON()})),
+      title:!!document.querySelector('.chart-sheet-title'),
+      compassFilter:getComputedStyle(document.querySelector('.map-compass-rose')).filter,
+      labels:[...document.querySelectorAll('.chart-printed-lettering')].map(n=>({text:n.getAttribute('aria-label'),paths:n.querySelectorAll('path').length,rect:n.getBoundingClientRect().toJSON()})),
+      home:!!document.querySelector('.chart-home'),
       hardware:[...document.querySelectorAll('.airport-placard,.map-compass-rose,.sequence-mileage-badge')].map(n=>n.getBoundingClientRect().toJSON()).filter(r=>r.width&&r.height),
       relief:getComputedStyle(document.querySelector('.map-terrain-relief')).opacity,
       paperOpacity:getComputedStyle(paper).opacity};
   });
   for(const key of ['x','y','width','height'])assert(Math.abs(proof.paper[key]-proof.viewBox[key])<.011,'Paper follows the live camera within its existing two-decimal viewBox rounding');
-  assert(proof.fonts.every(Boolean),'All chart fonts load locally');
-  assert.equal(proof.relief,'0.48');assert.equal(proof.paperOpacity,'0.68');
+  assert(!proof.title,'Unwanted chart title is removed');
+  assert.equal(proof.compassFilter,'none','Compass preserves crisp vector edges');
+  assert(proof.labels.length>0&&proof.labels.every(l=>l.paths>0),'All geographic lettering uses actual outlines');
+  if(/midwest|home|returned/.test(name))assert(proof.home,'Asheville remains marked independently of the current flight');
+  assert.equal(proof.relief,'0.48');assert.equal(proof.paperOpacity,'0.48');
   const overlaps=(a,b)=>a.left<b.right-.5&&a.right>b.left+.5&&a.top<b.bottom-.5&&a.bottom>b.top+.5;
   for(const [i,label] of proof.labels.entries()) {
     const r=label.rect,v=proof.rect;
@@ -122,7 +127,7 @@ async function showState(page,next) {
     await showState(page,ground);
     await page.waitForSelector('.route-map-shell.is-surface-registered',{timeout:7000});
     const surface=await page.locator('.airport-surface-layer').evaluate(n=>({paper:getComputedStyle(n,'::before').backgroundImage,runway:getComputedStyle(n.querySelector('.airport-surface-runway')).fill,taxiway:getComputedStyle(n.querySelector('.airport-surface-taxiway')).fill,font:getComputedStyle(n.querySelector('.airport-surface-label')).fontFamily}));
-    assert.match(surface.paper,/aged-chart-paper/);assert.equal(surface.runway,'none');assert.equal(surface.taxiway,'none');assert.match(surface.font,/DadRadar Chart Sans/);
+    assert.match(surface.paper,/aged-chart-paper/);assert.equal(surface.runway,'none');assert.equal(surface.taxiway,'none');assert.match(surface.font,/DadRadar Chart Antique/);
     await page.locator('.route-map-shell').screenshot({path:path.join(output,'airport.png')});
     await showState(page,{...state,flight:{...state.flight,surfacePosition:{...ground.flight.surfacePosition,onGround:false}}});
     await page.waitForFunction(()=>!document.querySelector('.route-map-shell').className.match(/is-surface-registered|map-roll-to-/),null,{timeout:7000});

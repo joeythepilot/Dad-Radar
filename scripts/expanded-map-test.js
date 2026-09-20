@@ -56,7 +56,7 @@ assert(mapSource.indexOf('class="great-lakes"') > mapSource.indexOf('class="stat
 
 assert.match(
   dashboardSource,
-  /north-america-caribbean-vintage\.svg\?v=paper-charts-1/
+  /north-america-caribbean-vintage\.svg\?v=antique-chart-2/
 );
 assert.match(
   dashboardSource,

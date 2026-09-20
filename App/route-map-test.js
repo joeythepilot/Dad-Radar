@@ -522,7 +522,7 @@ function testHighResolutionTerrainLayer() {
 
   assert.match(
     DASHBOARD_SOURCE,
-    /north-america-caribbean-vintage\.svg\?v=paper-charts-1/,
+    /north-america-caribbean-vintage\.svg\?v=antique-chart-2/,
     "The main display must bust the cached nested-terrain map asset."
   );
 
@@ -545,7 +545,7 @@ function testHighResolutionTerrainLayer() {
 
   assert.match(
     mobileSource,
-    /north-america-caribbean-vintage\.svg\?v=paper-charts-1/,
+    /north-america-caribbean-vintage\.svg\?v=antique-chart-2/,
     "Compact mobile must bust the cached nested-terrain map asset."
   );
 }

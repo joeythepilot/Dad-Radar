@@ -8,8 +8,11 @@
   "artwork": {
     "aged-chart-paper.png": "4618f3659bf92476fd1f5fa7588c129ae09908990072ab84b170e2aa81f93c94",
     "north-america-caribbean-relief-hires.jpg": "de681c47fc44f398cb4b5d7a6b546d8e990ea73379411ad2133ae6bddfeb34cd",
-    "chart-serif.woff": "def0428ac4c19c1a4b004beb2ddf45b7de51b4a73c71176402b2dc62e4a2492b",
-    "chart-serif-bold.woff": "f50c9f63939ab02b9273df1f14267fa388b0ecca2f75a8a9a511fe95d200b808",
-    "chart-sans.woff": "a8d13381bf6d2249e9a9c1da567f8fc6e0af55b4cba19db41eabecb2533f12b4"
+    "chart-antique-roman.woff": "ff4ce8136ee19361231c19cb003421d538ab55e784a627fb4a279918fce2c7bd",
+    "chart-antique-italic.woff": "44c5fd04097b08243139f144ef32f2b662df6111febb4d7e8c5c00921ae47b07"
+  },
+  "fontSources": {
+    "IMFeENrm28P.ttf": "fe9705bbde51af802719246d4608d08d37bde956ab99d9a590da996a5221a24c",
+    "IMFeENit28P.ttf": "47cd75dce54b1f2e0831359d22d5e688f519d68ae45706b664fd310fd0e3ccf7"
   }
 }

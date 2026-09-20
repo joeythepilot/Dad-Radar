@@ -45,4 +45,12 @@ plaque={left:280,top:280,width:110,height:55};
 renderer.update(camera);frame();
 assert(!drawn.children.some(n=>n.attrs['data-chart-name']==='EXAMPLE'),'A moved plaque invalidates placement even when the camera stays fixed');
 
-console.log('Cartographic label collision, density, clipping, resize and hardware movement tests passed.');
+// Asheville remains a home reference even when low-ranked cities are thinned.
+const home={text:'ASHEVILLE',kind:'city',x:30,y:30,rank:99,permanent:true};
+const crowd=Array.from({length:80},(_,i)=>({text:'CITY '+i,kind:'city',x:30+(i%10),y:30+Math.floor(i/10),rank:0}));
+assert(api.layout([...crowd,home],camera,{width:320,height:192}).some(l=>l.permanent),'Asheville has priority over density limits');
+const blockedHome=api.layout([home],camera,{width:1000,height:600,reserved:[{x:275,y:270,width:120,height:70}]});
+assert(blockedHome.some(l=>l.permanent),'Asheville label moves around an airport plaque instead of disappearing');
+assert(!api.overlap(blockedHome[0].box,{x:275,y:270,width:120,height:70}));
+assert.deepEqual(api.layout([{...home,x:-50}],camera,{width:1000,height:600}),[],'Home keeps its real coordinates when outside the visible region');
+console.log('Cartographic label collision, density, clipping, resize, home priority and hardware movement tests passed.');

@@ -1,11 +1,10 @@
 /* Approved aged-paper chart style, shared by kiosk, family and compact maps. */
-@font-face{font-family:"DadRadar Chart Serif";src:url("../assets/maps/chart-serif.woff") format("woff");font-weight:400;font-display:swap}
-@font-face{font-family:"DadRadar Chart Serif";src:url("../assets/maps/chart-serif-bold.woff") format("woff");font-weight:700;font-display:swap}
-@font-face{font-family:"DadRadar Chart Sans";src:url("../assets/maps/chart-sans.woff") format("woff");font-weight:400;font-display:swap}
+@font-face{font-family:"DadRadar Chart Antique";src:url("../assets/maps/chart-antique-roman.woff") format("woff");font-weight:400;font-display:swap}
+@font-face{font-family:"DadRadar Chart Antique";src:url("../assets/maps/chart-antique-italic.woff") format("woff");font-style:italic;font-weight:400;font-display:swap}
 .route-map-shell { background:#deceb0!important; }
-.map-water-fill { fill:#a2b6ae!important; }
+.map-water-fill { fill:#658ba4!important; }
 .map-terrain-relief { opacity:.48!important;filter:grayscale(1) contrast(1.22) sepia(.32)!important;mix-blend-mode:multiply!important; }
-.map-aged-paper { mix-blend-mode:multiply;opacity:.68;pointer-events:none; }
+.map-aged-paper { mix-blend-mode:multiply;opacity:.48;filter:saturate(.6) brightness(1.08);pointer-events:none; }
 .map-paper-grain { opacity:.14!important; }
 .map-age-stain { display:none; }
 .route-map-shell::before { background:none!important; }
@@ -13,17 +12,21 @@
 .map-route-shadow { opacity:.6!important;stroke:#e7d6ad!important;stroke-width:5!important;stroke-dasharray:none!important; }
 .map-route-line { stroke:#913b2b!important;stroke-width:2.3!important;opacity:.95!important; }
 .map-route-progress { stroke:#7a3024!important;stroke-width:2.7!important;opacity:.95!important; }
-.map-compass-rose { opacity:.72!important; }
+.map-compass-rose { opacity:.78!important;filter:none!important;shape-rendering:geometricPrecision; }
+.map-compass-rose text { font-family:"DadRadar Chart Antique",serif!important;font-weight:400!important; }
 .chart-label { pointer-events:none; }
-.chart-label text { font-family:"DadRadar Chart Serif",serif;fill:#766447; }
-.chart-label-region text,.chart-label-country text { font-weight:700; }
-.chart-label-city text { font-family:"DadRadar Chart Sans",sans-serif;fill:#4c4937; }
-.chart-label-city circle { fill:#e7dfc1;stroke:#535346;stroke-width:.65; }
-.chart-label-water text { fill:#557b87;font-style:italic; }
-.chart-label-terrain text { fill:#8a8060;font-style:italic; }
-.chart-sheet-title { font-family:"DadRadar Chart Serif",serif;fill:#494b40; }
-.airport-surface-layer { background:#e9dfc7!important;isolation:isolate; }
-.airport-surface-layer::before { content:"";position:absolute;inset:0;pointer-events:none;background:url("../assets/maps/aged-chart-paper.png?v=1") center/100% 100% no-repeat;opacity:.68;mix-blend-mode:multiply; }
+.chart-printed-lettering { fill:#62543c;stroke:none;mix-blend-mode:multiply; }
+.chart-label-country .chart-printed-lettering { fill:#7b715d;opacity:.65; }
+.chart-label-city .chart-printed-lettering { fill:#514936; }
+.chart-label-city circle { fill:#f0e6cc;stroke:#635a45;stroke-width:.65; }
+.chart-label-water .chart-printed-lettering { fill:#254d68; }
+.chart-label-terrain .chart-printed-lettering { fill:#776f56; }
+.chart-home .chart-printed-lettering { fill:#743c2f; }
+.chart-home circle { stroke:#743c2f;stroke-width:1; }
+.chart-home .chart-home-center { fill:#743c2f;stroke:none; }
+.chart-home-leader { stroke:#743c2f;stroke-width:.6; }
+.airport-surface-layer { background:#f6eed9!important;isolation:isolate; }
+.airport-surface-layer::before { content:"";position:absolute;inset:0;pointer-events:none;background:url("../assets/maps/aged-chart-paper.png?v=1") center/100% 100% no-repeat;opacity:.48;filter:saturate(.6) brightness(1.08);mix-blend-mode:multiply; }
 .airport-surface-svg { position:relative; }
 .airport-surface-apron { fill:#c5b795!important;stroke:#9a8b6e!important; }
 .airport-surface-terminal { fill:#82755d!important;stroke:#5e5340!important; }
@@ -31,6 +34,6 @@
 .airport-surface-taxiway:not([style]) { fill:#aa9976!important; }
 .airport-surface-runway { stroke:#625b4c!important; }
 .airport-surface-runway:not([style]) { fill:#625b4c!important; }
-.airport-surface-label { font-family:"DadRadar Chart Sans",sans-serif!important;font-weight:400!important;fill:#403629!important;stroke:#e7d7b2!important; }
-.airport-surface-caption { font-family:"DadRadar Chart Serif",serif!important;text-shadow:none!important; }
+.airport-surface-label { font-family:"DadRadar Chart Antique",sans-serif!important;font-weight:400!important;fill:#403629!important;stroke:#e7d7b2!important; }
+.airport-surface-caption { font-family:"DadRadar Chart Antique",serif!important;text-shadow:none!important; }
 .map-roll-regional-sheet,.map-roll-surface-sheet { background:#deceb0!important; }
