@@ -105,6 +105,8 @@ When a filed route is available, the dashed planned line follows decoded fixes. 
 
 For work sequences, the server persists previous work-leg tracks and mileage in master storage. Prior actual tracks remain drawn as muted sequence-history lines after the active leg advances; commute legs are excluded from the work-sequence total.
 
+The active-sequence counter uses `sequenceHistory.scheduledLegCount` for the trip total: Calendar work flights, including deadheads and excluding commutes and cancelled events, grouped using the existing 48-hour gap between work legs. The server associates that group with the current or most recent recorded leg. Calendar edits refresh the total, and the last known total survives a restart. Known trip legs older than Calendar's query window remain included as that window advances. `legCount` remains the recorded-history count; completed legs, tracks, and mileage are independent of the planned total. When no Calendar group can be matched, displays label the count as recorded instead of presenting it as a scheduled total.
+
 ## Geography, weather, and diagnostics
 
 The regional map uses local geographic data and airport metadata. NOAA/NWS composite reflectivity is fetched through the local server and cached; weather failure never blocks flight tracking.

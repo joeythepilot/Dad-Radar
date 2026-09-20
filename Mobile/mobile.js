@@ -24,13 +24,17 @@
     if (!node) return;
     const history = state?.sequenceHistory;
     const legs = Array.isArray(history?.legs) ? history.legs : [];
-    if (!legs.length) {
+    const scheduled = Number.isSafeInteger(history?.scheduledLegCount) && history.scheduledLegCount >= 0
+      ? history.scheduledLegCount : null;
+    if (!legs.length && !(scheduled > 0)) {
       node.hidden = true;
       return;
     }
     const miles = Number(history.totalDistanceNm);
     const completed = Number(history.completedLegCount) || 0;
-    node.textContent = `TRIP ${Number.isFinite(miles) ? Math.round(miles).toLocaleString('en-US') : '0'} NM · ${legs.length} ${legs.length === 1 ? 'LEG' : 'LEGS'}${completed ? ` · ${completed} DONE` : ''}`;
+    const total = scheduled ?? legs.length;
+    const legLabel = scheduled === null ? 'RECORDED' : total === 1 ? 'LEG' : 'LEGS';
+    node.textContent = `TRIP ${Number.isFinite(miles) ? Math.round(miles).toLocaleString('en-US') : '0'} NM · ${total} ${legLabel}${scheduled !== null || completed ? ` · ${completed} DONE` : ''}`;
     node.hidden = false;
   }
 

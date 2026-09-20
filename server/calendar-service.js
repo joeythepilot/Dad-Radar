@@ -230,9 +230,10 @@ async function getUpcomingEvents(options = {}) {
     }))
   };
 
-  return parsePilotSchedule(
-    rawCalendarData
-  );
+  return {
+    ...parsePilotSchedule(rawCalendarData),
+    queryWindow: {startUtc: startTime.toISOString(), endUtc: endTime.toISOString()}
+  };
 }
 
 module.exports = {

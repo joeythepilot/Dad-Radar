@@ -177,4 +177,74 @@ assert.equal(recoveredSummary.estimatedLegCount, 2);
 assert.ok(recoveredSummary.totalDistanceNm > 150, "Recovered trip uses great-circle mileage.");
 assert.ok(recoveredSummary.legs.every(leg => leg.estimated));
 
-console.log("Sequence history service tests passed.");
+// Planned trip totals include future legs without adding them to flown history.
+let plannedNow=Date.parse('2026-09-13T08:00:00Z');
+const plannedStorage={};
+const plannedService=createSequenceHistoryService(plannedStorage,{now:()=>plannedNow});
+const base=Date.parse('2026-09-13T09:00:00Z');
+const plannedLeg=(index,offsetHours)=>({
+ id:'plan-'+index,kind:'flight',status:'confirmed',travelRole:index===9?'deadhead':'operating',
+ isDeadhead:index===9,isCommute:false,flightNumber:String(4000+index),origin:'ORD',destination:'CMH',
+ times:{startUtc:new Date(base+offsetHours*3600000).toISOString(),endUtc:new Date(base+(offsetHours+1)*3600000).toISOString()}
+});
+const trip=[0,3,24,27,48,51,72,75,96].map((hours,i)=>plannedLeg(i+1,hours));
+const nextTrip=[plannedLeg(20,192),plannedLeg(21,195)];
+const commutePlan={...plannedLeg(30,76),isCommute:true,travelRole:'commute'};
+const cancelledPlan={...plannedLeg(31,77),status:'cancelled'};
+const plan=[...trip,...nextTrip,commutePlan,cancelledPlan,{...trip[8]}];
+plannedService.backfill(plan);
+for(const leg of trip.slice(0,7)){
+ plannedNow=Date.parse(leg.times.endUtc);
+ plannedService.update(resolved(leg,[{latitude:41.97,longitude:-87.9},{latitude:40,longitude:-82.875}],'ARRIVED'));
+}
+const sevenDone=plannedService.read();
+assert.equal(sevenDone.scheduledLegCount,9,'Seven completed legs out of nine scheduled must show a nine-leg trip');
+assert.equal(sevenDone.legCount,7,'Future plans must not become recorded legs');
+assert.equal(sevenDone.completedLegCount,7,'Completion remains independently recorded');
+assert.equal(sevenDone.legs.length,7);
+const originalMiles=sevenDone.totalDistanceNm;
+const originalTracks=JSON.stringify(sevenDone.legs.map(leg=>leg.track));
+plannedService.update({mode:'LAYOVER',event:{kind:'layover'},state:{}});
+assert.equal(plannedService.read().scheduledLegCount,9,'Layovers keep the full scheduled trip');
+plannedService.backfill(undefined);
+assert.equal(plannedService.read().scheduledLegCount,9,'Missing Calendar data must not erase the known plan');
+const restoredPlan=createSequenceHistoryService(plannedStorage,{now:()=>plannedNow});
+assert.equal(restoredPlan.read().scheduledLegCount,9,'Restart preserves the last known scheduled total');
+// Calendar edits replace planned slots rather than appending a second copy.
+const editedPlan=plan.filter(leg=>leg.id!=='plan-8').map(leg=>leg.id==='plan-9'?{...leg,times:{startUtc:new Date(base+97*3600000).toISOString(),endUtc:new Date(base+98*3600000).toISOString()}}:leg);
+plannedService.backfill(editedPlan);
+assert.equal(plannedService.read().scheduledLegCount,8,'Removing a future leg updates the total; retiming and duplicate events do not add legs');
+assert.equal(plannedService.read().totalDistanceNm,originalMiles,'Schedule totals do not alter flown mileage');
+assert.equal(JSON.stringify(plannedService.read().legs.map(leg=>leg.track)),originalTracks,'Schedule totals do not alter recorded tracks');
+plannedNow=base+192*3600000;
+plannedService.backfill(plan);
+const newTrip=plannedService.update(resolved(nextTrip[0],[],'BOARDING'));
+assert.equal(newTrip.scheduledLegCount,2,'A new trip after the existing 48-hour sequence gap gets its own planned total');
+assert.equal(newTrip.completedLegCount,0);
+assert.equal(newTrip.legCount,1);
+
+// A server first started midway through a trip still counts the earlier Calendar
+// legs outside its 48-hour backfill window, plus remaining scheduled legs.
+const recoveredPlan=createSequenceHistoryService({}, {now:()=>Date.parse(trip[6].times.endUtc)});
+const recoveredTrip=recoveredPlan.backfill(plan);
+assert.equal(recoveredTrip.scheduledLegCount,9,'The schedule total covers the full connected trip, not only the recent history window');
+assert(recoveredTrip.legCount<9);
+// A rolling Calendar window must not erase known earlier legs of a long trip.
+const longStorage={};
+let longNow=base;
+const longService=createSequenceHistoryService(longStorage,{now:()=>longNow});
+const longTrip=Array.from({length:10},(_,i)=>plannedLeg(50+i,i*24));
+longService.backfill(longTrip,{startUtc:new Date(base-7*86400000).toISOString()});
+for(const leg of longTrip.slice(0,9)){
+ longNow=Date.parse(leg.times.endUtc);
+ longService.update(resolved(leg,[],'ARRIVED'));
+}
+const rolledWindow={startUtc:longTrip[1].times.endUtc};
+longService.backfill(longTrip.slice(2),rolledWindow);
+assert.equal(longService.read().scheduledLegCount,10,'Known legs outside the rolling window remain part of the trip');
+assert.equal(longService.read().completedLegCount,9);
+const longRestored=createSequenceHistoryService(longStorage,{now:()=>longNow});
+longRestored.backfill(longTrip.slice(2,9),rolledWindow);
+assert.equal(longRestored.read().scheduledLegCount,9,'Restart preserves older membership while a removed future leg updates the total');
+assert.equal(createSequenceHistoryService({}, {now:()=>plannedNow}).read().scheduledLegCount,null,'Unknown scheduled total is explicit');
+console.log("Sequence history service tests passed, including scheduled trip totals, edits and restart.");

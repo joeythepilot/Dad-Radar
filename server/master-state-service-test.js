@@ -15,12 +15,14 @@ async function run() {
   const event = {id: "work-1", kind: "flight", status: "confirmed", carrierCode: "MQ", flightNumber: "4038",
     origin: "ORD", destination: "MSN", liveLookupCandidates: ["ENY4038"],
     times: {startUtc: "2026-09-10T17:00:00Z", endUtc: "2026-09-10T18:02:00Z"}};
+  const futureEvent={...event,id:'work-2',origin:'MSN',destination:'ORD',flightNumber:'4039',
+    times:{startUtc:'2026-09-11T12:00:00Z',endUtc:'2026-09-11T13:00:00Z'}};
   const options = {
     file: path.join(dir, "state.json"), now: () => clock,
     console: {warn() {}, error() {}},
     setInterval(fn, delay) {const key = {}; jobs.set(key, {fn, delay}); return key;},
     clearInterval(key) {jobs.delete(key);},
-    getCalendar: async () => {calendarCalls++; return {events: [event], retrievedAt: new Date(clock).toISOString()};},
+    getCalendar: async () => {calendarCalls++; return {events: [event, futureEvent], retrievedAt: new Date(clock).toISOString()};},
     async getFlight() {
       calls++;
       await Promise.resolve();
@@ -39,6 +41,10 @@ async function run() {
     await master.start();
     await master.poll();
     assert.equal(master.read().resolved.mode, "LANDING");
+    assert.equal(master.read().resolved.state.sequenceHistory.scheduledLegCount,2,
+      'The authoritative server envelope includes the whole scheduled trip');
+    assert.equal(master.read().resolved.state.sequenceHistory.legCount,1,
+      'Publishing future plans does not create recorded history');
     const count = calls, calendars = calendarCalls;
     const screens = await Promise.all(Array.from({length: 50}, async () => master.read()));
     assert(screens.every(screen => JSON.stringify(screen) === JSON.stringify(screens[0])));

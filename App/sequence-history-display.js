@@ -58,20 +58,23 @@
     const element = ensureBadge();
     if (!element) return;
     const legs = Array.isArray(history?.legs) ? history.legs : [];
+    const scheduled = Number.isSafeInteger(history?.scheduledLegCount) && history.scheduledLegCount >= 0
+      ? history.scheduledLegCount : null;
     const miles = Number(history?.totalDistanceNm);
     valueElement.textContent = `${Number.isFinite(miles) ? Math.round(miles).toLocaleString("en-US") : "0"} NM`;
 
-    if (!history || legs.length === 0) {
+    if (!history || (legs.length === 0 && !(scheduled > 0))) {
       detailElement.textContent = "NO RECORDED LEGS";
       element.classList.add("is-empty");
       return;
     }
 
     element.classList.remove("is-empty");
-    const legWord = legs.length === 1 ? "LEG" : "LEGS";
+    const total = scheduled ?? legs.length;
+    const legLabel = scheduled === null ? "RECORDED" : total === 1 ? "LEG" : "LEGS";
     const completed = Number(history.completedLegCount) || 0;
     const estimated = Number(history.estimatedLegCount) || 0;
-    detailElement.textContent = `${legs.length} ${legWord}${completed > 0 ? ` · ${completed} COMPLETE` : ""}${estimated > 0 ? ` · ${estimated} EST` : ""}`;
+    detailElement.textContent = `${total} ${legLabel}${scheduled !== null || completed > 0 ? ` · ${completed} COMPLETE` : ""}${estimated > 0 ? ` · ${estimated} EST` : ""}`;
   }
 
   ensureStylesheet();

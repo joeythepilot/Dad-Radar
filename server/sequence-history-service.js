@@ -120,6 +120,49 @@ function parseState(storage, now) {
   return emptyState(now);
 }
 
+// This is presentation metadata only. Planned legs never enter the recorded
+// track/mileage collection. Keep the existing 48-hour work-sequence boundary.
+function scheduledTripLegCount(events, state, queryWindow) {
+  if (!state.legs.length) { state.scheduledLegs = []; return 0; }
+  const unique = new Map();
+  const windowStart = Date.parse(queryWindow?.startUtc ?? "");
+  // Calendar omits events ending at/before timeMin. Retain only that portion
+  // of the known trip; events inside the query remain governed by fresh data.
+  for (const flight of state.scheduledLegs || []) {
+    if (Number.isFinite(windowStart) && flight.end <= windowStart) {
+      unique.set(flight.id || flight.key, flight);
+    }
+  }
+  for (const event of events) {
+    if (!isWorkFlight(event)) continue;
+    const start = Date.parse(eventTime(event, "startUtc") ?? "");
+    const end = Date.parse(eventTime(event, "endUtc") ?? "");
+    if (!Number.isFinite(start) || !Number.isFinite(end) || end < start) continue;
+    const id = event.id === null || event.id === undefined ? null : String(event.id);
+    unique.set(id || eventKey(event), {id, key: eventKey(event), start, end});
+  }
+  const flights = [...unique.values()].sort((a, b) => a.start - b.start);
+  const trips = [];
+  for (const flight of flights) {
+    let trip = trips[trips.length - 1];
+    if (!trip || flight.start - trip.end > SEQUENCE_GAP_MS) {
+      trip = {end: flight.end, flights: []}; trips.push(trip);
+    }
+    trip.flights.push(flight); trip.end = Math.max(trip.end, flight.end);
+  }
+  const current = state.legs.find(leg => leg.eventKey === state.currentEventKey);
+  const anchors = current ? [current, ...state.legs.slice().reverse()] : state.legs.slice().reverse();
+  for (const leg of anchors) {
+    const trip = trips.find(group => group.flights.some(flight =>
+      flight.key === leg.eventKey || (flight.id !== null && leg.eventId !== null &&
+        leg.eventId !== undefined && flight.id === String(leg.eventId))));
+    if (trip) { state.scheduledLegs = trip.flights; return trip.flights.length; }
+  }
+  // Never substitute a different upcoming trip when this sequence is absent
+  // from the available Calendar window. Clients can identify recorded-only data.
+  return null;
+}
+
 function publicSummary(state) {
   const legs = state.legs.map(leg => ({
     eventKey: leg.eventKey, eventId: leg.eventId, travelRole: leg.travelRole,
@@ -134,6 +177,7 @@ function publicSummary(state) {
     currentEventKey: state.currentEventKey ?? null,
     totalDistanceNm: Math.round(legs.reduce((sum, leg) => sum + leg.distanceNm, 0) * 10) / 10,
     legCount: legs.length,
+    scheduledLegCount: Number.isSafeInteger(state.scheduledLegCount) && state.scheduledLegCount >= 0 ? state.scheduledLegCount : null,
     completedLegCount: legs.filter(leg => leg.completed).length,
     estimatedLegCount: legs.filter(leg => leg.estimated).length,
     legs
@@ -143,8 +187,13 @@ function publicSummary(state) {
 function createSequenceHistoryService(storage, options = {}) {
   const clock = options.now || Date.now;
   let state = parseState(storage, clock());
+  let calendarEvents = null;
+  let calendarWindow = null;
 
-  function save() { storage[STORAGE_KEY] = JSON.stringify(state); }
+  function save() {
+    if (calendarEvents) state.scheduledLegCount = scheduledTripLegCount(calendarEvents, state, calendarWindow);
+    storage[STORAGE_KEY] = JSON.stringify(state);
+  }
 
   function expireIfNeeded(now) {
     const last = Date.parse(state.lastActivityAt ?? "");
@@ -154,7 +203,8 @@ function createSequenceHistoryService(storage, options = {}) {
     return false;
   }
 
-  function backfill(events) {
+  function backfill(events, queryWindow) {
+    if (Array.isArray(events)) { calendarEvents = events; calendarWindow = queryWindow; }
     const now = clock();
     expireIfNeeded(now);
     const candidates = (Array.isArray(events) ? events : [])
@@ -165,7 +215,7 @@ function createSequenceHistoryService(storage, options = {}) {
       })
       .sort((a, b) => Date.parse(eventTime(a, "startUtc") ?? "") - Date.parse(eventTime(b, "startUtc") ?? ""));
 
-    if (!candidates.length) return publicSummary(state);
+    if (!candidates.length) { save(); return publicSummary(state); }
     for (const event of candidates) {
       const key = eventKey(event);
       if (!key) continue;

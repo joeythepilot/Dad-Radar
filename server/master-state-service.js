@@ -40,7 +40,7 @@ function createMasterStateService(options) {
 
   function publish(resolved) {
     if (stopped) return;
-    sequenceHistory.backfill(schedule?.events);
+    sequenceHistory.backfill(schedule?.events, schedule?.queryWindow);
     const history = sequenceHistory.update(resolved);
     const publishedResolved = resolved
       ? {...resolved, state: {...(resolved.state || {}), sequenceHistory: history}}
@@ -153,7 +153,7 @@ function createMasterStateService(options) {
         .then(enrichCalendar)
         .then(value => {
           schedule = value;
-          sequenceHistory.backfill(schedule?.events);
+          sequenceHistory.backfill(schedule?.events, schedule?.queryWindow);
           persist();
           return value;
         }).finally(() => {calendarPending = null;});
