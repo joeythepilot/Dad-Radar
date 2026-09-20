@@ -1,4 +1,5 @@
-﻿/* DAD RADAR â€” VINTAGE ROUTE MAP
+@import url("./map-paper-chart.css?v=1");
+/* DAD RADAR â€” VINTAGE ROUTE MAP
    Loads after UI/styles.css and replaces only the map styling. */
 
 .vintage-map-panel {

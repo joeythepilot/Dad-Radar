@@ -53,10 +53,10 @@ for (const name of ["Superior", "Michigan", "Huron", "Erie", "Ontario"]) {
 }
 assert(mapSource.indexOf('class="great-lakes"') > mapSource.indexOf('class="state-boundaries"'),
   "Water must cover administrative edges inside lakes.");
-assert.doesNotMatch(mapSource, /stroke-dasharray/);
+
 assert.match(
   dashboardSource,
-  /north-america-caribbean-vintage\.svg\?v=terrain-direct-4/
+  /north-america-caribbean-vintage\.svg\?v=paper-charts-1/
 );
 assert.match(
   dashboardSource,

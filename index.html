@@ -33,7 +33,7 @@
 
   <link
     rel="stylesheet"
-    href="./UI/map.css?v=airport-surface-1"
+    href="./UI/map.css?v=paper-charts-1"
   >
 
   <!-- Loads last and owns the new three-column layout. -->
@@ -375,6 +375,9 @@
 
 
                   <defs>
+                    <mask id="map-relief-land" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="650">
+                      <image href="/assets/maps/chart-land-mask.svg?v=1" x="0" y="0" width="1200" height="650" preserveAspectRatio="none"/>
+                    </mask>
 
                     <clipPath id="route-map-clip">
                       <rect
@@ -497,7 +500,7 @@
 
                     <image
                       class="map-vector-geography"
-                      href="./assets/maps/north-america-caribbean-vintage.svg?v=terrain-direct-4"
+                      href="./assets/maps/north-america-caribbean-vintage.svg?v=paper-charts-1"
                       x="0"
                       y="0"
                       width="1200"
@@ -508,6 +511,7 @@
 
                     <image
                       class="map-terrain-relief"
+                      mask="url(#map-relief-land)"
                       href="./assets/maps/north-america-caribbean-relief-hires.jpg?v=terrain-direct-4"
                       x="315"
                       y="45"
@@ -516,6 +520,8 @@
                       preserveAspectRatio="none"
                       aria-hidden="true"
                     ></image>
+
+                    <image id="map-aged-paper" class="map-aged-paper" href="/assets/maps/aged-chart-paper.png?v=1" x="0" y="0" width="1200" height="650" preserveAspectRatio="none" aria-hidden="true"></image>
 
                     <g
                       class="map-country-label-layer"
@@ -1051,7 +1057,7 @@
   <script src="./App/boot-diagnostic.js?v=1"></script>
 
   <script
-    src="./App/dad-radar-browser.js?v=individual-flap-lights-1"
+    src="./App/dad-radar-browser.js?v=paper-charts-1"
     onerror="window.__dadRadarBoot.fail('BROWSER BUNDLE DID NOT LOAD')"
   ></script>
 

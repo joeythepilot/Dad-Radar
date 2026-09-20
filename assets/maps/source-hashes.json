@@ -1,0 +1,15 @@
+{
+  "naturalEarth": {
+    "ne_10m_rivers_lake_centerlines.geojson": "bb854a900ecbd3b408df46d5e16e3e0f974ba55993f9d8b5c26e855273c0905a",
+    "ne_10m_admin_1_states_provinces.geojson": "22d0e3ad85eb3e27f17cabf8ba2d50e554fbc27a87796ff891d958185da62fb5",
+    "ne_10m_admin_0_countries.geojson": "239eec57ac17f100a11e2536cffc56752c318b50ae765b0918ff7aab4ce8f255",
+    "ne_10m_populated_places.geojson": "9b8e3de09048ef00dfc70357dbb9fa324493f214b5e0ae4daf1aa79a8d10116b"
+  },
+  "artwork": {
+    "aged-chart-paper.png": "4618f3659bf92476fd1f5fa7588c129ae09908990072ab84b170e2aa81f93c94",
+    "north-america-caribbean-relief-hires.jpg": "de681c47fc44f398cb4b5d7a6b546d8e990ea73379411ad2133ae6bddfeb34cd",
+    "chart-serif.woff": "def0428ac4c19c1a4b004beb2ddf45b7de51b4a73c71176402b2dc62e4a2492b",
+    "chart-serif-bold.woff": "f50c9f63939ab02b9273df1f14267fa388b0ecca2f75a8a9a511fe95d200b808",
+    "chart-sans.woff": "a8d13381bf6d2249e9a9c1da567f8fc6e0af55b4cba19db41eabecb2533f12b4"
+  }
+}

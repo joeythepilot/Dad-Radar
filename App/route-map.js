@@ -114,6 +114,11 @@ const elements = {
   ,weatherImage: document.getElementById("map-weather-image")
 };
 
+const chartCartography = globalThis.dadRadarCartography?.create({
+  document, svg: elements.svg, layer: elements.cityLayer, shell: elements.shell,
+  paper: document.getElementById("map-aged-paper"), labels: globalThis.dadRadarMapLabels
+});
+
 let lastRenderedState = null;
 let resizeTimer = null;
 let lastTelemetryMapRenderAt = 0;
@@ -166,6 +171,7 @@ function project(longitude, latitude) {
 }
 
 function renderReferenceCities() {
+  if (chartCartography) return;
   if (!elements.cityLayer) {
     return;
   }
@@ -229,6 +235,7 @@ function referenceCityPresentationScale() {
 }
 
 function scaleReferenceCities(camera) {
+  if (chartCartography) { chartCartography.update(camera); return; }
   if (
     !elements.cityLayer ||
     typeof elements.cityLayer

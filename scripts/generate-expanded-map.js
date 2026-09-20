@@ -3,7 +3,8 @@
 const fs = require("fs");
 const path = require("path");
 const topojson = require("topojson-client");
-const world = require("world-atlas/countries-50m.json");
+const zlib = require("node:zlib");
+const geography = JSON.parse(zlib.gunzipSync(fs.readFileSync(path.resolve(__dirname,"../data/map-geography.json.gz"))));
 const unitedStates = require("us-atlas/states-10m.json");
 
 const projectRoot = path.resolve(__dirname, "..");
@@ -43,14 +44,14 @@ function project(coordinate) {
   ];
 }
 
-function ringPath(ring, precision = 1) {
+function ringPath(ring, precision = 3) {
   return ring.map((coordinate, index) => {
     const point = project(coordinate);
     return `${index === 0 ? "M" : "L"}${point[0].toFixed(precision)} ${point[1].toFixed(precision)}`;
   }).join("") + "Z";
 }
 
-function geometryPath(geometry, precision = 1) {
+function geometryPath(geometry, precision = 3) {
   if (geometry.type === "Polygon") {
     return geometry.coordinates.map(ring => ringPath(ring, precision)).join("");
   }
@@ -62,29 +63,10 @@ function geometryPath(geometry, precision = 1) {
   return "";
 }
 
-function coordinatesOf(geometry) {
-  if (geometry.type === "Polygon") {
-    return geometry.coordinates.flat();
-  }
-  if (geometry.type === "MultiPolygon") {
-    return geometry.coordinates.flat(2);
-  }
-  return [];
-}
-
-function intersectsMap(feature) {
-  return coordinatesOf(feature.geometry).some((coordinate) =>
-    coordinate[0] >= bounds.west &&
-    coordinate[0] <= bounds.east &&
-    coordinate[1] >= bounds.south &&
-    coordinate[1] <= bounds.north
-  );
-}
-
 function reliefPath(points, close = false) {
   return points.map((point, index) => {
     const projected = project(point);
-    return `${index === 0 ? "M" : "L"}${projected[0].toFixed(1)} ${projected[1].toFixed(1)}`;
+    return `${index === 0 ? "M" : "L"}${projected[0].toFixed(3)} ${projected[1].toFixed(3)}`;
   }).join("") + (close ? "Z" : "");
 }
 
@@ -93,10 +75,11 @@ const greatLakePaths = greatLakes.features.map(lake =>
   `<path data-lake="${lake.properties.name}" fill-rule="evenodd" d="${geometryPath(lake.geometry, 3)}"/>`
 ).join("\n    ");
 
-const features = topojson
-  .feature(world, world.objects.countries)
-  .features
-  .filter(intersectsMap);
+const features = geography.land.map(country => ({properties:{name:country.name},geometry:{type:"MultiPolygon",coordinates:country.polygons}}));
+const riverPaths = geography.rivers.map(river => `<path data-river="${String(river.name || "").replace(/&/g,"&amp;")}" d="${river.lines.map(line => reliefPath(line)).join("")}"/>`).join("\n");
+const gridPaths = [];
+for(let longitude=-134;longitude<=-56;longitude+=2) gridPaths.push(`<path d="${reliefPath([[longitude,5],[longitude,62]])}"/>`);
+for(let latitude=6;latitude<=62;latitude+=2) gridPaths.push(`<path d="${reliefPath([[-135,latitude],[-55,latitude]])}"/>`);
 
 const landPaths = features.map((feature, index) =>
   `<path class="country country-${index}" data-country="${String(feature.properties.name).replace(/&/g, "&amp;").replace(/\"/g, "&quot;")}" d="${geometryPath(feature.geometry)}"/>`
@@ -113,17 +96,13 @@ const statePaths = `<path class="state-boundary" data-boundaries="interior" d="$
   .map(line => reliefPath(line)).join("")}"/>`;
 
 const svg = `<?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated from world-atlas 2.0.2 / Natural Earth 1:50m country boundaries. -->
+<!-- Generated from Natural Earth 1:10m geography; source provenance in assets/maps/README.md. -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 650" preserveAspectRatio="none">
   <defs>
-    <pattern id="land-paper" width="52" height="38" patternUnits="userSpaceOnUse">
-      <rect width="52" height="38" fill="#cfb77e"/>
-      <path d="M-8 10 C7 3 17 17 31 10 S51 4 62 11 M-6 29 C8 23 18 35 34 28 S52 25 61 30" fill="none" stroke="#705e41" stroke-width=".7" opacity=".065"/>
-      <circle cx="9" cy="22" r=".8" fill="#6c583d" opacity=".10"/>
-      <circle cx="40" cy="5" r=".55" fill="#f2e5bd" opacity=".32"/>
-    </pattern>
+    <radialGradient id="land-paper"><stop offset="0" stop-color="#e9dfc7"/><stop offset="1" stop-color="#e1d3b5"/></radialGradient>
     <clipPath id="land-clip" fill-rule="evenodd">${landClipPaths}</clipPath>
   </defs>
+  <rect width="1200" height="650" fill="#a2b6ae"/>
   <g class="countries" fill-rule="evenodd">
     ${landPaths}
   </g>
@@ -133,12 +112,21 @@ const svg = `<?xml version="1.0" encoding="UTF-8"?>
   <g class="great-lakes">
     ${greatLakePaths}
   </g>
+  <g class="chart-rivers" fill="none">${riverPaths}</g>
+  <g class="chart-grid" fill="none">${gridPaths.join("")}</g>
   <style>
-    .country{fill:url(#land-paper);stroke:#6a583d;stroke-width:1.25;vector-effect:non-scaling-stroke}
-    .great-lakes{fill:#71827b;stroke:#5f6254;stroke-width:.3}
-    .state-boundary{stroke:#665438;stroke-width:.82;opacity:.82;vector-effect:non-scaling-stroke}
+    .country{fill:url(#land-paper);stroke:#728177;stroke-width:.055}
+    .great-lakes{fill:#a2b6ae;stroke:#667e78;stroke-width:.065}
+    .state-boundary{stroke:#776f53;stroke-width:.12;stroke-dasharray:.58 .20 .10 .20;opacity:.65}
+    .chart-rivers{stroke:#658e97;stroke-width:.065;opacity:.72;stroke-linecap:round;stroke-linejoin:round}
+    .chart-grid{stroke:#92937b;stroke-width:.045;opacity:.28}
   </style>
 </svg>\n`;
 
 fs.writeFileSync(outputPath, svg, "utf8");
 console.log(`Generated ${path.relative(projectRoot, outputPath)} from Natural Earth geography.`);
+
+// Transparent-water land mask prevents the relief raster edge appearing over
+// open ocean when the camera extends beyond the geographic source frame.
+const mask = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 650" preserveAspectRatio="none"><defs><mask id="land"><rect width="1200" height="650" fill="black"/><g fill="white" fill-rule="evenodd">${landClipPaths}</g><g fill="black">${greatLakePaths}</g></mask></defs><rect width="1200" height="650" fill="white" mask="url(#land)"/></svg>\n`;
+fs.writeFileSync(path.join(projectRoot,'assets/maps/chart-land-mask.svg'), mask);
