@@ -134,7 +134,8 @@ const server = http.createServer((request, response) => {
             sheenBackgroundImage: sheen.backgroundImage,
             boardBackgroundImage: boardLight.backgroundImage,
             boardBorderColor: boardLight.borderColor,
-            boardBoxShadow: boardLight.boxShadow
+            boardBoxShadow: boardLight.boxShadow,
+            individualLights:[...document.querySelectorAll('.flap-character')].map(n=>getComputedStyle(n,'::after').backgroundImage)
           };
         });
 
@@ -150,7 +151,11 @@ const server = http.createServer((request, response) => {
         assert.deepEqual(imageSize,[637,640],`${engine}: original PNG decodes at its full resolution`);
         // Exercise the real flip; moving halves must not revert to the drawn substitute.
         await page.waitForFunction(()=>!document.querySelector('.flap-character')._animationRunning);
+        assert.equal(await page.locator('.flap-character[data-value=" "]').first().evaluate(n=>getComputedStyle(n,'::after').opacity),'0',
+          `${engine}: a settled blank flap has its light off`);
         await page.evaluate(()=>flipFlapOnce(document.querySelector('.flap-character'),'A'));
+        assert.equal(await page.locator('.flap-character').first().evaluate(n=>getComputedStyle(n,'::after').opacity),'1',
+          `${engine}: a flap displaying a character has its light on`);
         assert.equal(await page.locator('.flap-character').first().locator('.flap-glyph svg [data-printed-ink="A"]').count(),2,
           `${engine}: both stationary halves use outlined ink rather than browser font text`);
         await page.evaluate(()=>{
@@ -187,6 +192,11 @@ const server = http.createServer((request, response) => {
         });
         assert.deepEqual(settled,{characters:['Z','Z'],matching:true,unique:true,browserText:false},
           `${engine}: settled halves join one printed character without duplicate SVG IDs or font text`);
+        await page.evaluate(()=>flipFlapOnce(document.querySelector('.flap-character'),' '));
+        await page.waitForFunction(()=>getComputedStyle(document.querySelector('.flap-character'),'::after').opacity==='0',null,{timeout:1500});
+        assert.equal(await page.locator('.flap-character').first().getAttribute('data-value'),' ',
+          `${engine}: returning to blank switches its lamp off`);
+        await page.evaluate(()=>flipFlapOnce(document.querySelector('.flap-character'),'Z'));
         assert.equal(
           evidence.seamHeight,
           "1px",
@@ -204,14 +214,16 @@ const server = http.createServer((request, response) => {
         );
         assert.match(
           evidence.sheenBackgroundImage,
-          /linear-gradient/,
-          `${engine}: the remaining surface treatment should be a restrained grazing gradient`
+          /radial-gradient/,
+          `${engine}: each flap has its own localized incandescent light`
         );
-        assert.match(
+        assert.equal(
           evidence.boardBackgroundImage,
-          /linear-gradient/,
-          `${engine}: the board should retain only the retuned cavity gradient`
+          'none',
+          `${engine}: no panel-wide light wash`
         );
+        assert(evidence.individualLights.length>10&&evidence.individualLights.every(light=>/radial-gradient/.test(light)),
+          `${engine}: every flap, including blank flaps, has its own light source`);
         assert.ok(
           evidence.boardBorderColor === "rgba(205, 177, 121, 0.09)" ||
             evidence.boardBorderColor === "rgba(205, 177, 121, 0.09)",

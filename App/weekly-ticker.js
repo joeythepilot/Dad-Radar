@@ -162,7 +162,7 @@
       if(!root.document.querySelector("link[data-dad-radar-weekly-ticker]")){
         const link=root.document.createElement("link");
         link.rel="stylesheet";
-        link.href="/UI/weekly-ticker-layout.css?v=13-printed-flap-light";
+        link.href="/UI/weekly-ticker-layout.css?v=14-individual-flap-lights";
         link.dataset.dadRadarWeeklyTicker="true";
         root.document.head.appendChild(link);
       }

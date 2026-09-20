@@ -39,32 +39,34 @@
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.014) !important;
 }
 
-/* Warm incandescent spill grazes the original card texture from above. */
+/* One small recessed incandescent source above each flap. The upper-edge
+   highlight and soft pool are clipped to that mechanism. */
 .flap-character::after {
   inset: 1px 3px !important;
   border-radius: 2px !important;
+  opacity: 1;
+  transition: opacity 180ms ease;
   background:
-    linear-gradient(
-      180deg,
-      rgba(247, 192, 111, 0.16) 0%,
-      rgba(241, 184, 103, 0.055) 35%,
-      transparent 62%,
-      transparent 84%,
-      rgba(0, 0, 0, 0.055) 100%
-    ) !important;
+    radial-gradient(ellipse 24% 8% at 50% 3%,
+      rgba(255, 221, 167, 0.48) 0%,
+      rgba(255, 204, 129, 0.18) 42%,
+      transparent 100%),
+    radial-gradient(ellipse 62% 72% at 50% 7%,
+      rgba(247, 190, 108, 0.24) 0%,
+      rgba(242, 181, 96, 0.10) 36%,
+      rgba(231, 165, 77, 0.025) 65%,
+      transparent 92%) !important;
 }
 
-/* Concealed warm strip above the cavity: broad falloff onto the card faces,
-   not a halo around letters or an illuminated outline. */
+/* Light the moving cards; switch off once the mechanism settles on blank. */
+.flap-character[data-value=" "]:not(.is-flipping)::after {
+  opacity: 0;
+}
+
+/* The shared housing stays dark between the individually lit mechanisms. */
 .flight-board::after {
   border-color: rgba(205, 177, 121, 0.09) !important;
   box-shadow:
-    inset 0 2px 7px rgba(250, 199, 122, 0.14),
     inset 0 -10px 22px rgba(0, 0, 0, 0.55) !important;
-  background:
-    radial-gradient(ellipse 100% 110% at 50% -12%,
-      rgba(249, 196, 117, 0.30) 0%,
-      rgba(244, 185, 97, 0.12) 42%,
-      transparent 78%),
-    linear-gradient(180deg, transparent 65%, rgba(0, 0, 0, 0.08)) !important;
+  background: none !important;
 }

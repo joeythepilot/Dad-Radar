@@ -31,5 +31,8 @@ reduced motion and resizing. Local engine selection is explicit through
 Split-flap letters also stay vector SVG. Both clipped halves use the same physical
 slot/character wear seed, with separate SVG definition IDs for each live instance.
 The existing em sizing and flip transforms place and animate that shared print face.
-Warm light spills downward from the upper housing; the original unlit hardware PNG
-and letter ink remain independent of the illumination overlay.
+Each flap has a small localized incandescent light at its own upper edge. The shared
+housing stays dark between mechanisms; no panel-wide wash is used. The original
+unlit hardware PNG and letter ink remain independent of the illumination overlay.
+Lights come on during a flip and fade out over 180 ms when a flap settles on a
+blank space. Nonblank characters keep their individual lights on.

@@ -11,7 +11,7 @@ const build = fs.readFileSync(path.join(projectRoot, "scripts", "build-browser.j
 const desktopStyles = fs.readFileSync(path.join(projectRoot, "UI", "styles.css"), "utf8");
 const mobileStyles = fs.readFileSync(path.join(projectRoot, "Mobile", "mobile.css"), "utf8");
 
-assert.match(html, /dad-radar-browser\.js\?v=printed-flap-light-1/, "The main display loads the generated browser bundle.");
+assert.match(html, /dad-radar-browser\.js\?v=individual-flap-lights-1/, "The main display loads the generated browser bundle.");
 assert.match(build, /targets:\s*["']> 0\.5%, not dead["']/, "The browser build targets the supported modern browser baseline.");
 assert.match(bundle, /loadVisibleDestinationPoster/, "Destination poster recovery remains in the browser bundle.");
 assert.match(bundle, /dadRadarWeeklyTicker/, "Weekly ticker remains in the browser bundle.");
