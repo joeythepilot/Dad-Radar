@@ -39,7 +39,7 @@
   <!-- Loads last and owns the new three-column layout. -->
   <link
     rel="stylesheet"
-    href="./UI/layout-side-rail.css?v=cleanup-1"
+    href="./UI/layout-side-rail.css?v=compact-sound-1"
   >
   <link rel="stylesheet" href="./UI/approved-map-artwork.css?v=1">
   <link rel="stylesheet" href="./UI/instrument-wheels.css?v=1">
@@ -50,12 +50,17 @@
 <body>
 
   <button
-    class="beta-audio-button"
+    class="beta-audio-button sound-enable-button"
     id="beta-audio-button"
     type="button"
+    aria-label="Enable sound"
+    title="Enable sound"
     hidden
   >
-    TAP ONCE FOR SPLIT-FLAP SOUND
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+      <path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/>
+      <path d="M16 8c2 2 2 6 0 8m3-11c4 4 4 10 0 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
   </button>
 
   <button
@@ -1057,7 +1062,7 @@
   <script src="./App/boot-diagnostic.js?v=1"></script>
 
   <script
-    src="./App/dad-radar-browser.js?v=scheduled-trip-count-1"
+    src="./App/dad-radar-browser.js?v=compact-sound-1"
     onerror="window.__dadRadarBoot.fail('BROWSER BUNDLE DID NOT LOAD')"
   ></script>
 

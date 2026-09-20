@@ -133,7 +133,7 @@ When started manually, that terminal must remain open. The automatic-startup ins
 1. Connect the iPad to the same home Wi-Fi as the desktop. A guest network may block devices from seeing one another.
 2. Open Safari and enter the address printed by `beta:address`.
 3. Rotate the iPad to landscape.
-4. Tap **Tap once for split-flap sound**. Safari requires this one human gesture before it permits audio.
+4. Tap anywhere on the display, or use the small speaker button in the lower-right corner, to enable the split-flap sound and altitude chime. The button disappears after both sounds are enabled. Safari can require this gesture before permitting audio; other browsers can too.
 5. In Safari, choose Share → Add to Home Screen. Launching from that icon removes most browser chrome.
 6. Keep the iPad plugged in and prevent automatic sleep while it is serving as the display.
 7. Optional: use iPad Guided Access to prevent accidental navigation away from Dad Radar.
@@ -226,7 +226,7 @@ Use a current Chrome, Edge, or Safari browser. Display pages automatically check
 
 ### There is no split-flap sound
 
-- Tap the sound button once after every fresh browser or Home Screen session.
+- Tap anywhere on the full display or use the small speaker button after a fresh browser or Home Screen session. If the button remains visible, tap it again to retry enabling sound.
 - Confirm iPad volume is up and Dad Radar remains the foreground app.
 
 ### Stop Dad Radar

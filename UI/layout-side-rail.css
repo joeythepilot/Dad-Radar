@@ -50,6 +50,22 @@
   display: none;
 }
 
+.sound-enable-button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  color: #c8ae7e;
+  border-color: rgba(221, 184, 112, 0.45);
+  cursor: pointer;
+}
+
+.sound-enable-button:focus-visible {
+  outline: 2px solid #f0d39d;
+  outline-offset: 3px;
+}
+
 .diagnostic-chime-button {
   bottom: 72px;
 }

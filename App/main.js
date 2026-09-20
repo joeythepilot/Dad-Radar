@@ -2103,33 +2103,34 @@ window.addEventListener(
   handleKeyboardShortcut
 );
 
-window.addEventListener(
-  "pointerdown",
-  () => {
-    splitFlapAudioController
-      ?.unlock();
-    altitudeChimeController
-      ?.unlock();
-  },
-  { once: true }
-);
+const audioControllers = [
+  splitFlapAudioController,
+  altitudeChimeController
+].filter(Boolean);
+
+let audioUnlockPending = false;
 
 async function enableBetaAudio() {
-  const splitFlapUnlocked =
-    await splitFlapAudioController
-      ?.unlock();
+  if (audioUnlockPending) return;
+  audioUnlockPending = true;
 
-  const altitudeChimeUnlocked =
-    await altitudeChimeController
-      ?.unlock();
+  try {
+    // Start every play request inside this gesture, before the first await.
+    const results = await Promise.all(
+      audioControllers.map(controller => controller.unlock())
+    );
 
-  const unlocked =
-    splitFlapUnlocked ||
-    altitudeChimeUnlocked;
-
-  if (unlocked && betaAudioButton) {
-    betaAudioButton.hidden = true;
+    if (results.every(Boolean)) {
+      if (betaAudioButton) betaAudioButton.hidden = true;
+      window.removeEventListener("click", enableBetaAudio);
+    }
+  } finally {
+    audioUnlockPending = false;
   }
+}
+
+if (audioControllers.length) {
+  window.addEventListener("click", enableBetaAudio);
 }
 
 if (betaAudioButton) {
@@ -2142,13 +2143,7 @@ if (betaAudioButton) {
     ) > 0;
 
   betaAudioButton.hidden =
-    !isTouchDisplay;
-
-  betaAudioButton.addEventListener(
-    "click",
-    enableBetaAudio,
-    { once: true }
-  );
+    !isTouchDisplay || !audioControllers.length;
 }
 
 if (diagnosticChimeButton) {
@@ -2159,7 +2154,9 @@ if (diagnosticChimeButton) {
 
   diagnosticChimeButton.addEventListener(
     "click",
-    async () => {
+    async (event) => {
+      // This click requests audible playback; a bubbling unlock would stop it.
+      event.stopPropagation();
       const played =
         await altitudeChimeController
           ?.play();

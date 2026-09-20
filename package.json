@@ -57,7 +57,7 @@
     "test:presentation": "node App/map-cartography-test.js && node App/instrument-math-test.js && node App/split-flap-audio-test.js && node App/map-roll-audio-test.js && node App/altitude-chime-test.js && node App/split-flap-state-test.js && node App/daily-schedule-layout-test.js && node App/printed-ink-test.js && node App/weekly-ticker-test.js && node App/weekly-overnight-update-test.js && node App/deployment-refresh-test.js && node App/poster-image-loader-test.js && node App/visual-state-controller-test.js && node App/descent-camera-test.js && node App/map-roll-transition-test.js && node App/route-map-test.js && node App/sequence-history-map-test.js && node App/airport-surface-map-test.js",
     "test:family": "node Mobile/view-model-test.js && node server/mobile-access-test.js && node server/family-password-test.js && node server/mobile-startup-test.js",
     "pretest:browser": "npm run build:browser",
-    "test:browser": "node scripts/weekly-ticker-headed-test.js && node scripts/split-flap-headed-test.js && node scripts/map-hardware-headed-test.js && node scripts/approved-artwork-browser-test.js && node scripts/deployment-refresh-browser-test.js"
+    "test:browser": "node scripts/weekly-ticker-headed-test.js && node scripts/split-flap-headed-test.js && node scripts/map-hardware-headed-test.js && node scripts/approved-artwork-browser-test.js && node scripts/deployment-refresh-browser-test.js && node scripts/audio-control-browser-test.js"
   },
   "repository": {
     "type": "git",
