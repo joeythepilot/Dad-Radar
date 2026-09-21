@@ -80,7 +80,7 @@ html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedu
   letter-spacing: 0.05px !important;
 }
 html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-entry {
-  grid-template-columns: minmax(0, 1fr) var(--family-duty-time-column-width) !important;
+  grid-template-columns: minmax(0, 1fr) !important;
   column-gap: 1% !important;
   font-size: var(--family-duty-row-font-size) !important;
   line-height: 1 !important;
@@ -91,9 +91,12 @@ html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedu
   text-overflow: clip !important;
   white-space: nowrap !important;
 }
+html[data-family-full] .daily-schedule-time-zone {
+  font-size: var(--family-duty-row-font-size);
+}
 html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-operational-stamp {
   right: 0.8% !important;
-  top: 50% !important;
+  top: 25% !important;
   width: 25.5% !important;
   max-height: 82% !important;
   padding: 0.02em 0.12em !important;

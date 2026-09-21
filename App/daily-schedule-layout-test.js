@@ -108,6 +108,11 @@ const stampedDuty = {
   ]
 };
 const stampedView = buildDutyCardView(stampedDuty, 1024, {homeAirport:"AVL", rowCapacity:5});
+const timedView=buildDutyCardView({...stampedDuty,entries:[{
+  ...stampedDuty.entries[0],departureTime:"11:07 PM",arrivalTime:"12:12 AM"
+}]},1920,{rowCapacity:3});
+assert.equal(timedView.rows[0].departureTime,"11:07 PM");
+assert.equal(timedView.rows[0].arrivalTime,"12:12 AM");
 assert.deepEqual(
   stampedView.rows[0].operationalStamp,
   {kind:"delay",label:"DELAYED",detail:"37 MINUTES"},

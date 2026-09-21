@@ -276,7 +276,7 @@
       const timeZone = providedOptions.displayTimeZone ?? "America/New_York";
       const entries = timeline.entries.map(entry => {
         const event = displayEventById(schedule, entry.id);
-        if (!event || event.kind !== "flight" || !operational(event) || entry.time === "ALL DAY") {
+        if (!event || event.kind !== "flight" || !operational(event)) {
           return entry;
         }
         const op = operational(event);
@@ -301,6 +301,8 @@
         return {
           ...entry,
           time: formatTime(bestDeparture(event), timeZone),
+          departureTime: formatTime(bestDeparture(event), timeZone),
+          arrivalTime: formatTime(bestArrival(event), timeZone),
           ...(hasProjectedDelay ? {
             operationalStamp: {
               kind: "delay",

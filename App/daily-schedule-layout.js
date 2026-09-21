@@ -234,6 +234,10 @@
               .join(" · "),
             time:
               entry?.time ?? "--:--",
+            ...(entry?.departureTime || entry?.arrivalTime ? {
+              departureTime: entry.departureTime ?? entry.time ?? "--:--",
+              arrivalTime: entry.arrivalTime ?? "--:--"
+            } : {}),
             ...(entry?.operationalStamp ? {
               operationalStamp: entry.operationalStamp
             } : {}),

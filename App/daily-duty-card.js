@@ -152,7 +152,7 @@
       viewportWidth,
       {
         homeAirport: root.dadRadarSettings?.homeAirport ?? "AVL",
-        rowCapacity: isFamilyFull ? 5 : undefined
+        rowCapacity: isFamilyFull || viewportWidth >= 1500 ? 3 : 2
       }
     );
 
@@ -162,6 +162,14 @@
 
     date.textContent = view.dateLabel;
     date.title = view.timeZoneLabel || "";
+    let zone = panel.querySelector('.daily-schedule-time-zone');
+    if (!zone) {
+      zone = root.document.createElement('p');
+      zone.className = 'daily-schedule-time-zone';
+      panel.appendChild(zone);
+    }
+    zone.textContent = `TIMES · ${view.timeZoneLabel || 'HOME TIME'}`;
+    list.style.setProperty('--duty-visible-rows', isFamilyFull || viewportWidth >= 1500 ? '3' : '2');
     context.textContent = view.context;
     fitFamilyFullStatus(panel, context);
     queueStatusFit();
@@ -198,7 +206,16 @@
 
       const time = root.document.createElement("time");
       time.className = "daily-schedule-time";
-      time.textContent = row.time;
+      if (row.departureTime || row.arrivalTime) {
+        item.classList.add('has-flight-times');
+        const departure=root.document.createElement('span');
+        departure.textContent=`DEP ${row.departureTime || '--:--'}`;
+        const arrival=root.document.createElement('span');
+        arrival.textContent=`ARR ${row.arrivalTime || '--:--'}`;
+        time.append(departure,arrival);
+      } else {
+        time.textContent = row.time;
+      }
 
       item.append(route, time);
 

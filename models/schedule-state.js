@@ -589,6 +589,10 @@
                     options.displayTimeZone
                   ),
             label: dailyEventLabel(event),
+            ...(event.kind === "flight" ? {
+              departureTime: formatTime(start, options.displayTimeZone),
+              arrivalTime: formatTime(end, options.displayTimeZone)
+            } : {}),
             tag: dailyEventTag(event),
             status
           };

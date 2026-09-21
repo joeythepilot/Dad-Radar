@@ -19,9 +19,9 @@ const state = {
   diagnostics:{shutterTestToken:"saved-command-before-page-load"},
   sequenceHistory:{totalDistanceNm:1468, completedLegCount:6, estimatedLegCount:6, legs:Array.from({length:6}, () => ({origin:"ORD",destination:"AVL"}))},
   dailySchedule:{dateLabel:"SUN SEP 13",timeZoneLabel:"EASTERN TIME",context:"DADDY IS HOME TODAY",entries:[
-    {time:"7:58 AM",label:"ORD → BWI",tag:"FLT 3761",status:"completed",kind:"flight"},
-    {time:"11:23 AM",label:"BWI → ORD",tag:"FLT 3762",status:"completed",kind:"flight"},
-    {time:"3:00 PM",label:"ORD → AVL",tag:"COMMUTE",status:"completed",kind:"flight"}
+    {time:"7:58 AM",departureTime:"7:58 AM",arrivalTime:"10:14 AM",label:"ORD → BWI",tag:"FLT 3761",status:"completed",kind:"flight"},
+    {time:"11:23 AM",departureTime:"11:23 AM",arrivalTime:"1:40 PM",label:"BWI → ORD",tag:"FLT 3762",status:"current",kind:"flight",operationalStamp:{kind:"delay",label:"DELAYED",detail:"45 MINUTES"}},
+    {time:"3:00 PM",departureTime:"3:00 PM",arrivalTime:"5:12 PM",label:"ORD → AVL",tag:"COMMUTE",status:"upcoming",kind:"flight"}
   ]}
 };
 const now = new Date().toISOString();
@@ -75,6 +75,21 @@ const server = http.createServer((req,res) => {
    await page.waitForSelector('#dashboard:not([hidden])').catch(async e=>{console.log(await page.evaluate(()=>({url:location.href,boot:document.querySelector('.status-message')?.textContent,html:document.documentElement.outerHTML.slice(0,700)})));throw e;});
    await page.waitForFunction(()=>document.querySelector('#eta-value').textContent==='7:42 PM');
    await page.waitForFunction(()=>document.querySelector('#destination-poster').naturalWidth>0);
+   await page.locator('.daily-schedule-card-art').evaluate(image=>image.decode());
+   const dutyProof=await page.locator('.daily-schedule-panel').evaluate(panel=>{
+     const box=panel.getBoundingClientRect();
+     const rows=[...panel.querySelectorAll('.daily-schedule-entry')];
+     const fields=[...panel.querySelectorAll('.daily-schedule-time span')];
+     return {zone:panel.querySelector('.daily-schedule-time-zone').textContent,
+       labels:fields.map(n=>n.textContent),
+       contained:fields.every(n=>{const r=n.getBoundingClientRect();return r.left>=box.left&&r.right<=box.right&&n.scrollWidth<=n.clientWidth+1;}),
+       separated:rows.every(n=>{const route=n.querySelector('.daily-schedule-label').getBoundingClientRect();const time=n.querySelector('.daily-schedule-time').getBoundingClientRect();return route.bottom<=time.top+1;}),
+       stampClear:rows.every(n=>{const s=n.querySelector('.daily-schedule-operational-stamp');return !s||s.getBoundingClientRect().bottom<=n.querySelector('.daily-schedule-time').getBoundingClientRect().top+1;})};
+   });
+   assert.match(dutyProof.zone,/EASTERN TIME/);
+   assert(dutyProof.labels.some(t=>t==='DEP 11:23 AM') && dutyProof.labels.some(t=>t==='ARR 1:40 PM'),`${name}: current flight has both labeled times`);
+   assert(dutyProof.contained && dutyProof.separated && dutyProof.stampClear,`${name}: duty times fit and clear route/stamp: ${JSON.stringify(dutyProof)}`);
+   await page.locator('.daily-schedule-panel').screenshot({path:path.join(output,`duty-${name}.png`)});
    assert.equal(await page.locator('.airspeed-range-ink').count(),1,'Airspeed has its painted range layer');
    const rangeProof=await page.locator('.airspeed-range-ink').evaluate(async image=>{
      await image.decode();

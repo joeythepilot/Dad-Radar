@@ -96,6 +96,8 @@ function resolve(op, options = {}, overrides = {}) {
   });
   assert.equal(daily.entries[0].time, "10:15 AM",
     "Today's Duty shows the current estimated OUT time.");
+  assert.equal(daily.entries[0].departureTime, "10:15 AM");
+  assert.equal(daily.entries[0].arrivalTime, "12:00 PM", "Duty arrival uses revised gate IN, not the calendar or touchdown time.");
   assert.deepEqual(daily.entries[0].operationalStamp, {
     kind: "delay",
     label: "DELAYED",
@@ -103,6 +105,18 @@ function resolve(op, options = {}, overrides = {}) {
   }, "A projected FlightAware departure delay becomes a child-friendly red dispatch stamp on the affected duty row.");
   assert.equal(daily.context,
     "DADDY'S FLIGHT TO WILKES-BARRE/SCRANTON, PENNSYLVANIA IS 75 MIN LATE");
+}
+
+{
+  for (const [op, departure, arrival] of [
+    [null, "9:00 AM", "11:00 AM"],
+    [operational({actualOut:"2026-08-04T13:10:00Z",actualIn:"2026-08-04T15:20:00Z"}),"9:10 AM","11:20 AM"]
+  ]) {
+    const {event,resolved}=resolve(op);
+    const entry=buildDailySchedule(schedule(event),resolved,{now:NOW,displayTimeZone:"America/New_York"}).entries[0];
+    assert.equal(entry.departureTime,departure,"Departure falls back to schedule and actual OUT overrides estimates.");
+    assert.equal(entry.arrivalTime,arrival,"Arrival falls back to schedule and actual IN overrides estimates.");
+  }
 }
 
 {
