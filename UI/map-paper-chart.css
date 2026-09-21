@@ -2,7 +2,7 @@
 @font-face{font-family:"DadRadar Chart Antique";src:url("../assets/maps/chart-antique-roman.woff") format("woff");font-weight:400;font-display:swap}
 @font-face{font-family:"DadRadar Chart Antique";src:url("../assets/maps/chart-antique-italic.woff") format("woff");font-style:italic;font-weight:400;font-display:swap}
 .route-map-shell { background:#cdbb99!important; }
-.map-water-fill { fill:#658ba4!important; }
+.map-water-fill { fill:#4f758d!important; }
 /* Exposure belongs to the printed sheet, never its live ink or hardware. */
 .map-vector-geography { filter:brightness(.88) sepia(.12) saturate(1.08); }
 .map-terrain-relief { opacity:.48!important;filter:grayscale(1) contrast(1.22) sepia(.32)!important;mix-blend-mode:multiply!important; }
