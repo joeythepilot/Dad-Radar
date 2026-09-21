@@ -1,7 +1,7 @@
 /* Approved aged-paper chart style, shared by kiosk, family and compact maps. */
 @font-face{font-family:"DadRadar Chart Antique";src:url("../assets/maps/chart-antique-roman.woff") format("woff");font-weight:400;font-display:swap}
 @font-face{font-family:"DadRadar Chart Antique";src:url("../assets/maps/chart-antique-italic.woff") format("woff");font-style:italic;font-weight:400;font-display:swap}
-.route-map-shell { background:#deceb0!important; }
+.route-map-shell { background:#cdbb99!important; }
 .map-water-fill { fill:#658ba4!important; }
 /* Exposure belongs to the printed sheet, never its live ink or hardware. */
 .map-vector-geography { filter:brightness(.88) sepia(.12) saturate(1.08); }
@@ -27,7 +27,7 @@
 .chart-home circle { stroke:#743c2f;stroke-width:1; }
 .chart-home .chart-home-center { fill:#743c2f;stroke:none; }
 .chart-home-leader { stroke:#743c2f;stroke-width:.6; }
-.airport-surface-layer { background:#dbc69b!important;isolation:isolate; }
+.airport-surface-layer { background:#cfb98e!important;isolation:isolate; }
 .airport-surface-layer::before { content:"";position:absolute;inset:0;pointer-events:none;background:url("../assets/maps/aged-chart-paper.png?v=1") center/100% 100% no-repeat;opacity:.64;filter:saturate(.85) brightness(.94);mix-blend-mode:multiply; }
 .airport-surface-svg { position:relative; }
 .airport-surface-apron { fill:#c5b795!important;stroke:#9a8b6e!important; }
@@ -38,7 +38,7 @@
 .airport-surface-runway:not([style]) { fill:#625b4c!important; }
 .airport-surface-label { font-family:"DadRadar Chart Antique",sans-serif!important;font-weight:400!important;fill:#403629!important;stroke:#e7d7b2!important; }
 .airport-surface-caption { font-family:"DadRadar Chart Antique",serif!important;text-shadow:none!important; }
-.map-roll-regional-sheet,.map-roll-surface-sheet { background:#deceb0!important; }
+.map-roll-regional-sheet,.map-roll-surface-sheet { background:#cdbb99!important; }
 
 /* A single graphite ink layer prevents overlapping prior legs darkening. */
 .map-sequence-history-layer { pointer-events:none;opacity:.62; }
