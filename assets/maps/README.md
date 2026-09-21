@@ -36,6 +36,13 @@ Exact input and artwork SHA-256 values are recorded in `source-hashes.json`. Exi
 
 ## Rebuilding and verification
 
+The US–Canada and US–Mexico borders have a separate muted sepia dash-dot
+ink layer. The generator extracts exact shared segments from the existing
+country polygons, joining consecutive segments so dashes follow the border.
+This layer sits above lake fills so the international boundary remains
+visible through the Great Lakes. Coastlines and interior state lines retain
+their previous geometry and styling; no other country borders are emphasized.
+
 With the four source GeoJSON files in one directory, run:
 
 ```sh

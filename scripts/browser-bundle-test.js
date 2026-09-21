@@ -15,7 +15,7 @@ assert.match(html, /dad-radar-browser\.js\?v=home-paper-1/, "The main display lo
 assert.match(build, /targets:\s*["']> 0\.5%, not dead["']/, "The browser build targets the supported modern browser baseline.");
 assert.match(bundle, /loadVisibleDestinationPoster/, "Destination poster recovery remains in the browser bundle.");
 assert.match(bundle, /dadRadarWeeklyTicker/, "Weekly ticker remains in the browser bundle.");
-assert.match(html, /north-america-caribbean-vintage\.svg\?v=antique-chart-3-dark-stock/, "The sharpened map artwork remains wired into the display.");
+assert.match(html, /north-america-caribbean-vintage\.svg\?v=antique-chart-4-us-borders/, "The sharpened map artwork remains wired into the display.");
 assert.match(html, /class="map-terrain-relief"[\s\S]*?north-america-caribbean-relief-hires\.jpg\?v=terrain-direct-4/, "Terrain loads directly in the live SVG rather than through a nested SVG image.");
 assert.match(html, /id="destination-poster"[\s\S]*?hidden[\s\S]*?id="destination-poster-fallback"[\s\S]*?aria-live=/, "Poster fallback remains present at boot.");
 const desktopCityText = desktopStyles.match(/\.map-city-reference text\s*\{([\s\S]*?)\}/)?.[1] ?? "";

@@ -41,6 +41,13 @@ assert.match(mapSource, /id="land-clip"/);
 assert.doesNotMatch(mapSource, /data:image\/png;base64,/);
 assert.doesNotMatch(mapSource, /north-america-caribbean-relief-hires\.jpg/);
 assert.match(mapSource, /class="state-boundary"/);
+for (const neighbor of ['Canada','Mexico']) {
+  const boundary=mapSource.match(new RegExp(`data-us-border="${neighbor}" d="([^"]+)"`));
+  assert(boundary, `The US–${neighbor} boundary must have its own visible ink path.`);
+  assert((boundary[1].match(/L/g)||[]).length>500, `${neighbor}: retain the detailed shared geographic edge`);
+}
+assert(mapSource.indexOf('class="us-international-boundaries"')>mapSource.indexOf('class="great-lakes"'),
+  'International lake boundaries must remain visible over the water.');
 assert.match(
   mapSource,
   /class="great-lakes"/,
@@ -56,7 +63,7 @@ assert(mapSource.indexOf('class="great-lakes"') > mapSource.indexOf('class="stat
 
 assert.match(
   dashboardSource,
-  /north-america-caribbean-vintage\.svg\?v=antique-chart-3-dark-stock/
+  /north-america-caribbean-vintage\.svg\?v=antique-chart-4-us-borders/
 );
 assert.match(
   dashboardSource,

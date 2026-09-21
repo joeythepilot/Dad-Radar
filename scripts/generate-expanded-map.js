@@ -95,6 +95,29 @@ const stateMesh = topojson.mesh(unitedStates, unitedStates.objects.states, (a, b
 const statePaths = `<path class="state-boundary" data-boundaries="interior" d="${stateMesh.coordinates
   .map(line => reliefPath(line)).join("")}"/>`;
 
+// Only edges shared with the US: never stroke a country's whole coastline.
+const edgeKey = (a, b) => [a.join(','), b.join(',')].sort().join('|');
+const usEdges = new Set();
+for (const polygon of geography.land.find(country => country.name === 'United States of America').polygons) {
+  for (const ring of polygon) for (let i=1;i<ring.length;i++) usEdges.add(edgeKey(ring[i-1],ring[i]));
+}
+const internationalPaths = ['Canada','Mexico'].map(name => {
+  const lines=[];
+  for (const polygon of geography.land.find(country => country.name === name).polygons) {
+    for (const ring of polygon) {
+      let line=[];
+      for (let i=1;i<ring.length;i++) {
+        if (usEdges.has(edgeKey(ring[i-1],ring[i]))) {
+          if (!line.length) line.push(ring[i-1]);
+          line.push(ring[i]);
+        } else if (line.length) { lines.push(line); line=[]; }
+      }
+      if (line.length) lines.push(line);
+    }
+  }
+  return `<path data-us-border="${name}" d="${lines.map(line=>reliefPath(line)).join('')}"/>`;
+}).join('\n');
+
 const svg = `<?xml version="1.0" encoding="UTF-8"?>
 <!-- Generated from Natural Earth 1:10m geography; source provenance in assets/maps/README.md. -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 650" preserveAspectRatio="none">
@@ -114,12 +137,14 @@ const svg = `<?xml version="1.0" encoding="UTF-8"?>
   </g>
   <g class="chart-rivers" fill="none">${riverPaths}</g>
   <g class="chart-grid" fill="none">${gridPaths.join("")}</g>
+  <g class="us-international-boundaries" fill="none">${internationalPaths}</g>
   <style>
     .country{fill:url(#land-paper);stroke:#728177;stroke-width:.055}
     .great-lakes{fill:#456f8a;stroke:#667e78;stroke-width:.065}
     .state-boundary{stroke:#776f53;stroke-width:.12;stroke-dasharray:.58 .20 .10 .20;opacity:.65}
     .chart-rivers{stroke:#658e97;stroke-width:.065;opacity:.72;stroke-linecap:round;stroke-linejoin:round}
     .chart-grid{stroke:#92937b;stroke-width:.045;opacity:.28}
+    .us-international-boundaries{stroke:#6b5134;stroke-width:.32;stroke-dasharray:1.15 .32 .16 .32;stroke-linecap:round;stroke-linejoin:round;opacity:.88}
   </style>
 </svg>\n`;
 
