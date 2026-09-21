@@ -68,10 +68,23 @@ async function inspect(page,name) {
   await page.waitForFunction(()=>document.querySelectorAll('.chart-label').length>0);
   await page.evaluate(()=>document.fonts.ready);
   await page.waitForTimeout(250);
-  const proof=await page.evaluate(()=>{
+  const proof=await page.evaluate(async()=>{
     const svg=document.querySelector('.route-map-svg'),r=svg.getBoundingClientRect(),v=svg.viewBox.baseVal;
     const paper=document.querySelector('#map-aged-paper');
-    return {rect:r.toJSON(),viewBox:{x:v.x,y:v.y,width:v.width,height:v.height},
+    // Sample the actual referenced SVG after its display filter. This catches
+    // changing a hidden CSS background while the opaque image stays pale.
+    const geography=document.querySelector('.map-vector-geography');
+    const image=new Image();image.src=geography.href.baseVal;await image.decode();
+    const canvas=document.createElement('canvas');canvas.width=1200;canvas.height=650;
+    const context=canvas.getContext('2d');context.filter=getComputedStyle(geography).filter;
+    context.drawImage(image,0,0,1200,650);
+    function sample(x,y){
+      const pixels=context.getImageData(x,y,9,9).data;
+      const rgb=[0,0,0];for(let i=0;i<pixels.length;i+=4)for(let c=0;c<3;c++)rgb[c]+=pixels[i+c]/81;
+      return {rgb,light:rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722};
+    }
+    const colors={land:sample(565,275),water:sample(930,540)};
+    return {colors,rect:r.toJSON(),viewBox:{x:v.x,y:v.y,width:v.width,height:v.height},
       paper:Object.fromEntries(['x','y','width','height'].map(k=>[k,Number(paper.getAttribute(k))])),
       title:!!document.querySelector('.chart-sheet-title'),
       compassFilter:getComputedStyle(document.querySelector('.map-compass-rose')).filter,
@@ -87,6 +100,9 @@ async function inspect(page,name) {
       dutyFilter:document.querySelector('.daily-schedule-card-art')?getComputedStyle(document.querySelector('.daily-schedule-card-art')).filter:null,
       dayTone:document.querySelector('.weekly-overnight-bay')?getComputedStyle(document.querySelector('.weekly-overnight-bay'),'::after').backgroundColor:null};
   });
+  console.log(name+': visible sheet luminance '+JSON.stringify(proof.colors));
+  assert(proof.colors.land.light<190,'Visible land artwork must be darker cream, not just its hidden background');
+  assert(proof.colors.water.light<100 && proof.colors.water.rgb[2]>proof.colors.water.rgb[0]+20,'Visible ocean artwork must use deeper blue');
   for(const key of ['x','y','width','height'])assert(Math.abs(proof.paper[key]-proof.viewBox[key])<.011,'Paper follows the live camera within its existing two-decimal viewBox rounding');
   assert(!proof.title,'Unwanted chart title is removed');
   assert.equal(proof.compassFilter,'none','Compass preserves crisp vector edges');

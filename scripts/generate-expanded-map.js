@@ -99,10 +99,10 @@ const svg = `<?xml version="1.0" encoding="UTF-8"?>
 <!-- Generated from Natural Earth 1:10m geography; source provenance in assets/maps/README.md. -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 650" preserveAspectRatio="none">
   <defs>
-    <radialGradient id="land-paper"><stop offset="0" stop-color="#f8f0db"/><stop offset="1" stop-color="#f0e5cc"/></radialGradient>
+    <radialGradient id="land-paper"><stop offset="0" stop-color="#e0cda7"/><stop offset="1" stop-color="#d2bd96"/></radialGradient>
     <clipPath id="land-clip" fill-rule="evenodd">${landClipPaths}</clipPath>
   </defs>
-  <rect width="1200" height="650" fill="#658ba4"/>
+  <rect width="1200" height="650" fill="#456f8a"/>
   <g class="countries" fill-rule="evenodd">
     ${landPaths}
   </g>
@@ -116,7 +116,7 @@ const svg = `<?xml version="1.0" encoding="UTF-8"?>
   <g class="chart-grid" fill="none">${gridPaths.join("")}</g>
   <style>
     .country{fill:url(#land-paper);stroke:#728177;stroke-width:.055}
-    .great-lakes{fill:#658ba4;stroke:#667e78;stroke-width:.065}
+    .great-lakes{fill:#456f8a;stroke:#667e78;stroke-width:.065}
     .state-boundary{stroke:#776f53;stroke-width:.12;stroke-dasharray:.58 .20 .10 .20;opacity:.65}
     .chart-rivers{stroke:#658e97;stroke-width:.065;opacity:.72;stroke-linecap:round;stroke-linejoin:round}
     .chart-grid{stroke:#92937b;stroke-width:.045;opacity:.28}
