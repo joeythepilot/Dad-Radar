@@ -1210,7 +1210,7 @@ function testAirportCameraIntegration() {
   assert(low[2] < high[2], "The integrated low-airport camera uses height above DEN, not sea level.");
 }
 
-function testPersistentSequenceTracksStayInsideRegionalCamera() {
+function testPersistentSequenceTracksDoNotWidenActiveRouteCamera() {
   const flight = {
     origin: "ORD",
     destination: "CMI",
@@ -1253,21 +1253,31 @@ function testPersistentSequenceTracksStayInsideRegionalCamera() {
   };
   const {elements, context} = createHarness(flight, state);
   const camera = viewBox(elements["route-map-svg"]);
-  const columbus = context.project(-82.8919, 39.998);
-  const chicago = context.project(-87.9073, 41.9742);
-  const cameraCenter = {
-    x: camera[0] + camera[2] / 2,
-    y: camera[1] + camera[3] / 2
-  };
-  assert(
-    columbus.x >= camera[0] && columbus.x <= camera[0] + camera[2],
-    "The regional camera must keep previous persistent sequence tracks in frame instead of clipping Columbus offscreen when the current leg is ORD-CMI."
-  );
-  assert(
-    Math.abs(cameraCenter.x - chicago.x) < 1 &&
-    Math.abs(cameraCenter.y - chicago.y) < 1,
-    "Persistent history may widen the camera, but a delayed ORD-CMI leg must stay centered on ORD/Chicago rather than on the old tracks."
-  );
+  const routeOnly = viewBox(createHarness(flight).elements["route-map-svg"]);
+  assert.deepEqual(camera, routeOnly,
+    "Previous sequence tracks remain available for drawing but cannot widen the active route camera.");
+  assert.equal(state.sequenceHistory.legs.length, 3, "Camera fitting must preserve history data.");
+}
+
+function testDelayedBoardingRouteCamera() {
+  const flight = {origin:"ORD",destination:"IND",progress:0,altitude:null};
+  const history = {currentEventKey:"ord-ind",legs:[
+    {eventKey:"old-west",track:[{latitude:37.62,longitude:-122.38},{latitude:41.97,longitude:-87.90}]},
+    {eventKey:"old-south",track:[{latitude:29.99,longitude:-90.25},{latitude:41.97,longitude:-87.90}]}
+  ]};
+  const expected = viewBox(createHarness(flight).elements["route-map-svg"]);
+  assert(expected[2] < 90, "ORD–IND alone fits a regional frame.");
+  for (const status of ["BOARDING","DELAYED","PRE-FLIGHT","EN ROUTE"]) {
+    const harness = createHarness(flight,{status,flight,sequenceHistory:history});
+    assert.deepEqual(viewBox(harness.elements["route-map-svg"]),expected,
+      `${status}: old cross-country tracks must not turn ORD–IND into a national overview`);
+    for(const code of ["ORD","IND"]) {
+      const airport=airportCatalog.lookupAirport(code);
+      const point=harness.context.project(airport.longitude,airport.latitude);
+      assert(point.x>=expected[0] && point.x<=expected[0]+expected[2] &&
+        point.y>=expected[1] && point.y<=expected[1]+expected[3],`${code} stays in frame`);
+    }
+  }
 }
 
 function testShortFlightFraming() {
@@ -1282,7 +1292,8 @@ function testShortFlightFraming() {
 }
 
 function runTests() {
-  testPersistentSequenceTracksStayInsideRegionalCamera();
+  testDelayedBoardingRouteCamera();
+  testPersistentSequenceTracksDoNotWidenActiveRouteCamera();
   testShortFlightFraming();
   testAirportCameraIntegration();
   testDetailedMapAsset();

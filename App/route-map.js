@@ -883,113 +883,6 @@ function nearestRouteProgress(
   return clamp(bestProgress, 0, 1);
 }
 
-function sequenceHistoryCameraPoints(state) {
-  const history = state?.sequenceHistory;
-  const legs = Array.isArray(history?.legs) ? history.legs : [];
-  const currentEventKey = history?.currentEventKey ?? null;
-  const points = [];
-
-  for (const leg of legs) {
-    if (currentEventKey && leg?.eventKey === currentEventKey) {
-      continue;
-    }
-
-    for (const raw of Array.isArray(leg?.track) ? leg.track : []) {
-      const latitude = Number(raw?.latitude ?? raw?.lat);
-      const longitude = Number(raw?.longitude ?? raw?.lon);
-
-      if (
-        !Number.isFinite(latitude) ||
-        !Number.isFinite(longitude) ||
-        latitude < MAP_BOUNDS.south ||
-        latitude > MAP_BOUNDS.north ||
-        longitude < MAP_BOUNDS.west ||
-        longitude > MAP_BOUNDS.east
-      ) {
-        continue;
-      }
-
-      points.push(project(longitude, latitude));
-    }
-  }
-
-  return points;
-}
-
-function fitCameraAroundAnchor(points, anchor) {
-  if (
-    !Number.isFinite(anchor?.x) ||
-    !Number.isFinite(anchor?.y)
-  ) {
-    return fitCameraToPoints(points);
-  }
-
-  const usablePoints = points.filter(
-    (point) =>
-      Number.isFinite(point?.x) &&
-      Number.isFinite(point?.y)
-  );
-
-  if (!usablePoints.length) {
-    return fitCameraToPoints([anchor]);
-  }
-
-  const maxHorizontal =
-    Math.max(
-      1,
-      ...usablePoints.map((point) =>
-        Math.abs(point.x - anchor.x)
-      )
-    );
-
-  const maxVertical =
-    Math.max(
-      1,
-      ...usablePoints.map((point) =>
-        Math.abs(point.y - anchor.y)
-      )
-    );
-
-  let width =
-    Math.max(
-      16,
-      maxHorizontal * 2 * 1.24
-    );
-
-  let height =
-    Math.max(
-      16,
-      maxVertical * 2 * 1.3
-    );
-
-  const aspectRatio =
-    viewportAspectRatio();
-
-  if (width / height < aspectRatio) {
-    width = height * aspectRatio;
-  } else {
-    height = width / aspectRatio;
-  }
-
-  const minimumWidth =
-    BASE_VIEW_BOX.width /
-    MAX_CAMERA_ZOOM;
-
-  if (width < minimumWidth) {
-    width = minimumWidth;
-    height = width / aspectRatio;
-  }
-
-  return {
-    x: anchor.x - width / 2,
-    y: anchor.y - height / 2,
-    width,
-    height,
-    zoom:
-      BASE_VIEW_BOX.width /
-      width
-  };
-}
 
 function fitCameraToPoints(points) {
   const usablePoints =
@@ -1932,25 +1825,16 @@ function renderRegionalRouteMap(state) {
       displayProgress
     );
 
-  const historyCameraPoints =
-    sequenceHistoryCameraPoints(state);
-
+  // Frame this leg, not the accumulated trip. Historical paths still render
+  // in their own layer, but must not pull a short boarding route out to the US.
   const cameraPoints = [
     ...sampleCurve(curve),
     ...(actualTrack?.points ?? []),
-    ...historyCameraPoints,
     livePosition
   ];
 
   const routeCamera =
-    historyCameraPoints.length
-      ? fitCameraAroundAnchor(
-          cameraPoints,
-          aircraftPoint
-        )
-      : fitCameraToPoints(
-          cameraPoints
-        );
+    fitCameraToPoints(cameraPoints);
 
   const camera =
     cameraForSurfaceProximity(

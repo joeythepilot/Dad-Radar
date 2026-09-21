@@ -214,6 +214,29 @@ const server = http.createServer((req,res) => {
    }
    results.push({name,geometry,assets});await page.close();
  }
+ // A short predeparture leg must not be framed around yesterday's tracks.
+ state.flight={number:"TEST",origin:"ORD",destination:"IND",destinationCity:"INDIANAPOLIS",
+   altitude:null,airspeed:null,heading:null,progress:0,eta:"7:42 PM"};
+ state.sequenceHistory={currentEventKey:"ord-ind",legs:[
+   {eventKey:"past-west",origin:"SFO",destination:"ORD",track:[{latitude:37.62,longitude:-122.38},{latitude:41.97,longitude:-87.90}]},
+   {eventKey:"past-south",origin:"MSY",destination:"ORD",track:[{latitude:29.99,longitude:-90.25},{latitude:41.97,longitude:-87.90}]}
+ ]};
+ for(const status of ['BOARDING','DELAYED']) {
+   state.status=status;
+   const page=await browser.newPage({viewport:{width:1920,height:1080}});
+   const settled=observeBrowserErrors(page);
+   await page.goto(`http://127.0.0.1:${server.address().port}/`);
+   await page.waitForSelector('#dashboard:not([hidden])');
+   await page.waitForFunction(()=>document.querySelector('#destination-poster').naturalWidth>0);
+   await page.waitForFunction(()=>document.querySelector('#map-destination')?.textContent==='IND');
+   const frame=await page.locator('#route-map-svg').getAttribute('viewBox');
+   assert(Number(frame.split(/\s+/)[2])<100,`${status} ORD–IND stays route-focused with cross-country history: ${frame}`);
+   assert(await page.locator('.map-sequence-history-leg').count()>0,'Historical paths are preserved, not deleted to fix zoom');
+   await page.screenshot({path:path.join(output,`route-${status.toLowerCase()}.png`)});
+   await settled(status+' route framing');
+   await page.close();
+ }
+ console.log('Boarding and delayed ORD–IND browser framing passed with historical tracks retained.');
  fs.writeFileSync(path.join(output,'verification.json'),JSON.stringify(results,null,2));
  console.log('Approved artwork browser checks passed: '+results.map(r=>r.name).join(', '));
  } finally {await browser.close();await new Promise(r=>server.close(r));}
