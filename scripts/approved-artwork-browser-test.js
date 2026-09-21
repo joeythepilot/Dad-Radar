@@ -75,6 +75,24 @@ const server = http.createServer((req,res) => {
    await page.waitForSelector('#dashboard:not([hidden])').catch(async e=>{console.log(await page.evaluate(()=>({url:location.href,boot:document.querySelector('.status-message')?.textContent,html:document.documentElement.outerHTML.slice(0,700)})));throw e;});
    await page.waitForFunction(()=>document.querySelector('#eta-value').textContent==='7:42 PM');
    await page.waitForFunction(()=>document.querySelector('#destination-poster').naturalWidth>0);
+   assert.equal(await page.locator('.airspeed-range-ink').count(),1,'Airspeed has its painted range layer');
+   const rangeProof=await page.locator('.airspeed-range-ink').evaluate(async image=>{
+     await image.decode();
+     const canvas=document.createElement('canvas');canvas.width=1254;canvas.height=1254;
+     const context=canvas.getContext('2d');context.drawImage(image,0,0,1254,1254);
+     const pixel=(x,y)=>Array.from(context.getImageData(x,y,1,1).data);
+     return {red:pixel(982,324),yellow:pixel(993,348),green:pixel(1087,627),
+       white:pixel(1032,459),cruise:pixel(462,1024),center:pixel(627,627),
+       z:Number(getComputedStyle(image).zIndex),
+       needleZ:Number(getComputedStyle(document.querySelector('.airspeed-needle-layer')).zIndex)};
+   });
+   assert(rangeProof.red[0]>rangeProof.red[1]*1.4 && rangeProof.red[3]>100,'Low-speed red radial is visible at 110');
+   assert(rangeProof.yellow[0]>rangeProof.yellow[2]*1.5 && rangeProof.yellow[3]>100,'Yellow caution paint is visible between 110 and 125');
+   assert(rangeProof.green[1]>rangeProof.green[0]*1.15 && rangeProof.green[3]>100,'Normal-range green paint follows the scale');
+   assert(rangeProof.white[0]>150 && rangeProof.white[3]>100,'Separate ivory flap-range paint is visible');
+   assert.equal(rangeProof.cruise[3],0,'No high-speed warning paint beyond the illustrative range');
+   assert.equal(rangeProof.center[3],0,'Ink leaves the instrument center clear');
+   assert(rangeProof.z<rangeProof.needleZ,'Needle remains above the painted ranges');
    const headingProof=await page.locator('.heading-glass-overlay').evaluate(async image=>{
      await image.decode();
      const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=1024;
@@ -120,6 +138,7 @@ const server = http.createServer((req,res) => {
    assert(Math.abs(geometry.artWidth-geometry.rail.width)<2,'Visible clock housing matches rail width');
    assert.equal(geometry.weekly,7);assert.equal(geometry.gauge,3);
    if(name==='kiosk')await page.locator('.heading-instrument').screenshot({path:path.join(output,'heading-detail.png')});
+   if(name==='kiosk')await page.locator('.airspeed-instrument').screenshot({path:path.join(output,'airspeed-detail.png')});
    for(const tile of geometry.tiles)assert(tile.left>=geometry.board.left-1&&tile.right<=geometry.board.right+1,'Split-flap tiles remain inside board');
    for (const eta of ['7:42 PM','--:--','DELAYED','ARRIVED','AWAITING UPDATED ARRIVAL TIME']) {
      // Exercise the existing render function; the artwork must consume its output.

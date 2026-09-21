@@ -2095,6 +2095,11 @@ h1 {
     1;
 }
 
+/* Registered paint over the original face, below the lamp and moving needle. */
+.airspeed-range-ink {
+  z-index: 1;
+}
+
 .instrument-internal-light {
   z-index: 2;
   inset: 13%;
