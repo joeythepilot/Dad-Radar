@@ -75,6 +75,31 @@ const server = http.createServer((req,res) => {
    await page.waitForSelector('#dashboard:not([hidden])').catch(async e=>{console.log(await page.evaluate(()=>({url:location.href,boot:document.querySelector('.status-message')?.textContent,html:document.documentElement.outerHTML.slice(0,700)})));throw e;});
    await page.waitForFunction(()=>document.querySelector('#eta-value').textContent==='7:42 PM');
    await page.waitForFunction(()=>document.querySelector('#destination-poster').naturalWidth>0);
+   const headingProof=await page.locator('.heading-glass-overlay').evaluate(async image=>{
+     await image.decode();
+     const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=1024;
+     const context=canvas.getContext('2d');context.drawImage(image,0,0);
+     const pixels=context.getImageData(0,0,1024,1024).data;
+     const pixel=(x,y)=>Array.from(pixels.slice((y*1024+x)*4,(y*1024+x)*4+4));
+     const original=new Image();original.src='/assets/instruments/heading/heading-airplane-glass-overlay.png';await original.decode();
+     context.clearRect(0,0,1024,1024);context.drawImage(original,0,0);
+     const baseline=context.getImageData(0,0,1024,1024).data;
+     let changedOutsidePointer=0,opaqueOutsideCircle=0;
+     for(let y=0;y<1024;y++)for(let x=0;x<1024;x++){
+       const i=(y*1024+x)*4;
+       if((x-512)**2+(y-512)**2>440**2 && pixels[i+3])opaqueOutsideCircle++;
+       if(x<345||x>679||y<305||y>725){
+         if(pixels[i+3]!==baseline[i+3] || (pixels[i+3] && [0,1,2].some(c=>pixels[i+c]!==baseline[i+c])))changedOutsidePointer++;
+       }
+     }
+     return {width:image.naturalWidth,height:image.naturalHeight,nose:pixel(512,330),center:pixel(512,505),empty:pixel(100,512),changedOutsidePointer,opaqueOutsideCircle};
+   });
+   assert.deepEqual([headingProof.width,headingProof.height],[1024,1024],'Heading overlay retains its original registered canvas');
+   assert(headingProof.nose[3]>240,'Approved longer nose is visible above the old short pointer');
+   assert(headingProof.center[0]<140 && headingProof.center[3]>240,'Dark pointer remains centered on the gauge pivot');
+   assert.equal(headingProof.empty[3],0,'Real transparency leaves the compass card visible');
+   assert.equal(headingProof.opaqueOutsideCircle,0,'Canvas outside the circular glass aperture is transparent');
+   assert.equal(headingProof.changedOutsidePointer,0,'Original index arrow and upper-right reflection are preserved pixel-for-pixel');
    assert.equal(await page.locator('.destination-stage').evaluate(node=>getComputedStyle(node).backgroundImage), 'none',
      'The loaded poster must have one foreground rendering path.');
    assert.equal(await page.locator('.twin-clock-panel').count(),1,'Approved single twin-clock housing must exist');
@@ -94,6 +119,7 @@ const server = http.createServer((req,res) => {
    assert(Math.abs(geometry.artHeight-geometry.strip.height)<2,'Visible clock housing matches split-flap height');
    assert(Math.abs(geometry.artWidth-geometry.rail.width)<2,'Visible clock housing matches rail width');
    assert.equal(geometry.weekly,7);assert.equal(geometry.gauge,3);
+   if(name==='kiosk')await page.locator('.heading-instrument').screenshot({path:path.join(output,'heading-detail.png')});
    for(const tile of geometry.tiles)assert(tile.left>=geometry.board.left-1&&tile.right<=geometry.board.right+1,'Split-flap tiles remain inside board');
    for (const eta of ['7:42 PM','--:--','DELAYED','ARRIVED','AWAITING UPDATED ARRIVAL TIME']) {
      // Exercise the existing render function; the artwork must consume its output.
