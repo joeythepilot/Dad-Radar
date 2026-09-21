@@ -147,3 +147,13 @@ assert.equal(mixedView.totalEntries, 4, "The physical card should count only the
 console.log(
   "Daily schedule layout tests passed."
 );
+const ruledEntries=[
+ {kind:'flight',label:'IND → ORD',time:'11:48 AM',departureTime:'11:48 AM',arrivalTime:'1:00 PM',status:'completed'},
+ {kind:'flight',label:'ORD → SPI',time:'2:05 PM',departureTime:'2:05 PM',arrivalTime:'3:02 PM',status:'completed'},
+ {kind:'layover',label:'LAYOVER · Springfield',time:'3:20 PM',status:'current'}
+];
+const ruled=buildDutyCardView({entries:ruledEntries},1920,{ruledSlots:5,rowCapacity:5});
+assert.deepEqual(ruled.rows.map(r=>r.slots),[2,2,1],'Two flights plus layover occupy exactly five printed lines.');
+const flying=buildDutyCardView({entries:ruledEntries.map((e,i)=>({...e,kind:'flight',departureTime:e.time,arrivalTime:'4:00 PM',status:i===1?'current':'upcoming'}))},1920,{ruledSlots:5,rowCapacity:5});
+assert(flying.rows.reduce((n,r)=>n+r.slots,0)<=5,'Flight pairs never overflow the five-line paper');
+assert(flying.rows.some(r=>r.status==='current'),'Current flight stays visible');

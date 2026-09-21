@@ -212,6 +212,15 @@
           viewportWidth,
           providedOptions.rowCapacity
         );
+      const slotsFor = entry => entry?.departureTime || entry?.arrivalTime ? 2 : 1;
+      const slotBudget = Number(providedOptions.ruledSlots);
+      if (slotBudget > 0) {
+        while (visibleEntries.length > 1 && visibleEntries.reduce((n,e)=>n+slotsFor(e),0)>slotBudget) {
+          const current=visibleEntries.findIndex(e=>e.status==='current');
+          if(current>0) visibleEntries.shift();
+          else visibleEntries.pop();
+        }
+      }
 
       return {
         dateLabel:
@@ -226,6 +235,7 @@
         rows: visibleEntries.map(
           (entry, index) => ({
             number: index + 1,
+            ...(slotBudget > 0 ? {slots:slotsFor(entry)} : {}),
             route: [
               entry?.label,
               entry?.tag

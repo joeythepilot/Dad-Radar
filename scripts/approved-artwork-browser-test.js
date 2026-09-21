@@ -18,10 +18,10 @@ const state = {
   },
   diagnostics:{shutterTestToken:"saved-command-before-page-load"},
   sequenceHistory:{totalDistanceNm:1468, completedLegCount:6, estimatedLegCount:6, legs:Array.from({length:6}, () => ({origin:"ORD",destination:"AVL"}))},
-  dailySchedule:{dateLabel:"SUN SEP 13",timeZoneLabel:"EASTERN TIME",context:"DADDY IS HOME TODAY",entries:[
+  dailySchedule:{dateLabel:"SUN SEP 13",timeZoneLabel:"EASTERN TIME",context:"DADDY IS ON LAYOVER IN SPRINGFIELD, ILLINOIS",entries:[
     {time:"7:58 AM",departureTime:"7:58 AM",arrivalTime:"10:14 AM",label:"ORD → BWI",tag:"FLT 3761",status:"completed",kind:"flight"},
     {time:"11:23 AM",departureTime:"11:23 AM",arrivalTime:"1:40 PM",label:"BWI → ORD",tag:"FLT 3762",status:"current",kind:"flight",operationalStamp:{kind:"delay",label:"DELAYED",detail:"45 MINUTES"}},
-    {time:"3:00 PM",departureTime:"3:00 PM",arrivalTime:"5:12 PM",label:"ORD → AVL",tag:"COMMUTE",status:"upcoming",kind:"flight"}
+    {time:"3:20 PM",label:"LAYOVER · Springfield",tag:"GROUND",status:"upcoming",kind:"layover"}
   ]}
 };
 const now = new Date().toISOString();
@@ -83,12 +83,18 @@ const server = http.createServer((req,res) => {
      return {zone:panel.querySelector('.daily-schedule-time-zone').textContent,
        labels:fields.map(n=>n.textContent),
        contained:fields.every(n=>{const r=n.getBoundingClientRect();return r.left>=box.left&&r.right<=box.right&&n.scrollWidth<=n.clientWidth+1;}),
-       separated:rows.every(n=>{const route=n.querySelector('.daily-schedule-label').getBoundingClientRect();const time=n.querySelector('.daily-schedule-time').getBoundingClientRect();return route.bottom<=time.top+1;}),
+       separated:rows.filter(n=>n.classList.contains('has-flight-times')).every(n=>{const route=n.querySelector('.daily-schedule-label').getBoundingClientRect();const time=n.querySelector('.daily-schedule-time').getBoundingClientRect();return route.bottom<=time.top+1;}),
+       adjacent:rows.every((n,i)=>!i || rows[i-1].querySelector('.daily-schedule-time').getBoundingClientRect().bottom+Math.max(.5,parseFloat(getComputedStyle(n).fontSize)*.15)<=n.querySelector('.daily-schedule-label').getBoundingClientRect().top),
+       slots:rows.map(n=>n.style.gridRow),
+       boxes:rows.map(n=>({row:n.getBoundingClientRect().toJSON(),route:n.querySelector('.daily-schedule-label').getBoundingClientRect().toJSON(),time:n.querySelector('.daily-schedule-time').getBoundingClientRect().toJSON(),grid:getComputedStyle(n).gridTemplateRows})),
        stampClear:rows.every(n=>{const s=n.querySelector('.daily-schedule-operational-stamp');return !s||s.getBoundingClientRect().bottom<=n.querySelector('.daily-schedule-time').getBoundingClientRect().top+1;})};
    });
    assert.match(dutyProof.zone,/EASTERN TIME/);
    assert(dutyProof.labels.some(t=>t==='DEP 11:23 AM') && dutyProof.labels.some(t=>t==='ARR 1:40 PM'),`${name}: current flight has both labeled times`);
-   assert(dutyProof.contained && dutyProof.separated && dutyProof.stampClear,`${name}: duty times fit and clear route/stamp: ${JSON.stringify(dutyProof)}`);
+   assert(dutyProof.contained && dutyProof.separated && dutyProof.stampClear && dutyProof.adjacent,`${name}: duty times fit and clear neighboring rows/route/stamp: ${JSON.stringify(dutyProof)}`);
+   assert.deepEqual(dutyProof.slots,['span 2','span 2','span 1'],'Flight/time pairs and layover align to the five ruled lines');
+   const leaders=await page.locator('.airport-marker-group:has(.airport-leader-fitting) .airport-leader').evaluateAll(nodes=>nodes.map(n=>getComputedStyle(n).stroke));
+   assert.deepEqual(leaders,['none','none'],'Physical pointers must not have a flat red connector painted behind them');
    await page.locator('.daily-schedule-panel').screenshot({path:path.join(output,`duty-${name}.png`)});
    assert.equal(await page.locator('.airspeed-range-ink').count(),1,'Airspeed has its painted range layer');
    const rangeProof=await page.locator('.airspeed-range-ink').evaluate(async image=>{

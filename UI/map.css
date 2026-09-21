@@ -245,6 +245,12 @@
   vector-effect: non-scaling-stroke;
 }
 
+/* The approved physical fitting replaces this old flat connector. Keep its
+   coordinates available to the positioning code, but do not paint it twice. */
+.airport-marker-group:has(.airport-leader-fitting) .airport-leader {
+  stroke: none;
+}
+
 .airport-placard-body {
   fill: transparent;
   stroke: none;

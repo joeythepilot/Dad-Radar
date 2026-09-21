@@ -113,15 +113,16 @@
   min-width: 0;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) 27%;
+  grid-template-rows: minmax(0, 1fr);
   align-items: center;
   column-gap: 4%;
+  row-gap: 0;
   padding: 0;
   overflow: hidden;
   color: #493c2c;
   font-family: "Courier New", monospace;
-  font-size: clamp(10px, 0.78vw, 14px);
+  font-size: clamp(4px, 0.74vw, 14px);
   line-height: 1.1;
   letter-spacing: 0.15px;
   white-space: nowrap;
@@ -213,10 +214,15 @@
   padding-right: 28%;
 }
 
-.daily-schedule-panel.is-physical-duty-card .daily-schedule-time {
+.daily-schedule-panel.is-physical-duty-card .has-flight-times .daily-schedule-time {
   display: flex;
   gap: 1.2em;
   grid-row: 2;
+}
+
+.daily-schedule-panel.is-physical-duty-card .has-flight-times {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: repeat(2, minmax(0, 1fr));
 }
 
 .daily-schedule-time-zone {

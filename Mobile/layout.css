@@ -40,14 +40,14 @@ html.family-full-portrait .destination-poster-image { position:absolute; top:0; 
    the cabinet is scaled into a much smaller housing. Scale only the live ink
    and its calibrated text windows. The desktop physical card remains unchanged. */
 html[data-family-full] .daily-schedule-panel.is-physical-duty-card {
-  --family-duty-date-font-size: clamp(4.5px, 0.52vw, 6.5px);
+  --family-duty-date-font-size: clamp(3.8px, 0.44vw, 5.5px);
   --family-duty-context-font-size: clamp(6.2px, 0.70vw, 8.5px);
   --family-duty-row-font-size: clamp(5.2px, 0.60vw, 8px);
   --family-duty-footer-font-size: clamp(5.2px, 0.58vw, 7.5px);
   --family-duty-context-top: 19.8%;
-  --family-duty-context-height: 16.4%;
+  --family-duty-context-height: 14.5%;
   --family-duty-context-safety-pad: 0.14em;
-  --family-duty-date-width: 23%;
+  --family-duty-date-width: 16%;
   --family-duty-time-column-width: 31%;
   --family-duty-stamp-font-size: clamp(3.8px, 0.44vw, 5.8px);
 }
@@ -80,11 +80,14 @@ html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedu
   letter-spacing: 0.05px !important;
 }
 html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-entry {
-  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-columns: minmax(0, 1fr) 27% !important;
   column-gap: 1% !important;
   font-size: var(--family-duty-row-font-size) !important;
   line-height: 1 !important;
   letter-spacing: 0 !important;
+}
+html[data-family-full] .daily-schedule-panel.is-physical-duty-card .has-flight-times {
+  grid-template-columns: minmax(0, 1fr) !important;
 }
 html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-time {
   overflow: hidden !important;

@@ -2,7 +2,7 @@
   "use strict";
 
   const CARD_ASSET = "/assets/ui/today-duty-card-weekly-paper.png";
-  const CARD_CSS = "/UI/daily-duty-card.css?v=5-home-paper";
+  const CARD_CSS = "/UI/daily-duty-card.css?v=6-ruled-times";
   const STATUS_FIT_STEP_PX = 0.25;
   const STATUS_MIN_FONT_PX = 4;
 
@@ -152,7 +152,8 @@
       viewportWidth,
       {
         homeAirport: root.dadRadarSettings?.homeAirport ?? "AVL",
-        rowCapacity: isFamilyFull || viewportWidth >= 1500 ? 3 : 2
+        rowCapacity: 5,
+        ruledSlots: 5
       }
     );
 
@@ -169,7 +170,7 @@
       panel.appendChild(zone);
     }
     zone.textContent = `TIMES · ${view.timeZoneLabel || 'HOME TIME'}`;
-    list.style.setProperty('--duty-visible-rows', isFamilyFull || viewportWidth >= 1500 ? '3' : '2');
+    list.style.setProperty('--duty-visible-rows', '5');
     context.textContent = view.context;
     fitFamilyFullStatus(panel, context);
     queueStatusFit();
@@ -195,6 +196,7 @@
       const item = root.document.createElement("li");
       item.className = `daily-schedule-entry is-${row.status}`;
       item.dataset.row = String(row.number);
+      item.style.gridRow = `span ${row.slots || 1}`;
 
       if (row.status === "current") {
         item.setAttribute("aria-current", "true");
