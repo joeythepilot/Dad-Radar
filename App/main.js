@@ -1730,8 +1730,12 @@ function updateDashboard(state) {
     }
 
     if (etaValue) {
+      // Arrival confirmation outranks any retained planned/estimated time,
+      // including when an early arrival precedes that time on the clock.
+      const arrived = state.status === "ARRIVED";
       etaValue.textContent =
-        flight.eta ?? "--:--";
+        arrived ? "ARRIVED" : (flight.eta ?? "--:--");
+      etaValue.setAttribute("aria-label", arrived ? "Arrival confirmed" : "Estimated arrival");
     }
 
     if (airspeedValue) {
@@ -1861,6 +1865,7 @@ function updateDashboard(state) {
     if (etaValue) {
       etaValue.textContent =
         "--:--";
+      etaValue.setAttribute("aria-label", "Estimated arrival unavailable");
     }
 
     updateInstrumentNeedles(null);

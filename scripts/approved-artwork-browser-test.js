@@ -259,6 +259,21 @@ const server = http.createServer((req,res) => {
    }
    results.push({name,geometry,assets});await page.close();
  }
+ // Arrival retires a stale ETA even when early; the next active leg restores it.
+ const arrivalPage=await browser.newPage({viewport:{width:1920,height:1080}});
+ state.status='ARRIVED';state.flight.eta='7:56 AM';
+ await arrivalPage.goto(`http://127.0.0.1:${server.address().port}/`);
+ await arrivalPage.waitForSelector('#dashboard:not([hidden])');
+ assert.equal(await arrivalPage.locator('#eta-value').textContent(),'ARRIVED','Confirmed arrival must retire the previous ETA');
+ await arrivalPage.locator('.twin-clock-panel').screenshot({path:path.join(output,'clock-arrived.png')});
+ state.status='BOARDING';state.flight.eta='11:21 AM';
+ await arrivalPage.evaluate(s=>window.dispatchEvent(new CustomEvent('dad-radar:visual-state-change',{detail:{state:s}})),state);
+ assert.equal(await arrivalPage.locator('#eta-value').textContent(),'11:21 AM','Next active flight restores its own ETA');
+ assert.equal(await arrivalPage.locator('#eta-value').getAttribute('aria-label'),'Estimated arrival');
+ state.status='ARRIVED';state.flight.eta='11:59 PM';
+ await arrivalPage.evaluate(s=>window.dispatchEvent(new CustomEvent('dad-radar:visual-state-change',{detail:{state:s}})),state);
+ assert.equal(await arrivalPage.locator('#eta-value').textContent(),'ARRIVED','Arrival immediately retires a future ETA without a page refresh');
+ await arrivalPage.close();
  // A short predeparture leg must not be framed around yesterday's tracks.
  state.flight={number:"TEST",origin:"ORD",destination:"IND",destinationCity:"INDIANAPOLIS",
    altitude:null,airspeed:null,heading:null,progress:0,eta:"7:42 PM"};
