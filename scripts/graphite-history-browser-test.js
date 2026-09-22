@@ -83,11 +83,11 @@ async function inspect(page,name) {
    horizontalOverflow:document.documentElement.scrollWidth>innerWidth+1};
  });
  assert.equal(result.paths.length,3,'Only prior recorded legs are shown');
- assert.equal(result.opacity,'0.62','Opacity belongs to the group, so crossings have uniform density');
+ assert.equal(result.opacity,'0.88','Stronger ink remains grouped so crossings have uniform density');
  for(const p of result.paths){
   assert.equal(p.fill,'none','A recorded track never fills its enclosed area');
   assert.equal(p.opacity,'1','Each track is opaque inside the shared ink layer');
-  assert.equal(p.stroke,'rgb(81, 79, 72)');assert(p.width<=1.2&&p.width>=1);
+  assert.equal(p.stroke,'rgb(64, 61, 53)');assert(p.width<=2&&p.width>=1.7,'History remains legible at screen scale');
   assert.notEqual(p.dashes,'none');assert.equal(p.effect,'non-scaling-stroke');
  }
  assert.deepEqual(result.circles.map(c=>c.code).sort(),['BWI','CMH','ORD']);
