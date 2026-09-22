@@ -12,6 +12,32 @@
   background: transparent !important;
   box-shadow: none !important;
   isolation: isolate;
+  container-type: inline-size;
+  --duty-columns: 15% 29% 25% 28%;
+}
+
+/* A translated crop of the original paper covers only the old TIME/ROUTE ink. */
+.daily-schedule-heading-paper {
+  position: absolute;
+  inset: -3% 0 auto;
+  width: 100%;
+  height: 100%;
+  clip-path: inset(45% 4% 51% 6%);
+  filter: brightness(0.84) saturate(1.16);
+  pointer-events: none;
+  z-index: 1;
+}
+.daily-schedule-column-headings {
+  position: absolute;
+  z-index: 2;
+  top: 42.5%;
+  left: 7.4%;
+  right: 5%;
+  display: grid;
+  grid-template-columns: var(--duty-columns);
+  column-gap: 1%;
+  color: #493c2c;
+  font: bold 1.7cqw/1 "Courier New", monospace;
 }
 
 .daily-schedule-panel.is-physical-duty-card::after {
@@ -113,16 +139,16 @@
   min-width: 0;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 27%;
+  grid-template-columns: var(--duty-columns);
   grid-template-rows: minmax(0, 1fr);
   align-items: center;
-  column-gap: 4%;
+  column-gap: 1%;
   row-gap: 0;
   padding: 0;
   overflow: hidden;
   color: #493c2c;
   font-family: "Courier New", monospace;
-  font-size: clamp(4px, 0.74vw, 14px);
+  font-size: 2.2cqw;
   line-height: 1.1;
   letter-spacing: 0.15px;
   white-space: nowrap;
@@ -133,6 +159,8 @@
   display: none !important;
 }
 
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-flight,
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-time > span,
 .daily-schedule-panel.is-physical-duty-card .daily-schedule-label,
 .daily-schedule-panel.is-physical-duty-card .daily-schedule-time {
   min-width: 0;
@@ -205,24 +233,18 @@
   position: relative;
 }
 
-.daily-schedule-panel.is-physical-duty-card .daily-schedule-entry:has(.daily-schedule-operational-stamp) {
-  grid-template-columns: minmax(0, 1fr);
-  padding-right: 0;
+.daily-schedule-panel.is-physical-duty-card .daily-schedule-time {
+  display: contents;
 }
-
-.daily-schedule-panel.is-physical-duty-card .daily-schedule-entry:has(.daily-schedule-operational-stamp) .daily-schedule-label {
-  padding-right: 28%;
+.daily-schedule-panel.is-physical-duty-card .is-ground-entry .daily-schedule-flight {
+  display: none;
 }
-
-.daily-schedule-panel.is-physical-duty-card .has-flight-times .daily-schedule-time {
-  display: flex;
-  gap: 1.2em;
-  grid-row: 2;
+.daily-schedule-panel.is-physical-duty-card .is-ground-entry .daily-schedule-label {
+  grid-column: 1 / 3;
+  font-size: 1.8cqw;
 }
-
-.daily-schedule-panel.is-physical-duty-card .has-flight-times {
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: repeat(2, minmax(0, 1fr));
+.daily-schedule-entry:has(.daily-schedule-operational-stamp) > .daily-schedule-label {
+  width: 55%;
 }
 
 .daily-schedule-time-zone {
@@ -239,27 +261,27 @@
 .daily-schedule-panel.is-physical-duty-card .daily-schedule-operational-stamp {
   position: absolute;
   z-index: 3;
-  right: 0.4%;
-  top: 25%;
-  width: 25%;
+  left: 32.5%;
+  top: 50%;
+  width: 12.5%;
   display: flex;
-  flex-direction: row;
-  gap: 0.35em;
+  flex-direction: column;
+  gap: 0.05em;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  padding: 0.12em 0.25em;
-  border: 1.5px solid currentColor;
+  padding: 0.02em 0.12em;
+  border: 0.75px solid currentColor;
   color: rgba(139, 32, 25, 0.9);
   font-family: "Courier New", monospace;
-  font-size: clamp(6px, 0.45vw, 8px);
+  font-size: 1.1cqw;
   font-weight: 800;
   line-height: 0.95;
   letter-spacing: 0.12px;
   text-align: center;
   text-transform: uppercase;
   white-space: nowrap;
-  transform: translateY(-50%) rotate(-2.1deg);
+  transform: translateY(-50%) rotate(-0.4deg);
   opacity: 0.88;
   filter: contrast(0.92);
   pointer-events: none;

@@ -71,6 +71,8 @@ assert.equal(cardView.rows.length, 5, "A five-leg day keeps all five readable as
 assert.deepEqual(cardView.rows[1], {
   number:2,
   route:"CLT → CMH · FLT 4102",
+  flight:"4102",
+  pairing:"CLT → CMH",
   time:"8:05 AM",
   status:"current"
 }, "Duty-card rows combine route and tag while keeping time in its dedicated field.");
@@ -153,7 +155,14 @@ const ruledEntries=[
  {kind:'layover',label:'LAYOVER · Springfield',time:'3:20 PM',status:'current'}
 ];
 const ruled=buildDutyCardView({entries:ruledEntries},1920,{ruledSlots:5,rowCapacity:5});
-assert.deepEqual(ruled.rows.map(r=>r.slots),[2,2,1],'Two flights plus layover occupy exactly five printed lines.');
+assert.deepEqual(ruled.rows.map(r=>r.slots),[1,1,1],'Each assignment occupies one printed line.');
+const fiveTimedFlights = buildDutyCardView({entries:Array.from({length:5},(_,i)=>({kind:'flight',label:'SPI → ORD',tag:`FLT ${3637+i}`,departureTime:'7:00 AM',arrivalTime:'8:16 AM',status:i===2?'current':'upcoming'}))},1920,{ruledSlots:5,rowCapacity:5});
+assert.equal(fiveTimedFlights.rows.length,5,'All five flights fit with both times');
+assert.equal(fiveTimedFlights.rows[0].flight,'3637');
+assert.equal(fiveTimedFlights.rows[0].pairing,'SPI → ORD');
+const commuteView=buildDutyCardView({entries:[{kind:'flight',flightNumber:'3637',tag:'COMMUTE',label:'SPI → ORD',departureTime:'7:00 AM',arrivalTime:'8:16 AM'}]},1920,{ruledSlots:5,rowCapacity:5});
+assert.equal(commuteView.rows[0].flight,'3637','Commute flight numbers do not get replaced by the assignment tag');
+assert.match(commuteView.rows[0].route,/COMMUTE/,'Assignment detail remains available to the renderer');
 const flying=buildDutyCardView({entries:ruledEntries.map((e,i)=>({...e,kind:'flight',departureTime:e.time,arrivalTime:'4:00 PM',status:i===1?'current':'upcoming'}))},1920,{ruledSlots:5,rowCapacity:5});
 assert(flying.rows.reduce((n,r)=>n+r.slots,0)<=5,'Flight pairs never overflow the five-line paper');
 assert(flying.rows.some(r=>r.status==='current'),'Current flight stays visible');

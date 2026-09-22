@@ -212,7 +212,7 @@
           viewportWidth,
           providedOptions.rowCapacity
         );
-      const slotsFor = entry => entry?.departureTime || entry?.arrivalTime ? 2 : 1;
+      const slotsFor = () => 1;
       const slotBudget = Number(providedOptions.ruledSlots);
       if (slotBudget > 0) {
         while (visibleEntries.length > 1 && visibleEntries.reduce((n,e)=>n+slotsFor(e),0)>slotBudget) {
@@ -235,6 +235,8 @@
         rows: visibleEntries.map(
           (entry, index) => ({
             number: index + 1,
+            flight: String(entry?.flightNumber ?? entry?.tag ?? "—").replace(/^FLT\s+/i, ""),
+            pairing: entry?.label ?? "SCHEDULED ACTIVITY",
             ...(slotBudget > 0 ? {slots:slotsFor(entry)} : {}),
             route: [
               entry?.label,

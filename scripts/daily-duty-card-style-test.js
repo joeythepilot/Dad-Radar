@@ -52,7 +52,7 @@ assert(mobileLayoutCss.includes("text-overflow: clip !important"), "Mobile Full 
 assert(mobileLayoutCss.includes("--family-duty-stamp-font-size"), "Mobile Full must give the operational delay stamp its own compact type scale.");
 assert(mobileLayoutCss.includes("html[data-family-full] .daily-schedule-panel.is-physical-duty-card .daily-schedule-operational-stamp"), "Mobile Full must calibrate the operational stamp separately from the desktop card.");
 assert(mobileLayoutCss.includes("max-height: 82% !important"), "Mobile Full delay stamp must stay vertically inside its ruled row.");
-assert(mobileLayoutCss.includes("rotate(-1.2deg)"), "Mobile Full delay stamp rotation must be shallow enough to avoid clipping.");
+assert(mobileLayoutCss.includes("rotate(-0.4deg)"), "Mobile Full delay stamp rotation must be shallow enough to avoid clipping.");
 
 function percentVariable(name) {
   const match = mobileLayoutCss.match(new RegExp(`${name}:\\s*([0-9.]+)%`));

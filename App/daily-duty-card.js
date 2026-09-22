@@ -2,7 +2,7 @@
   "use strict";
 
   const CARD_ASSET = "/assets/ui/today-duty-card-weekly-paper.png";
-  const CARD_CSS = "/UI/daily-duty-card.css?v=6-ruled-times";
+  const CARD_CSS = "/UI/daily-duty-card.css?v=7-flight-columns";
   const STATUS_FIT_STEP_PX = 0.25;
   const STATUS_MIN_FONT_PX = 4;
 
@@ -34,6 +34,22 @@
       panel.prepend(art);
     }
 
+    if (!panel.querySelector('.daily-schedule-column-headings')) {
+      // Reuse blank paper from the same unmodified artwork over its old labels.
+      const paper = root.document.createElement('img');
+      paper.src = CARD_ASSET;
+      paper.alt = '';
+      paper.className = 'daily-schedule-heading-paper';
+      paper.setAttribute('aria-hidden', 'true');
+      const headings = root.document.createElement('div');
+      headings.className = 'daily-schedule-column-headings';
+      for (const text of ['FLIGHT', 'ROUTE', 'DEPART', 'ARRIVE']) {
+        const label = root.document.createElement('span');
+        label.textContent = text;
+        headings.appendChild(label);
+      }
+      panel.append(paper, headings);
+    }
     panel.querySelector(".daily-schedule-now")?.remove();
     panel.querySelector("#daily-schedule-title")?.classList.add("visually-hidden");
 
@@ -196,6 +212,7 @@
       const item = root.document.createElement("li");
       item.className = `daily-schedule-entry is-${row.status}`;
       item.dataset.row = String(row.number);
+      item.title = row.route; // Retain COMMUTE/DEADHEAD assignment detail.
       item.style.gridRow = `span ${row.slots || 1}`;
 
       if (row.status === "current") {
@@ -204,22 +221,32 @@
 
       const route = root.document.createElement("span");
       route.className = "daily-schedule-label";
-      route.textContent = row.route || "SCHEDULED ACTIVITY";
+      route.textContent = row.pairing;
+      const flight = root.document.createElement('span');
+      flight.className = 'daily-schedule-flight';
+      flight.textContent = row.flight;
 
       const time = root.document.createElement("time");
       time.className = "daily-schedule-time";
       if (row.departureTime || row.arrivalTime) {
         item.classList.add('has-flight-times');
         const departure=root.document.createElement('span');
-        departure.textContent=`DEP ${row.departureTime || '--:--'}`;
+        departure.textContent=row.departureTime || '--:--';
+        departure.setAttribute('aria-label', `Departs ${departure.textContent}`);
         const arrival=root.document.createElement('span');
-        arrival.textContent=`ARR ${row.arrivalTime || '--:--'}`;
+        arrival.textContent=row.arrivalTime || '--:--';
+        arrival.setAttribute('aria-label', `Arrives ${arrival.textContent}`);
         time.append(departure,arrival);
       } else {
-        time.textContent = row.time;
+        item.classList.add('is-ground-entry');
+        const start = root.document.createElement('span');
+        start.textContent = row.time;
+        const end = root.document.createElement('span');
+        end.textContent = '—';
+        time.append(start, end);
       }
 
-      item.append(route, time);
+      item.append(flight, route, time);
 
       if (row.operationalStamp?.kind === "delay") {
         const stamp = root.document.createElement("span");

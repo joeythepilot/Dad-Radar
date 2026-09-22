@@ -97,6 +97,7 @@ function resolve(op, options = {}, overrides = {}) {
   assert.equal(daily.entries[0].time, "10:15 AM",
     "Today's Duty shows the current estimated OUT time.");
   assert.equal(daily.entries[0].departureTime, "10:15 AM");
+  assert.equal(daily.entries[0].flightNumber, "4140", "The duty card receives a separate flight number, independent of its assignment tag.");
   assert.equal(daily.entries[0].arrivalTime, "12:00 PM", "Duty arrival uses revised gate IN, not the calendar or touchdown time.");
   assert.deepEqual(daily.entries[0].operationalStamp, {
     kind: "delay",

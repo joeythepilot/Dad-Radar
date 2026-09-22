@@ -590,6 +590,7 @@
                   ),
             label: dailyEventLabel(event),
             ...(event.kind === "flight" ? {
+              flightNumber: event.flightNumber ?? null,
               departureTime: formatTime(start, options.displayTimeZone),
               arrivalTime: formatTime(end, options.displayTimeZone)
             } : {}),
