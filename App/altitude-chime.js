@@ -87,6 +87,9 @@
       let hasReachedBelowBand = false;
       let hasReachedAboveBand = false;
       const chimeDirections = new Set();
+      const attempts = new Map();
+      const now = providedOptions.now ?? Date.now;
+      let flightGeneration = 0;
 
       function ensureAudio() {
         if (!audio && audioFactory) {
@@ -109,10 +112,12 @@
         }
 
         flightKey = nextFlightKey;
+        flightGeneration += 1;
         previousAltitude = null;
         hasReachedBelowBand = false;
         hasReachedAboveBand = false;
         chimeDirections.clear();
+        attempts.clear();
       }
 
       async function play() {
@@ -223,8 +228,23 @@
           return null;
         }
 
+        const time = now();
+        const attempt = attempts.get(direction) ?? {count: 0, firstAt: time, nextAt: time};
+        // Retry transient audio failures promptly, never minutes later or on
+        // every interpolated frame. Successful and pending plays remain latched.
+        if (attempt.count >= 3 || time - attempt.firstAt > 30000 || time < attempt.nextAt) {
+          return null;
+        }
+        attempt.count += 1;
+        attempt.nextAt = time + 5000;
+        attempts.set(direction, attempt);
+        const generation = flightGeneration;
         chimeDirections.add(direction);
-        void play();
+        void play().then((played) => {
+          if (!played && generation === flightGeneration) {
+            chimeDirections.delete(direction);
+          }
+        });
         return direction;
       }
 

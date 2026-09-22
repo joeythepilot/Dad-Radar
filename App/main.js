@@ -2055,8 +2055,8 @@ function observeAltitudeChime(nextState) {
   const chimeDirection =
     altitudeChimeController?.observe(
       [
-        nextState.eventId ?? "",
-        nextState.flight.number ?? "",
+        // Provider flight numbers/callsigns may change within one scheduled leg.
+        nextState.eventId || nextState.flight.number || "",
         nextState.flight.origin ?? "",
         nextState.flight.destination ?? ""
       ].join("|"),
