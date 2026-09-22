@@ -14,6 +14,7 @@
   isolation: isolate;
   container-type: inline-size;
   --duty-columns: 15% 29% 25% 28%;
+  --duty-paper-treatment: brightness(0.76) saturate(1.23);
 }
 
 /* A translated crop of the original paper covers only the old TIME/ROUTE ink. */
@@ -23,7 +24,7 @@
   width: 100%;
   height: 100%;
   clip-path: inset(45% 4% 51% 6%);
-  filter: brightness(0.84) saturate(1.16);
+  filter: var(--duty-paper-treatment);
   pointer-events: none;
   z-index: 1;
 }
@@ -53,7 +54,7 @@
   height: 100%;
   object-fit: fill;
   /* Home-monitor calibration: richer cream without dimming live lettering. */
-  filter: brightness(0.84) saturate(1.16);
+  filter: var(--duty-paper-treatment);
   pointer-events: none;
   user-select: none;
 }
