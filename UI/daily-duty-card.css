@@ -14,7 +14,8 @@
   isolation: isolate;
   container-type: inline-size;
   --duty-columns: 15% 29% 25% 28%;
-  --duty-paper-treatment: brightness(0.76) saturate(1.23);
+  /* Match the rendered twin-clock paper's warm cream, including its tint. */
+  --duty-paper-treatment: brightness(0.995) saturate(1.28);
 }
 
 /* A translated crop of the original paper covers only the old TIME/ROUTE ink. */
