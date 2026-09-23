@@ -1,8 +1,8 @@
 "use strict";
 const assert=require("node:assert/strict");
-const openings=[[".destination-panel",0.625,2.35,4.4,5.0285714286],[".daily-schedule-panel",0.625,7.8785714286,4.4,2.8589285714],[".vintage-map-panel",5.65,2.35,10.1875,6.5375],[".weekly-overnight-bank",5.65,9.3875,10.1875,1.35],[".twin-clock-panel",16.3375,0.375,3.35,1.8],["#flight-number",0.625,0.5,3.0460694444444445,1.35],["#flight-origin",4.171069444444445,0.5,2.27675,1.35],["#flight-destination",6.947819444444445,0.5,2.27675,1.35],["#status-value",9.724569444444445,0.5,6.112930555555555,1.35],[".instrument-slot:nth-child(1)",16.7625,2.746875,2.5,2.5],[".instrument-slot:nth-child(2)",16.7625,5.61875,2.5,2.5],[".instrument-slot:nth-child(3)",16.7625,8.490625,2.5,2.5]];
+const openings=[[".destination-panel",0.5,2.35,4.4,5.0285714286],[".daily-schedule-panel",0.5,7.8785714286,4.4,2.8589285714],[".vintage-map-panel",5.525,2.35,10.1875,6.5375],[".weekly-overnight-bank",5.525,9.3875,10.1875,1.35],[".twin-clock-panel",16.2125,0.375,3.35,1.8],["#flight-number",0.5,0.5,3.0460694444444445,1.35],["#flight-origin",4.046069444444445,0.5,2.27675,1.35],["#flight-destination",6.822819444444445,0.5,2.27675,1.35],["#status-value",9.599569444444445,0.5,6.112930555555555,1.35],[".instrument-slot:nth-child(1)",16.6375,2.746875,2.5,2.5],[".instrument-slot:nth-child(2)",16.6375,5.61875,2.5,2.5],[".instrument-slot:nth-child(3)",16.6375,8.490625,2.5,2.5]];
 async function checkPhysicalFaceplate(page,name){
- const checkedOpenings=[...openings,['.route-map-shell',5.65,2.35,10.1875,6.5375]];
+ const checkedOpenings=[...openings,['.route-map-shell',5.525,2.35,10.1875,6.5375]];
  await page.screenshot({path:require('node:path').join(__dirname,'../artifacts/approved-artwork/physical-'+name+'.png'),fullPage:true});
  const proof=await page.evaluate(specs=>{
   const d=document.querySelector('.dashboard').getBoundingClientRect();
