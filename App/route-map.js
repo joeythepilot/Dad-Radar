@@ -1350,25 +1350,24 @@ function positionAirportMarker(
       ".airport-placard"
     );
 
-  const placementLength =
-    Math.hypot(
-      placement.x,
-      placement.y
-    ) || 1;
-
   const fitting = marker.querySelector(".airport-leader-fitting");
+  const plaqueScale = fitting ? 1.4 : 1;
+  // Expand the offset with the housing so horizontal leaders still clear
+  // the airport medallion, including near-vertical and stationary routes.
+  placement = {x: placement.x * plaqueScale, y: placement.y * plaqueScale};
+  const placementLength = Math.hypot(placement.x, placement.y) || 1;
   if (leader) {
     const leaderStart = 16;
     // The approved plaques are shallower than the previous 132 × 72 housing.
     // Meet their visible edge along the existing leader, keeping route/camera
     // placement unchanged. Legacy/compact markers retain their old endpoint.
     const plaqueEdge = fitting ? Math.min(
-      63.5 / Math.abs(placement.x / placementLength),
-      19.4 / Math.abs(placement.y / placementLength)
+      63.5 * plaqueScale / Math.abs(placement.x / placementLength),
+      19.4 * plaqueScale / Math.abs(placement.y / placementLength)
     ) - 1 : 35;
     const leaderLength =
       Math.max(
-        34,
+        fitting ? leaderStart + 2 : 34,
         placementLength - plaqueEdge
       );
 
@@ -1418,8 +1417,8 @@ function positionAirportMarker(
   if (placard) {
     placard.setAttribute(
       "transform",
-      `translate(${(placement.x - 66).toFixed(1)} ` +
-      `${(placement.y - 36).toFixed(1)})`
+      `translate(${(placement.x - 66 * plaqueScale).toFixed(1)} ` +
+      `${(placement.y - 36 * plaqueScale).toFixed(1)}) scale(${plaqueScale})`
     );
   }
 }

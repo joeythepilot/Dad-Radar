@@ -31,8 +31,8 @@
       }
     });
     sequenceValues.forEach(value => {
-      const size = value.classList.contains("sequence-mileage-value") ? 20 :
-        value.classList.contains("sequence-mileage-label") ? 9 : 8;
+      const size = value.classList.contains("sequence-mileage-value") ? 26 :
+        value.classList.contains("sequence-mileage-label") ? 12 : 12;
       value.style.setProperty("font-size", `${size}px`, "important");
       const range = document.createRange();
       range.selectNodeContents(value);

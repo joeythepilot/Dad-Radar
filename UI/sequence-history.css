@@ -3,7 +3,7 @@
 /* Seat the visible metal against the bezel; compensate for the PNG viewport gutters. */
 .vintage-map-panel .route-map-shell .sequence-mileage-badge {
   position: absolute; z-index: 56; left: 0; bottom: 0 !important;
-  width: var(--map-sequence-width, 196px) !important; max-width: none !important;
+  width: var(--map-sequence-width, 274px) !important; max-width: none !important;
   aspect-ratio: 631 / 262; padding: 0 !important;
   border: 0; background: none; box-shadow: none;
   font-family: "Courier New", monospace;
@@ -18,12 +18,12 @@
   white-space: nowrap;
 }
 .vintage-map-panel .route-map-shell .sequence-mileage-label {
-  top: 6%; height: 19%; font-size: 9px !important; letter-spacing: .4px; color: #ccb783;
+  top: 6%; height: 19%; font-size: 12px !important; letter-spacing: .4px; color: #ccb783;
 }
 .vintage-map-panel .route-map-shell .sequence-mileage-value {
-  top: 33%; height: 30%; font-size: 20px !important; letter-spacing: .4px; color: #dbc28d;
+  top: 33%; height: 30%; font-size: 26px !important; letter-spacing: .4px; color: #dbc28d;
 }
 .vintage-map-panel .route-map-shell .sequence-mileage-detail {
-  top: 78%; height: 15%; font-size: 8px !important; letter-spacing: 0; color: #ccb783;
+  top: 74%; height: 15%; font-size: 12px !important; letter-spacing: 0; color: #ccb783;
   line-height: 1.05; overflow-wrap: break-word;
 }

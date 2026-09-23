@@ -1337,3 +1337,20 @@ function testRadarFollowsViewport() {
 }
 testRadarFollowsViewport();
 runTests();
+
+// A north/south route can put the plaque almost horizontally beside its pin.
+// The larger approved housing must not cover the airport or swallow its leader.
+{
+  const makePart = () => ({attrs:{},setAttribute(k,v){this.attrs[k]=String(v);},getAttribute(k){return this.attrs[k];}});
+  const parts={'.airport-leader':makePart(),'.airport-leader-fitting':makePart(),'.airport-placard':makePart()};
+  const marker={setAttribute(){},querySelector(s){return parts[s];}};
+  const source=ROUTE_MAP_SOURCE.slice(ROUTE_MAP_SOURCE.indexOf('function positionAirportMarker('),ROUTE_MAP_SOURCE.indexOf('function positionAircraftMarker('));
+  const position=vm.runInNewContext(source+';positionAirportMarker');
+  position(marker,{x:0,y:0},{x:86,y:18},1);
+  const transform=parts['.airport-placard'].attrs.transform.match(/translate\(([-\d.]+) ([-\d.]+)\) scale\(([-\d.]+)\)/);
+  const scale=Number(transform[3]),cx=Number(transform[1])+66*scale,cy=Number(transform[2])+36*scale;
+  assert(cx-63.5*scale>17,'Enlarged plaque clears airport medallion');
+  const distance=Math.hypot(cx,cy),edge=Math.min(63.5*scale/Math.abs(cx/distance),19.4*scale/Math.abs(cy/distance));
+  const leader=parts['.airport-leader'].attrs;
+  assert(Math.abs(Math.hypot(Number(leader.x2),Number(leader.y2))-(distance-edge+1))<.2,'Leader socket meets enlarged plaque edge');
+}

@@ -17,7 +17,7 @@ const state = {
     latitude:37.3,longitude:-84.8
   },
   diagnostics:{shutterTestToken:"saved-command-before-page-load"},
-  sequenceHistory:{totalDistanceNm:1468, completedLegCount:6, estimatedLegCount:6, legs:Array.from({length:6}, () => ({origin:"ORD",destination:"AVL"}))},
+  sequenceHistory:{scheduledLegCount:16,totalDistanceNm:1468, completedLegCount:6, estimatedLegCount:6, legs:Array.from({length:6}, () => ({origin:"ORD",destination:"AVL"}))},
   dailySchedule:{dateLabel:"SUN SEP 13",timeZoneLabel:"EASTERN TIME",context:"DADDY IS ON LAYOVER IN SPRINGFIELD, ILLINOIS",entries:[
     {time:"7:58 AM",departureTime:"7:58 AM",arrivalTime:"10:14 AM",label:"ORD → BWI",tag:"FLT 3761",status:"completed",kind:"flight"},
     {time:"11:23 AM",departureTime:"11:23 AM",arrivalTime:"1:40 PM",label:"BWI → ORD",tag:"FLT 3762",status:"current",kind:"flight",operationalStamp:{kind:"delay",label:"DELAYED",detail:"45 MINUTES"}},
@@ -205,8 +205,9 @@ const server = http.createServer((req,res) => {
    const edgeError=await page.locator('.airport-leader-fitting').first().evaluate(n=>{
      const leader=n.parentElement.querySelector('.airport-leader');
      const transform=n.parentElement.querySelector('.airport-placard').transform.baseVal.consolidate().matrix;
-     const x=transform.e+66,y=transform.f+36,d=Math.hypot(x,y);
-     const edge=Math.min(63.5/Math.abs(x/d),19.4/Math.abs(y/d));
+     if(Math.abs(transform.a-1.4)>.001) throw new Error("Approved plaques must be enlarged for room viewing");
+     const x=transform.e+66*transform.a,y=transform.f+36*transform.a,d=Math.hypot(x,y);
+     const edge=Math.min(63.5*transform.a/Math.abs(x/d),19.4*transform.a/Math.abs(y/d));
      return Math.abs(Math.hypot(+leader.getAttribute('x2'),+leader.getAttribute('y2'))-(d-edge+1));
    });
    assert(edgeError<.2,'Fitting socket attaches to the new shallow plaque edge');
@@ -223,6 +224,19 @@ const server = http.createServer((req,res) => {
      return {text:n.textContent,contained:r.left>=w.left-1&&r.right<=w.right+1&&r.top>=w.top-1&&r.bottom<=w.bottom+1};
    });
    assert(sequenceInk.contained,`${name}: sequence detail stays within its metal footer: ${sequenceInk.text}`);
+   const legibility=await page.evaluate(()=>({
+     detailSize:parseFloat(getComputedStyle(document.querySelector('.sequence-mileage-detail')).fontSize),
+     plaque:[...document.querySelectorAll('.airport-placard')].map(p=>{
+       const role=p.querySelector('.airport-placard-role').getBBox();
+       const code=p.querySelector('.airport-code').getBBox();
+       const city=p.querySelector('.airport-city').getBBox();
+       return {bounds:[role.y,role.height,code.y,code.height,city.y,city.height],separate:Number(p.querySelector(".airport-code").getAttribute("y"))-Number(p.querySelector(".airport-placard-role").getAttribute("y"))>=12 && Number(p.querySelector(".airport-city").getAttribute("y"))-Number(p.querySelector(".airport-code").getAttribute("y"))>=10,
+         citySize:parseFloat(getComputedStyle(p.querySelector('.airport-city')).fontSize)};
+     })
+   }));
+   assert(legibility.detailSize>=11,`${name}: scheduled leg count remains readable`);
+   assert(legibility.plaque.every(p=>p.separate&&p.citySize>=8.5),`${name}: enlarged plaque lines stay separate ${JSON.stringify(legibility)}`);
+
    await require("./instrument-wheels-browser-proof").checkInstrumentWheels(page,name);
    await page.screenshot({path:path.join(output,`${name}.png`),fullPage:true});
    await assertBrowserSettled(name);

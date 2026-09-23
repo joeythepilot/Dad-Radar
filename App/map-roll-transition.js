@@ -81,7 +81,7 @@
     apertureSize = size;
     const stacked = !familyFull && width < 560;
     const inset = width < 400 ? 10 : 18;
-    const sequenceWidth = Math.min(196, width - inset * 2);
+    const sequenceWidth = Math.min(274, width - inset * 2);
     const clockWidth = Math.min(184, stacked ? (width - inset * 2 - 16) / 2 : (width - inset * 2 - sequenceWidth - 24) / 2);
     const scale = Math.min(1, clockWidth / 184);
     const values = {
@@ -96,7 +96,7 @@
       // These are dimensions of the existing housings, not new metal artwork.
       // Scale each complete housing plus its raster rod around its lower edge.
       values["--map-clock-width"] = 184;
-      values["--map-sequence-width"] = 196;
+      values["--map-sequence-width"] = 274;
       values["--map-hardware-inset"] = full.inset;
       values["--map-clock-bottom"] = full.clockBottom;
       values["--map-clock-font"] = full.valueFont;
