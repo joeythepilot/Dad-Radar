@@ -202,10 +202,11 @@ const server = http.createServer((req,res) => {
    assert.equal(assets.length,7);assert(assets.every(a=>a.w>0),'Approved map and wheel PNGs decode');
    const fitting=await page.locator('.airport-leader-fitting').first().getAttribute('transform');
    assert.match(fitting,/translate\(.+\) rotate\(/,'End fitting follows positioned leader');
+   assert.match(fitting,/scale\(1\.4\)/,'Pointer grows with the enlarged plaque');
    const edgeError=await page.locator('.airport-leader-fitting').first().evaluate(n=>{
      const leader=n.parentElement.querySelector('.airport-leader');
      const transform=n.parentElement.querySelector('.airport-placard').transform.baseVal.consolidate().matrix;
-     if(Math.abs(transform.a-1.4)>.001) throw new Error("Approved plaques must be enlarged for room viewing");
+     if(Math.abs(transform.a-1.96)>.001) throw new Error("Approved plaques must be enlarged for room viewing");
      const x=transform.e+66*transform.a,y=transform.f+36*transform.a,d=Math.hypot(x,y);
      const edge=Math.min(63.5*transform.a/Math.abs(x/d),19.4*transform.a/Math.abs(y/d));
      return Math.abs(Math.hypot(+leader.getAttribute('x2'),+leader.getAttribute('y2'))-(d-edge+1));

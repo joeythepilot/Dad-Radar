@@ -1351,7 +1351,7 @@ function positionAirportMarker(
     );
 
   const fitting = marker.querySelector(".airport-leader-fitting");
-  const plaqueScale = fitting ? 1.4 : 1;
+  const plaqueScale = fitting ? 1.96 : 1;
   // Expand the offset with the housing so horizontal leaders still clear
   // the airport medallion, including near-vertical and stationary routes.
   placement = {x: placement.x * plaqueScale, y: placement.y * plaqueScale};
@@ -1411,7 +1411,7 @@ function positionAirportMarker(
   if (fitting && leader) {
     const angle = Math.atan2(placement.y, placement.x) * 180 / Math.PI;
     fitting.setAttribute("transform",
-      `translate(${leader.getAttribute("x2")} ${leader.getAttribute("y2")}) rotate(${angle + 180})`);
+      `translate(${leader.getAttribute("x2")} ${leader.getAttribute("y2")}) rotate(${angle + 180}) scale(1.4)`);
   }
 
   if (placard) {
