@@ -1,0 +1,42 @@
+/* Physical-first v3: inches measured from the PDF active-image origin.
+   Active image 20.0625 x 11.3125 inches. Home only; companion stays unchanged.
+   Rollback: archive/pre-physical-faceplate-v3-2026-09-23.
+   Values target openings, not the outer extents of decorative housings. */
+html:not([data-family-full]) .dashboard { position:relative; padding:0!important; container-type:size; background:#050505; }
+html:not([data-family-full]) .dashboard .panel-shell,
+html:not([data-family-full]) .dashboard .lower-display-grid,
+html:not([data-family-full]) .dashboard .left-module-stack,
+html:not([data-family-full]) .dashboard .center-map-stack,
+html:not([data-family-full]) .dashboard .instrument-rail,
+html:not([data-family-full]) .dashboard .flight-strip-module,
+html:not([data-family-full]) .dashboard .flight-board,
+html:not([data-family-full]) .dashboard .flight-board-row,
+html:not([data-family-full]) .dashboard .flap-route-section { display:contents!important; }
+html:not([data-family-full]) .flight-strip-labels,
+html:not([data-family-full]) .flight-board::before, html:not([data-family-full]) .flight-board::after,
+html:not([data-family-full]) .flight-strip-module::before, html:not([data-family-full]) .flight-strip-module::after { display:none!important; }
+html:not([data-family-full]) .dashboard .destination-panel { position:absolute!important; inset:auto!important; left:3.115264797507788%!important; top:23.646408839779003%!important; width:21.93146417445483%!important; height:44.45146014232044%!important; margin:0!important; min-width:0!important; min-height:0!important; max-width:none!important; max-height:none!important; }
+html:not([data-family-full]) .dashboard .daily-schedule-panel { position:absolute!important; inset:auto!important; left:3.115264797507788%!important; top:72.51775848486189%!important; width:21.93146417445483%!important; height:25.272296763756906%!important; margin:0!important; min-width:0!important; min-height:0!important; max-width:none!important; max-height:none!important; }
+html:not([data-family-full]) .dashboard .vintage-map-panel { position:absolute!important; inset:auto!important; left:28.161993769470406%!important; top:23.646408839779003%!important; width:50.77881619937694%!important; height:57.79005524861878%!important; margin:0!important; min-width:0!important; min-height:0!important; max-width:none!important; max-height:none!important; }
+html:not([data-family-full]) .dashboard .weekly-overnight-bank { position:absolute!important; inset:auto!important; left:28.161993769470406%!important; top:85.85635359116023%!important; width:50.77881619937694%!important; height:11.933701657458565%!important; margin:0!important; min-width:0!important; min-height:0!important; max-width:none!important; max-height:none!important; }
+html:not([data-family-full]) .dashboard .twin-clock-panel { position:absolute!important; inset:auto!important; left:81.43302180685357%!important; top:3.314917127071823%!important; width:16.697819314641745%!important; height:15.911602209944753%!important; margin:0!important; min-width:0!important; min-height:0!important; max-width:none!important; max-height:none!important; }
+html:not([data-family-full]) .dashboard #flight-number { position:absolute!important; inset:auto!important; left:3.115264797507788%!important; top:5.303867403314917%!important; width:15.182900657667012%!important; height:11.933701657458565%!important; margin:0!important; min-width:0!important; min-height:0!important; max-width:none!important; max-height:none!important; }
+html:not([data-family-full]) .dashboard #flight-origin { position:absolute!important; inset:auto!important; left:20.790377293181034%!important; top:5.303867403314917%!important; width:11.34828660436137%!important; height:11.933701657458565%!important; margin:0!important; min-width:0!important; min-height:0!important; max-width:none!important; max-height:none!important; }
+html:not([data-family-full]) .dashboard #flight-destination { position:absolute!important; inset:auto!important; left:34.630875735548635%!important; top:5.303867403314917%!important; width:11.34828660436137%!important; height:11.933701657458565%!important; margin:0!important; min-width:0!important; min-height:0!important; max-width:none!important; max-height:none!important; }
+html:not([data-family-full]) .dashboard #status-value { position:absolute!important; inset:auto!important; left:48.47137417791623%!important; top:5.303867403314917%!important; width:30.469435790931115%!important; height:11.933701657458565%!important; margin:0!important; min-width:0!important; min-height:0!important; max-width:none!important; max-height:none!important; }
+html:not([data-family-full]) .dashboard .instrument-slot:nth-child(1) { position:absolute!important; inset:auto!important; left:84.04984423676012%!important; top:26.933701657458563%!important; width:11.46417445482866%!important; height:20.33149171270718%!important; margin:0!important; min-width:0!important; min-height:0!important; max-width:none!important; max-height:none!important; }
+html:not([data-family-full]) .dashboard .instrument-slot:nth-child(2) { position:absolute!important; inset:auto!important; left:84.04984423676012%!important; top:50.552486187845304%!important; width:11.46417445482866%!important; height:20.33149171270718%!important; margin:0!important; min-width:0!important; min-height:0!important; max-width:none!important; max-height:none!important; }
+html:not([data-family-full]) .dashboard .instrument-slot:nth-child(3) { position:absolute!important; inset:auto!important; left:84.04984423676012%!important; top:74.17127071823204%!important; width:11.46417445482866%!important; height:20.33149171270718%!important; margin:0!important; min-width:0!important; min-height:0!important; max-width:none!important; max-height:none!important; }
+
+html:not([data-family-full]) .dashboard .destination-panel, html:not([data-family-full]) .dashboard .vintage-map-panel,
+html:not([data-family-full]) .dashboard .instrument-slot { padding:0!important; border:0!important; border-radius:0!important; box-shadow:none!important; background:none!important; }
+html:not([data-family-full]) .dashboard .destination-stage { inset:0; width:100%; height:100%; }
+html:not([data-family-full]) .dashboard .destination-poster-image { width:100%!important; height:100%!important; object-fit:contain!important; }
+html:not([data-family-full]) .dashboard .vintage-map-panel .route-map-shell { inset:0!important; width:100%!important; height:100%!important; border:0!important; border-radius:0!important; }
+html:not([data-family-full]) .dashboard .flap-cell { display:flex!important; gap:.18cqw!important; padding:0!important; align-items:stretch!important; }
+html:not([data-family-full]) .dashboard .flap-character { flex:1 1 0!important; min-width:0!important; max-width:none!important; width:auto!important; height:100%!important; font-size:2.75cqw!important; }
+html:not([data-family-full]) .dashboard .instrument-slot { overflow:hidden!important; border-radius:50%!important; display:block!important; }
+html:not([data-family-full]) .dashboard .instrument-slot .instrument { position:absolute!important; width:128.205128%!important; height:128.205128%!important; max-width:none!important; max-height:none!important; left:50%!important; top:50%!important; transform:translate(-50%,-50%); margin:0!important; }
+html:not([data-family-full]) .dashboard .instrument-slot .heading-instrument { width:116.363636%!important; height:116.363636%!important; }
+html:not([data-family-full]) .dashboard .instrument-slot .instrument-wheel-readout { bottom:17%!important; }
+html:not([data-family-full]) .dashboard .instrument-slot .altimeter-readout { left:22%!important; right:22%!important; bottom:24%!important; }

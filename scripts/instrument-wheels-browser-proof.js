@@ -7,7 +7,8 @@ async function checkInstrumentWheels(page, name) {
   assert.deepEqual(initial, ['438','171','34000']);
   const geometry = await faces.evaluateAll(nodes => nodes.map(n => {
     const r=n.getBoundingClientRect(),g=n.closest('.instrument').getBoundingClientRect();
-    return {inside:r.left>=g.left&&r.right<=g.right&&r.top>g.top+g.height*.6&&r.bottom<g.bottom,
+    const lowerFace=document.documentElement.hasAttribute('data-family-full') ? .6 : .5;
+    return {inside:r.left>=g.left&&r.right<=g.right&&r.top>g.top+g.height*lowerFace&&r.bottom<g.bottom,
       ratio:r.width/r.height,expected:n.viewBox.baseVal.width/300,
       digits:[...n.querySelectorAll('.instrument-wheel-digits [data-printed-ink]')].every(t=>{const b=t.getBBox();return b.width>0&&b.width<106;})};
   }));
