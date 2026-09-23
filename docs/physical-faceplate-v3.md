@@ -11,9 +11,11 @@ Rollback checkpoint: `archive/pre-physical-faceplate-v3-2026-09-23`, commit `6eb
 | Map | 5.650 | 2.675 | 10.1875 | 6.5375 |
 | Seven-day bank | 5.650 | 9.7125 | 10.1875 | 1.350 |
 | Twin clocks | 16.3375 | 0.375 | 3.350 | 1.800 |
-| Airspeed face | 16.8625 | 3.046875 | 2.300 | 2.300 |
-| Heading face | 16.8625 | 5.718750 | 2.300 | 2.300 |
-| Altimeter face | 16.8625 | 8.390625 | 2.300 | 2.300 |
+| Airspeed face | 16.7625 | 2.746875 | 2.500 | 2.500 |
+| Heading face | 16.7625 | 5.618750 | 2.500 | 2.500 |
+| Altimeter face | 16.7625 | 8.490625 | 2.500 | 2.500 |
+
+Approved 2.5-inch amendment: the gauge centers are (18.0125, 3.996875), (18.0125, 6.868750), and (18.0125, 9.740625). Clear vertical gaps remain 0.371875 inches. The airspeed center moves up 0.200 inches, heading stays fixed, and altimeter moves down 0.200 inches. These supersede the PDF's 2.300-inch gauge circles only; the source drawing still needs updating before cutting. All other openings are unchanged.
 
 The four split-flap groups use the four individual rectangles extracted from the PDF, with top 0.600 and height 1.350. The unrounded source geometry is retained in `scripts/physical-faceplate-browser-proof.js`.
 
