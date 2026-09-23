@@ -37,6 +37,8 @@ html:not([data-family-full]) .dashboard .flap-cell { display:flex!important; gap
 html:not([data-family-full]) .dashboard .flap-character { flex:1 1 0!important; min-width:0!important; max-width:none!important; width:auto!important; height:100%!important; font-size:2.75cqw!important; }
 html:not([data-family-full]) .dashboard .instrument-slot { overflow:hidden!important; border-radius:50%!important; display:block!important; }
 html:not([data-family-full]) .dashboard .instrument-slot .instrument { position:absolute!important; width:128.205128%!important; height:128.205128%!important; max-width:none!important; max-height:none!important; left:50%!important; top:50%!important; transform:translate(-50%,-50%); margin:0!important; }
-html:not([data-family-full]) .dashboard .instrument-slot .heading-instrument { width:116.363636%!important; height:116.363636%!important; }
+html:not([data-family-full]) .dashboard .instrument-slot .heading-instrument { width:136.986301%!important; height:136.986301%!important; }
 html:not([data-family-full]) .dashboard .instrument-slot .instrument-wheel-readout { bottom:17%!important; }
+/* Fit the heading's inner dial, then retain the readout's prior visible size and inset. */
+html:not([data-family-full]) .dashboard .heading-instrument .instrument-wheel-readout { bottom:22%!important; transform:scale(.8494545); transform-origin:bottom center; }
 html:not([data-family-full]) .dashboard .instrument-slot .altimeter-readout { left:22%!important; right:22%!important; bottom:24%!important; }
