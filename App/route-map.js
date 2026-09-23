@@ -1351,7 +1351,7 @@ function positionAirportMarker(
     );
 
   const fitting = marker.querySelector(".airport-leader-fitting");
-  const plaqueScale = fitting ? 1.4 : 1;
+  const plaqueScale = fitting ? 1.05 : 1;
   // Expand the offset with the housing so horizontal leaders still clear
   // the airport medallion, including near-vertical and stationary routes.
   placement = {x: placement.x * plaqueScale, y: placement.y * plaqueScale};
@@ -1362,7 +1362,7 @@ function positionAirportMarker(
     // Meet their visible edge along the existing leader, keeping route/camera
     // placement unchanged. Legacy/compact markers retain their old endpoint.
     const plaqueEdge = fitting ? Math.min(
-      63.5 * plaqueScale / Math.abs(placement.x / placementLength),
+      52.5 * plaqueScale / Math.abs(placement.x / placementLength),
       19.4 * plaqueScale / Math.abs(placement.y / placementLength)
     ) - 1 : 35;
     const leaderLength =
@@ -1411,13 +1411,13 @@ function positionAirportMarker(
   if (fitting && leader) {
     const angle = Math.atan2(placement.y, placement.x) * 180 / Math.PI;
     fitting.setAttribute("transform",
-      `translate(${leader.getAttribute("x2")} ${leader.getAttribute("y2")}) rotate(${angle + 180}) scale(1)`);
+      `translate(${leader.getAttribute("x2")} ${leader.getAttribute("y2")}) rotate(${angle + 180}) scale(0.75)`);
   }
 
   if (placard) {
     placard.setAttribute(
       "transform",
-      `translate(${(placement.x - 66 * plaqueScale).toFixed(1)} ` +
+      `translate(${(placement.x - (fitting ? 55 : 66) * plaqueScale).toFixed(1)} ` +
       `${(placement.y - 36 * plaqueScale).toFixed(1)}) scale(${plaqueScale})`
     );
   }

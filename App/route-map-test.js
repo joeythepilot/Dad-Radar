@@ -1348,9 +1348,9 @@ runTests();
   const position=vm.runInNewContext(source+';positionAirportMarker');
   position(marker,{x:0,y:0},{x:86,y:18},1);
   const transform=parts['.airport-placard'].attrs.transform.match(/translate\(([-\d.]+) ([-\d.]+)\) scale\(([-\d.]+)\)/);
-  const scale=Number(transform[3]),cx=Number(transform[1])+66*scale,cy=Number(transform[2])+36*scale;
-  assert(cx-63.5*scale>17,'Enlarged plaque clears airport medallion');
-  const distance=Math.hypot(cx,cy),edge=Math.min(63.5*scale/Math.abs(cx/distance),19.4*scale/Math.abs(cy/distance));
+  const scale=Number(transform[3]),cx=Number(transform[1])+55*scale,cy=Number(transform[2])+36*scale;
+  assert(cx-52.5*scale>17,'Enlarged plaque clears airport medallion');
+  const distance=Math.hypot(cx,cy),edge=Math.min(52.5*scale/Math.abs(cx/distance),19.4*scale/Math.abs(cy/distance));
   const leader=parts['.airport-leader'].attrs;
   assert(Math.abs(Math.hypot(Number(leader.x2),Number(leader.y2))-(distance-edge+1))<.2,'Leader socket meets enlarged plaque edge');
 }

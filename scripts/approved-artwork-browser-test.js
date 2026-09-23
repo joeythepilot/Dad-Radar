@@ -202,13 +202,13 @@ const server = http.createServer((req,res) => {
    assert.equal(assets.length,7);assert(assets.every(a=>a.w>0),'Approved map and wheel PNGs decode');
    const fitting=await page.locator('.airport-leader-fitting').first().getAttribute('transform');
    assert.match(fitting,/translate\(.+\) rotate\(/,'End fitting follows positioned leader');
-   assert.match(fitting,/scale\(1\)/,'Pointer returns to its earlier size');
+   assert.match(fitting,/scale\(0\.75\)/,'Pointer shrinks with the plaque');
    const edgeError=await page.locator('.airport-leader-fitting').first().evaluate(n=>{
      const leader=n.parentElement.querySelector('.airport-leader');
      const transform=n.parentElement.querySelector('.airport-placard').transform.baseVal.consolidate().matrix;
-     if(Math.abs(transform.a-1.4)>.001) throw new Error("Approved plaques must be enlarged for room viewing");
-     const x=transform.e+66*transform.a,y=transform.f+36*transform.a,d=Math.hypot(x,y);
-     const edge=Math.min(63.5*transform.a/Math.abs(x/d),19.4*transform.a/Math.abs(y/d));
+     if(Math.abs(transform.a-1.05)>.001) throw new Error("Approved plaques must use the reduced code-only size");
+     const x=transform.e+55*transform.a,y=transform.f+36*transform.a,d=Math.hypot(x,y);
+     const edge=Math.min(52.5*transform.a/Math.abs(x/d),19.4*transform.a/Math.abs(y/d));
      return Math.abs(Math.hypot(+leader.getAttribute('x2'),+leader.getAttribute('y2'))-(d-edge+1));
    });
    assert(edgeError<.2,'Fitting socket attaches to the new shallow plaque edge');
@@ -230,8 +230,8 @@ const server = http.createServer((req,res) => {
      plaque:[...document.querySelectorAll('.airport-placard')].map(p=>{
        const code=p.querySelector('.airport-code').getBBox();
        return {codeOnly:['.airport-placard-role','.airport-city'].every(s=>getComputedStyle(p.querySelector(s)).display==='none'),
-         centered:Math.abs(code.x+code.width/2-66)<3 && Math.abs(code.y+code.height/2-36)<3,
-         contained:code.x>=8 && code.x+code.width<=124 && code.y>=16 && code.y+code.height<=57,
+         centered:Math.abs(code.x+code.width/2-55)<3 && Math.abs(code.y+code.height/2-36)<3,
+         contained:code.x>=8 && code.x+code.width<=102 && code.y>=16 && code.y+code.height<=57,
          codeSize:parseFloat(getComputedStyle(p.querySelector('.airport-code')).fontSize)};
      })
    }));
