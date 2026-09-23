@@ -202,11 +202,11 @@ const server = http.createServer((req,res) => {
    assert.equal(assets.length,7);assert(assets.every(a=>a.w>0),'Approved map and wheel PNGs decode');
    const fitting=await page.locator('.airport-leader-fitting').first().getAttribute('transform');
    assert.match(fitting,/translate\(.+\) rotate\(/,'End fitting follows positioned leader');
-   assert.match(fitting,/scale\(1\.4\)/,'Pointer grows with the enlarged plaque');
+   assert.match(fitting,/scale\(1\)/,'Pointer returns to its earlier size');
    const edgeError=await page.locator('.airport-leader-fitting').first().evaluate(n=>{
      const leader=n.parentElement.querySelector('.airport-leader');
      const transform=n.parentElement.querySelector('.airport-placard').transform.baseVal.consolidate().matrix;
-     if(Math.abs(transform.a-1.96)>.001) throw new Error("Approved plaques must be enlarged for room viewing");
+     if(Math.abs(transform.a-1.4)>.001) throw new Error("Approved plaques must be enlarged for room viewing");
      const x=transform.e+66*transform.a,y=transform.f+36*transform.a,d=Math.hypot(x,y);
      const edge=Math.min(63.5*transform.a/Math.abs(x/d),19.4*transform.a/Math.abs(y/d));
      return Math.abs(Math.hypot(+leader.getAttribute('x2'),+leader.getAttribute('y2'))-(d-edge+1));
@@ -228,15 +228,15 @@ const server = http.createServer((req,res) => {
    const legibility=await page.evaluate(()=>({
      detailSize:parseFloat(getComputedStyle(document.querySelector('.sequence-mileage-detail')).fontSize),
      plaque:[...document.querySelectorAll('.airport-placard')].map(p=>{
-       const role=p.querySelector('.airport-placard-role').getBBox();
        const code=p.querySelector('.airport-code').getBBox();
-       const city=p.querySelector('.airport-city').getBBox();
-       return {bounds:[role.y,role.height,code.y,code.height,city.y,city.height],separate:Number(p.querySelector(".airport-code").getAttribute("y"))-Number(p.querySelector(".airport-placard-role").getAttribute("y"))>=12 && Number(p.querySelector(".airport-city").getAttribute("y"))-Number(p.querySelector(".airport-code").getAttribute("y"))>=10,
-         citySize:parseFloat(getComputedStyle(p.querySelector('.airport-city')).fontSize)};
+       return {codeOnly:['.airport-placard-role','.airport-city'].every(s=>getComputedStyle(p.querySelector(s)).display==='none'),
+         centered:Math.abs(code.x+code.width/2-66)<3 && Math.abs(code.y+code.height/2-36)<3,
+         contained:code.x>=8 && code.x+code.width<=124 && code.y>=16 && code.y+code.height<=57,
+         codeSize:parseFloat(getComputedStyle(p.querySelector('.airport-code')).fontSize)};
      })
    }));
    assert(legibility.detailSize>=11,`${name}: scheduled leg count remains readable`);
-   assert(legibility.plaque.every(p=>p.separate&&p.citySize>=8.5),`${name}: enlarged plaque lines stay separate ${JSON.stringify(legibility)}`);
+   assert(legibility.plaque.every(p=>p.codeOnly&&p.centered&&p.contained&&p.codeSize>=26),`${name}: only a large centered code is printed inside the plaque ${JSON.stringify(legibility)}`);
 
    await require("./instrument-wheels-browser-proof").checkInstrumentWheels(page,name);
    await page.screenshot({path:path.join(output,`${name}.png`),fullPage:true});

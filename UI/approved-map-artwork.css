@@ -27,8 +27,10 @@ html.family-full-portrait .dashboard .panel-shell {
   grid-template-rows: var(--twin-clock-height, 61px) minmax(0, 1fr) !important;
 }
 .route-map-svg .airport-placard-art { filter: none; }
-.route-map-svg .airport-placard-role {
-  fill: #ead6a5; font-size: 7px !important; letter-spacing: 1px; stroke: none;
+/* Keep live city values available to route logic, but print only the code. */
+.route-map-svg .airport-placard-role,
+.route-map-svg .airport-city { display: none; }
+.route-map-svg .airport-code {
+  fill: #f5e4b7; font-size: 26px; letter-spacing: .7px;
+  dominant-baseline: central;
 }
-.route-map-svg .airport-code { fill: #f5e4b7; font-size: 14px; letter-spacing: .7px; }
-.route-map-svg .airport-city { fill: #e4c994; font-size: 8.5px; letter-spacing: .4px; }
