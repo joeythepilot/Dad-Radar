@@ -38,7 +38,15 @@ html:not([data-family-full]) .dashboard .flap-character { flex:1 1 0!important; 
 html:not([data-family-full]) .dashboard .instrument-slot { overflow:hidden!important; border-radius:50%!important; display:block!important; }
 html:not([data-family-full]) .dashboard .instrument-slot .instrument { position:absolute!important; width:128.205128%!important; height:128.205128%!important; max-width:none!important; max-height:none!important; left:50%!important; top:50%!important; transform:translate(-50%,-50%); margin:0!important; }
 html:not([data-family-full]) .dashboard .instrument-slot .heading-instrument { width:136.986301%!important; height:136.986301%!important; }
+/* Each source has a different inner-dial diameter: airspeed 76%, altimeter 74%. */
+html:not([data-family-full]) .dashboard .instrument-slot .airspeed-instrument { width:131.578947%!important; height:131.578947%!important; }
+html:not([data-family-full]) .dashboard .instrument-slot .altimeter-instrument { width:135.135135%!important; height:135.135135%!important; }
+/* Keep the existing paint radius so the outer red radial stays clear of the cutout. */
+html:not([data-family-full]) .dashboard .airspeed-range-ink { transform:scale(.974358974); transform-origin:center; }
 html:not([data-family-full]) .dashboard .instrument-slot .instrument-wheel-readout { bottom:17%!important; }
 /* Fit the heading's inner dial, then retain the readout's prior visible size and inset. */
 html:not([data-family-full]) .dashboard .heading-instrument .instrument-wheel-readout { bottom:22%!important; transform:scale(.8494545); transform-origin:bottom center; }
 html:not([data-family-full]) .dashboard .instrument-slot .altimeter-readout { left:22%!important; right:22%!important; bottom:24%!important; }
+/* Compensate the wheel inserts for the parent enlargement; preserve their visible size and position. */
+html:not([data-family-full]) .dashboard .airspeed-instrument .instrument-wheel-readout { bottom:17.846154%!important; transform:scale(.974358974); transform-origin:bottom center; }
+html:not([data-family-full]) .dashboard .altimeter-instrument .instrument-wheel-readout { bottom:25.333333%!important; transform:scale(.948717949); transform-origin:bottom center; }

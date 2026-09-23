@@ -7,11 +7,16 @@ async function checkPhysicalFaceplate(page,name){
  const proof=await page.evaluate(specs=>{
   const d=document.querySelector('.dashboard').getBoundingClientRect();
   return {
-   headingDialFill:(()=>{
-    const dial=document.querySelector('.heading-instrument').getBoundingClientRect();
-    const opening=document.querySelector('.heading-instrument').closest('.instrument-slot').getBoundingClientRect();
-    // The inner dial occupies approximately 73% of its source canvas.
-    return dial.width*.73/opening.width;
+   dialFill:[['.airspeed-instrument',.76],['.heading-instrument',.73],['.altimeter-instrument',.74]].map(([selector,fraction])=>{
+    const instrument=document.querySelector(selector),dial=instrument.getBoundingClientRect();
+    const opening=instrument.closest('.instrument-slot').getBoundingClientRect();
+    return {selector,fill:dial.width*fraction/opening.width};
+   }),
+   speedInkInside:(()=>{
+    const ink=document.querySelector('.airspeed-range-ink').getBoundingClientRect();
+    const opening=document.querySelector('.airspeed-instrument').closest('.instrument-slot').getBoundingClientRect();
+    // The red radial is the outermost paint, reaching radius 481.51 on a 1254px canvas.
+    return ink.width*481.51/1254<opening.width/2;
    })(),
    openings:specs.map(([s,x,y,w,h])=>{
     const r=document.querySelector(s).getBoundingClientRect();
@@ -30,7 +35,8 @@ async function checkPhysicalFaceplate(page,name){
  },checkedOpenings);
  for(const p of proof.openings)p.actual.forEach((v,i)=>assert(Math.abs(v-p.expected[i])<.012,name+' physical opening '+p.s+' '+JSON.stringify(p)));
  assert(proof.wheels.every(Boolean),name+': number wheels remain inside round cutouts '+JSON.stringify(proof.wheels));
- assert(Math.abs(proof.headingDialFill-1)<.01,name+': heading inner dial fills the circular opening');
+ for(const dial of proof.dialFill)assert(Math.abs(dial.fill-1)<.01,name+': inner dial fills the circular opening '+JSON.stringify(dial));
+ assert(proof.speedInkInside,name+': airspeed range paint stays inside its circular opening');
  assert(proof.tiles,name+': split-flap characters fit individual physical openings');
  return proof;
 }
