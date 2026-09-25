@@ -11,9 +11,9 @@ Rollback checkpoint: `archive/pre-physical-faceplate-v3-2026-09-23`, commit `6eb
 | Map | 5.525 | 2.350 | 10.1875 | 6.5375 |
 | Seven-day bank | 5.525 | 9.3875 | 10.1875 | 1.350 |
 | Twin clocks | 16.2125 | 0.375 | 3.350 | 1.800 |
-| Airspeed face | 16.6375 | 2.746875 | 2.500 | 2.500 |
-| Heading face | 16.6375 | 5.618750 | 2.500 | 2.500 |
-| Altimeter face | 16.6375 | 8.490625 | 2.500 | 2.500 |
+| Airspeed face | 16.8820 | 2.953250 | 2.011 | 2.011 |
+| Heading face | 16.8820 | 5.863250 | 2.011 | 2.011 |
+| Altimeter face | 16.8820 | 8.773250 | 2.011 | 2.011 |
 
 Approved 2.5-inch amendment: the gauge centers are (17.8875, 3.996875), (17.8875, 6.868750), and (17.8875, 9.740625). Clear vertical gaps remain 0.371875 inches. The airspeed center moves up 0.200 inches, heading stays fixed, and altimeter moves down 0.200 inches. These supersede the PDF's 2.300-inch gauge circles only; the original v3 drawing is superseded by the revised cutting templates. All other openings are unchanged.
 
@@ -32,3 +32,9 @@ Approved horizontal balance revision: all twelve home openings shift left 0.125 
 Heading dial fit correction: home heading artwork scales to 136.986301% so its approximately 73%-diameter inner dial fills the existing 2.500-inch opening. All image layers remain registered. The wheel readout is compensated to retain its previous visible size and lower-face position. No opening coordinates or cutting-template dimensions change; v6 remains current.
 
 Airspeed/altimeter dial review: the remaining narrow bezel rings were inside the common 78% crop. Fit their inner dials individually at 131.578947% (airspeed, 76% source diameter) and 135.135135% (altimeter, 74%). Preserve wheel-insert size/position with inverse scaling and adjusted insets. The airspeed paint retains its previous screen radius to keep the red radial inside the cutout; angular registration is unchanged. Source artwork and needle logic are untouched. All three openings stay 2.500 inches; v6 template remains current.
+
+## Current: Speedhut A-101 physical part (2026-09-25)
+
+Supersedes the earlier 2.500-inch apertures above in the revision history. Visible circular openings are now 2.011 inches. Heading center remains (17.8875, 6.86875). Airspeed center is (17.8875, 3.95875); altimeter center is (17.8875, 9.77875). Center spacing is 2.910 inches. Using the approved part's 2.785-inch maximum outer envelope leaves 0.125 inches between bezels. Part projection is 0.250 inches. These are Joey's supplied part dimensions, not independently verified manufacturing dimensions.
+
+All other openings remain unchanged. Apply geometry only in the authoritative home physical stylesheet; the generic responsive rail must not reposition companion layouts. Keep artwork, readouts and ranges registered inside the smaller circles. Prior good deployment: `50272ab1c53b212f130553ba9b802f64e07fbefd`. The earlier v6 cutting PDF is now OUTDATED for instrument holes/centers and must not be used to cut them; a part-specific template still needs preparation.
