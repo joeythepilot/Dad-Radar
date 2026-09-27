@@ -89,6 +89,12 @@
       title: "BROWNSVILLE",
       location: "Brownsville, Texas"
     }),
+    BUF: Object.freeze({
+      source:
+        "./assets/destinations/buf-poster-7x8-candidate-v2.png",
+      title: "BUFFALO",
+      location: "Buffalo, New York"
+    }),
     CHS: Object.freeze({
       source:
         "./assets/destinations/chs-poster-7x8-candidate-v1.png",
@@ -132,6 +138,12 @@
       title: "CHAMPAIGN–URBANA",
       location:
         "Champaign–Urbana, Illinois"
+    }),
+    COS: Object.freeze({
+      source:
+        "./assets/destinations/cos-poster-7x8-candidate-v2.png",
+      title: "COLORADO SPRINGS",
+      location: "Colorado Springs, Colorado"
     }),
     DCA: Object.freeze({
       source:
@@ -231,6 +243,12 @@
       title: "WICHITA",
       location: "Wichita, Kansas"
     }),
+    JAX: Object.freeze({
+      source:
+        "./assets/destinations/jax-poster-7x8-candidate-v2.png",
+      title: "JACKSONVILLE",
+      location: "Jacksonville, Florida"
+    }),
     LBB: Object.freeze({
       source:
         "./assets/destinations/lbb-poster-7x8-candidate-v1.png",
@@ -327,6 +345,12 @@
         "./assets/destinations/sat-poster-7x8-candidate-v1.png",
       title: "SAN ANTONIO",
       location: "San Antonio, Texas"
+    }),
+    SDF: Object.freeze({
+      source:
+        "./assets/destinations/sdf-poster-7x8-candidate-v2.png",
+      title: "LOUISVILLE",
+      location: "Louisville, Kentucky"
     }),
     SEA: Object.freeze({
       source:

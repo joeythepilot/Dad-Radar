@@ -147,7 +147,7 @@
     {
       "id": "envoy-gap-2026-09-27-f",
       "label": "Envoy candidate route gap batch F — AVL style reset",
-      "status": "candidate",
+      "status": "approved",
       "airportCodes": [
         "BHM",
         "BUF",
@@ -1648,7 +1648,7 @@
       "descriptor": "CITY HALL • ART DECO • SQUARE",
       "tagline": "A City Built to Rise.",
       "batch": "envoy-gap-2026-09-27-f",
-      "status": "candidate",
+      "status": "approved",
       "output": "assets/destinations/buf-poster-7x8-candidate-v2.png",
       "visualProfileId": "buffalo-cityhall-avl-lithograph-winter-gold",
       "design": {
@@ -1684,7 +1684,7 @@
       "descriptor": "RED ROCKS • PEAK • SKY",
       "tagline": "Where Stone Meets Sky.",
       "batch": "envoy-gap-2026-09-27-f",
-      "status": "candidate",
+      "status": "approved",
       "output": "assets/destinations/cos-poster-7x8-candidate-v2.png",
       "visualProfileId": "coloradosprings-gardenofgods-avl-lithograph-turquoise",
       "design": {
@@ -1719,7 +1719,7 @@
       "descriptor": "BLUE BRIDGE • RIVER • CITY",
       "tagline": "Across the St. Johns.",
       "batch": "envoy-gap-2026-09-27-f",
-      "status": "candidate",
+      "status": "approved",
       "output": "assets/destinations/jax-poster-7x8-candidate-v2.png",
       "visualProfileId": "jacksonville-mainstreetbridge-avl-lithograph-coral-dawn",
       "design": {
@@ -1754,7 +1754,7 @@
       "descriptor": "BIG FOUR • RIVER • PARK",
       "tagline": "By the Ohio River.",
       "batch": "envoy-gap-2026-09-27-f",
-      "status": "candidate",
+      "status": "approved",
       "output": "assets/destinations/sdf-poster-7x8-candidate-v2.png",
       "visualProfileId": "louisville-bigfourbridge-avl-lithograph-lavender-dusk",
       "design": {
