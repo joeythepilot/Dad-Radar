@@ -1,0 +1,1190 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-09-27",
+  "scope": "Working candidate airport inventory for Envoy-operated MQ flights; route lists can be historical or seasonal. This is not a complete verified current schedule.",
+  "sources": [
+    {
+      "label": "Envoy Air company destination total",
+      "url": "https://www.envoyair.com/",
+      "note": "Over 160 destinations, no airport-by-airport list"
+    },
+    {
+      "label": "FlightNerve Envoy Air MQ routes and destinations",
+      "url": "https://www.flightnerve.com/airlines/MQ",
+      "note": "Public route snapshot; airport codes assembled from destination and route/origin sections, not a complete authoritative list"
+    }
+  ],
+  "method": "141 candidate codes transcribed from the public MQ route page and related route pages; four existing DadRadar poster codes retained as separately tagged local evidence. Recheck individual operating routes and source date before commercial publication.",
+  "firstBatch": {
+    "id": "envoy-gap-2026-09-27-a",
+    "codes": [
+      "AMA",
+      "LIT",
+      "ATW",
+      "FAR",
+      "BRO"
+    ]
+  },
+  "destinations": [
+    {
+      "code": "ABE",
+      "city": "Allentown",
+      "region": "Pennsylvania",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "ABI",
+      "city": "Abilene",
+      "region": "Texas",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "ABQ",
+      "city": "Albuquerque",
+      "region": "New Mexico",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "ACA",
+      "city": "Acapulco",
+      "region": "Guerrero",
+      "country": "MX",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "ACT",
+      "city": "Waco",
+      "region": "Texas",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "AEX",
+      "city": "Alexandria",
+      "region": "Louisiana",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "AGU",
+      "city": "Aguascalientes",
+      "region": "Aguascalientes",
+      "country": "MX",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "ALB",
+      "city": "Albany",
+      "region": "New York",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "AMA",
+      "city": "Amarillo",
+      "region": "Texas",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "candidate"
+    },
+    {
+      "code": "ATL",
+      "city": "Atlanta",
+      "region": "Georgia",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "ATW",
+      "city": "Appleton",
+      "region": "Wisconsin",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "candidate"
+    },
+    {
+      "code": "AUS",
+      "city": "Austin",
+      "region": "Texas",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "AVL",
+      "city": "Asheville",
+      "region": "North Carolina",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "AVP",
+      "city": "Wilkes-Barre/Scranton",
+      "region": "Pennsylvania",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "BDL",
+      "city": "Windsor Locks",
+      "region": "Connecticut",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "BHM",
+      "city": "Birmingham",
+      "region": "Alabama",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "BIL",
+      "city": "Billings",
+      "region": "Montana",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "BIS",
+      "city": "Bismarck",
+      "region": "North Dakota",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "BMI",
+      "city": "Bloomington/Normal",
+      "region": "Illinois",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "BNA",
+      "city": "Nashville",
+      "region": "Tennessee",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "BOI",
+      "city": "Boise",
+      "region": "Idaho",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "BOS",
+      "city": "Boston",
+      "region": "Massachusetts",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "BPT",
+      "city": "Beaumont/Port Arthur",
+      "region": "Texas",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "BRO",
+      "city": "Brownsville",
+      "region": "Texas",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "candidate"
+    },
+    {
+      "code": "BTR",
+      "city": "Baton Rouge",
+      "region": "Louisiana",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "BUF",
+      "city": "Buffalo",
+      "region": "New York",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "BUR",
+      "city": "Burbank",
+      "region": "California",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "BWI",
+      "city": "Baltimore",
+      "region": "Maryland",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "CAE",
+      "city": "Columbia",
+      "region": "South Carolina",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "CAK",
+      "city": "Akron",
+      "region": "Ohio",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "CCS",
+      "city": "Caracas",
+      "region": "Vargas",
+      "country": "VE",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "CHA",
+      "city": "Chattanooga",
+      "region": "Tennessee",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "CHS",
+      "city": "Charleston",
+      "region": "South Carolina",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "CID",
+      "city": "Cedar Rapids",
+      "region": "Iowa",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "CLD",
+      "city": "Carlsbad",
+      "region": "California",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "CLE",
+      "city": "Cleveland",
+      "region": "Ohio",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "CLL",
+      "city": "College Station",
+      "region": "Texas",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "CLT",
+      "city": "Charlotte",
+      "region": "North Carolina",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "CMH",
+      "city": "Columbus",
+      "region": "Ohio",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "CMI",
+      "city": "Champaign/Urbana",
+      "region": "Illinois",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "COS",
+      "city": "Colorado Springs",
+      "region": "Colorado",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "COU",
+      "city": "Columbia",
+      "region": "Missouri",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "CRP",
+      "city": "Corpus Christi",
+      "region": "Texas",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "CUU",
+      "city": "Chihuahua",
+      "region": "Chihuahua",
+      "country": "MX",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "CVG",
+      "city": "Covington",
+      "region": "Kentucky",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "CWA",
+      "city": "Mosinee",
+      "region": "Wisconsin",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "DAY",
+      "city": "Dayton",
+      "region": "Ohio",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "DCA",
+      "city": "Washington",
+      "region": "District of Columbia",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "DFW",
+      "city": "Dallas-Fort Worth",
+      "region": "Texas",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "DOM",
+      "city": "Marigot",
+      "region": "Saint-Andrew",
+      "country": "DM",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "DSM",
+      "city": "Des Moines",
+      "region": "Iowa",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "DTW",
+      "city": "Detroit",
+      "region": "Michigan",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "ECP",
+      "city": "Panama City",
+      "region": "Florida",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "EIS",
+      "city": "Road Town",
+      "region": null,
+      "country": "VG",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "ELP",
+      "city": "El Paso",
+      "region": "Texas",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "EUG",
+      "city": "Eugene",
+      "region": "Oregon",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "EVV",
+      "city": "Evansville",
+      "region": "Indiana",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "EYW",
+      "city": "Key West",
+      "region": "Florida",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "FAR",
+      "city": "Fargo",
+      "region": "North Dakota",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "candidate"
+    },
+    {
+      "code": "FSM",
+      "city": "Fort Smith",
+      "region": "Arkansas",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "FWA",
+      "city": "Fort Wayne",
+      "region": "Indiana",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "GCK",
+      "city": "Garden City",
+      "region": "Kansas",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "GGG",
+      "city": "Longview",
+      "region": "Texas",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "GJT",
+      "city": "Grand Junction",
+      "region": "Colorado",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "GNV",
+      "city": "Gainesville",
+      "region": "Florida",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "GPT",
+      "city": "Gulfport",
+      "region": "Mississippi",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "GRB",
+      "city": "Green Bay",
+      "region": "Wisconsin",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "GRI",
+      "city": "Grand Island",
+      "region": "Nebraska",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "GRK",
+      "city": "Fort Hood (Killeen)",
+      "region": "Texas",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "GRR",
+      "city": "Grand Rapids",
+      "region": "Michigan",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "GSO",
+      "city": "Greensboro",
+      "region": "North Carolina",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "GSP",
+      "city": "Greer",
+      "region": "South Carolina",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "HOU",
+      "city": "Houston",
+      "region": "Texas",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "HPN",
+      "city": "White Plains",
+      "region": "New York",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "HRL",
+      "city": "Harlingen",
+      "region": "Texas",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "HSV",
+      "city": "Huntsville",
+      "region": "Alabama",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "IAH",
+      "city": "Houston",
+      "region": "Texas",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "ICT",
+      "city": "Wichita",
+      "region": "Kansas",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "ILM",
+      "city": "Wilmington",
+      "region": "North Carolina",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "IND",
+      "city": "Indianapolis",
+      "region": "Indiana",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "JAN",
+      "city": "Jackson",
+      "region": "Mississippi",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "JAX",
+      "city": "Jacksonville",
+      "region": "Florida",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "JFK",
+      "city": "New York",
+      "region": "New York",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "LAN",
+      "city": "Lansing",
+      "region": "Michigan",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "LAW",
+      "city": "Lawton",
+      "region": "Oklahoma",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "LBB",
+      "city": "Lubbock",
+      "region": "Texas",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "LCH",
+      "city": "Lake Charles",
+      "region": "Louisiana",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "LGA",
+      "city": "New York",
+      "region": "New York",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "LIT",
+      "city": "Little Rock",
+      "region": "Arkansas",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "candidate"
+    },
+    {
+      "code": "LRD",
+      "city": "Laredo",
+      "region": "Texas",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "LSE",
+      "city": "La Crosse",
+      "region": "Wisconsin",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "MAF",
+      "city": "Midland",
+      "region": "Texas",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "MAR",
+      "city": "Maracaibo",
+      "region": "Zulia",
+      "country": "VE",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "MCI",
+      "city": "Kansas City",
+      "region": "Missouri",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "MEM",
+      "city": "Memphis",
+      "region": "Tennessee",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "MFE",
+      "city": "Mc Allen",
+      "region": "Texas",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "MGM",
+      "city": "Montgomery",
+      "region": "Alabama",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "MHH",
+      "city": "Marsh Harbour",
+      "region": null,
+      "country": "BS",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "MHK",
+      "city": "Manhattan",
+      "region": "Kansas",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "MHT",
+      "city": "Manchester",
+      "region": "New Hampshire",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "MIA",
+      "city": "Miami",
+      "region": "Florida",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "MLI",
+      "city": "Moline",
+      "region": "Illinois",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "MLU",
+      "city": "Monroe",
+      "region": "Louisiana",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "MQT",
+      "city": "Marquette",
+      "region": "Michigan",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "MSN",
+      "city": "Madison",
+      "region": "Wisconsin",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "MSO",
+      "city": "Missoula",
+      "region": "Montana",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "MSP",
+      "city": "Minneapolis",
+      "region": "Minnesota",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "MSY",
+      "city": "New Orleans",
+      "region": "Louisiana",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "MTY",
+      "city": "Monterrey",
+      "region": "Nuevo Leon",
+      "country": "MX",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "MYR",
+      "city": "Myrtle Beach",
+      "region": "South Carolina",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "MZT",
+      "city": "Mazatlan",
+      "region": "Sinaloa",
+      "country": "MX",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "OKC",
+      "city": "Oklahoma City",
+      "region": "Oklahoma",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "OMA",
+      "city": "Omaha",
+      "region": "Nebraska",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "ORD",
+      "city": "Chicago",
+      "region": "Illinois",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "ORF",
+      "city": "Norfolk",
+      "region": "Virginia",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "PHX",
+      "city": "Phoenix",
+      "region": "Arizona",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "PIA",
+      "city": "Peoria",
+      "region": "Illinois",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "PIT",
+      "city": "Pittsburgh",
+      "region": "Pennsylvania",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "PNS",
+      "city": "Pensacola",
+      "region": "Florida",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "RAP",
+      "city": "Rapid City",
+      "region": "South Dakota",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "RDM",
+      "city": "Redmond",
+      "region": "Oregon",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "RDU",
+      "city": "Raleigh/Durham",
+      "region": "North Carolina",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "RIC",
+      "city": "Richmond",
+      "region": "Virginia",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "ROC",
+      "city": "Rochester",
+      "region": "New York",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "ROW",
+      "city": "Roswell",
+      "region": "New Mexico",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "RST",
+      "city": "Rochester",
+      "region": "Minnesota",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "SAT",
+      "city": "San Antonio",
+      "region": "Texas",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "SBP",
+      "city": "San Luis Obispo",
+      "region": "California",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "SDF",
+      "city": "Louisville",
+      "region": "Kentucky",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "SEA",
+      "city": "Seattle",
+      "region": "Washington",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "SGF",
+      "city": "Springfield",
+      "region": "Missouri",
+      "country": "US",
+      "sourceTag": "existing-poster-only",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "SPI",
+      "city": "Springfield",
+      "region": "Illinois",
+      "country": "US",
+      "sourceTag": "existing-poster-only",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "STL",
+      "city": "St Louis",
+      "region": "Missouri",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "SYR",
+      "city": "Syracuse",
+      "region": "New York",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "TPA",
+      "city": "Tampa",
+      "region": "Florida",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "TRI",
+      "city": "Bristol/Johnson/Kingsport",
+      "region": "Tennessee",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "TUL",
+      "city": "Tulsa",
+      "region": "Oklahoma",
+      "country": "US",
+      "sourceTag": "existing-poster-only",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "TVC",
+      "city": "Traverse City",
+      "region": "Michigan",
+      "country": "US",
+      "sourceTag": "existing-poster-only",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "TYS",
+      "city": "Knoxville",
+      "region": "Tennessee",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "XNA",
+      "city": "Fayetteville/Springdale/Rogers",
+      "region": "Arkansas",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "installed"
+    },
+    {
+      "code": "YQB",
+      "city": "Quebec City",
+      "region": "Quebec",
+      "country": "CA",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "YUL",
+      "city": "Dorval",
+      "region": "Quebec",
+      "country": "CA",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "YUM",
+      "city": "Yuma",
+      "region": "Arizona",
+      "country": "US",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "YYZ",
+      "city": "Mississauga",
+      "region": "Ontario",
+      "country": "CA",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "ZIH",
+      "city": "Ixtapa",
+      "region": "Guerrero",
+      "country": "MX",
+      "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    }
+  ]
+}
