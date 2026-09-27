@@ -143,6 +143,18 @@
         "SEA",
         "STL"
       ]
+    },
+    {
+      "id": "envoy-gap-2026-09-27-f",
+      "label": "Envoy candidate route gap batch F",
+      "status": "candidate",
+      "airportCodes": [
+        "BHM",
+        "BUF",
+        "COS",
+        "JAX",
+        "SDF"
+      ]
     }
   ],
   "destinations": [
@@ -1588,6 +1600,176 @@
       "referenceSources": [
         "https://www.nps.gov/jeff/planyourvisit/materials-and-techniques.htm",
         "https://www.nps.gov/places/eads-bridge.htm"
+      ]
+    },
+    {
+      "code": "BHM",
+      "icao": "KBHM",
+      "city": "Birmingham",
+      "region": "Alabama",
+      "title": "BIRMINGHAM",
+      "subtitle": "ALABAMA",
+      "descriptor": "FURNACES • IRON • CITY",
+      "tagline": "Forged in the City.",
+      "batch": "envoy-gap-2026-09-27-f",
+      "status": "candidate",
+      "output": "assets/destinations/bhm-poster-7x8-candidate-v1.png",
+      "visualProfileId": "birmingham-slossfurnaces-brass-violet-dusk",
+      "design": {
+        "landmarks": [
+          "Sloss Furnaces historic blast furnace complex",
+          "brick engine house and industrial pipes"
+        ],
+        "skySignature": "Lavender-gold dusk with one long sloped cream cloud",
+        "seasonAndLight": "Early autumn dusk, rust-red furnaces and charcoal shadows",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Tiny propeller airliner far upper left above the city",
+        "foreground": "Two tall blast furnaces, broad pipes, and a brick engine house with a few foreground trees",
+        "avoid": [
+          "Vulcan statue or its likeness",
+          "operating flames or smoke from museum furnaces",
+          "photorealistic industrial texture"
+        ]
+      },
+      "referenceSources": [
+        "https://www.birminghamal.gov/government/city-departments/sloss-furnaces-museum/sloss-furnaces-history",
+        "https://www.birminghamal.gov/government/city-departments/sloss-furnaces-museum/discover-sloss"
+      ]
+    },
+    {
+      "code": "BUF",
+      "icao": "KBUF",
+      "city": "Buffalo",
+      "region": "New York",
+      "title": "BUFFALO",
+      "subtitle": "NEW YORK",
+      "descriptor": "CITY HALL • ART DECO • SQUARE",
+      "tagline": "A City Built to Rise.",
+      "batch": "envoy-gap-2026-09-27-f",
+      "status": "candidate",
+      "output": "assets/destinations/buf-poster-7x8-candidate-v1.png",
+      "visualProfileId": "buffalo-cityhall-frostblue-morning",
+      "design": {
+        "landmarks": [
+          "Buffalo City Hall",
+          "Niagara Square and McKinley Monument"
+        ],
+        "skySignature": "Frosty pale blue winter morning with two wispy white cloud planes",
+        "seasonAndLight": "Clear cold morning, terracotta Art Deco City Hall and restrained snow",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small propeller airliner high upper right over Niagara Square",
+        "foreground": "Niagara Square radial paths and monument with City Hall centered beyond",
+        "avoid": [
+          "Niagara Falls at City Hall",
+          "generic Empire State Building",
+          "photographic snow glare"
+        ]
+      },
+      "referenceSources": [
+        "https://www.buffalony.gov/649/City-Hall-History",
+        "https://www.visitbuffaloniagara.com/neighborhood/downtown/"
+      ]
+    },
+    {
+      "code": "COS",
+      "icao": "KCOS",
+      "city": "Colorado Springs",
+      "region": "Colorado",
+      "title": "COLORADO SPRINGS",
+      "subtitle": "COLORADO",
+      "descriptor": "RED ROCKS • PEAK • SKY",
+      "tagline": "Where Stone Meets Sky.",
+      "batch": "envoy-gap-2026-09-27-f",
+      "status": "candidate",
+      "output": "assets/destinations/cos-poster-7x8-candidate-v1.png",
+      "visualProfileId": "coloradosprings-gardenofgods-vermillion-day",
+      "design": {
+        "landmarks": [
+          "Garden of the Gods sandstone formations",
+          "Pikes Peak behind the park"
+        ],
+        "skySignature": "Wide clear turquoise high-altitude sky with a single cream cloud arc",
+        "seasonAndLight": "Late spring daylight, vermilion rock slabs and blue-gray distant mountain",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Tiny propeller airliner mid upper left outside the rock formations",
+        "foreground": "Distinct upright red sandstone fins, sparse pinyon and distant Pikes Peak",
+        "avoid": [
+          "generic Utah hoodoos",
+          "urban skyline in the park",
+          "photographic rock texture"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitcos.com/things-to-do/garden-of-the-gods-park/",
+        "https://www.visitcos.com/directory/garden-of-the-gods-visitor-nature-center/"
+      ]
+    },
+    {
+      "code": "JAX",
+      "icao": "KJAX",
+      "city": "Jacksonville",
+      "region": "Florida",
+      "title": "JACKSONVILLE",
+      "subtitle": "FLORIDA",
+      "descriptor": "BLUE BRIDGE • RIVER • CITY",
+      "tagline": "Across the St. Johns.",
+      "batch": "envoy-gap-2026-09-27-f",
+      "status": "candidate",
+      "output": "assets/destinations/jax-poster-7x8-candidate-v1.png",
+      "visualProfileId": "jacksonville-mainstreetbridge-teal-sunrise",
+      "design": {
+        "landmarks": [
+          "Main Street Bridge blue vertical lift towers",
+          "St. Johns River downtown riverfront"
+        ],
+        "skySignature": "Soft coral sunrise with broad aqua cloud streaks",
+        "seasonAndLight": "Warm Florida morning, bright blue bridge and shaded water",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Tiny propeller airliner far upper right above the river",
+        "foreground": "Blue lift bridge across broad St. Johns with Northbank skyline behind",
+        "avoid": [
+          "suspension cables replacing lift towers",
+          "Atlantic beach beside downtown",
+          "generic white bridge"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitjacksonville.com/blog/city-of-bridges/",
+        "https://jaxhistory.org/a-tale-of-two-bridges/"
+      ]
+    },
+    {
+      "code": "SDF",
+      "icao": "KSDF",
+      "city": "Louisville",
+      "region": "Kentucky",
+      "title": "LOUISVILLE",
+      "subtitle": "KENTUCKY",
+      "descriptor": "BIG FOUR • RIVER • PARK",
+      "tagline": "By the Ohio River.",
+      "batch": "envoy-gap-2026-09-27-f",
+      "status": "candidate",
+      "output": "assets/destinations/sdf-poster-7x8-candidate-v1.png",
+      "visualProfileId": "louisville-bigfourbridge-copper-sunset",
+      "design": {
+        "landmarks": [
+          "Big Four Bridge former rail truss",
+          "Louisville Waterfront Park and Ohio River"
+        ],
+        "skySignature": "Pale peach evening sky with layered muted-blue cloud bars",
+        "seasonAndLight": "Early autumn sunset, copper bridge truss and olive parkland",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small propeller airliner upper left in pale sky",
+        "foreground": "Louisville park bank and pedestrian ramp leading to six-span bridge over river",
+        "avoid": [
+          "bridge as suspension bridge",
+          "Churchill Downs spires beside river",
+          "branded bourbon labels"
+        ]
+      },
+      "referenceSources": [
+        "https://ourwaterfront.org/",
+        "https://www.gotolouisville.com/directory/big-four-bridge/"
       ]
     }
   ]

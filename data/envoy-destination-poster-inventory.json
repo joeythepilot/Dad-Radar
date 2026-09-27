@@ -152,7 +152,7 @@
       "region": "Alabama",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "candidate"
     },
     {
       "code": "BIL",
@@ -232,7 +232,7 @@
       "region": "New York",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "candidate"
     },
     {
       "code": "BUR",
@@ -352,7 +352,7 @@
       "region": "Colorado",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "candidate"
     },
     {
       "code": "COU",
@@ -680,7 +680,7 @@
       "region": "Florida",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "candidate"
     },
     {
       "code": "JFK",
@@ -1056,7 +1056,7 @@
       "region": "Kentucky",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "candidate"
     },
     {
       "code": "SEA",
@@ -1225,6 +1225,16 @@
       "RIC",
       "SEA",
       "STL"
+    ]
+  },
+  "sixthBatch": {
+    "id": "envoy-gap-2026-09-27-f",
+    "codes": [
+      "BHM",
+      "BUF",
+      "COS",
+      "JAX",
+      "SDF"
     ]
   }
 }

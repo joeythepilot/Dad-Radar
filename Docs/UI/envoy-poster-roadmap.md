@@ -6,7 +6,7 @@ Envoy describes service to **over 160 destinations**, but its public site does n
 
 Sources: [Envoy Air](https://www.envoyair.com/), [FlightNerve MQ route listing](https://www.flightnerve.com/airlines/MQ). The latter's own destination count and visible code list vary between crawls; its 146/148 headline is not treated as a complete verified roster. Ground handling locations are a separate service and are not automatically destinations flown by Envoy.
 
-After Joey's batch A through E approvals, **62** airport codes have an installed poster and **83** remain without artwork in the 145-code working union. The JSON records each code, airport catalog geography, source tag, and poster status, so batches can be selected without conflating a candidate route with approved art.
+After Joey's batch A through E approvals, **62** airport codes have an installed poster, **five** have Batch F candidate art awaiting review, and **78** have no artwork in the 145-code working union. The JSON records each code, airport catalog geography, source tag, and poster status, so batches can be selected without conflating a candidate route with approved art.
 
 ## Batch A: approved and installed in the application catalog
 
@@ -67,6 +67,18 @@ These five use flatter matte colors and print texture following Joey's Batch C s
 | STL | St. Louis, Missouri | Gateway Arch, Eads Bridge and Mississippi | Check Arch, bridge and shoreline relationships. |
 
 The comparison `Docs/UI/envoy-gap-2026-09-27-e-review.jpg` places these compositions above approved Batch D at the same size. The scenes use flat matte ink, halftone grain and distinct local anchors. Joey approved them on 2026-09-27, and all five are wired into `config/posters.js`. The route roster and landmark details remain subject to factual review before commercial use. Publication to the application branch alone does not verify deployment to the home display.
+
+## Batch F: candidate review; not installed
+
+| Code | City | Visual anchor | Review note |
+| --- | --- | --- | --- |
+| BHM | Birmingham, Alabama | Sloss Furnaces historic blast-furnace complex | The first Vulcan-statue direction was discarded before candidate installation because Vulcan Park asserts rights in the statue likeness and word mark. Check Sloss structures and any commercial-use concerns separately. |
+| BUF | Buffalo, New York | City Hall and Niagara Square | Check Art Deco tower, monument and winter streetscape. |
+| COS | Colorado Springs, Colorado | Garden of the Gods and Pikes Peak | Check sandstone silhouettes and mountain viewpoint. |
+| JAX | Jacksonville, Florida | Blue Main Street vertical-lift bridge and St. Johns River | Check lift-tower geometry and Northbank skyline. |
+| SDF | Louisville, Kentucky | Big Four Bridge, Ohio River and Waterfront Park | Check truss spans and pedestrian approach relationship. |
+
+The comparison `Docs/UI/envoy-gap-2026-09-27-f-review.jpg` places these five above the approved Batch E reference at matching size. They are **candidates only** and are deliberately absent from `config/posters.js` until Joey approves them. They use the same 1173 × 1341 review canvas, not the later high-resolution print master. Landmark and third-party rights review remains necessary before commercial sale. Sources and visual profiles are recorded in `data/poster-batch-manifest.json`.
 
 ## Next passes
 
