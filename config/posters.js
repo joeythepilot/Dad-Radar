@@ -9,6 +9,18 @@
       location:
         "Lehigh Valley, Pennsylvania"
     }),
+    AMA: Object.freeze({
+      source:
+        "./assets/destinations/ama-poster-7x8-candidate-v1.png",
+      title: "AMARILLO",
+      location: "Amarillo, Texas"
+    }),
+    ATW: Object.freeze({
+      source:
+        "./assets/destinations/atw-poster-7x8-candidate-v1.png",
+      title: "APPLETON",
+      location: "Appleton, Wisconsin"
+    }),
     AVL: Object.freeze({
       source:
         "./assets/destinations/asheville-poster-7x8-baseline.png",
@@ -34,6 +46,12 @@
         "./assets/destinations/bwi-poster-7x8-candidate-v1.png",
       title: "BALTIMORE",
       location: "Baltimore, Maryland"
+    }),
+    BRO: Object.freeze({
+      source:
+        "./assets/destinations/bro-poster-7x8-candidate-v1.png",
+      title: "BROWNSVILLE",
+      location: "Brownsville, Texas"
     }),
     CLT: Object.freeze({
       source:
@@ -93,6 +111,12 @@
       title: "EVANSVILLE",
       location: "Evansville, Indiana"
     }),
+    FAR: Object.freeze({
+      source:
+        "./assets/destinations/far-poster-7x8-candidate-v1.png",
+      title: "FARGO",
+      location: "Fargo, North Dakota"
+    }),
     GRB: Object.freeze({
       source:
         "./assets/destinations/grb-poster-7x8-candidate-v1.png",
@@ -128,6 +152,12 @@
         "./assets/destinations/lbb-poster-7x8-candidate-v1.png",
       title: "LUBBOCK",
       location: "Lubbock, Texas"
+    }),
+    LIT: Object.freeze({
+      source:
+        "./assets/destinations/lit-poster-7x8-candidate-v1.png",
+      title: "LITTLE ROCK",
+      location: "Little Rock, Arkansas"
     }),
     LSE: Object.freeze({
       source:

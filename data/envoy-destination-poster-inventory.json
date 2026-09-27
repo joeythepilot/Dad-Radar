@@ -48,7 +48,7 @@
       "region": "New Mexico",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "candidate"
     },
     {
       "code": "ACA",
@@ -96,7 +96,7 @@
       "region": "Texas",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "candidate"
+      "posterStatus": "installed"
     },
     {
       "code": "ATL",
@@ -112,7 +112,7 @@
       "region": "Wisconsin",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "candidate"
+      "posterStatus": "installed"
     },
     {
       "code": "AUS",
@@ -216,7 +216,7 @@
       "region": "Texas",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "candidate"
+      "posterStatus": "installed"
     },
     {
       "code": "BTR",
@@ -496,7 +496,7 @@
       "region": "North Dakota",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "candidate"
+      "posterStatus": "installed"
     },
     {
       "code": "FSM",
@@ -552,7 +552,7 @@
       "region": "Mississippi",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "candidate"
     },
     {
       "code": "GRB",
@@ -584,7 +584,7 @@
       "region": "Michigan",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "candidate"
     },
     {
       "code": "GSO",
@@ -648,7 +648,7 @@
       "region": "Kansas",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "candidate"
     },
     {
       "code": "ILM",
@@ -736,7 +736,7 @@
       "region": "Arkansas",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "candidate"
+      "posterStatus": "installed"
     },
     {
       "code": "LRD",
@@ -1040,7 +1040,7 @@
       "region": "Texas",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "candidate"
     },
     {
       "code": "SBP",
@@ -1186,5 +1186,15 @@
       "sourceTag": "public-mq-route-snapshot",
       "posterStatus": "missing"
     }
-  ]
+  ],
+  "secondBatch": {
+    "id": "envoy-gap-2026-09-27-b",
+    "codes": [
+      "GRR",
+      "SAT",
+      "ABQ",
+      "GPT",
+      "ICT"
+    ]
+  }
 }

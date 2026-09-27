@@ -87,13 +87,25 @@
     {
       "id": "envoy-gap-2026-09-27-a",
       "label": "Envoy candidate route gap batch A",
-      "status": "candidate",
+      "status": "approved",
       "airportCodes": [
         "AMA",
         "LIT",
         "ATW",
         "FAR",
         "BRO"
+      ]
+    },
+    {
+      "id": "envoy-gap-2026-09-27-b",
+      "label": "Envoy candidate route gap batch B",
+      "status": "candidate",
+      "airportCodes": [
+        "GRR",
+        "SAT",
+        "ABQ",
+        "GPT",
+        "ICT"
       ]
     }
   ],
@@ -714,7 +726,7 @@
       "descriptor": "CANYON • PLAINS • PANHANDLE",
       "tagline": "Where the Plains Open Wide.",
       "batch": "envoy-gap-2026-09-27-a",
-      "status": "candidate",
+      "status": "approved",
       "output": "assets/destinations/ama-poster-7x8-candidate-v1.png",
       "visualProfileId": "palo-duro-wind-gold",
       "design": {
@@ -747,7 +759,7 @@
       "descriptor": "RIVER • BRIDGE • CAPITAL",
       "tagline": "Where the River Leads.",
       "batch": "envoy-gap-2026-09-27-a",
-      "status": "candidate",
+      "status": "approved",
       "output": "assets/destinations/lit-poster-7x8-candidate-v1.png",
       "visualProfileId": "arkansas-river-rainbreak",
       "design": {
@@ -780,7 +792,7 @@
       "descriptor": "FOX RIVER • MILLS • AUTUMN",
       "tagline": "Where the River Turns.",
       "batch": "envoy-gap-2026-09-27-a",
-      "status": "candidate",
+      "status": "approved",
       "output": "assets/destinations/atw-poster-7x8-candidate-v1.png",
       "visualProfileId": "fox-river-copper-mist",
       "design": {
@@ -813,7 +825,7 @@
       "descriptor": "PRAIRIE • THEATRE • RIVER",
       "tagline": "A Welcome on the Plains.",
       "batch": "envoy-gap-2026-09-27-a",
-      "status": "candidate",
+      "status": "approved",
       "output": "assets/destinations/far-poster-7x8-candidate-v1.png",
       "visualProfileId": "fargo-slate-snow-sun",
       "design": {
@@ -846,7 +858,7 @@
       "descriptor": "RESACAS • HERITAGE • VALLEY",
       "tagline": "Where Two Cultures Meet.",
       "batch": "envoy-gap-2026-09-27-a",
-      "status": "candidate",
+      "status": "approved",
       "output": "assets/destinations/bro-poster-7x8-candidate-v1.png",
       "visualProfileId": "resaca-humid-rose-dawn",
       "design": {
@@ -867,6 +879,171 @@
       "referenceSources": [
         "https://visitbtx.com/members/dean-porter-park/",
         "https://visitbtx.com/members/historic-walking-tour/"
+      ]
+    },
+    {
+      "code": "GRR",
+      "icao": "KGRR",
+      "city": "Grand Rapids",
+      "region": "Michigan",
+      "title": "GRAND RAPIDS",
+      "subtitle": "MICHIGAN",
+      "descriptor": "GRAND RIVER • BLUE BRIDGE • WEST MICHIGAN",
+      "tagline": "Where the River Runs Blue.",
+      "batch": "envoy-gap-2026-09-27-b",
+      "status": "candidate",
+      "output": "assets/destinations/grr-poster-7x8-candidate-v1.png",
+      "visualProfileId": "grand-rapids-bluebridge-pale-spring",
+      "design": {
+        "landmarks": [
+          "Grand River",
+          "Blue Bridge historic railroad bridge"
+        ],
+        "skySignature": "Fresh pale spring sky with one long pearl cloud band above river fog",
+        "seasonAndLight": "Early spring morning with cool reflected light and soft pink budding trees",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Tiny silver propeller airliner near the upper-left edge over the river",
+        "foreground": "Grand River reflections, blue truss bridge, low waterfront",
+        "avoid": [
+          "generic suspension bridge",
+          "towering fantasy skyline"
+        ]
+      },
+      "referenceSources": [
+        "https://www.experiencegr.com/listing/the-blue-bridge/7596/",
+        "https://www.experiencegr.com/articles/post/downtown-walking-tour/"
+      ]
+    },
+    {
+      "code": "SAT",
+      "icao": "KSAT",
+      "city": "San Antonio",
+      "region": "Texas",
+      "title": "SAN ANTONIO",
+      "subtitle": "TEXAS",
+      "descriptor": "MISSIONS • RIVER • HERITAGE",
+      "tagline": "A City of Living History.",
+      "batch": "envoy-gap-2026-09-27-b",
+      "status": "candidate",
+      "output": "assets/destinations/sat-poster-7x8-candidate-v1.png",
+      "visualProfileId": "san-antonio-mission-late-gold",
+      "design": {
+        "landmarks": [
+          "Mission San José",
+          "San Antonio River Mission Reach"
+        ],
+        "skySignature": "Warm dusty apricot evening sky with one thin high cirrus arc",
+        "seasonAndLight": "Clear late summer golden hour on pale limestone",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small propeller airliner far upper right beyond the mission tower",
+        "foreground": "Mission stone arches, oak shade, dry grass and river path",
+        "avoid": [
+          "Alamo logo or signage",
+          "generic adobe fantasy fortress"
+        ]
+      },
+      "referenceSources": [
+        "https://www.nps.gov/saan/planyourvisit/sanjose.htm",
+        "https://www.visitsanantonio.com/things-to-do/san-antonio-missions/"
+      ]
+    },
+    {
+      "code": "ABQ",
+      "icao": "KABQ",
+      "city": "Albuquerque",
+      "region": "New Mexico",
+      "title": "ALBUQUERQUE",
+      "subtitle": "NEW MEXICO",
+      "descriptor": "SANDIAS • OLD TOWN • BOSQUE",
+      "tagline": "Beneath the Sandia Sky.",
+      "batch": "envoy-gap-2026-09-27-b",
+      "status": "candidate",
+      "output": "assets/destinations/abq-poster-7x8-candidate-v1.png",
+      "visualProfileId": "albuquerque-sandia-violet-dusk",
+      "design": {
+        "landmarks": [
+          "Sandia Mountains",
+          "Historic Old Town Plaza and San Felipe de Neri Church"
+        ],
+        "skySignature": "Violet-blue desert dusk with cloudless high sky and a last rose glow on Sandia ridge",
+        "seasonAndLight": "Autumn blue hour with mountain alpenglow",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Tiny silver propeller airliner high at far left over the bosque",
+        "foreground": "Adobe Old Town rooftops, cottonwoods and low desert plants",
+        "avoid": [
+          "Phoenix saguaros",
+          "balloon fiesta trademark imagery"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitalbuquerque.org/about-abq/history/",
+        "https://www.visitalbuquerque.org/about-abq/neighborhoods/historic-old-town/"
+      ]
+    },
+    {
+      "code": "GPT",
+      "icao": "KGPT",
+      "city": "Gulfport",
+      "region": "Mississippi",
+      "title": "GULFPORT",
+      "subtitle": "MISSISSIPPI",
+      "descriptor": "HARBOR • SOUND • COAST",
+      "tagline": "The Coast Is Calling.",
+      "batch": "envoy-gap-2026-09-27-b",
+      "status": "candidate",
+      "output": "assets/destinations/gpt-poster-7x8-candidate-v1.png",
+      "visualProfileId": "gulfport-mississippi-sound-sea-glass",
+      "design": {
+        "landmarks": [
+          "Jones Park marina",
+          "Mississippi Sound shoreline"
+        ],
+        "skySignature": "Soft sea-glass dawn with low broken salt-air clouds and pearl horizon",
+        "seasonAndLight": "Calm warm coastal dawn with muted silver water",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small silver propeller airliner at upper center-left above the harbor",
+        "foreground": "Working harbor boats, palms and coastal pines on broad low shore",
+        "avoid": [
+          "Biloxi Lighthouse",
+          "casino signs or logos"
+        ]
+      },
+      "referenceSources": [
+        "https://visitmississippi.org/things-to-do/outdoors/jones-park/",
+        "https://www.coastalmississippi.com/plan/coastal-communities/gulfport/"
+      ]
+    },
+    {
+      "code": "ICT",
+      "icao": "KICT",
+      "city": "Wichita",
+      "region": "Kansas",
+      "title": "WICHITA",
+      "subtitle": "KANSAS",
+      "descriptor": "AIR CAPITAL • PRAIRIE • HERITAGE",
+      "tagline": "Where the Plains Took Flight.",
+      "batch": "envoy-gap-2026-09-27-b",
+      "status": "candidate",
+      "output": "assets/destinations/ict-poster-7x8-candidate-v1.png",
+      "visualProfileId": "wichita-art-deco-amber-high-noon",
+      "design": {
+        "landmarks": [
+          "Historic Wichita Municipal Airport terminal (Kansas Aviation Museum)",
+          "Kansas prairie horizon"
+        ],
+        "skySignature": "Clean pale gold high noon with long horizontal wheat-colored haze and no cloud bank",
+        "seasonAndLight": "Dry early autumn midday with architectural shadow geometry",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small twin-engine unbranded propeller aircraft far above the left terminal wing",
+        "foreground": "1930s Art Deco airport terminal façade, prairie grasses and broad apron",
+        "avoid": [
+          "Keeper of the Plains sculpture",
+          "aircraft manufacturer logos"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitwichita.com/things-to-do/attractions/kansas-aviation-museum/",
+        "https://www.visitwichita.com/blog/post/nahof-welcome-to-wichita/"
       ]
     }
   ]

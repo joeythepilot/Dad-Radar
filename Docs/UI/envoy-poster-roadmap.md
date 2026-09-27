@@ -6,19 +6,31 @@ Envoy describes service to **over 160 destinations**, but its public site does n
 
 Sources: [Envoy Air](https://www.envoyair.com/), [FlightNerve MQ route listing](https://www.flightnerve.com/airlines/MQ). The latter's own destination count and visible code list vary between crawls; its 146/148 headline is not treated as a complete verified roster. Ground handling locations are a separate service and are not automatically destinations flown by Envoy.
 
-At this snapshot, **37** airport codes have an installed poster. Of the 141 public route candidates, **33** have one and **108** do not. The union of the candidate list and four local-only codes contains **145** codes. The JSON records each code, airport catalog geography, source tag, and poster status, so batches can be selected without conflating a candidate route with approved art.
+After Joey's batch A approval, **42** airport codes have an installed poster. Five batch B codes have candidate art and **98** remain without artwork in the 145-code working union. The JSON records each code, airport catalog geography, source tag, and poster status, so batches can be selected without conflating a candidate route with approved art.
 
-## Batch A: five candidate posters
+## Batch A: approved and installed in the application catalog
 
 | Code | City | Visual anchor | Review note |
 | --- | --- | --- | --- |
 | AMA | Amarillo, Texas | Palo Duro Canyon and Lighthouse formation | Check formation silhouette against park photographs. |
 | LIT | Little Rock, Arkansas | Big Dam Bridge and Arkansas River | Check bridge geometry and skyline relationship. |
-| ATW | Appleton, Wisconsin | Fox River, mills, locks, autumn | Campus-like building may be invented; replace if fidelity cannot be established. |
+| ATW | Appleton, Wisconsin | Fox River, mills, locks, autumn | Initial invented-looking campus building was removed before review. |
 | FAR | Fargo, North Dakota | Fargo Theatre and snowy Broadway | Check the theatre frontage and marquee treatment. |
 | BRO | Brownsville, Texas | Resaca water, palms, historic fabric | Scene combines local motifs; check architecture and geography. |
 
-Candidate art lives in `assets/destinations/` and is compared in `Docs/UI/envoy-gap-2026-09-27-a-review.png`. These five are **not installed in the application**. Promotion requires Joey's visual acceptance, factual landmark review, display and archival derivatives, and an update to the approved poster catalog.
+Joey approved the five compositions on 2026-09-27. Their review-size assets are wired into `config/posters.js`. The earlier comparison is `Docs/UI/envoy-gap-2026-09-27-a-review.png`. Application installation and any later home-host deployment are separate states; publication to the application branch alone does not prove the display is running these images. Landmark details still deserve a dedicated factual review before commercial use. The 2100 × 2400 display and 4200 × 4800 archival deliverables are a later production pass; the application currently uses the validated 1173 × 1341 assets, consistent with the existing poster library.
+
+## Batch B: five candidates for Joey's review
+
+| Code | City | Visual anchor | Review note |
+| --- | --- | --- | --- |
+| GRR | Grand Rapids, Michigan | Grand River and Blue Bridge | Check bridge span and downtown skyline fidelity. |
+| SAT | San Antonio, Texas | Mission San José | Water feature from first generation was removed; check mission façade. |
+| ABQ | Albuquerque, New Mexico | Old Town and Sandia Mountains | Check San Felipe de Neri and mountain perspective. |
+| GPT | Gulfport, Mississippi | Jones Park marina and Mississippi Sound | Confirm waterfront details and avoid a generic coast reading. |
+| ICT | Wichita, Kansas | Historic municipal airport terminal | Check tower and Art Deco wings against photographs. |
+
+These five are candidate artwork in `assets/destinations/` and compared with batch A in `Docs/UI/envoy-gap-2026-09-27-b-review.png`. They are not in the installed poster catalog. The batch records and local-reference URLs are in `data/poster-batch-manifest.json`.
 
 ## Next passes
 
