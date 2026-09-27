@@ -98,6 +98,29 @@ const reassigned=ticker.buildWeeklyOvernightModules({events:[
 ]},{now:'2026-09-30T16:00:00Z'});
 assert.equal(reassigned[2].code,'EVV','A later assigned flight arrival supersedes an earlier layover and reserve.');
 
+const dutyFree={id:'off',kind:'duty-free',allDay:true,status:'confirmed',times:{startUtc:'2026-10-02T04:00:00Z',endUtc:'2026-10-04T04:00:00Z'}};
+const daysOff=ticker.buildWeeklyOvernightModules({events:[dutyFree]}, {now:'2026-09-30T16:00:00Z'});
+assert.deepEqual(daysOff.map(module=>module.code).slice(0,5),['UNKN','UNKN','HOME','HOME','UNKN'],
+  'Only the explicitly covered all-day Duty Free Period dates show HOME.');
+assert.deepEqual(daysOff[2].characters,['H','O','M','E'],'HOME fits the four mechanical wheels.');
+const offAtRollover=ticker.buildWeeklyOvernightModules({events:[dutyFree]}, {now:'2026-10-02T09:59:00Z'});
+assert.equal(offAtRollover[0].code,'UNKN','At 5:59 AM Eastern the previous operational date remains unknown.');
+assert.equal(offAtRollover[1].code,'HOME','The new Duty Free date is already known to be home.');
+assert.equal(ticker.buildWeeklyOvernightModules({events:[dutyFree]}, {now:'2026-10-02T10:01:00Z'})[0].code,'HOME',
+  'At 6 AM Eastern the Duty Free date becomes the first wheel.');
+const conflictingOff=ticker.buildWeeklyOvernightModules({events:[dutyFree,reserve,
+  flight('assignment','EVV','2026-10-02T18:00:00Z','2026-10-02T23:00:00Z'),
+  {...layover('cancelled','CMH','2026-10-02T22:00:00Z','2026-10-03T12:00:00Z'),status:'cancelled'}
+]},{now:'2026-09-30T16:00:00Z'});
+assert.equal(conflictingOff[2].code,'EVV','An assigned flight wins over a Duty Free Period and a cancelled layover supplies no location.');
+assert.equal(conflictingOff[3].code,'ORD','An explicit reserve block wins over a conflicting Duty Free Period.');
+assert.equal(ticker.buildWeeklyOvernightModules({events:[{...dutyFree,status:'cancelled'}]},
+  {now:'2026-09-30T16:00:00Z'})[2].code,'UNKN','A cancelled Duty Free Period supplies no home evidence.');
+const timedOff={...dutyFree,id:'timed-off',allDay:false,times:{startUtc:'2026-10-02T16:00:00Z',endUtc:'2026-10-03T09:59:00Z'}};
+assert.deepEqual(ticker.buildWeeklyOvernightModules({events:[timedOff]}, {now:'2026-09-30T16:00:00Z'})
+  .map(module=>module.code).slice(0,5),['UNKN','UNKN','HOME','UNKN','UNKN'],
+  'A timed Duty Free Period ending before the 6 AM rollover covers only its operational date.');
+
 assert.equal(ticker.operationalDateKey('2026-11-01T10:59:00Z','America/New_York'),'2026-10-31',
   'The fall daylight-saving change still rolls at 5:59 AM Eastern.');
 assert.equal(ticker.operationalDateKey('2026-11-01T11:00:00Z','America/New_York'),'2026-11-01',

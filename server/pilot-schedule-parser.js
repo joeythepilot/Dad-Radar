@@ -531,6 +531,7 @@ function parsePilotEvent(
     return {
       id: event.id ?? null,
       kind: "duty-free",
+      allDay: Boolean(event.start?.date && event.end?.date),
       summary,
       description,
       status:

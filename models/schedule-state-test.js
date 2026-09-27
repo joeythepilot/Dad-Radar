@@ -937,6 +937,16 @@ function testDailyScheduleHasOneCurrentActivity() {
 }
 
 function runTests() {
+  const dayOff={id:'day-off',kind:'duty-free',allDay:true,status:'confirmed',times:{startUtc:'2026-08-04T04:00:00Z',endUtc:'2026-08-06T04:00:00Z'}};
+  const atHome=resolveScheduleState(createSchedule([dayOff]),{now:NOW});
+  assert.equal(atHome.mode,'HOME','An active Duty Free Period explicitly establishes home.');
+  assert.equal(atHome.state.locationAirport,'AVL');
+  assert.equal(atHome.state.message,'DADDY IS HOME');
+  assert.equal(atHome.event.id,'day-off');
+  assert.notEqual(resolveScheduleState(createSchedule([dayOff]),{now:'2026-08-06T14:00:00Z'}).mode,'HOME',
+    'A blank date after the Duty Free Period is not automatically home.');
+  assert.notEqual(resolveScheduleState(createSchedule([{...dayOff,status:'cancelled'}]),{now:NOW}).mode,'HOME',
+    'A cancelled Duty Free Period does not establish home.');
   const reserveBlock = {id:'reserve-block',kind:'reserve',reserveType:'BLOCK',airport:'ORD',allDay:true,status:'confirmed',times:{startUtc:'2026-08-04T04:00:00Z',endUtc:'2026-08-07T04:00:00Z'}};
   const rap = {id:'rap',kind:'reserve',reserveType:'RAP',airport:'ORD',allDay:false,status:'confirmed',times:{startUtc:'2026-08-04T12:00:00Z',endUtc:'2026-08-04T20:00:00Z'}};
   const reserveSchedule=createSchedule([reserveBlock,rap]);

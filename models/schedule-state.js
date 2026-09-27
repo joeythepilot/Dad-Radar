@@ -1172,10 +1172,7 @@
           "duty-free"
         ) {
           return createGroundLocationState(
-            inferGroundAirport(
-              events,
-              now
-            ),
+            options.homeAirport,
             options,
             activeEvent
           );

@@ -125,6 +125,25 @@
       }
 
       sorted(schedule?.events)
+        .filter(event=>event.kind==="duty-free")
+        .forEach(dayOff=>{
+          const lastInstant=new Date(endOf(dayOff).getTime()-1);
+          const first=dayOff.allDay
+            ? localDateParts(startOf(dayOff),options.timeZone)?.key
+            : operationalDateKey(startOf(dayOff),options.timeZone);
+          const last=dayOff.allDay
+            ? localDateParts(lastInstant,options.timeZone)?.key
+            : operationalDateKey(lastInstant,options.timeZone);
+          if(!first||!last)return;
+          for(const module of modules){
+            if(module.key>=first && module.key<=last){
+              module.code="HOME";
+              module.characters=overnightCharacters("HOME");
+            }
+          }
+        });
+
+      sorted(schedule?.events)
         .filter(event=>event.kind==="reserve" && event.allDay && event.airport)
         .forEach(reserve=>{
           const airport=normalizeOvernightCode(reserve.airport,options.homeAirport);

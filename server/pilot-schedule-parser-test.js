@@ -384,6 +384,11 @@ function runTests() {
   assert.equal(block.airport,'ORD');
   assert.equal(block.allDay,true);
   assert.equal(block.times.endUtc,'2026-10-04T04:00:00.000Z');
+  const dutyFree = parsePilotEvent(createEvent({summary:'Duty free period',start:{date:'2026-10-02'},end:{date:'2026-10-04'}}));
+  assert.equal(dutyFree.kind,'duty-free');
+  assert.equal(dutyFree.allDay,true,'An imported multi-day Duty Free Period retains its calendar-date scope.');
+  assert.equal(dutyFree.times.startUtc,'2026-10-02T04:00:00.000Z');
+  assert.equal(dutyFree.times.endUtc,'2026-10-04T04:00:00.000Z');
   assert.equal(parsePilotEvent(createEvent({summary:'RAP review'})).kind,'other');
   assert.equal(parsePilotEvent(createEvent({summary:'Reserve'})).kind,'other');
   const cci = createEvent({summary: 'FLT 3632', description: 'SEQ#: 18073 Flight#: 3632 Stations: ORD→EVV Local Time: Sun, Sep 27, 2026\n22:37 - Sun, Sep 27, 2026 23:58 UTC Time: Mon, Sep 28, 2026 03:37 UTC - Mon,\nSep 28, 2026 04:58 UTC'});
