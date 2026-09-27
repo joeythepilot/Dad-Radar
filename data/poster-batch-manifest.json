@@ -131,6 +131,18 @@
         "ELP",
         "PIT"
       ]
+    },
+    {
+      "id": "envoy-gap-2026-09-27-e",
+      "label": "Envoy candidate route gap batch E",
+      "status": "approved",
+      "airportCodes": [
+        "IAH",
+        "MSP",
+        "RIC",
+        "SEA",
+        "STL"
+      ]
     }
   ],
   "destinations": [
@@ -1406,6 +1418,176 @@
       "referenceSources": [
         "https://www.visitpittsburgh.com/blog/how-to-ride-the-pittsburgh-inclines/",
         "https://www.visitpittsburgh.com/neighborhoods/downtown-pittsburgh/"
+      ]
+    },
+    {
+      "code": "IAH",
+      "icao": "KIAH",
+      "city": "Houston",
+      "region": "Texas",
+      "title": "HOUSTON",
+      "subtitle": "TEXAS",
+      "descriptor": "BAYOU • SKYLINE • GULF",
+      "tagline": "Along the Bayou.",
+      "batch": "envoy-gap-2026-09-27-e",
+      "status": "approved",
+      "output": "assets/destinations/iah-poster-7x8-candidate-v1.png",
+      "visualProfileId": "houston-buffalobayou-sage-gold",
+      "design": {
+        "landmarks": [
+          "Buffalo Bayou Park",
+          "Downtown Houston skyline"
+        ],
+        "skySignature": "Sage-blue clear morning with wide cream cloud gaps",
+        "seasonAndLight": "Late spring morning, green bayou banks with soft amber city",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Tiny propeller airliner upper left above an open sky gap",
+        "foreground": "Winding Buffalo Bayou and park trees before simplified downtown towers",
+        "avoid": [
+          "space center rocket in downtown",
+          "modern advertising",
+          "glass-window photorealism"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visithoustontexas.com/travel-planning/trip-ideas/outdoorsy-type/downtown-discover-urban-green/",
+        "https://www.visithoustontexas.com/things-to-do/parks-and-outdoors/beaches/fun-on-the-water/"
+      ]
+    },
+    {
+      "code": "MSP",
+      "icao": "KMSP",
+      "city": "Minneapolis",
+      "region": "Minnesota",
+      "title": "MINNEAPOLIS",
+      "subtitle": "MINNESOTA",
+      "descriptor": "STONE ARCH • MILLS • RIVER",
+      "tagline": "Where the River Built a City.",
+      "batch": "envoy-gap-2026-09-27-e",
+      "status": "approved",
+      "output": "assets/destinations/msp-poster-7x8-candidate-v1.png",
+      "visualProfileId": "minneapolis-stonearch-iceblue-autumn",
+      "design": {
+        "landmarks": [
+          "Stone Arch Bridge",
+          "Mill City Museum and Mississippi riverfront"
+        ],
+        "skySignature": "Pale crisp ice-blue autumn sky with one diagonal bank of cream cloud",
+        "seasonAndLight": "Early fall, russet river trees and cool stone bridge",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small propeller airliner far upper right above riverbank",
+        "foreground": "Stone Arch Bridge crossing the Mississippi with mill ruins on the near bank",
+        "avoid": [
+          "generic modern suspension bridge",
+          "St. Paul skyline",
+          "photographic river foam"
+        ]
+      },
+      "referenceSources": [
+        "https://www.minneapolis.org/things-to-do/itineraries/52-must-sees/stone-arch-bridge/",
+        "https://www.minneapolis.org/things-to-do/itineraries/52-must-sees/mill-city-museum/"
+      ]
+    },
+    {
+      "code": "RIC",
+      "icao": "KRIC",
+      "city": "Richmond",
+      "region": "Virginia",
+      "title": "RICHMOND",
+      "subtitle": "VIRGINIA",
+      "descriptor": "JAMES • RAPIDS • CITY",
+      "tagline": "A River Through the City.",
+      "batch": "envoy-gap-2026-09-27-e",
+      "status": "approved",
+      "output": "assets/destinations/ric-poster-7x8-candidate-v1.png",
+      "visualProfileId": "richmond-jamesriver-summer-jade",
+      "design": {
+        "landmarks": [
+          "James River rapids",
+          "Belle Isle pedestrian bridge and downtown"
+        ],
+        "skySignature": "Warm cream summer sky with low, widely spaced blue cloud slivers",
+        "seasonAndLight": "Clear summer daylight, jade river shallows and brick city",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Tiny propeller airliner upper left behind sparse clouds",
+        "foreground": "Flat river rocks and rapids in foreground, pedestrian bridge and city beyond",
+        "avoid": [
+          "mountain backdrop",
+          "ocean harbor",
+          "invented stone arch bridge"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitrichmondva.com/things-to-do/outdoors/belle-isle/",
+        "https://www.visitrichmondva.com/blog/post/7-must-try-experiences-to-live-like-a-rva-local/"
+      ]
+    },
+    {
+      "code": "SEA",
+      "icao": "KSEA",
+      "city": "Seattle",
+      "region": "Washington",
+      "title": "SEATTLE",
+      "subtitle": "WASHINGTON",
+      "descriptor": "SOUND • FERRY • NEEDLE",
+      "tagline": "Across the Sound.",
+      "batch": "envoy-gap-2026-09-27-e",
+      "status": "approved",
+      "output": "assets/destinations/sea-poster-7x8-candidate-v1.png",
+      "visualProfileId": "seattle-elliottbay-fogblue-morning",
+      "design": {
+        "landmarks": [
+          "Space Needle",
+          "Elliott Bay ferry and waterfront"
+        ],
+        "skySignature": "Layered fog-blue morning sky with flat ivory cloud bands",
+        "seasonAndLight": "Cool spring morning, muted teal Sound and forest-green shore",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Tiny propeller airliner high upper right through pale cloud gap",
+        "foreground": "Washington State Ferry on Elliott Bay with the city and Space Needle beyond",
+        "avoid": [
+          "Mount Rainier north of the city",
+          "ferry too large to reveal waterfront",
+          "photorealistic mist"
+        ]
+      },
+      "referenceSources": [
+        "https://visitseattle.org/blog/12-spectacular-views-youll-only-see-in-seattle/",
+        "https://visitseattle.org/things-to-do/sightseeing/top-25-attractions/"
+      ]
+    },
+    {
+      "code": "STL",
+      "icao": "KSTL",
+      "city": "St Louis",
+      "region": "Missouri",
+      "title": "ST. LOUIS",
+      "subtitle": "MISSOURI",
+      "descriptor": "ARCH • BRIDGE • RIVER",
+      "tagline": "At the Gateway.",
+      "batch": "envoy-gap-2026-09-27-e",
+      "status": "approved",
+      "output": "assets/destinations/stl-poster-7x8-candidate-v1.png",
+      "visualProfileId": "stl-gatewayarch-brass-afternoon",
+      "design": {
+        "landmarks": [
+          "Gateway Arch",
+          "Eads Bridge and Mississippi River"
+        ],
+        "skySignature": "Wide powder-blue afternoon with two stretched cream cloud plates",
+        "seasonAndLight": "Early autumn afternoon, silver arch as matte pale cream and gold riverbank",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small propeller airliner far upper left outside the arch",
+        "foreground": "Arch on west bank parkland, Eads Bridge to north, Mississippi in foreground",
+        "avoid": [
+          "arch spanning the river",
+          "arch made of stone",
+          "duplicate arches"
+        ]
+      },
+      "referenceSources": [
+        "https://www.nps.gov/jeff/planyourvisit/materials-and-techniques.htm",
+        "https://www.nps.gov/places/eads-bridge.htm"
       ]
     }
   ]

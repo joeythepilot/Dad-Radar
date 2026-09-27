@@ -6,7 +6,7 @@ Envoy describes service to **over 160 destinations**, but its public site does n
 
 Sources: [Envoy Air](https://www.envoyair.com/), [FlightNerve MQ route listing](https://www.flightnerve.com/airlines/MQ). The latter's own destination count and visible code list vary between crawls; its 146/148 headline is not treated as a complete verified roster. Ground handling locations are a separate service and are not automatically destinations flown by Envoy.
 
-After Joey's batch A through D approvals, **57** airport codes have an installed poster and **88** remain without artwork in the 145-code working union. The JSON records each code, airport catalog geography, source tag, and poster status, so batches can be selected without conflating a candidate route with approved art.
+After Joey's batch A through E approvals, **62** airport codes have an installed poster and **83** remain without artwork in the 145-code working union. The JSON records each code, airport catalog geography, source tag, and poster status, so batches can be selected without conflating a candidate route with approved art.
 
 ## Batch A: approved and installed in the application catalog
 
@@ -55,6 +55,18 @@ Joey flagged the first-pass images as drifting toward photorealism. All five wer
 | PIT | Pittsburgh, Pennsylvania | Duquesne Incline, Point and river bridges | Check relative river, bridge and incline positions. |
 
 These five use flatter matte colors and print texture following Joey's Batch C style correction. Charleston, Cleveland and El Paso received a second pass to bring the title and footer closer to the approved hierarchy. The contact sheet `Docs/UI/envoy-gap-2026-09-27-d-review.jpg` compares them with approved Batch C at the same size. Joey approved the revised set on 2026-09-27, and the assets are wired into `config/posters.js`. Factual landmark review remains necessary before commercial use. Publication to the application branch alone does not verify deployment to the home display.
+
+## Batch E: approved and installed in the application catalog
+
+| Code | City | Visual anchor | Review note |
+| --- | --- | --- | --- |
+| IAH | Houston, Texas | Buffalo Bayou Park and downtown skyline | Check skyline silhouette and bayou viewpoint. HOU remains a separate missing airport code. |
+| MSP | Minneapolis, Minnesota | Stone Arch Bridge, Mississippi and mill ruins | Check arch count and mill placement. Water and footer received a print-style pass. |
+| RIC | Richmond, Virginia | James River rapids, Belle Isle bridge and downtown | Check pedestrian bridge geometry and river vantage. Water and footer received a print-style pass. |
+| SEA | Seattle, Washington | Elliott Bay ferry, Space Needle and skyline | Check mountains and skyline from the water; footer contrast was increased. |
+| STL | St. Louis, Missouri | Gateway Arch, Eads Bridge and Mississippi | Check Arch, bridge and shoreline relationships. |
+
+The comparison `Docs/UI/envoy-gap-2026-09-27-e-review.jpg` places these compositions above approved Batch D at the same size. The scenes use flat matte ink, halftone grain and distinct local anchors. Joey approved them on 2026-09-27, and all five are wired into `config/posters.js`. The route roster and landmark details remain subject to factual review before commercial use. Publication to the application branch alone does not verify deployment to the home display.
 
 ## Next passes
 

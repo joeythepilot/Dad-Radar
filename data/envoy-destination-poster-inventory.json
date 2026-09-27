@@ -640,7 +640,7 @@
       "region": "Texas",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "ICT",
@@ -880,7 +880,7 @@
       "region": "Minnesota",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "MSY",
@@ -1008,7 +1008,7 @@
       "region": "Virginia",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "ROC",
@@ -1064,7 +1064,7 @@
       "region": "Washington",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "SGF",
@@ -1088,7 +1088,7 @@
       "region": "Missouri",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "SYR",
@@ -1215,6 +1215,16 @@
       "CLE",
       "ELP",
       "PIT"
+    ]
+  },
+  "fifthBatch": {
+    "id": "envoy-gap-2026-09-27-e",
+    "codes": [
+      "IAH",
+      "MSP",
+      "RIC",
+      "SEA",
+      "STL"
     ]
   }
 }

@@ -207,6 +207,12 @@
       title: "HUNTSVILLE",
       location: "Huntsville, Alabama"
     }),
+    IAH: Object.freeze({
+      source:
+        "./assets/destinations/iah-poster-7x8-candidate-v1.png",
+      title: "HOUSTON",
+      location: "Houston, Texas"
+    }),
     IND: Object.freeze({
       source:
         "./assets/destinations/ind-poster-7x8-candidate-v1.png",
@@ -256,6 +262,12 @@
       title: "MADISON",
       location: "Madison, Wisconsin"
     }),
+    MSP: Object.freeze({
+      source:
+        "./assets/destinations/msp-poster-7x8-candidate-v1.png",
+      title: "MINNEAPOLIS",
+      location: "Minneapolis, Minnesota"
+    }),
     MSY: Object.freeze({
       source:
         "./assets/destinations/msy-poster-7x8-candidate-v1.png",
@@ -292,6 +304,12 @@
       title: "PITTSBURGH",
       location: "Pittsburgh, Pennsylvania"
     }),
+    RIC: Object.freeze({
+      source:
+        "./assets/destinations/ric-poster-7x8-candidate-v1.png",
+      title: "RICHMOND",
+      location: "Richmond, Virginia"
+    }),
     ROC: Object.freeze({
       source:
         "./assets/destinations/roc-poster-7x8-candidate-v1.png",
@@ -304,6 +322,12 @@
       title: "SAN ANTONIO",
       location: "San Antonio, Texas"
     }),
+    SEA: Object.freeze({
+      source:
+        "./assets/destinations/sea-poster-7x8-candidate-v1.png",
+      title: "SEATTLE",
+      location: "Seattle, Washington"
+    }),
     SGF: Object.freeze({
       source:
         "./assets/destinations/sgf-poster-7x8-candidate-v1.png",
@@ -315,6 +339,12 @@
         "./assets/destinations/spi-poster-7x8-candidate-v1.png",
       title: "SPRINGFIELD",
       location: "Springfield, Illinois"
+    }),
+    STL: Object.freeze({
+      source:
+        "./assets/destinations/stl-poster-7x8-candidate-v1.png",
+      title: "ST. LOUIS",
+      location: "St. Louis, Missouri"
     }),
     SYR: Object.freeze({
       source:

@@ -19,6 +19,10 @@ DadRadar 1 is accepted against the Maxwell family Raspberry Pi unit's HP 23es di
 
 The browser always uses `object-fit: contain`. Existing traditional 2 : 3 posters may show restrained background margins, but no foreground artwork may be cropped. New 7 : 8 posters should fill the opening naturally.
 
+## Physical print proof
+
+The complete 7 : 8 poster can be centered on a standard 4 × 6-inch portrait postcard at 4 × 4.57 inches, leaving about 0.71 inch above and below. Preserve the printed border and footer; do not crop the image to fill the 2 : 3 card. At this size, the current 1173 × 1341 review assets deliver approximately 293 pixels per inch and are suitable for a postcard proof. A 5 × 7-inch print can similarly contain a 5 × 5.71-inch poster with top and bottom margins, though the review asset is only about 235 pixels per inch at that size. For larger retail prints such as 8 × 10 inches, prepare the 2100 × 2400 display derivative or the 4200 × 4800 archival master and inspect the lettering and grain at print size before release.
+
 ## Visual direction
 
 - Vintage airline or destination-travel poster rather than modern tourism advertising
