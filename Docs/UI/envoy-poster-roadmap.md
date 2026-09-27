@@ -6,7 +6,7 @@ Envoy describes service to **over 160 destinations**, but its public site does n
 
 Sources: [Envoy Air](https://www.envoyair.com/), [FlightNerve MQ route listing](https://www.flightnerve.com/airlines/MQ). The latter's own destination count and visible code list vary between crawls; its 146/148 headline is not treated as a complete verified roster. Ground handling locations are a separate service and are not automatically destinations flown by Envoy.
 
-After Joey's batch A, B and C approvals, **52** airport codes have an installed poster and **93** remain without artwork in the 145-code working union. The JSON records each code, airport catalog geography, source tag, and poster status, so batches can be selected without conflating a candidate route with approved art.
+After Joey's batch A through D approvals, **57** airport codes have an installed poster and **88** remain without artwork in the 145-code working union. The JSON records each code, airport catalog geography, source tag, and poster status, so batches can be selected without conflating a candidate route with approved art.
 
 ## Batch A: approved and installed in the application catalog
 
@@ -43,6 +43,18 @@ Joey approved these five compositions on 2026-09-27. Their review-size assets ar
 | MCI | Kansas City, Missouri | Union Station, fountain and downtown | The first pass placed Liberty Memorial behind the station; the candidate removes it. Check the station façade and skyline. |
 
 Joey flagged the first-pass images as drifting toward photorealism. All five were restyled with matte limited-ink color, graphic shadows, stippled print texture and simplified skies; the original and revised versions are paired in `Docs/UI/envoy-gap-2026-09-27-c-style-before-after.png`. The revised candidates are compared with approved Batch B at the same review size in `Docs/UI/envoy-gap-2026-09-27-c-review.png`. Joey approved the revised set on 2026-09-27, and the assets are wired into `config/posters.js`. Landmark details still deserve a factual review before commercial use. Publication to the application branch does not by itself verify deployment to the home display.
+
+## Batch D: approved and installed in the application catalog
+
+| Code | City | Visual anchor | Review note |
+| --- | --- | --- | --- |
+| AUS | Austin, Texas | Congress Avenue Bridge, Lady Bird Lake and skyline | Check bridge arches, skyline vantage and small bat silhouettes. |
+| CHS | Charleston, South Carolina | Rainbow Row along East Bay Street | The revised scene keeps the pastel streetscape and removes an extraneous distant steeple; check façade sequence. |
+| CLE | Cleveland, Ohio | Hope Memorial Bridge guardian and Terminal Tower | A factual pass replaced an invented steering wheel with a vehicle and corrected the bridge to a curved-edge steel truss. Check the remaining geometry against direct references. |
+| ELP | El Paso, Texas | Plaza Theatre and Franklin Mountains | Check façade and mountain silhouette; the candidate is a historic-styled street scene, not a claim about current vehicles. |
+| PIT | Pittsburgh, Pennsylvania | Duquesne Incline, Point and river bridges | Check relative river, bridge and incline positions. |
+
+These five use flatter matte colors and print texture following Joey's Batch C style correction. Charleston, Cleveland and El Paso received a second pass to bring the title and footer closer to the approved hierarchy. The contact sheet `Docs/UI/envoy-gap-2026-09-27-d-review.jpg` compares them with approved Batch C at the same size. Joey approved the revised set on 2026-09-27, and the assets are wired into `config/posters.js`. Factual landmark review remains necessary before commercial use. Publication to the application branch alone does not verify deployment to the home display.
 
 ## Next passes
 

@@ -119,6 +119,18 @@
         "EYW",
         "MCI"
       ]
+    },
+    {
+      "id": "envoy-gap-2026-09-27-d",
+      "label": "Envoy candidate route gap batch D",
+      "status": "approved",
+      "airportCodes": [
+        "AUS",
+        "CHS",
+        "CLE",
+        "ELP",
+        "PIT"
+      ]
     }
   ],
   "destinations": [
@@ -1222,6 +1234,178 @@
       "referenceSources": [
         "https://www.visitkc.com/union-station-crown-center/",
         "https://www.visitkc.com/articles/iconic-kansas-city-landmarks/"
+      ]
+    },
+    {
+      "code": "AUS",
+      "icao": "KAUS",
+      "city": "Austin",
+      "region": "Texas",
+      "title": "AUSTIN",
+      "subtitle": "TEXAS",
+      "descriptor": "LAKE • BRIDGE • MUSIC",
+      "tagline": "Where Evening Takes Flight.",
+      "batch": "envoy-gap-2026-09-27-d",
+      "status": "approved",
+      "output": "assets/destinations/aus-poster-7x8-candidate-v1.png",
+      "visualProfileId": "austin-congressbridge-terracotta-dusk",
+      "design": {
+        "landmarks": [
+          "Congress Avenue Bridge",
+          "Lady Bird Lake downtown skyline"
+        ],
+        "skySignature": "Pale turquoise turning coral at a low dusk horizon, with small separated cloud ribbons",
+        "seasonAndLight": "Late-summer evening, bridge in cool shadow and warm windows across the lake",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small propeller airliner near far upper left under a thin cloud band",
+        "foreground": "Congress Avenue Bridge spanning Lady Bird Lake, modest bat silhouettes beneath one span",
+        "avoid": [
+          "giant bat swarm",
+          "generic country music stage",
+          "Capitol behind the lake bridge"
+        ]
+      },
+      "referenceSources": [
+        "https://www.austintexas.org/austin-insider-blog/blog/post/first-timers-guide/",
+        "https://www.austintexas.org/things-to-do/outdoors/bat-watching/"
+      ]
+    },
+    {
+      "code": "CHS",
+      "icao": "KCHS",
+      "city": "Charleston",
+      "region": "South Carolina",
+      "title": "CHARLESTON",
+      "subtitle": "SOUTH CAROLINA",
+      "descriptor": "RAINBOW ROW • PALMETTO • HARBOR",
+      "tagline": "Color Along the Coast.",
+      "batch": "envoy-gap-2026-09-27-d",
+      "status": "approved",
+      "output": "assets/destinations/chs-poster-7x8-candidate-v1.png",
+      "visualProfileId": "charleston-rainbowrow-pastel-morning",
+      "design": {
+        "landmarks": [
+          "Rainbow Row on East Bay Street",
+          "Charleston Battery"
+        ],
+        "skySignature": "Soft ivory morning with thin blue horizontal cloud streaks, no sunset",
+        "seasonAndLight": "Bright spring morning, pastel houses in matte lemon, rose and mint",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Tiny silver propeller airliner high upper right above East Bay Street",
+        "foreground": "East Bay Street view of varied Georgian row-house façades and one palmetto",
+        "avoid": [
+          "water immediately against Rainbow Row façades",
+          "identical house fronts",
+          "plantation imagery"
+        ]
+      },
+      "referenceSources": [
+        "https://www.charlestoncvb.com/itineraries/first-timers-guide/",
+        "https://www.charlestoncvb.com/blog/streets-to-explore"
+      ]
+    },
+    {
+      "code": "CLE",
+      "icao": "KCLE",
+      "city": "Cleveland",
+      "region": "Ohio",
+      "title": "CLEVELAND",
+      "subtitle": "OHIO",
+      "descriptor": "BRIDGE • RIVER • LAKE",
+      "tagline": "Built to Endure.",
+      "batch": "envoy-gap-2026-09-27-d",
+      "status": "approved",
+      "output": "assets/destinations/cle-poster-7x8-candidate-v1.png",
+      "visualProfileId": "cleveland-hopebridge-slate-autumn",
+      "design": {
+        "landmarks": [
+          "Hope Memorial Bridge Guardians of Traffic",
+          "Terminal Tower"
+        ],
+        "skySignature": "Steel-blue autumn morning with angular cream cloud planes",
+        "seasonAndLight": "Cool clear fall light, sandstone guardian pylons and deep river blue",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Tiny propeller airliner far upper right over the downtown skyline",
+        "foreground": "One sandstone Guardian pylon holding a stylized vehicle beside the bridge deck; curved-edge steel truss below, Terminal Tower beyond",
+        "avoid": [
+          "sports logos",
+          "placing Terminal Tower on the bridge",
+          "photo-real stone carving",
+          "guardian holding an invented steering wheel",
+          "stone arch bridge under the deck"
+        ]
+      },
+      "referenceSources": [
+        "https://www.thisiscleveland.com/ThisIsCleveland/media/Documents/Maps/Downtown%20Cleveland/2022-Walk-CLE-Map.pdf",
+        "https://case.edu/ech/articles/h/hope-memorial-bridge"
+      ]
+    },
+    {
+      "code": "ELP",
+      "icao": "KELP",
+      "city": "El Paso",
+      "region": "Texas",
+      "title": "EL PASO",
+      "subtitle": "TEXAS",
+      "descriptor": "PLAZA • MOUNTAINS • SUN CITY",
+      "tagline": "A City of Desert Light.",
+      "batch": "envoy-gap-2026-09-27-d",
+      "status": "approved",
+      "output": "assets/destinations/elp-poster-7x8-candidate-v1.png",
+      "visualProfileId": "elpaso-plaza-franklin-ochre-afternoon",
+      "design": {
+        "landmarks": [
+          "Historic Plaza Theatre",
+          "Franklin Mountains"
+        ],
+        "skySignature": "Wide pale lemon desert sky with a few flat rust-edged cloud slabs",
+        "seasonAndLight": "Clear high-desert afternoon, amber plaster and violet mountain shadow",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small propeller airliner mid-upper left against open sky",
+        "foreground": "Plaza Theatre frontage and simplified downtown street with Franklin Mountains beyond",
+        "avoid": [
+          "Juárez street signs",
+          "mission church substituted for the Plaza Theatre",
+          "oversaturated photographic desert glow"
+        ]
+      },
+      "referenceSources": [
+        "https://visitelpaso.com/places/historic-plaza-theatre",
+        "https://visitelpaso.com/places/franklin-mountains-state-park"
+      ]
+    },
+    {
+      "code": "PIT",
+      "icao": "KPIT",
+      "city": "Pittsburgh",
+      "region": "Pennsylvania",
+      "title": "PITTSBURGH",
+      "subtitle": "PENNSYLVANIA",
+      "descriptor": "INCLINE • RIVERS • BRIDGES",
+      "tagline": "Where Three Rivers Meet.",
+      "batch": "envoy-gap-2026-09-27-d",
+      "status": "approved",
+      "output": "assets/destinations/pit-poster-7x8-candidate-v1.png",
+      "visualProfileId": "pittsburgh-duquesneincline-blue-gold",
+      "design": {
+        "landmarks": [
+          "Duquesne Incline",
+          "Point State Park and three rivers"
+        ],
+        "skySignature": "Cool light-blue spring sky with staggered flat cloud patches",
+        "seasonAndLight": "Late spring daylight, yellow bridge accents and navy water",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small propeller airliner upper left above the far riverbank",
+        "foreground": "Duquesne Incline car and track from Mount Washington with the Point and bridges beyond",
+        "avoid": [
+          "incline track running into the river",
+          "more than one Point fountain",
+          "photographic skyscraper windows"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitpittsburgh.com/blog/how-to-ride-the-pittsburgh-inclines/",
+        "https://www.visitpittsburgh.com/neighborhoods/downtown-pittsburgh/"
       ]
     }
   ]

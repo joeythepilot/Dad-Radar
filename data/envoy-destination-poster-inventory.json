@@ -120,7 +120,7 @@
       "region": "Texas",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "AVL",
@@ -288,7 +288,7 @@
       "region": "South Carolina",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "CID",
@@ -312,7 +312,7 @@
       "region": "Ohio",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "CLL",
@@ -464,7 +464,7 @@
       "region": "Texas",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "EUG",
@@ -968,7 +968,7 @@
       "region": "Pennsylvania",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "PNS",
@@ -1205,6 +1205,16 @@
       "BOI",
       "EYW",
       "MCI"
+    ]
+  },
+  "fourthBatch": {
+    "id": "envoy-gap-2026-09-27-d",
+    "codes": [
+      "AUS",
+      "CHS",
+      "CLE",
+      "ELP",
+      "PIT"
     ]
   }
 }

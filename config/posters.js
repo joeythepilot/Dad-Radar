@@ -27,6 +27,12 @@
       title: "ATLANTA",
       location: "Atlanta, Georgia"
     }),
+    AUS: Object.freeze({
+      source:
+        "./assets/destinations/aus-poster-7x8-candidate-v1.png",
+      title: "AUSTIN",
+      location: "Austin, Texas"
+    }),
     ATW: Object.freeze({
       source:
         "./assets/destinations/atw-poster-7x8-candidate-v1.png",
@@ -76,6 +82,18 @@
         "./assets/destinations/bro-poster-7x8-candidate-v1.png",
       title: "BROWNSVILLE",
       location: "Brownsville, Texas"
+    }),
+    CHS: Object.freeze({
+      source:
+        "./assets/destinations/chs-poster-7x8-candidate-v1.png",
+      title: "CHARLESTON",
+      location: "Charleston, South Carolina"
+    }),
+    CLE: Object.freeze({
+      source:
+        "./assets/destinations/cle-poster-7x8-candidate-v1.png",
+      title: "CLEVELAND",
+      location: "Cleveland, Ohio"
     }),
     GPT: Object.freeze({
       source:
@@ -134,6 +152,12 @@
         "./assets/destinations/dtw-poster-7x8-candidate-v1.png",
       title: "DETROIT",
       location: "Detroit, Michigan"
+    }),
+    ELP: Object.freeze({
+      source:
+        "./assets/destinations/elp-poster-7x8-candidate-v1.png",
+      title: "EL PASO",
+      location: "El Paso, Texas"
     }),
     EVV: Object.freeze({
       source:
@@ -261,6 +285,12 @@
         "./assets/destinations/pia-poster-7x8-candidate-v1.png",
       title: "PEORIA",
       location: "Peoria, Illinois"
+    }),
+    PIT: Object.freeze({
+      source:
+        "./assets/destinations/pit-poster-7x8-candidate-v1.png",
+      title: "PITTSBURGH",
+      location: "Pittsburgh, Pennsylvania"
     }),
     ROC: Object.freeze({
       source:
