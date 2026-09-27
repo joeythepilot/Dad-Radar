@@ -41,8 +41,9 @@
     });
 
     const ACTIVE_EVENT_PRIORITY = Object.freeze({
-      flight: 4,
-      layover: 3,
+      flight: 5,
+      layover: 4,
+      reserve: 3,
       "duty-free": 2,
       other: 1
     });
@@ -294,6 +295,10 @@
         return "HOME · DAY OFF";
       }
 
+      if (event.kind === "reserve") {
+        return `RESERVE · ${airportCity(event.airport, event.airport ?? "BASE")}`;
+      }
+
       return String(
         event.summary ?? "SCHEDULED ACTIVITY"
       )
@@ -318,6 +323,10 @@
 
       if (event.kind === "duty-free") {
         return "OFF DUTY";
+      }
+
+      if (event.kind === "reserve") {
+        return event.reserveType === "RAP" ? "RAP" : "RESERVE";
       }
 
       return "";
@@ -473,6 +482,8 @@
           `DADDY IS BETWEEN FLIGHTS IN ${resolvedLocation}`,
         LAYOVER:
           `DADDY IS ON LAYOVER IN ${resolvedLocation}`,
+        RESERVE:
+          `DADDY IS ON RESERVE IN ${resolvedLocation}`,
         LOCATION_UNKNOWN:
           "DADDY'S LOCATION IS NOT CONFIRMED",
         OFFLINE:
@@ -582,6 +593,7 @@
             kind: event.kind ?? "other",
             time:
               event.kind === "duty-free" ||
+              event.allDay ||
               !startsToday
                 ? "ALL DAY"
                 : formatTime(
@@ -593,6 +605,9 @@
               flightNumber: event.flightNumber ?? null,
               departureTime: formatTime(start, options.displayTimeZone),
               arrivalTime: formatTime(end, options.displayTimeZone)
+            } : {}),
+            ...(event.kind === "reserve" && !event.allDay && startsToday ? {
+              endTime: formatTime(end, options.displayTimeZone)
             } : {}),
             tag: dailyEventTag(event),
             status
@@ -766,6 +781,7 @@
         HOME: "HOME",
         AT_BASE: "AT BASE",
         LAYOVER: "LAYOVER",
+        RESERVE: "RESERVE",
         LOCATION_UNKNOWN:
           "LOCATION UNKNOWN",
         OFFLINE: "OFFLINE"
@@ -1079,6 +1095,17 @@
           "LAYOVER",
           `DADDY IS ON LAYOVER IN ${location}`,
           event
+        );
+      }
+
+      if (event.kind === "reserve") {
+        const airport = event.airport ?? options.baseAirport;
+        const location = String(airportLocation(airport, airport)).toUpperCase();
+        return createMessageState(
+          "RESERVE",
+          `DADDY IS ON RESERVE IN ${location}`,
+          event,
+          airport
         );
       }
 

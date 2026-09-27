@@ -58,4 +58,10 @@ const rolloverAfter=ticker.buildWeeklyOvernightModules({events:[]},{
 assert.equal(rolloverBefore[0].day,"MON","At 05:59 local the far-left bay still shows Monday.");
 assert.equal(rolloverAfter[0].day,"TUE","After 06:00 local the far-left bay advances to Tuesday.");
 
+const reserve={id:'reserve-ord',kind:'reserve',airport:'ORD',allDay:true,status:'confirmed',times:{startUtc:'2026-10-01T04:00:00Z',endUtc:'2026-10-04T04:00:00Z'}};
+const assignedLayover=layover('assigned-evv','EVV','2026-10-02T23:00:00Z','2026-10-03T15:00:00Z');
+const reserveBank=ticker.buildWeeklyOvernightModules({events:[reserve,assignedLayover]},{now:'2026-09-30T16:00:00Z'});
+assert.deepEqual(reserveBank.map(module=>module.code).slice(0,5),['HOME','ORD','EVV','ORD','HOME'],
+  'Explicit reserve dates show ORD; an assigned layover wins; blank days beyond the block stay outside reserve.');
+
 console.log("Weekly overnight tests passed: approved module artwork, seven bays, airport codes and 6am rollover.");

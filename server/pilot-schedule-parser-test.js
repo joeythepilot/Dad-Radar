@@ -373,6 +373,19 @@ function testFullSchedule() {
 }
 
 function runTests() {
+  const rap = parsePilotEvent(createEvent({summary:'RAP',start:{dateTime:'2026-10-01T09:00:00-05:00'},end:{dateTime:'2026-10-01T17:00:00-05:00'}}));
+  assert.equal(rap.kind,'reserve');
+  assert.equal(rap.airport,'ORD');
+  assert.equal(rap.reserveType,'RAP');
+  assert.equal(rap.allDay,false);
+  assert.equal(rap.times.startUtc,'2026-10-01T14:00:00.000Z');
+  const block = parsePilotEvent(createEvent({summary:'Reserve ORD',start:{date:'2026-10-01'},end:{date:'2026-10-04'}}));
+  assert.equal(block.kind,'reserve');
+  assert.equal(block.airport,'ORD');
+  assert.equal(block.allDay,true);
+  assert.equal(block.times.endUtc,'2026-10-04T04:00:00.000Z');
+  assert.equal(parsePilotEvent(createEvent({summary:'RAP review'})).kind,'other');
+  assert.equal(parsePilotEvent(createEvent({summary:'Reserve'})).kind,'other');
   const cci = createEvent({summary: 'FLT 3632', description: 'SEQ#: 18073 Flight#: 3632 Stations: ORD→EVV Local Time: Sun, Sep 27, 2026\n22:37 - Sun, Sep 27, 2026 23:58 UTC Time: Mon, Sep 28, 2026 03:37 UTC - Mon,\nSep 28, 2026 04:58 UTC'});
   const flight = parsePilotEvent(cci);
   assert.equal(flight.kind, 'flight');

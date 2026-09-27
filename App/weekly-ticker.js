@@ -104,6 +104,21 @@
       const byKey=new Map(modules.map(module=>[module.key,module]));
 
       sorted(schedule?.events)
+        .filter(event=>event.kind==="reserve" && event.allDay)
+        .forEach(reserve=>{
+          const airport=normalizeOvernightCode(reserve.airport,options.homeAirport);
+          const first=localDateParts(startOf(reserve),options.timeZone)?.key;
+          const last=localDateParts(new Date(endOf(reserve).getTime()-1),options.timeZone)?.key;
+          if(!first||!last)return;
+          for(const module of modules){
+            if(module.key>=first && module.key<=last){
+              module.code=airport;
+              module.characters=overnightCharacters(airport);
+            }
+          }
+        });
+
+      sorted(schedule?.events)
         .filter(event=>event.kind==="layover")
         .forEach(layover=>{
           const airport=normalizeOvernightCode(layover.airport,options.homeAirport);

@@ -37,6 +37,9 @@ const LAYOVER_SUMMARY_PATTERN =
 const DUTY_FREE_PATTERN =
   /^Duty free period$/i;
 
+const RESERVE_BLOCK_PATTERN = /^Reserve\s+([A-Z]{3})$/i;
+const RAP_PATTERN = /^RAP$/i;
+
 function cleanText(value) {
   return typeof value === "string"
     ? value.trim()
@@ -536,6 +539,22 @@ function parsePilotEvent(
         createFallbackTimes(event),
       updated:
         event.updated ?? null
+    };
+  }
+
+  const reserveBlock = summary.match(RESERVE_BLOCK_PATTERN);
+  if (RAP_PATTERN.test(summary) || reserveBlock) {
+    return {
+      id: event.id ?? null,
+      kind: "reserve",
+      reserveType: reserveBlock ? "BLOCK" : "RAP",
+      airport: normalizeAirport(reserveBlock?.[1]) ?? "ORD",
+      allDay: Boolean(event.start?.date && event.end?.date),
+      summary,
+      description,
+      status: event.status ?? null,
+      times: createFallbackTimes(event),
+      updated: event.updated ?? null
     };
   }
 

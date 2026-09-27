@@ -155,6 +155,10 @@
         return "HOME DAY";
       }
 
+      if (finalEntry.kind === "reserve") {
+        return "ON RESERVE";
+      }
+
       if (finalEntry.kind === "flight") {
         const destination =
           routeDestination(
@@ -202,9 +206,12 @@
       const allEntries = hasRealDuty
         ? sourceEntries.filter(
             (entry) =>
-              entry?.kind !== "duty-free"
+              entry?.kind !== "duty-free" &&
+              entry?.kind !== "reserve"
           )
-        : sourceEntries;
+        : sourceEntries.some(entry=>entry?.kind==="reserve" && entry?.tag==="RAP")
+          ? sourceEntries.filter(entry=>entry?.kind!=="reserve" || entry?.tag==="RAP")
+          : sourceEntries;
 
       const visibleEntries =
         selectVisibleEntries(
@@ -246,9 +253,9 @@
               .join(" · "),
             time:
               entry?.time ?? "--:--",
-            ...(entry?.departureTime || entry?.arrivalTime ? {
+            ...(entry?.departureTime || entry?.arrivalTime || entry?.endTime ? {
               departureTime: entry.departureTime ?? entry.time ?? "--:--",
-              arrivalTime: entry.arrivalTime ?? "--:--"
+              arrivalTime: entry.arrivalTime ?? entry.endTime ?? "--:--"
             } : {}),
             ...(entry?.operationalStamp ? {
               operationalStamp: entry.operationalStamp

@@ -134,6 +134,20 @@ const mixedDutyFreeDay = {
   ]
 };
 const mixedView = buildDutyCardView(mixedDutyFreeDay, 1024, {homeAirport:"AVL", rowCapacity:5});
+const assignedReserveView=buildDutyCardView({...mixedDutyFreeDay,entries:[
+  {time:'ALL DAY',label:'RESERVE · CHICAGO',tag:'RESERVE',status:'upcoming',kind:'reserve'},
+  {time:'8:00 AM',label:'RESERVE · CHICAGO',tag:'RAP',status:'completed',kind:'reserve'},
+  mixedDutyFreeDay.entries[1]
+]},1920,{rowCapacity:5});
+assert.deepEqual(assignedReserveView.rows.map(row=>row.route),['AVL → ORD · COMMUTE'],
+  'An assigned flight is the duty item rather than an overlapping reserve placeholder.');
+const rapCard=buildDutyCardView({context:'DADDY IS ON RESERVE IN CHICAGO, ILLINOIS',entries:[
+  {time:'ALL DAY',label:'RESERVE · CHICAGO',tag:'RESERVE',status:'upcoming',kind:'reserve'},
+  {time:'8:00 AM',endTime:'4:00 PM',label:'RESERVE · CHICAGO',tag:'RAP',status:'current',kind:'reserve'}
+]},1920,{rowCapacity:5});
+assert.equal(rapCard.rows.length,1,'A timed RAP replaces the duplicate all-day reserve line on Today’s Duty');
+assert.equal(rapCard.rows[0].departureTime,'8:00 AM');
+assert.equal(rapCard.rows[0].arrivalTime,'4:00 PM');
 assert.deepEqual(
   mixedView.rows.map((row) => row.route),
   [

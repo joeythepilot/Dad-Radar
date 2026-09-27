@@ -937,6 +937,25 @@ function testDailyScheduleHasOneCurrentActivity() {
 }
 
 function runTests() {
+  const reserveBlock = {id:'reserve-block',kind:'reserve',reserveType:'BLOCK',airport:'ORD',allDay:true,status:'confirmed',times:{startUtc:'2026-08-04T04:00:00Z',endUtc:'2026-08-07T04:00:00Z'}};
+  const rap = {id:'rap',kind:'reserve',reserveType:'RAP',airport:'ORD',allDay:false,status:'confirmed',times:{startUtc:'2026-08-04T12:00:00Z',endUtc:'2026-08-04T20:00:00Z'}};
+  const reserveSchedule=createSchedule([reserveBlock,rap]);
+  const onRap=resolveScheduleState(reserveSchedule,{now:NOW});
+  assert.equal(onRap.mode,'RESERVE');
+  assert.equal(onRap.event.id,'rap');
+  assert.equal(onRap.state.message,'DADDY IS ON RESERVE IN CHICAGO, ILLINOIS');
+  const rapDuty=buildDailySchedule(reserveSchedule,onRap,{now:NOW});
+  assert.equal(rapDuty.context,onRap.state.message);
+  assert.deepEqual(rapDuty.entries.map(entry=>[entry.kind,entry.tag,entry.time]),[['reserve','RESERVE','ALL DAY'],['reserve','RAP','8:00 AM']]);
+  assert.equal(rapDuty.entries[1].endTime,'4:00 PM','RAP availability has a visible end time');
+  assert.equal(rapDuty.entries.filter(entry=>entry.status==='current').length,1);
+  const later=resolveScheduleState(reserveSchedule,{now:'2026-08-05T14:00:00Z'});
+  assert.equal(later.mode,'RESERVE');
+  assert.equal(later.event.id,'reserve-block');
+  assert.notEqual(resolveScheduleState(reserveSchedule,{now:'2026-08-07T14:00:00Z'}).mode,'RESERVE','Blank days after the block are not reserve');
+  const flight=createFlight({id:'assigned-flight',times:{startUtc:'2026-08-04T13:00:00Z',endUtc:'2026-08-04T15:00:00Z'}});
+  const assigned=resolveScheduleState(createSchedule([reserveBlock,rap,flight]),{now:NOW});
+  assert.equal(assigned.event.id,'assigned-flight','An assignment takes precedence over RAP and the all-day block');
   testActiveFlight();
   testGsoDestinationCity();
   testBilDestinationCity();
