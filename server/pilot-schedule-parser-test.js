@@ -373,6 +373,22 @@ function testFullSchedule() {
 }
 
 function runTests() {
+  const cci = createEvent({summary: 'FLT 3632', description: 'SEQ#: 18073 Flight#: 3632 Stations: ORD→EVV Local Time: Sun, Sep 27, 2026\n22:37 - Sun, Sep 27, 2026 23:58 UTC Time: Mon, Sep 28, 2026 03:37 UTC - Mon,\nSep 28, 2026 04:58 UTC'});
+  const flight = parsePilotEvent(cci);
+  assert.equal(flight.kind, 'flight');
+  assert.equal(flight.route, 'ORD→EVV');
+  assert.equal(flight.flightNumber, '3632');
+  assert.equal(flight.times.startUtc, '2026-09-28T03:37:00.000Z');
+  assert.equal(flight.times.endUtc, '2026-09-28T04:58:00.000Z');
+  assert.deepEqual(flight.liveLookupCandidates, ['AA3632', 'MQ3632', 'ENY3632']);
+  assert.equal(parsePilotEvent(createEvent({summary:'Layover in EVV'})).airport, 'EVV');
+  assert.equal(parsePilotEvent(createEvent({summary:'Layover in EVV'})).kind, 'layover');
+  assert.equal(parsePilotEvent(createEvent({summary:'FLT 3632'})).kind, 'other');
+  assert.equal(parsePilotEvent({...cci, summary:'FLT 9999'}).kind, 'other', 'Do not associate mismatched flight numbers');
+  assert.equal(parsePilotEvent({...cci, description:cci.description.replace('04:58 UTC', '02:58 UTC')}).kind, 'other', 'Reject reversed explicit UTC times');
+  const weekly = require('../App/weekly-ticker');
+  const overnight = parsePilotEvent(createEvent({summary:'Layover in EVV',start:{dateTime:'2026-09-27T23:58:00-04:00'},end:{dateTime:'2026-09-28T15:53:00-04:00'}}));
+  assert.equal(weekly.buildWeeklyOvernightModules({events:[overnight]}, {now:'2026-09-26T23:00:00Z'})[1].code, 'EVV', 'Imported overnight reaches Sunday wheel');
   testRosterFlightTimeZones();
   testManualCommute();
   testMisspelledCommuteMarker();

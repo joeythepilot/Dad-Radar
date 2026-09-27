@@ -32,7 +32,7 @@ const DEADHEAD_SUMMARY_PATTERN =
 const DEADHEAD_PATTERN = /\bDEADHEAD\b/i;
 
 const LAYOVER_SUMMARY_PATTERN =
-  /^Layover\s+([A-Z]{3})(?:\s+\(([^)]+)\))?/i;
+  /^Layover\s+(?:in\s+)?([A-Z]{3})\b(?:\s+\(([^)]+)\))?/i;
 
 const DUTY_FREE_PATTERN =
   /^Duty free period$/i;
@@ -62,6 +62,20 @@ function normalizeCarrier(value) {
 function parseFlightDescription(description) {
   const text = cleanText(description)
     .replace(/\s+/g, " ");
+
+  // MOBILE CCI exports airport-local wall times inside a single-zone event.
+  // Its explicit UTC pair is the unambiguous source for both endpoints.
+  const cciFlight = text.match(/Flight#:\s*(\d{1,4})\s+Stations:\s*([A-Z]{3})\s*(?:→|->)\s*([A-Z]{3})\b/i);
+  const cciTimes = text.match(/UTC Time:\s*(.+? UTC)\s*-\s*(.+? UTC)(?:\s|$)/i);
+  if (cciFlight && cciTimes) {
+    const parseUtc = value => DateTime.fromFormat(value, 'ccc, LLL d, yyyy HH:mm \'UTC\'', {zone:'UTC', locale:'en-US'});
+    const departure = parseUtc(cciTimes[1]);
+    const arrival = parseUtc(cciTimes[2]);
+    if (departure.isValid && arrival.isValid && arrival > departure) {
+      return {carrierCode:null, flightNumber:cciFlight[1], origin:normalizeAirport(cciFlight[2]), destination:normalizeAirport(cciFlight[3]), startUtc:departure.toISO(), endUtc:arrival.toISO()};
+    }
+    return null;
+  }
 
   const flightMatch = text.match(
     /Flight:\s*(?:([A-Z]{2,3})\s*)?(\d{1,4})\s+Stations:\s*([A-Z]{3})\s*(?:→|->)\s*([A-Z]{3})/i
@@ -179,6 +193,15 @@ function createFlightTimes(
 
   if (!flightDescription) {
     return fallback;
+  }
+
+  if (flightDescription.startUtc && flightDescription.endUtc) {
+    return {...fallback, source:'description-utc-times',
+      departureZone:airportTimeZoneFor(flightDescription.origin),
+      arrivalZone:airportTimeZoneFor(flightDescription.destination),
+      startUtc:flightDescription.startUtc, endUtc:flightDescription.endUtc,
+      startEastern:DateTime.fromISO(flightDescription.startUtc).setZone(DISPLAY_TIME_ZONE).toISO(),
+      endEastern:DateTime.fromISO(flightDescription.endUtc).setZone(DISPLAY_TIME_ZONE).toISO()};
   }
 
   const departureZone =
@@ -352,6 +375,7 @@ function parsePilotEvent(
     commuteMatch ||
     flightMatch ||
     deadheadMatch ||
+    (/^FLT\s+\d{1,4}\s*$/i.test(summary) && descriptionFlight && summary.match(/\d+/)[0] === descriptionFlight.flightNumber) ||
     (isCommute && descriptionFlight) ||
     (isDeadhead && descriptionFlight)
   ) {
@@ -385,7 +409,7 @@ function parsePilotEvent(
               deadheadMatch[3]
             )
           : normalizeAirport(
-              flightMatch?.[2]
+            flightMatch?.[2] ?? descriptionFlight?.origin
             );
 
     const summaryDestination =
@@ -398,7 +422,7 @@ function parsePilotEvent(
               deadheadMatch[4]
             )
           : normalizeAirport(
-              flightMatch?.[3]
+            flightMatch?.[3] ?? descriptionFlight?.destination
             );
 
     const carrierCode =
