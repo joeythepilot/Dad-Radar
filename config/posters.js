@@ -15,6 +15,12 @@
       title: "ALBUQUERQUE",
       location: "Albuquerque, New Mexico"
     }),
+    ALB: Object.freeze({
+      source:
+        "./assets/destinations/alb-poster-7x8-candidate-v1.png",
+      title: "ALBANY",
+      location: "Albany, New York"
+    }),
     AMA: Object.freeze({
       source:
         "./assets/destinations/ama-poster-7x8-candidate-v1.png",
@@ -95,6 +101,12 @@
       title: "BUFFALO",
       location: "Buffalo, New York"
     }),
+    CHA: Object.freeze({
+      source:
+        "./assets/destinations/cha-poster-7x8-candidate-v1.png",
+      title: "CHATTANOOGA",
+      location: "Chattanooga, Tennessee"
+    }),
     CHS: Object.freeze({
       source:
         "./assets/destinations/chs-poster-7x8-candidate-v1.png",
@@ -164,6 +176,12 @@
         "./assets/destinations/day-poster-7x8-candidate-v1.png",
       title: "DAYTON",
       location: "Dayton, Ohio"
+    }),
+    DSM: Object.freeze({
+      source:
+        "./assets/destinations/dsm-poster-7x8-candidate-v1.png",
+      title: "DES MOINES",
+      location: "Des Moines, Iowa"
     }),
     DTW: Object.freeze({
       source:
@@ -274,6 +292,12 @@
       title: "KANSAS CITY",
       location: "Kansas City, Missouri"
     }),
+    MEM: Object.freeze({
+      source:
+        "./assets/destinations/mem-poster-7x8-candidate-v1.png",
+      title: "MEMPHIS",
+      location: "Memphis, Tennessee"
+    }),
     MIA: Object.freeze({
       source:
         "./assets/destinations/mia-poster-7x8-candidate-v1.png",
@@ -327,6 +351,12 @@
         "./assets/destinations/pit-poster-7x8-candidate-v1.png",
       title: "PITTSBURGH",
       location: "Pittsburgh, Pennsylvania"
+    }),
+    PNS: Object.freeze({
+      source:
+        "./assets/destinations/pns-poster-7x8-candidate-v1.png",
+      title: "PENSACOLA",
+      location: "Pensacola, Florida"
     }),
     RIC: Object.freeze({
       source:

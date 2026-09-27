@@ -6,7 +6,7 @@ Envoy describes service to **over 160 destinations**, but its public site does n
 
 Sources: [Envoy Air](https://www.envoyair.com/), [FlightNerve MQ route listing](https://www.flightnerve.com/airlines/MQ). The latter's own destination count and visible code list vary between crawls; its 146/148 headline is not treated as a complete verified roster. Ground handling locations are a separate service and are not automatically destinations flown by Envoy.
 
-After Joey's batch A through F approvals, **67** airport codes have an installed poster and **78** have no active artwork in the 145-code working union. The JSON records each code, airport catalog geography, source tag, and poster status, so batches can be selected without conflating a candidate route with approved art.
+After Joey's batch A through G approvals, **72** airport codes have an installed poster and **73** have no active artwork in the 145-code working union. The JSON records each code, airport catalog geography, source tag, and poster status, so batches can be selected without conflating a candidate route with approved art.
 
 ## Batch A: approved and installed in the application catalog
 
@@ -79,6 +79,18 @@ The comparison `Docs/UI/envoy-gap-2026-09-27-e-review.jpg` places these composit
 | SDF | Louisville, Kentucky | Big Four Bridge, Ohio River and Waterfront Park | Approved painterly revision. A bright cloud mass was softened to the approved quiet-sky direction; check truss spans and pedestrian approach relationship. |
 
 Joey reset the entire set to the approved AVL poster after finding the first five too blocky. The former Batch F review sheet and five v1 images were removed from the active branch. `Docs/UI/envoy-gap-2026-09-27-f-reset-bhm-proof.jpg` preserves the Birmingham/AVL approval comparison; `Docs/UI/envoy-gap-2026-09-27-f-avl-review.jpg` shows the full revised set next to AVL. Joey approved the four revised candidates on 2026-09-27, and all five are now wired into `config/posters.js`. The artwork uses the 1173 × 1341 review canvas, not the later high-resolution print master. Aircraft geometry, landmark fidelity and third-party rights deserve review before commercial sale. Sources and visual profiles are recorded in `data/poster-batch-manifest.json`. Branch publication alone does not verify deployment to the home display.
+
+## Batch G: approved and installed in the application catalog
+
+| Code | City | Visual anchor | Review note |
+| --- | --- | --- | --- |
+| ALB | Albany, New York | New York State Capitol and State Street hill | Check roof/turret geometry and the exaggerated steps. No dome should be introduced. |
+| CHA | Chattanooga, Tennessee | Walnut Street Bridge, Tennessee River and ridge | The first aircraft had an extra apparent propeller and was redrawn. Check the bridge's Petit truss and landscape viewpoint. |
+| DSM | Des Moines, Iowa | Iowa State Capitol's five domes and grounds | The first aircraft had an extra propeller and was redrawn. Check the five-domed building and scenic river relationship. |
+| MEM | Memphis, Tennessee | Hernando de Soto Bridge, Mississippi and riverfront | The first bright red sky was softened. Check the bridge's two arch spans and skyline viewpoint. |
+| PNS | Pensacola, Florida | Palafox Pier marina and Pensacola Bay | The marina and bay are downtown, not an open-Gulf beach. Check pier structures and background roofline. |
+
+`Docs/UI/envoy-gap-2026-09-27-g-avl-review.jpg` compares these five with AVL at equal review size. Joey approved the set on 2026-09-27, and all five are wired into `config/posters.js`. Each uses the 1173 × 1341 review canvas and the rich painted lithograph direction. The working Envoy route roster, landmark details, aircraft anatomy and commercial-use rights still require review before sale; publication to the branch does not verify home-display deployment.
 
 ## Next passes
 

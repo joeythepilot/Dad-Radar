@@ -88,7 +88,7 @@
       "region": "New York",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "AMA",
@@ -280,7 +280,7 @@
       "region": "Tennessee",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "CHS",
@@ -432,7 +432,7 @@
       "region": "Iowa",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "DTW",
@@ -784,7 +784,7 @@
       "region": "Tennessee",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "MFE",
@@ -976,7 +976,7 @@
       "region": "Florida",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "RAP",
@@ -1235,6 +1235,16 @@
       "COS",
       "JAX",
       "SDF"
+    ]
+  },
+  "seventhBatch": {
+    "id": "envoy-gap-2026-09-27-g",
+    "codes": [
+      "ALB",
+      "CHA",
+      "DSM",
+      "MEM",
+      "PNS"
     ]
   }
 }

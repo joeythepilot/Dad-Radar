@@ -155,6 +155,18 @@
         "JAX",
         "SDF"
       ]
+    },
+    {
+      "id": "envoy-gap-2026-09-27-g",
+      "label": "Envoy candidate route gap batch G — AVL painted style",
+      "status": "approved",
+      "airportCodes": [
+        "ALB",
+        "CHA",
+        "DSM",
+        "MEM",
+        "PNS"
+      ]
     }
   ],
   "destinations": [
@@ -1777,6 +1789,176 @@
       "referenceSources": [
         "https://ourwaterfront.org/",
         "https://www.gotolouisville.com/directory/big-four-bridge/"
+      ]
+    },
+    {
+      "code": "ALB",
+      "icao": "KALB",
+      "city": "Albany",
+      "region": "New York",
+      "title": "ALBANY",
+      "subtitle": "NEW YORK",
+      "descriptor": "CAPITOL • HILL • HUDSON",
+      "tagline": "Above the Hudson.",
+      "batch": "envoy-gap-2026-09-27-g",
+      "status": "approved",
+      "output": "assets/destinations/alb-poster-7x8-candidate-v1.png",
+      "visualProfileId": "albany-statecapitol-avl-lithograph-autumn-pearl",
+      "design": {
+        "landmarks": [
+          "New York State Capitol on State Street hill",
+          "broad stone steps and autumn streetscape"
+        ],
+        "skySignature": "Pearl-gray blue sky with thin lavender cloud band",
+        "seasonAndLight": "Golden autumn afternoon on pale stone and slate roofs",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small two-wing-engine vintage transport at upper left, smooth unpowered nose",
+        "foreground": "Broad steps rising between amber trees toward the Capitol",
+        "avoid": [
+          "golden or white dome atop New York Capitol",
+          "Washington Capitol silhouette",
+          "nose-mounted or third propeller"
+        ]
+      },
+      "referenceSources": [
+        "https://empirestateplaza.ny.gov/highlights-new-york-state-capitol",
+        "https://ogs.ny.gov/node/25431"
+      ]
+    },
+    {
+      "code": "CHA",
+      "icao": "KCHA",
+      "city": "Chattanooga",
+      "region": "Tennessee",
+      "title": "CHATTANOOGA",
+      "subtitle": "TENNESSEE",
+      "descriptor": "BRIDGE • RIVER • RIDGE",
+      "tagline": "Across the Tennessee.",
+      "batch": "envoy-gap-2026-09-27-g",
+      "status": "approved",
+      "output": "assets/destinations/cha-poster-7x8-candidate-v1.png",
+      "visualProfileId": "chattanooga-walnutbridge-avl-lithograph-sage-morning",
+      "design": {
+        "landmarks": [
+          "Walnut Street pedestrian bridge's long steel truss",
+          "Tennessee River and distant rounded ridge"
+        ],
+        "skySignature": "Pale sage-blue morning with one thin cream cloud streak",
+        "seasonAndLight": "Late spring clear morning, gentle gold on river",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small two-wing-engine vintage transport at upper right, smooth unpowered nose",
+        "foreground": "Riverbank dogwood blossoms and stone edge",
+        "avoid": [
+          "suspension bridge replacing truss",
+          "huge dramatic clouds",
+          "extra or nose propeller"
+        ]
+      },
+      "referenceSources": [
+        "https://chattanooga.gov/things-to-do/parks/walnut-street-bridge",
+        "https://www.visitchattanooga.com/plan/neighborhoods/riverfront/"
+      ]
+    },
+    {
+      "code": "DSM",
+      "icao": "KDSM",
+      "city": "Des Moines",
+      "region": "Iowa",
+      "title": "DES MOINES",
+      "subtitle": "IOWA",
+      "descriptor": "GOLD DOME • PRAIRIE • CITY",
+      "tagline": "Where the Rivers Meet.",
+      "batch": "envoy-gap-2026-09-27-g",
+      "status": "approved",
+      "output": "assets/destinations/dsm-poster-7x8-candidate-v1.png",
+      "visualProfileId": "desmoines-statecapitol-avl-lithograph-rose-morning",
+      "design": {
+        "landmarks": [
+          "Iowa State Capitol central gold dome",
+          "four smaller corner domes and landscaped grounds"
+        ],
+        "skySignature": "Dusty-rose morning under pale blue with a delicate long cloud",
+        "seasonAndLight": "Late summer morning, golden central dome and olive trees",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Tiny two-wing-engine vintage transport high upper left in near-profile, smooth nose",
+        "foreground": "Prairie grasses and autumn trees with distant water",
+        "avoid": [
+          "fewer or more than five Capitol domes",
+          "Albany's slate-roof silhouette",
+          "third or nose propeller"
+        ]
+      },
+      "referenceSources": [
+        "https://www.legis.iowa.gov/resources/tourCapitol/pictorial",
+        "https://www.legis.iowa.gov/docs/publications/IF/793559.pdf"
+      ]
+    },
+    {
+      "code": "MEM",
+      "icao": "KMEM",
+      "city": "Memphis",
+      "region": "Tennessee",
+      "title": "MEMPHIS",
+      "subtitle": "TENNESSEE",
+      "descriptor": "RIVER • BRIDGE • MUSIC",
+      "tagline": "Where the River Rolls.",
+      "batch": "envoy-gap-2026-09-27-g",
+      "status": "approved",
+      "output": "assets/destinations/mem-poster-7x8-candidate-v1.png",
+      "visualProfileId": "memphis-desotobridge-avl-lithograph-indigo-dusk",
+      "design": {
+        "landmarks": [
+          "Hernando de Soto Bridge's two M-shaped arches",
+          "Mississippi River and downtown riverfront"
+        ],
+        "skySignature": "Open indigo and soft mauve dusk with two peach ribbons",
+        "seasonAndLight": "Evening bridge lights reflected in broad river",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Tiny two-wing-engine vintage transport high upper right, smooth unpowered nose",
+        "foreground": "Tom Lee Park riverside trees with a distant barge",
+        "avoid": [
+          "suspension bridge or repeated small truss spans",
+          "fiery cloud mass",
+          "third or nose propeller"
+        ]
+      },
+      "referenceSources": [
+        "https://www.memphistravel.com/trip-ideas/mighty-lights",
+        "https://www.memphistravel.com/article/experience-mississippi-riverfront-tom-lee-park"
+      ]
+    },
+    {
+      "code": "PNS",
+      "icao": "KPNS",
+      "city": "Pensacola",
+      "region": "Florida",
+      "title": "PENSACOLA",
+      "subtitle": "FLORIDA",
+      "descriptor": "BAY • PIER • SAILS",
+      "tagline": "Where the Bay Meets Sky.",
+      "batch": "envoy-gap-2026-09-27-g",
+      "status": "approved",
+      "output": "assets/destinations/pns-poster-7x8-candidate-v1.png",
+      "visualProfileId": "pensacola-palafoxpier-avl-lithograph-seaglass-evening",
+      "design": {
+        "landmarks": [
+          "Palafox Pier and Yacht Harbour marina downtown",
+          "Pensacola Bay and waterfront promenade"
+        ],
+        "skySignature": "Open pale peach-blue sky with two fine cloud streaks",
+        "seasonAndLight": "Late spring afternoon, sea-glass bay and calm light",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small two-wing-engine vintage transport upper left above marina, smooth nose",
+        "foreground": "Promenade palms and sea oats beside docked sailboats",
+        "avoid": [
+          "open Gulf beach falsely replacing downtown bay",
+          "invented lighthouse or statue",
+          "third or nose propeller"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitpensacola.com/directory/palafox-pier-and-yacht-harbour-marina/",
+        "https://www.visitpensacola.com/directory/plaza-de-luna/"
       ]
     }
   ]
