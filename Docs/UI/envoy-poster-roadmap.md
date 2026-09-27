@@ -6,7 +6,7 @@ Envoy describes service to **over 160 destinations**, but its public site does n
 
 Sources: [Envoy Air](https://www.envoyair.com/), [FlightNerve MQ route listing](https://www.flightnerve.com/airlines/MQ). The latter's own destination count and visible code list vary between crawls; its 146/148 headline is not treated as a complete verified roster. Ground handling locations are a separate service and are not automatically destinations flown by Envoy.
 
-After Joey's batch A and B approvals, **47** airport codes have an installed poster and **98** remain without artwork in the 145-code working union. The JSON records each code, airport catalog geography, source tag, and poster status, so batches can be selected without conflating a candidate route with approved art.
+After Joey's batch A, B and C approvals, **52** airport codes have an installed poster and **93** remain without artwork in the 145-code working union. The JSON records each code, airport catalog geography, source tag, and poster status, so batches can be selected without conflating a candidate route with approved art.
 
 ## Batch A: approved and installed in the application catalog
 
@@ -31,6 +31,18 @@ Joey approved the five compositions on 2026-09-27. Their review-size assets are 
 | ICT | Wichita, Kansas | Historic municipal airport terminal | Check tower and Art Deco wings against photographs. |
 
 Joey approved these five compositions on 2026-09-27. Their review-size assets are wired into `config/posters.js`, with the comparison in `Docs/UI/envoy-gap-2026-09-27-b-review.png`. Landmark details still deserve factual review before commercial use. The batch records and local-reference URLs are in `data/poster-batch-manifest.json`.
+
+## Batch C: approved and installed in the application catalog
+
+| Code | City | Visual anchor | Review note |
+| --- | --- | --- | --- |
+| ATL | Atlanta, Georgia | Piedmont Park, Lake Clara Meer and Midtown | Check skyline silhouette and park vantage. |
+| BOS | Boston, Massachusetts | Public Garden lagoon, bridge and swan boat | Check adjacent streetscape and bridge geometry. |
+| BOI | Boise, Idaho | State Capitol, foothills and river | Check Capitol silhouette and relative setting. |
+| EYW | Key West, Florida | Key West Lighthouse and Old Town houses | Check lighthouse proportions and surrounding rooftops. |
+| MCI | Kansas City, Missouri | Union Station, fountain and downtown | The first pass placed Liberty Memorial behind the station; the candidate removes it. Check the station façade and skyline. |
+
+Joey flagged the first-pass images as drifting toward photorealism. All five were restyled with matte limited-ink color, graphic shadows, stippled print texture and simplified skies; the original and revised versions are paired in `Docs/UI/envoy-gap-2026-09-27-c-style-before-after.png`. The revised candidates are compared with approved Batch B at the same review size in `Docs/UI/envoy-gap-2026-09-27-c-review.png`. Joey approved the revised set on 2026-09-27, and the assets are wired into `config/posters.js`. Landmark details still deserve a factual review before commercial use. Publication to the application branch does not by itself verify deployment to the home display.
 
 ## Next passes
 

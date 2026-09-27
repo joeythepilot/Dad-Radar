@@ -107,6 +107,18 @@
         "GPT",
         "ICT"
       ]
+    },
+    {
+      "id": "envoy-gap-2026-09-27-c",
+      "label": "Envoy candidate route gap batch C",
+      "status": "approved",
+      "airportCodes": [
+        "ATL",
+        "BOS",
+        "BOI",
+        "EYW",
+        "MCI"
+      ]
     }
   ],
   "destinations": [
@@ -1044,6 +1056,172 @@
       "referenceSources": [
         "https://www.visitwichita.com/things-to-do/attractions/kansas-aviation-museum/",
         "https://www.visitwichita.com/blog/post/nahof-welcome-to-wichita/"
+      ]
+    },
+    {
+      "code": "ATL",
+      "icao": "KATL",
+      "city": "Atlanta",
+      "region": "Georgia",
+      "title": "ATLANTA",
+      "subtitle": "GEORGIA",
+      "descriptor": "PIEDMONT • SKYLINE • PEACHTREES",
+      "tagline": "A City in Motion.",
+      "batch": "envoy-gap-2026-09-27-c",
+      "status": "approved",
+      "output": "assets/destinations/atl-poster-7x8-candidate-v1.png",
+      "visualProfileId": "atlanta-piedmont-spring-vermilion",
+      "design": {
+        "landmarks": [
+          "Piedmont Park",
+          "Midtown Atlanta skyline"
+        ],
+        "skySignature": "Pale coral spring dawn above the park with thin lifted cloud wisps",
+        "seasonAndLight": "Fresh spring sunrise with flowering trees and warm brick",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Tiny silver propeller airliner far upper left above the park meadow",
+        "foreground": "Lake Clara Meer park edge, flowering dogwood and city silhouettes",
+        "avoid": [
+          "airport terminal",
+          "corporate logos"
+        ]
+      },
+      "referenceSources": [
+        "https://discoveratlanta.com/partner/piedmont-park/",
+        "https://discoveratlanta.com/stories/things-to-do/amazing-places-to-take-engagement-and-wedding-photos-in-atlanta/"
+      ]
+    },
+    {
+      "code": "BOS",
+      "icao": "KBOS",
+      "city": "Boston",
+      "region": "Massachusetts",
+      "title": "BOSTON",
+      "subtitle": "MASSACHUSETTS",
+      "descriptor": "GARDEN • BRICK • HARBOR",
+      "tagline": "A City by the Sea.",
+      "batch": "envoy-gap-2026-09-27-c",
+      "status": "approved",
+      "output": "assets/destinations/bos-poster-7x8-candidate-v1.png",
+      "visualProfileId": "boston-publicgarden-inkblue-spring",
+      "design": {
+        "landmarks": [
+          "Boston Public Garden lagoon",
+          "Beacon Hill Federal-style row houses"
+        ],
+        "skySignature": "Cool clear spring blue with small pearl cloud tufts, no sunset",
+        "seasonAndLight": "Bright May morning with pale green leaves and soft blossoms",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Tiny silver propeller airliner high upper right behind the garden canopy",
+        "foreground": "Public Garden lagoon bridge and a small swan boat, restrained brick streetscape",
+        "avoid": [
+          "New York brownstones",
+          "Fenway branding"
+        ]
+      },
+      "referenceSources": [
+        "https://www.meetboston.com/blog/post/parks/",
+        "https://www.meetboston.com/blog/post/top-15-instagrammable-locations-in-boston/"
+      ]
+    },
+    {
+      "code": "BOI",
+      "icao": "KBOI",
+      "city": "Boise",
+      "region": "Idaho",
+      "title": "BOISE",
+      "subtitle": "IDAHO",
+      "descriptor": "FOOTHILLS • RIVER • IDAHO",
+      "tagline": "Between City and Wild.",
+      "batch": "envoy-gap-2026-09-27-c",
+      "status": "approved",
+      "output": "assets/destinations/boi-poster-7x8-candidate-v1.png",
+      "visualProfileId": "boise-foothills-ochre-autumn",
+      "design": {
+        "landmarks": [
+          "Idaho State Capitol",
+          "Boise Foothills"
+        ],
+        "skySignature": "Clear high sage-blue autumn sky with a single wispy white high cloud",
+        "seasonAndLight": "Early fall afternoon, sun grazing tawny foothills",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small silver propeller airliner at far left above foothill shoulder",
+        "foreground": "Cottonwoods by Boise River Greenbelt and low downtown",
+        "avoid": [
+          "Sawtooth Mountains as city backdrop",
+          "generic mountain resort"
+        ]
+      },
+      "referenceSources": [
+        "https://visitboise.com/about-boise/",
+        "https://visitboise.com/create-a-downtown-takeover-vibe-for-your-next-boise-meeting/"
+      ]
+    },
+    {
+      "code": "EYW",
+      "icao": "KEYW",
+      "city": "Key West",
+      "region": "Florida",
+      "title": "KEY WEST",
+      "subtitle": "FLORIDA",
+      "descriptor": "LIGHTHOUSE • HARBOR • KEYS",
+      "tagline": "At the End of the Road.",
+      "batch": "envoy-gap-2026-09-27-c",
+      "status": "approved",
+      "output": "assets/destinations/eyw-poster-7x8-candidate-v1.png",
+      "visualProfileId": "key-west-lighthouse-aqua-morning",
+      "design": {
+        "landmarks": [
+          "Key West Lighthouse and Keeper’s Quarters",
+          "Old Town conch houses"
+        ],
+        "skySignature": "Aqua tropical midmorning with low ivory trade-wind cloud ribbons",
+        "seasonAndLight": "Clear humid morning with white wood, turquoise shade and coral accents",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small silver propeller airliner far upper right above the Old Town roofline",
+        "foreground": "White lighthouse tower, pale timber conch houses and royal palms",
+        "avoid": [
+          "Southernmost Point buoy branding",
+          "Alligator Reef Lighthouse"
+        ]
+      },
+      "referenceSources": [
+        "https://www.kwahs.org/key-west-lighthouse-keepers-quarters/",
+        "https://fla-keys.com/key-west/"
+      ]
+    },
+    {
+      "code": "MCI",
+      "icao": "KMCI",
+      "city": "Kansas City",
+      "region": "Missouri",
+      "title": "KANSAS CITY",
+      "subtitle": "MISSOURI",
+      "descriptor": "UNION STATION • JAZZ • HEARTLAND",
+      "tagline": "Where Routes Come Together.",
+      "batch": "envoy-gap-2026-09-27-c",
+      "status": "approved",
+      "output": "assets/destinations/mci-poster-7x8-candidate-v1.png",
+      "visualProfileId": "kansas-city-union-station-brass-evening",
+      "design": {
+        "landmarks": [
+          "Kansas City Union Station",
+          "downtown skyline"
+        ],
+        "skySignature": "Deep blue early evening with a restrained amber horizon and thin cloud seam",
+        "seasonAndLight": "Autumn dusk with warm station windows and cool stone shadows",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Tiny silver propeller airliner upper left above the station",
+        "foreground": "Union Station Beaux-Arts façade, fountain and station lawn",
+        "avoid": [
+          "sports team logos",
+          "generic downtown interchange",
+          "Liberty Memorial behind the station"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitkc.com/union-station-crown-center/",
+        "https://www.visitkc.com/articles/iconic-kansas-city-landmarks/"
       ]
     }
   ]

@@ -21,6 +21,12 @@
       title: "AMARILLO",
       location: "Amarillo, Texas"
     }),
+    ATL: Object.freeze({
+      source:
+        "./assets/destinations/atl-poster-7x8-candidate-v1.png",
+      title: "ATLANTA",
+      location: "Atlanta, Georgia"
+    }),
     ATW: Object.freeze({
       source:
         "./assets/destinations/atw-poster-7x8-candidate-v1.png",
@@ -41,11 +47,23 @@
       location:
         "Bloomington–Normal, Illinois"
     }),
+    BOI: Object.freeze({
+      source:
+        "./assets/destinations/boi-poster-7x8-candidate-v1.png",
+      title: "BOISE",
+      location: "Boise, Idaho"
+    }),
     BNA: Object.freeze({
       source:
         "./assets/destinations/bna-poster-7x8-candidate-v1.png",
       title: "NASHVILLE",
       location: "Nashville, Tennessee"
+    }),
+    BOS: Object.freeze({
+      source:
+        "./assets/destinations/bos-poster-7x8-candidate-v1.png",
+      title: "BOSTON",
+      location: "Boston, Massachusetts"
     }),
     BWI: Object.freeze({
       source:
@@ -123,6 +141,12 @@
       title: "EVANSVILLE",
       location: "Evansville, Indiana"
     }),
+    EYW: Object.freeze({
+      source:
+        "./assets/destinations/eyw-poster-7x8-candidate-v1.png",
+      title: "KEY WEST",
+      location: "Key West, Florida"
+    }),
     FAR: Object.freeze({
       source:
         "./assets/destinations/far-poster-7x8-candidate-v1.png",
@@ -189,6 +213,12 @@
       title: "LA CROSSE",
       location:
         "La Crosse, Wisconsin"
+    }),
+    MCI: Object.freeze({
+      source:
+        "./assets/destinations/mci-poster-7x8-candidate-v1.png",
+      title: "KANSAS CITY",
+      location: "Kansas City, Missouri"
     }),
     MIA: Object.freeze({
       source:

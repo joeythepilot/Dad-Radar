@@ -104,7 +104,7 @@
       "region": "Georgia",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "ATW",
@@ -192,7 +192,7 @@
       "region": "Idaho",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "BOS",
@@ -200,7 +200,7 @@
       "region": "Massachusetts",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "BPT",
@@ -488,7 +488,7 @@
       "region": "Florida",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "FAR",
@@ -776,7 +776,7 @@
       "region": "Missouri",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "MEM",
@@ -1195,6 +1195,16 @@
       "ABQ",
       "GPT",
       "ICT"
+    ]
+  },
+  "thirdBatch": {
+    "id": "envoy-gap-2026-09-27-c",
+    "codes": [
+      "ATL",
+      "BOS",
+      "BOI",
+      "EYW",
+      "MCI"
     ]
   }
 }
