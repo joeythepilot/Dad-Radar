@@ -147,7 +147,7 @@
     {
       "id": "envoy-gap-2026-09-27-f",
       "label": "Envoy candidate route gap batch F — AVL style reset",
-      "status": "generating",
+      "status": "candidate",
       "airportCodes": [
         "BHM",
         "BUF",
@@ -1612,7 +1612,7 @@
       "descriptor": "PARK • LAKE • MAGIC CITY",
       "tagline": "In the Heart of Birmingham.",
       "batch": "envoy-gap-2026-09-27-f",
-      "status": "candidate",
+      "status": "approved",
       "output": "assets/destinations/bhm-poster-7x8-candidate-v2.png",
       "visualProfileId": "birmingham-railroadpark-avl-lithograph-evening",
       "design": {
@@ -1648,23 +1648,25 @@
       "descriptor": "CITY HALL • ART DECO • SQUARE",
       "tagline": "A City Built to Rise.",
       "batch": "envoy-gap-2026-09-27-f",
-      "status": "planned",
+      "status": "candidate",
       "output": "assets/destinations/buf-poster-7x8-candidate-v2.png",
-      "visualProfileId": "buffalo-cityhall-frostblue-morning",
+      "visualProfileId": "buffalo-cityhall-avl-lithograph-winter-gold",
       "design": {
         "landmarks": [
           "Buffalo City Hall",
           "Niagara Square and McKinley Monument"
         ],
-        "skySignature": "Frosty pale blue winter morning with two wispy white cloud planes",
-        "seasonAndLight": "Clear cold morning, terracotta Art Deco City Hall and restrained snow",
+        "skySignature": "Open dusty-blue winter sky with thin peach horizontal cloud bands",
+        "seasonAndLight": "Clear cold afternoon, golden Art Deco City Hall and restrained snow",
         "titleAlignment": "center",
-        "aircraftPlacement": "Small propeller airliner high upper right over Niagara Square",
+        "aircraftPlacement": "Small wing-engined four-engine transport high upper right; smooth unpowered nose",
         "foreground": "Niagara Square radial paths and monument with City Hall centered beyond",
         "avoid": [
           "Niagara Falls at City Hall",
           "generic Empire State Building",
-          "photographic snow glare"
+          "photographic snow glare",
+          "human statue atop McKinley obelisk",
+          "nose-mounted propeller or 8-bit blocks"
         ]
       },
       "referenceSources": [
@@ -1682,23 +1684,24 @@
       "descriptor": "RED ROCKS • PEAK • SKY",
       "tagline": "Where Stone Meets Sky.",
       "batch": "envoy-gap-2026-09-27-f",
-      "status": "planned",
+      "status": "candidate",
       "output": "assets/destinations/cos-poster-7x8-candidate-v2.png",
-      "visualProfileId": "coloradosprings-gardenofgods-vermillion-day",
+      "visualProfileId": "coloradosprings-gardenofgods-avl-lithograph-turquoise",
       "design": {
         "landmarks": [
           "Garden of the Gods sandstone formations",
           "Pikes Peak behind the park"
         ],
-        "skySignature": "Wide clear turquoise high-altitude sky with a single cream cloud arc",
-        "seasonAndLight": "Late spring daylight, vermilion rock slabs and blue-gray distant mountain",
+        "skySignature": "Wide calm turquoise high-altitude sky with thin cream streaks",
+        "seasonAndLight": "Late spring afternoon, vermilion rock slabs and blue-gray distant mountain",
         "titleAlignment": "center",
-        "aircraftPlacement": "Tiny propeller airliner mid upper left outside the rock formations",
+        "aircraftPlacement": "Small twin-wing-engine airliner upper left over the sandstone fins, smooth unpowered nose",
         "foreground": "Distinct upright red sandstone fins, sparse pinyon and distant Pikes Peak",
         "avoid": [
           "generic Utah hoodoos",
           "urban skyline in the park",
-          "photographic rock texture"
+          "photographic rock texture",
+          "nose-mounted propeller or 8-bit blocks"
         ]
       },
       "referenceSources": [
@@ -1716,23 +1719,24 @@
       "descriptor": "BLUE BRIDGE • RIVER • CITY",
       "tagline": "Across the St. Johns.",
       "batch": "envoy-gap-2026-09-27-f",
-      "status": "planned",
+      "status": "candidate",
       "output": "assets/destinations/jax-poster-7x8-candidate-v2.png",
-      "visualProfileId": "jacksonville-mainstreetbridge-teal-sunrise",
+      "visualProfileId": "jacksonville-mainstreetbridge-avl-lithograph-coral-dawn",
       "design": {
         "landmarks": [
           "Main Street Bridge blue vertical lift towers",
           "St. Johns River downtown riverfront"
         ],
-        "skySignature": "Soft coral sunrise with broad aqua cloud streaks",
+        "skySignature": "Sea-glass blue dawn with low thin coral cloud streaks",
         "seasonAndLight": "Warm Florida morning, bright blue bridge and shaded water",
         "titleAlignment": "center",
-        "aircraftPlacement": "Tiny propeller airliner far upper right above the river",
+        "aircraftPlacement": "Small twin-wing-engine airliner upper left above riverbank palms, smooth unpowered nose",
         "foreground": "Blue lift bridge across broad St. Johns with Northbank skyline behind",
         "avoid": [
           "suspension cables replacing lift towers",
           "Atlantic beach beside downtown",
-          "generic white bridge"
+          "generic white bridge",
+          "nose-mounted propeller or 8-bit blocks"
         ]
       },
       "referenceSources": [
@@ -1750,23 +1754,24 @@
       "descriptor": "BIG FOUR • RIVER • PARK",
       "tagline": "By the Ohio River.",
       "batch": "envoy-gap-2026-09-27-f",
-      "status": "planned",
+      "status": "candidate",
       "output": "assets/destinations/sdf-poster-7x8-candidate-v2.png",
-      "visualProfileId": "louisville-bigfourbridge-copper-sunset",
+      "visualProfileId": "louisville-bigfourbridge-avl-lithograph-lavender-dusk",
       "design": {
         "landmarks": [
           "Big Four Bridge former rail truss",
           "Louisville Waterfront Park and Ohio River"
         ],
-        "skySignature": "Pale peach evening sky with layered muted-blue cloud bars",
-        "seasonAndLight": "Early autumn sunset, copper bridge truss and olive parkland",
+        "skySignature": "Open muted lavender-blue dusk with two thin peach cloud ribbons",
+        "seasonAndLight": "Early autumn evening, copper bridge truss and olive parkland",
         "titleAlignment": "center",
-        "aircraftPlacement": "Small propeller airliner upper left in pale sky",
+        "aircraftPlacement": "Small twin-wing-engine airliner upper right, smooth unpowered nose",
         "foreground": "Louisville park bank and pedestrian ramp leading to six-span bridge over river",
         "avoid": [
           "bridge as suspension bridge",
           "Churchill Downs spires beside river",
-          "branded bourbon labels"
+          "branded bourbon labels",
+          "nose-mounted propeller or fiery cloud mass"
         ]
       },
       "referenceSources": [

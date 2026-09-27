@@ -6,7 +6,7 @@ Envoy describes service to **over 160 destinations**, but its public site does n
 
 Sources: [Envoy Air](https://www.envoyair.com/), [FlightNerve MQ route listing](https://www.flightnerve.com/airlines/MQ). The latter's own destination count and visible code list vary between crawls; its 146/148 headline is not treated as a complete verified roster. Ground handling locations are a separate service and are not automatically destinations flown by Envoy.
 
-After Joey's batch A through E approvals, **62** airport codes have an installed poster, **one** has the new Birmingham Batch F proof awaiting review, and **82** have no active artwork in the 145-code working union. The JSON records each code, airport catalog geography, source tag, and poster status, so batches can be selected without conflating a candidate route with approved art.
+After Joey's batch A through E approvals and the Birmingham Batch F approval, **63** airport codes have an installed poster, **four** have new Batch F candidates awaiting review, and **78** have no active artwork in the 145-code working union. The JSON records each code, airport catalog geography, source tag, and poster status, so batches can be selected without conflating a candidate route with approved art.
 
 ## Batch A: approved and installed in the application catalog
 
@@ -68,17 +68,17 @@ These five use flatter matte colors and print texture following Joey's Batch C s
 
 The comparison `Docs/UI/envoy-gap-2026-09-27-e-review.jpg` places these compositions above approved Batch D at the same size. The scenes use flat matte ink, halftone grain and distinct local anchors. Joey approved them on 2026-09-27, and all five are wired into `config/posters.js`. The route roster and landmark details remain subject to factual review before commercial use. Publication to the application branch alone does not verify deployment to the home display.
 
-## Batch F: AVL style reset; Birmingham proof only
+## Batch F: AVL style reset; Birmingham approved, four candidates
 
 | Code | City | Visual anchor | Review note |
 | --- | --- | --- | --- |
-| BHM | Birmingham, Alabama | Railroad Park lake, paths and downtown skyline | A Vulcan-statue direction was discarded over the park's asserted likeness rights. Joey rejected the industrial Sloss concept, then rejected a park pass with an implausible nose-prop airplane and the set's 8-bit drift. The new proof follows AVL's painterly lithograph and depicts a smaller four-engine transport with no nose propeller. Inspect the airframe and skyline at full size before approval. |
-| BUF | Buffalo, New York | City Hall and Niagara Square | Check Art Deco tower, monument and winter streetscape. |
-| COS | Colorado Springs, Colorado | Garden of the Gods and Pikes Peak | Check sandstone silhouettes and mountain viewpoint. |
-| JAX | Jacksonville, Florida | Blue Main Street vertical-lift bridge and St. Johns River | Check lift-tower geometry and Northbank skyline. |
-| SDF | Louisville, Kentucky | Big Four Bridge, Ohio River and Waterfront Park | Check truss spans and pedestrian approach relationship. |
+| BHM | Birmingham, Alabama | Railroad Park lake, paths and downtown skyline | Joey approved the third AVL-style proof with the quieter sky and corrected, lower skyline. Installed in the application catalog. A Vulcan direction was discarded over asserted likeness rights; the industrial Sloss version and implausible nose-prop park pass were rejected. |
+| BUF | Buffalo, New York | City Hall and Niagara Square | New painterly candidate. The McKinley Monument was corrected to a plain white obelisk with lions at its base, removing an invented statue atop the first pass. Check architecture and winter streetscape. |
+| COS | Colorado Springs, Colorado | Garden of the Gods and Pikes Peak | New painterly candidate; check sandstone silhouettes and mountain viewpoint. |
+| JAX | Jacksonville, Florida | Blue Main Street vertical-lift bridge and St. Johns River | New painterly candidate; check lift-tower geometry and Northbank skyline. |
+| SDF | Louisville, Kentucky | Big Four Bridge, Ohio River and Waterfront Park | New painterly candidate. A bright cloud mass was softened to the approved quiet-sky direction; check truss spans and pedestrian approach relationship. |
 
-Joey reset the entire set to the approved AVL poster after finding the first five too blocky. The former Batch F review sheet and five v1 images were removed from the active branch. `Docs/UI/envoy-gap-2026-09-27-f-reset-bhm-proof.jpg` places the one new Birmingham proof beside AVL at matching size. Buffalo, Colorado Springs, Jacksonville and Louisville retain their research but are back to planned status; they will be regenerated only after the Birmingham style proof is accepted. No Batch F image is in `config/posters.js`. The proof is 1173 × 1341, not a high-resolution print master. Landmark and third-party rights review remains necessary before commercial sale. Sources and visual profiles are recorded in `data/poster-batch-manifest.json`.
+Joey reset the entire set to the approved AVL poster after finding the first five too blocky. The former Batch F review sheet and five v1 images were removed from the active branch. `Docs/UI/envoy-gap-2026-09-27-f-reset-bhm-proof.jpg` preserves the Birmingham/AVL approval comparison; `Docs/UI/envoy-gap-2026-09-27-f-avl-review.jpg` shows the full revised set next to AVL. Only BHM is wired into `config/posters.js`; the other four await explicit approval. The artwork uses the 1173 × 1341 review canvas, not the later high-resolution print master. Aircraft geometry, landmark fidelity and third-party rights deserve review before commercial sale. Sources and visual profiles are recorded in `data/poster-batch-manifest.json`. Branch publication alone does not verify deployment to the home display.
 
 ## Next passes
 

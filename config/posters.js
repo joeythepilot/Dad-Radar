@@ -46,6 +46,12 @@
       location:
         "Asheville, North Carolina"
     }),
+    BHM: Object.freeze({
+      source:
+        "./assets/destinations/bhm-poster-7x8-candidate-v2.png",
+      title: "BIRMINGHAM",
+      location: "Birmingham, Alabama"
+    }),
     BMI: Object.freeze({
       source:
         "./assets/destinations/bmi-poster-7x8-candidate-v1.png",
