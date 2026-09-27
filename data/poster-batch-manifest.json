@@ -1609,31 +1609,32 @@
       "region": "Alabama",
       "title": "BIRMINGHAM",
       "subtitle": "ALABAMA",
-      "descriptor": "FURNACES • IRON • CITY",
-      "tagline": "Forged in the City.",
+      "descriptor": "PARK • LAKE • MAGIC CITY",
+      "tagline": "In the Heart of Birmingham.",
       "batch": "envoy-gap-2026-09-27-f",
       "status": "candidate",
       "output": "assets/destinations/bhm-poster-7x8-candidate-v1.png",
-      "visualProfileId": "birmingham-slossfurnaces-brass-violet-dusk",
+      "visualProfileId": "birmingham-railroadpark-goldblue-spring",
       "design": {
         "landmarks": [
-          "Sloss Furnaces historic blast furnace complex",
-          "brick engine house and industrial pipes"
+          "Railroad Park lake and paths",
+          "Birmingham downtown skyline beyond the park"
         ],
-        "skySignature": "Lavender-gold dusk with one long sloped cream cloud",
-        "seasonAndLight": "Early autumn dusk, rust-red furnaces and charcoal shadows",
+        "skySignature": "Clear pale-blue sky and broad simplified cream clouds; no aircraft",
+        "seasonAndLight": "Sunny late spring, golden-green lawn and coral flowering beds",
         "titleAlignment": "center",
-        "aircraftPlacement": "Tiny propeller airliner far upper left above the city",
-        "foreground": "Two tall blast furnaces, broad pipes, and a brick engine house with a few foreground trees",
+        "aircraftPlacement": "None; the aircraft in the first park pass was rejected as distracting and implausibly large",
+        "foreground": "Curving walking path beside reflective lake, trees and low flowers",
         "avoid": [
           "Vulcan statue or its likeness",
-          "operating flames or smoke from museum furnaces",
-          "photorealistic industrial texture"
+          "blast furnaces and industrial propaganda tone",
+          "aircraft of any size",
+          "photorealistic water and skyline details"
         ]
       },
       "referenceSources": [
-        "https://www.birminghamal.gov/government/city-departments/sloss-furnaces-museum/sloss-furnaces-history",
-        "https://www.birminghamal.gov/government/city-departments/sloss-furnaces-museum/discover-sloss"
+        "https://railroadpark.org/about/about-us/",
+        "https://railroadpark.org/"
       ]
     },
     {

@@ -72,13 +72,13 @@ The comparison `Docs/UI/envoy-gap-2026-09-27-e-review.jpg` places these composit
 
 | Code | City | Visual anchor | Review note |
 | --- | --- | --- | --- |
-| BHM | Birmingham, Alabama | Sloss Furnaces historic blast-furnace complex | The first Vulcan-statue direction was discarded before candidate installation because Vulcan Park asserts rights in the statue likeness and word mark. Check Sloss structures and any commercial-use concerns separately. |
+| BHM | Birmingham, Alabama | Railroad Park lake, paths and downtown skyline | A Vulcan-statue direction was discarded over the park's asserted likeness rights. Joey rejected the subsequent industrial Sloss concept as too severe and flagged an implausibly large aircraft in the first park pass. Current candidate is a flatter, warmer park view without an airplane. Check skyline geography before commercial use. |
 | BUF | Buffalo, New York | City Hall and Niagara Square | Check Art Deco tower, monument and winter streetscape. |
 | COS | Colorado Springs, Colorado | Garden of the Gods and Pikes Peak | Check sandstone silhouettes and mountain viewpoint. |
 | JAX | Jacksonville, Florida | Blue Main Street vertical-lift bridge and St. Johns River | Check lift-tower geometry and Northbank skyline. |
 | SDF | Louisville, Kentucky | Big Four Bridge, Ohio River and Waterfront Park | Check truss spans and pedestrian approach relationship. |
 
-The comparison `Docs/UI/envoy-gap-2026-09-27-f-review.jpg` places these five above the approved Batch E reference at matching size. They are **candidates only** and are deliberately absent from `config/posters.js` until Joey approves them. They use the same 1173 × 1341 review canvas, not the later high-resolution print master. Landmark and third-party rights review remains necessary before commercial sale. Sources and visual profiles are recorded in `data/poster-batch-manifest.json`.
+The comparison `Docs/UI/envoy-gap-2026-09-27-f-review.jpg` places these five above the approved Batch E reference at matching size. Birmingham was replaced after Joey's feedback; the active candidate contains no industrial site or aircraft. These are **candidates only** and are deliberately absent from `config/posters.js` until Joey approves them. They use the same 1173 × 1341 review canvas, not the later high-resolution print master. Landmark and third-party rights review remains necessary before commercial sale. Sources and visual profiles are recorded in `data/poster-batch-manifest.json`.
 
 ## Next passes
 
