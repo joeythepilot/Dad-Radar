@@ -146,8 +146,8 @@
     },
     {
       "id": "envoy-gap-2026-09-27-f",
-      "label": "Envoy candidate route gap batch F",
-      "status": "candidate",
+      "label": "Envoy candidate route gap batch F — AVL style reset",
+      "status": "generating",
       "airportCodes": [
         "BHM",
         "BUF",
@@ -1613,23 +1613,24 @@
       "tagline": "In the Heart of Birmingham.",
       "batch": "envoy-gap-2026-09-27-f",
       "status": "candidate",
-      "output": "assets/destinations/bhm-poster-7x8-candidate-v1.png",
-      "visualProfileId": "birmingham-railroadpark-goldblue-spring",
+      "output": "assets/destinations/bhm-poster-7x8-candidate-v2.png",
+      "visualProfileId": "birmingham-railroadpark-avl-lithograph-evening",
       "design": {
         "landmarks": [
           "Railroad Park lake and paths",
           "Birmingham downtown skyline beyond the park"
         ],
-        "skySignature": "Clear pale-blue sky and broad simplified cream clouds; no aircraft",
-        "seasonAndLight": "Sunny late spring, golden-green lawn and coral flowering beds",
+        "skySignature": "Open dusky-blue to peach evening sky with two low horizontal cloud streaks",
+        "seasonAndLight": "Warm evening, painterly lake reflections and flowering foreground",
         "titleAlignment": "center",
-        "aircraftPlacement": "None; the aircraft in the first park pass was rejected as distracting and implausibly large",
+        "aircraftPlacement": "Small vintage four-engine transport at upper left, all propellers wing-mounted and none at nose; inspect geometry before approval",
         "foreground": "Curving walking path beside reflective lake, trees and low flowers",
         "avoid": [
           "Vulcan statue or its likeness",
           "blast furnaces and industrial propaganda tone",
-          "aircraft of any size",
-          "photorealistic water and skyline details"
+          "nose-mounted propeller or hybrid aircraft",
+          "blocky pixel-art skyline",
+          "copy of AVL cloud silhouette"
         ]
       },
       "referenceSources": [
@@ -1647,8 +1648,8 @@
       "descriptor": "CITY HALL • ART DECO • SQUARE",
       "tagline": "A City Built to Rise.",
       "batch": "envoy-gap-2026-09-27-f",
-      "status": "candidate",
-      "output": "assets/destinations/buf-poster-7x8-candidate-v1.png",
+      "status": "planned",
+      "output": "assets/destinations/buf-poster-7x8-candidate-v2.png",
       "visualProfileId": "buffalo-cityhall-frostblue-morning",
       "design": {
         "landmarks": [
@@ -1681,8 +1682,8 @@
       "descriptor": "RED ROCKS • PEAK • SKY",
       "tagline": "Where Stone Meets Sky.",
       "batch": "envoy-gap-2026-09-27-f",
-      "status": "candidate",
-      "output": "assets/destinations/cos-poster-7x8-candidate-v1.png",
+      "status": "planned",
+      "output": "assets/destinations/cos-poster-7x8-candidate-v2.png",
       "visualProfileId": "coloradosprings-gardenofgods-vermillion-day",
       "design": {
         "landmarks": [
@@ -1715,8 +1716,8 @@
       "descriptor": "BLUE BRIDGE • RIVER • CITY",
       "tagline": "Across the St. Johns.",
       "batch": "envoy-gap-2026-09-27-f",
-      "status": "candidate",
-      "output": "assets/destinations/jax-poster-7x8-candidate-v1.png",
+      "status": "planned",
+      "output": "assets/destinations/jax-poster-7x8-candidate-v2.png",
       "visualProfileId": "jacksonville-mainstreetbridge-teal-sunrise",
       "design": {
         "landmarks": [
@@ -1749,8 +1750,8 @@
       "descriptor": "BIG FOUR • RIVER • PARK",
       "tagline": "By the Ohio River.",
       "batch": "envoy-gap-2026-09-27-f",
-      "status": "candidate",
-      "output": "assets/destinations/sdf-poster-7x8-candidate-v1.png",
+      "status": "planned",
+      "output": "assets/destinations/sdf-poster-7x8-candidate-v2.png",
       "visualProfileId": "louisville-bigfourbridge-copper-sunset",
       "design": {
         "landmarks": [

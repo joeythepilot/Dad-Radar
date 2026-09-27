@@ -232,7 +232,7 @@
       "region": "New York",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "candidate"
+      "posterStatus": "missing"
     },
     {
       "code": "BUR",
@@ -352,7 +352,7 @@
       "region": "Colorado",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "candidate"
+      "posterStatus": "missing"
     },
     {
       "code": "COU",
@@ -680,7 +680,7 @@
       "region": "Florida",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "candidate"
+      "posterStatus": "missing"
     },
     {
       "code": "JFK",
@@ -1056,7 +1056,7 @@
       "region": "Kentucky",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "candidate"
+      "posterStatus": "missing"
     },
     {
       "code": "SEA",
