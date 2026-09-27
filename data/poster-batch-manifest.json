@@ -99,7 +99,7 @@
     {
       "id": "envoy-gap-2026-09-27-b",
       "label": "Envoy candidate route gap batch B",
-      "status": "candidate",
+      "status": "approved",
       "airportCodes": [
         "GRR",
         "SAT",
@@ -891,7 +891,7 @@
       "descriptor": "GRAND RIVER • BLUE BRIDGE • WEST MICHIGAN",
       "tagline": "Where the River Runs Blue.",
       "batch": "envoy-gap-2026-09-27-b",
-      "status": "candidate",
+      "status": "approved",
       "output": "assets/destinations/grr-poster-7x8-candidate-v1.png",
       "visualProfileId": "grand-rapids-bluebridge-pale-spring",
       "design": {
@@ -924,7 +924,7 @@
       "descriptor": "MISSIONS • RIVER • HERITAGE",
       "tagline": "A City of Living History.",
       "batch": "envoy-gap-2026-09-27-b",
-      "status": "candidate",
+      "status": "approved",
       "output": "assets/destinations/sat-poster-7x8-candidate-v1.png",
       "visualProfileId": "san-antonio-mission-late-gold",
       "design": {
@@ -957,7 +957,7 @@
       "descriptor": "SANDIAS • OLD TOWN • BOSQUE",
       "tagline": "Beneath the Sandia Sky.",
       "batch": "envoy-gap-2026-09-27-b",
-      "status": "candidate",
+      "status": "approved",
       "output": "assets/destinations/abq-poster-7x8-candidate-v1.png",
       "visualProfileId": "albuquerque-sandia-violet-dusk",
       "design": {
@@ -990,7 +990,7 @@
       "descriptor": "HARBOR • SOUND • COAST",
       "tagline": "The Coast Is Calling.",
       "batch": "envoy-gap-2026-09-27-b",
-      "status": "candidate",
+      "status": "approved",
       "output": "assets/destinations/gpt-poster-7x8-candidate-v1.png",
       "visualProfileId": "gulfport-mississippi-sound-sea-glass",
       "design": {
@@ -1023,7 +1023,7 @@
       "descriptor": "AIR CAPITAL • PRAIRIE • HERITAGE",
       "tagline": "Where the Plains Took Flight.",
       "batch": "envoy-gap-2026-09-27-b",
-      "status": "candidate",
+      "status": "approved",
       "output": "assets/destinations/ict-poster-7x8-candidate-v1.png",
       "visualProfileId": "wichita-art-deco-amber-high-noon",
       "design": {

@@ -48,7 +48,7 @@
       "region": "New Mexico",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "candidate"
+      "posterStatus": "installed"
     },
     {
       "code": "ACA",
@@ -552,7 +552,7 @@
       "region": "Mississippi",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "candidate"
+      "posterStatus": "installed"
     },
     {
       "code": "GRB",
@@ -584,7 +584,7 @@
       "region": "Michigan",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "candidate"
+      "posterStatus": "installed"
     },
     {
       "code": "GSO",
@@ -648,7 +648,7 @@
       "region": "Kansas",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "candidate"
+      "posterStatus": "installed"
     },
     {
       "code": "ILM",
@@ -1040,7 +1040,7 @@
       "region": "Texas",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "candidate"
+      "posterStatus": "installed"
     },
     {
       "code": "SBP",

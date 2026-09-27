@@ -6,7 +6,7 @@ Envoy describes service to **over 160 destinations**, but its public site does n
 
 Sources: [Envoy Air](https://www.envoyair.com/), [FlightNerve MQ route listing](https://www.flightnerve.com/airlines/MQ). The latter's own destination count and visible code list vary between crawls; its 146/148 headline is not treated as a complete verified roster. Ground handling locations are a separate service and are not automatically destinations flown by Envoy.
 
-After Joey's batch A approval, **42** airport codes have an installed poster. Five batch B codes have candidate art and **98** remain without artwork in the 145-code working union. The JSON records each code, airport catalog geography, source tag, and poster status, so batches can be selected without conflating a candidate route with approved art.
+After Joey's batch A and B approvals, **47** airport codes have an installed poster and **98** remain without artwork in the 145-code working union. The JSON records each code, airport catalog geography, source tag, and poster status, so batches can be selected without conflating a candidate route with approved art.
 
 ## Batch A: approved and installed in the application catalog
 
@@ -20,7 +20,7 @@ After Joey's batch A approval, **42** airport codes have an installed poster. Fi
 
 Joey approved the five compositions on 2026-09-27. Their review-size assets are wired into `config/posters.js`. The earlier comparison is `Docs/UI/envoy-gap-2026-09-27-a-review.png`. Application installation and any later home-host deployment are separate states; publication to the application branch alone does not prove the display is running these images. Landmark details still deserve a dedicated factual review before commercial use. The 2100 × 2400 display and 4200 × 4800 archival deliverables are a later production pass; the application currently uses the validated 1173 × 1341 assets, consistent with the existing poster library.
 
-## Batch B: five candidates for Joey's review
+## Batch B: approved and installed in the application catalog
 
 | Code | City | Visual anchor | Review note |
 | --- | --- | --- | --- |
@@ -30,7 +30,7 @@ Joey approved the five compositions on 2026-09-27. Their review-size assets are 
 | GPT | Gulfport, Mississippi | Jones Park marina and Mississippi Sound | Confirm waterfront details and avoid a generic coast reading. |
 | ICT | Wichita, Kansas | Historic municipal airport terminal | Check tower and Art Deco wings against photographs. |
 
-These five are candidate artwork in `assets/destinations/` and compared with batch A in `Docs/UI/envoy-gap-2026-09-27-b-review.png`. They are not in the installed poster catalog. The batch records and local-reference URLs are in `data/poster-batch-manifest.json`.
+Joey approved these five compositions on 2026-09-27. Their review-size assets are wired into `config/posters.js`, with the comparison in `Docs/UI/envoy-gap-2026-09-27-b-review.png`. Landmark details still deserve factual review before commercial use. The batch records and local-reference URLs are in `data/poster-batch-manifest.json`.
 
 ## Next passes
 

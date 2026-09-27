@@ -9,6 +9,12 @@
       location:
         "Lehigh Valley, Pennsylvania"
     }),
+    ABQ: Object.freeze({
+      source:
+        "./assets/destinations/abq-poster-7x8-candidate-v1.png",
+      title: "ALBUQUERQUE",
+      location: "Albuquerque, New Mexico"
+    }),
     AMA: Object.freeze({
       source:
         "./assets/destinations/ama-poster-7x8-candidate-v1.png",
@@ -52,6 +58,12 @@
         "./assets/destinations/bro-poster-7x8-candidate-v1.png",
       title: "BROWNSVILLE",
       location: "Brownsville, Texas"
+    }),
+    GPT: Object.freeze({
+      source:
+        "./assets/destinations/gpt-poster-7x8-candidate-v1.png",
+      title: "GULFPORT",
+      location: "Gulfport, Mississippi"
     }),
     CLT: Object.freeze({
       source:
@@ -123,6 +135,12 @@
       title: "GREEN BAY",
       location: "Green Bay, Wisconsin"
     }),
+    GRR: Object.freeze({
+      source:
+        "./assets/destinations/grr-poster-7x8-candidate-v1.png",
+      title: "GRAND RAPIDS",
+      location: "Grand Rapids, Michigan"
+    }),
     GSO: Object.freeze({
       source:
         "./assets/destinations/gso-poster-7x8-candidate-v1.png",
@@ -146,6 +164,12 @@
         "./assets/destinations/ind-poster-7x8-candidate-v1.png",
       title: "INDIANAPOLIS",
       location: "Indianapolis, Indiana"
+    }),
+    ICT: Object.freeze({
+      source:
+        "./assets/destinations/ict-poster-7x8-candidate-v1.png",
+      title: "WICHITA",
+      location: "Wichita, Kansas"
     }),
     LBB: Object.freeze({
       source:
@@ -213,6 +237,12 @@
         "./assets/destinations/roc-poster-7x8-candidate-v1.png",
       title: "ROCHESTER",
       location: "Rochester, New York"
+    }),
+    SAT: Object.freeze({
+      source:
+        "./assets/destinations/sat-poster-7x8-candidate-v1.png",
+      title: "SAN ANTONIO",
+      location: "San Antonio, Texas"
     }),
     SGF: Object.freeze({
       source:

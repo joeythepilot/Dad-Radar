@@ -36,7 +36,10 @@ function runTests() {
     getPoster("TPA").title,
     "TAMPA"
   );
-  for (const code of ["AMA", "LIT", "ATW", "FAR", "BRO"]) {
+  for (const code of [
+    "AMA", "LIT", "ATW", "FAR", "BRO",
+    "GRR", "SAT", "ABQ", "GPT", "ICT"
+  ]) {
     assert.ok(
       getPoster(code),
       `${code} approved poster should be installed`
@@ -44,7 +47,7 @@ function runTests() {
   }
   assert.equal(
     Object.keys(posterByAirport).length,
-    42
+    47
   );
 
   for (const [code, poster] of
