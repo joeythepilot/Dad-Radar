@@ -27,7 +27,7 @@ async function checkWeeklyTicker(page, compact, label, output, expectedModules) 
     if (JSON.stringify(labels) !== JSON.stringify(expected)) return false;
     const resources = performance.getEntriesByType("resource").map(entry => entry.name);
     return resources.some(name => name.includes("/assets/hardware/weekly-overnight/weekly-overnight-module.png"));
-  }, expectedModules.map(module => module.day + " overnight " + (module.code === "HOME" ? "home" : module.code)),
+  }, expectedModules.map(module => module.day + " overnight " + (module.code === "HOME" ? "home" : module.code === "UNKN" ? "unknown" : module.code)),
   {timeout: 4000, polling: 25});
 
   await page.waitForFunction(() => {

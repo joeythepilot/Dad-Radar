@@ -4,6 +4,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const ticker = require("./weekly-ticker");
 function layover(id,airport,startUtc,endUtc){return{id,kind:"layover",status:"confirmed",airport,times:{startUtc,endUtc}};}
+function flight(id,destination,startUtc,endUtc){return{id,kind:"flight",status:"confirmed",origin:"ORD",destination,times:{startUtc,endUtc}};}
 
 const overnightAsset=path.join(__dirname,"..","assets","hardware","weekly-overnight","weekly-overnight-module.png");
 assert(fs.existsSync(overnightAsset),"Reusable weekly overnight module artwork is present.");
@@ -40,13 +41,13 @@ assert.deepEqual(
   [
     ["MON","ORD","ORD "],
     ["TUE","DFW","DFW "],
-    ["WED","HOME","HOME"],
-    ["THU","HOME","HOME"],
-    ["FRI","HOME","HOME"],
-    ["SAT","HOME","HOME"],
-    ["SUN","HOME","HOME"]
+    ["WED","UNKN","UNKN"],
+    ["THU","UNKN","UNKN"],
+    ["FRI","UNKN","UNKN"],
+    ["SAT","UNKN","UNKN"],
+    ["SUN","UNKN","UNKN"]
   ],
-  "Seven-bay bank shows the overnight airport on the operational day and HOME elsewhere."
+  "Seven-bay bank shows explicit layovers and an honest four-wheel unknown for uncovered dates."
 );
 
 const rolloverBefore=ticker.buildWeeklyOvernightModules({events:[]},{
@@ -61,7 +62,45 @@ assert.equal(rolloverAfter[0].day,"TUE","After 06:00 local the far-left bay adva
 const reserve={id:'reserve-ord',kind:'reserve',airport:'ORD',allDay:true,status:'confirmed',times:{startUtc:'2026-10-01T04:00:00Z',endUtc:'2026-10-04T04:00:00Z'}};
 const assignedLayover=layover('assigned-evv','EVV','2026-10-02T23:00:00Z','2026-10-03T15:00:00Z');
 const reserveBank=ticker.buildWeeklyOvernightModules({events:[reserve,assignedLayover]},{now:'2026-09-30T16:00:00Z'});
-assert.deepEqual(reserveBank.map(module=>module.code).slice(0,5),['HOME','ORD','EVV','ORD','HOME'],
+assert.deepEqual(reserveBank.map(module=>module.code).slice(0,5),['UNKN','ORD','EVV','ORD','UNKN'],
   'Explicit reserve dates show ORD; an assigned layover wins; blank days beyond the block stay outside reserve.');
+
+const scheduleEvidence=ticker.buildWeeklyOvernightModules({events:[
+  flight('return-base','ORD','2026-09-30T14:00:00Z','2026-09-30T22:00:00Z'),
+  layover('base-layover','ORD','2026-09-30T23:00:00Z','2026-10-01T12:00:00Z'),
+  {id:'rap',kind:'reserve',reserveType:'RAP',airport:'ORD',allDay:false,status:'confirmed',
+    times:{startUtc:'2026-10-01T16:00:00Z',endUtc:'2026-10-02T03:59:00Z'}}
+]},{now:'2026-09-30T16:00:00Z'});
+assert.deepEqual(scheduleEvidence.map(module=>module.code).slice(0,5),
+  ['ORD','ORD','UNKN','UNKN','UNKN'],
+  'A flight arrival and timed RAP establish their own operational dates, but no later blank date.');
+
+const assignment=ticker.buildWeeklyOvernightModules({events:[
+  reserve,
+  flight('assigned','AVL','2026-10-02T17:00:00Z','2026-10-03T01:30:00Z'),
+  {...flight('cancelled-assignment','CMH','2026-10-02T18:00:00Z','2026-10-03T02:00:00Z'),status:'cancelled'}
+]},{now:'2026-09-30T16:00:00Z'});
+assert.equal(assignment[2].code,'HOME','A scheduled AVL arrival beats reserve; a cancelled assignment supplies no location.');
+assert.deepEqual(assignment[2].characters,['H','O','M','E']);
+
+const arrivals=ticker.buildWeeklyOvernightModules({events:[
+  flight('after-six','AVL','2026-10-01T07:00:00Z','2026-10-01T10:01:00Z'),
+  flight('before-six','CMH','2026-10-01T02:00:00Z','2026-10-01T09:59:00Z'),
+  flight('later','ORD','2026-10-01T18:00:00Z','2026-10-02T01:00:00Z')
+]},{now:'2026-09-30T16:00:00Z'});
+assert.deepEqual(arrivals.map(module=>module.code).slice(0,2),['CMH','ORD'],
+  'Arrivals use the 6 AM Eastern operational date, and the latest arrival on that date wins.');
+
+const reassigned=ticker.buildWeeklyOvernightModules({events:[
+  reserve,
+  layover('earlier-base','ORD','2026-10-02T12:00:00Z','2026-10-02T19:00:00Z'),
+  flight('later-assignment','EVV','2026-10-02T19:15:00Z','2026-10-02T22:00:00Z')
+]},{now:'2026-09-30T16:00:00Z'});
+assert.equal(reassigned[2].code,'EVV','A later assigned flight arrival supersedes an earlier layover and reserve.');
+
+assert.equal(ticker.operationalDateKey('2026-11-01T10:59:00Z','America/New_York'),'2026-10-31',
+  'The fall daylight-saving change still rolls at 5:59 AM Eastern.');
+assert.equal(ticker.operationalDateKey('2026-11-01T11:00:00Z','America/New_York'),'2026-11-01',
+  'The fall daylight-saving change still rolls at 6 AM Eastern.');
 
 console.log("Weekly overnight tests passed: approved module artwork, seven bays, airport codes and 6am rollover.");

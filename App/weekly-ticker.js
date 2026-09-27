@@ -24,7 +24,7 @@
     function startOf(event) { return toDate(event?.times?.startUtc ?? event?.startUtc); }
     function endOf(event) { return toDate(event?.times?.endUtc ?? event?.endUtc); }
 
-    function usable(event) { return event && event.status !== "cancelled" && startOf(event) && endOf(event); }
+    function usable(event) { return event && !event.cancelled && !/^cancell?ed$/i.test(String(event.status??"")) && startOf(event) && endOf(event); }
     function sorted(events) { return (Array.isArray(events) ? events : []).filter(usable).slice().sort((a,b)=>startOf(a)-startOf(b)); }
 
     function shiftKey(key, days) {
@@ -39,6 +39,7 @@
     }
 
     const OVERNIGHT_MODULE_COUNT = 7;
+    const UNKNOWN_OVERNIGHT_CODE = "UNKN";
     const OPERATIONAL_DAY_ROLLOVER_HOUR = 6;
     const MODULE_DESIGN_WIDTH = 149;
     const MODULE_DESIGN_HEIGHT = 122;
@@ -83,8 +84,8 @@
     }
 
     function overnightCharacters(value) {
-      const code=String(value??"HOME").toUpperCase();
-      if(code==="HOME")return ["H","O","M","E"];
+      const code=String(value??UNKNOWN_OVERNIGHT_CODE).toUpperCase();
+      if(code==="HOME" || code===UNKNOWN_OVERNIGHT_CODE)return code.split("");
       const chars=code.slice(0,3).split("");
       while(chars.length<4)chars.push(" ");
       return chars.slice(0,4);
@@ -99,12 +100,19 @@
       const todayKey=operationalDateKey(now,options.timeZone,OPERATIONAL_DAY_ROLLOVER_HOUR);
       const modules=Array.from({length:OVERNIGHT_MODULE_COUNT},(_,index)=>{
         const key=shiftKey(todayKey,index);
-        return {key,day:weekdayForKey(key),code:"HOME",characters:overnightCharacters("HOME")};
+        return {key,day:weekdayForKey(key),code:UNKNOWN_OVERNIGHT_CODE,characters:overnightCharacters(UNKNOWN_OVERNIGHT_CODE)};
       });
       const byKey=new Map(modules.map(module=>[module.key,module]));
+      const locationEvidenceAt=new Map();
+      function applyLocation(module,airport,at) {
+        if(!module || (locationEvidenceAt.has(module.key) && locationEvidenceAt.get(module.key)>at))return;
+        module.code=airport;
+        module.characters=overnightCharacters(airport);
+        locationEvidenceAt.set(module.key,at);
+      }
 
       sorted(schedule?.events)
-        .filter(event=>event.kind==="reserve" && event.allDay)
+        .filter(event=>event.kind==="reserve" && event.allDay && event.airport)
         .forEach(reserve=>{
           const airport=normalizeOvernightCode(reserve.airport,options.homeAirport);
           const first=localDateParts(startOf(reserve),options.timeZone)?.key;
@@ -119,7 +127,32 @@
         });
 
       sorted(schedule?.events)
-        .filter(event=>event.kind==="layover")
+        .filter(event=>event.kind==="reserve" && !event.allDay && event.airport)
+        .forEach(reserve=>{
+          const airport=normalizeOvernightCode(reserve.airport,options.homeAirport);
+          const first=operationalDateKey(startOf(reserve),options.timeZone);
+          const last=operationalDateKey(new Date(endOf(reserve).getTime()-1),options.timeZone);
+          if(!first||!last)return;
+          for(const module of modules){
+            if(module.key>=first && module.key<=last){
+              module.code=airport;
+              module.characters=overnightCharacters(airport);
+            }
+          }
+        });
+
+      sorted(schedule?.events)
+        .filter(event=>event.kind==="flight" && event.destination)
+        .sort((a,b)=>endOf(a)-endOf(b))
+        .forEach(flight=>{
+          const module=byKey.get(operationalDateKey(endOf(flight),options.timeZone));
+          if(!module)return;
+          const airport=normalizeOvernightCode(flight.destination,options.homeAirport);
+          applyLocation(module,airport,endOf(flight).getTime());
+        });
+
+      sorted(schedule?.events)
+        .filter(event=>event.kind==="layover" && event.airport)
         .forEach(layover=>{
           const airport=normalizeOvernightCode(layover.airport,options.homeAirport);
           if(airport==="HOME")return;
@@ -131,10 +164,7 @@
           for(let index=0;index<overnightCount;index+=1){
             const key=shiftKey(startKey,index);
             const module=byKey.get(key);
-            if(module){
-              module.code=airport;
-              module.characters=overnightCharacters(airport);
-            }
+            applyLocation(module,airport,start.getTime());
           }
         });
 
@@ -434,7 +464,7 @@
           const dayChanged=oldDay!==module.day;
 
           bay.element.setAttribute("aria-label",
-            module.day+" overnight "+(module.code==="HOME"?"home":module.code));
+            module.day+" overnight "+(module.code==="HOME"?"home":module.code===UNKNOWN_OVERNIGHT_CODE?"unknown":module.code));
 
           if(!currentModules || !animate){
             bay.day=module.day;
