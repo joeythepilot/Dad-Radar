@@ -38,7 +38,7 @@ function runTests() {
   );
   assert.equal(
     Object.keys(posterByAirport).length,
-    32
+    37
   );
 
   for (const [code, poster] of

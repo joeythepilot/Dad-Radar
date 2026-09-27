@@ -55,6 +55,12 @@
       "label": "Carolinas family beta destination coverage",
       "status": "approved",
       "airportCodes": ["GSP"]
+    },
+    {
+      "id": "family-trip-2026-09-27",
+      "label": "September 27 traded trip destination coverage",
+      "status": "approved",
+      "airportCodes": ["EVV", "GSO", "DAY", "DTW", "OMA"]
     }
   ],
   "destinations": [
@@ -250,6 +256,26 @@
     {
       "code": "GSP", "icao": "KGSP", "city": "Greenville–Spartanburg", "region": "South Carolina", "title": "GREENVILLE–SPARTANBURG", "subtitle": "SOUTH CAROLINA", "descriptor": "BLUE RIDGE • REEDY RIVER • UPSTATE", "tagline": "The Upstate beneath the Blue Ridge.", "batch": "carolinas-2026-08", "status": "approved", "output": "assets/destinations/gsp-poster-7x8-candidate-v1.png", "visualProfileId": "upstate-falls-golden-afternoon",
       "design": {"landmarks": ["Falls Park on the Reedy", "Liberty Bridge", "Blue Ridge foothills", "Spartanburg rail heritage"], "skySignature": "Warm Carolina-blue late-afternoon sky with broad cream clouds", "seasonAndLight": "Late summer with warm sunlight across the Upstate", "titleAlignment": "center", "aircraftPlacement": "Classic silver propeller airliner above the Blue Ridge horizon", "foreground": "Reedy River falls, curved pedestrian bridge, and leafy park", "avoid": ["airline logos", "modern jets", "generic coastal imagery"]}, "referenceSources": ["https://www.visitgreenvillesc.com/things-to-do/attractions/falls-park-on-the-reedy/", "https://www.visitspartanburg.com/", "https://gspairport.com/"]
+    },
+    {
+      "code": "EVV", "icao": "KEVV", "city": "Evansville", "region": "Indiana", "title": "EVANSVILLE", "subtitle": "INDIANA", "descriptor": "OHIO RIVER • RIVER CITY • HERITAGE", "tagline": "Where the River Bends.", "batch": "family-trip-2026-09-27", "status": "approved", "output": "assets/destinations/evv-poster-7x8-candidate-v1.png", "visualProfileId": "evansville-cobalt-river-nightfall",
+      "design": {"landmarks": ["Ohio River bend", "Downtown Evansville", "Victory Theatre"], "skySignature": "Cobalt dusk and one low apricot band over the Ohio River", "seasonAndLight": "Late-summer nightfall with copper river reflections", "titleAlignment": "center", "aircraftPlacement": "Small silver propeller airliner at upper left over the river", "foreground": "Riverfront promenade, reflected lamps and historic brick", "avoid": ["Evansville, Wisconsin", "mountainous skyline", "casino branding"]}, "referenceSources": ["https://www.exploreevansville.com/", "https://victorytheatre.com/friends-of-the-victory/the-new-marquee"]
+    },
+    {
+      "code": "GSO", "icao": "KGSO", "city": "Greensboro", "region": "North Carolina", "title": "GREENSBORO", "subtitle": "NORTH CAROLINA", "descriptor": "GATE CITY • HISTORY • GARDENS", "tagline": "A City of Welcome.", "batch": "family-trip-2026-09-27", "status": "approved", "output": "assets/destinations/gso-poster-7x8-candidate-v1.png", "visualProfileId": "greensboro-leafy-turquoise-morning",
+      "design": {"landmarks": ["Historic South Elm Street", "International Civil Rights Center & Museum", "LeBauer Park"], "skySignature": "Pale turquoise autumn morning with thin high wisps", "seasonAndLight": "Clear early autumn morning with green city trees", "titleAlignment": "center", "aircraftPlacement": "Small silver propeller airliner at upper right over South Elm Street", "foreground": "Historic brick facades and tree-lined civic park", "avoid": ["Greenville–Spartanburg imagery", "Reedy River", "invented monument signage"]}, "referenceSources": ["https://www.visitgreensboronc.com/about-us/greensboro-history/downtown.aspx", "https://www.visitgreensboronc.com/things-to-do/attractions/the-international-civil-rights-center-and-museum.aspx"]
+    },
+    {
+      "code": "DAY", "icao": "KDAY", "city": "Dayton", "region": "Ohio", "title": "DAYTON", "subtitle": "OHIO", "descriptor": "WRIGHT BROTHERS • CARILLON • FLIGHT", "tagline": "Where Flight Began.", "batch": "family-trip-2026-09-27", "status": "approved", "output": "assets/destinations/day-poster-7x8-candidate-v1.png", "visualProfileId": "dayton-carillon-cornflower-afternoon",
+      "design": {"landmarks": ["Deeds Carillon", "Carillon Historical Park", "Wright aviation heritage"], "skySignature": "Cornflower blue afternoon with narrow white cloud streaks", "seasonAndLight": "Clear summer daylight across green park lawns", "titleAlignment": "center", "aircraftPlacement": "Small early biplane at upper right beside carillon", "foreground": "Art Moderne carillon tower and tree-lined lawns", "avoid": ["Gothic pinnacles", "generic skyscraper tower", "unrelated aircraft branding"]}, "referenceSources": ["https://www.nps.gov/daav/learn/historyculture/index.htm", "https://www.nps.gov/daav/learn/historyculture/wright-cycle-company-complex.htm"]
+    },
+    {
+      "code": "DTW", "icao": "KDTW", "city": "Detroit", "region": "Michigan", "title": "DETROIT", "subtitle": "MICHIGAN", "descriptor": "RIVERFRONT • ART DECO • MOTOR CITY", "tagline": "Built to Move.", "batch": "family-trip-2026-09-27", "status": "approved", "output": "assets/destinations/dtw-poster-7x8-candidate-v1.png", "visualProfileId": "detroit-indigo-river-blue-hour",
+      "design": {"landmarks": ["Detroit River", "Renaissance Center", "Guardian Building"], "skySignature": "Indigo blue hour with a narrow silver-blue break", "seasonAndLight": "Clear twilight with copper city windows over dark river water", "titleAlignment": "center", "aircraftPlacement": "Small silver propeller airliner high at upper left", "foreground": "Detroit River reflections and waterfront skyline", "avoid": ["New York skyline", "automaker logos", "fictional Art Deco crown"]}, "referenceSources": ["https://visitdetroit.com/inside-the-d/iconic-landmarks/", "https://visitdetroit.com/itinerary/amazing-architecture/"]
+    },
+    {
+      "code": "OMA", "icao": "KOMA", "city": "Omaha", "region": "Nebraska", "title": "OMAHA", "subtitle": "NEBRASKA", "descriptor": "MISSOURI RIVER • OLD MARKET • HEARTLAND", "tagline": "At the Heart of the Plains.", "batch": "family-trip-2026-09-27", "status": "approved", "output": "assets/destinations/oma-poster-7x8-candidate-v1.png", "visualProfileId": "omaha-golden-bridge-afternoon",
+      "design": {"landmarks": ["Bob Kerrey Pedestrian Bridge", "Missouri River", "Old Market"], "skySignature": "Honey-gold afternoon and long blue-grey cloud bands", "seasonAndLight": "Late summer golden light along the Missouri River", "titleAlignment": "center", "aircraftPlacement": "Small silver propeller airliner high at upper right", "foreground": "Historic Old Market brick and broad river reflections", "avoid": ["mountain silhouette", "suspension bridge", "futuristic skyline"]}, "referenceSources": ["https://www.visitomaha.com/bob/", "https://www.visitomaha.com/"]
     }
   ]
 }

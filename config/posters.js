@@ -75,11 +75,35 @@
       location:
         "Dallas–Fort Worth, Texas"
     }),
+    DAY: Object.freeze({
+      source:
+        "./assets/destinations/day-poster-7x8-candidate-v1.png",
+      title: "DAYTON",
+      location: "Dayton, Ohio"
+    }),
+    DTW: Object.freeze({
+      source:
+        "./assets/destinations/dtw-poster-7x8-candidate-v1.png",
+      title: "DETROIT",
+      location: "Detroit, Michigan"
+    }),
+    EVV: Object.freeze({
+      source:
+        "./assets/destinations/evv-poster-7x8-candidate-v1.png",
+      title: "EVANSVILLE",
+      location: "Evansville, Indiana"
+    }),
     GRB: Object.freeze({
       source:
         "./assets/destinations/grb-poster-7x8-candidate-v1.png",
       title: "GREEN BAY",
       location: "Green Bay, Wisconsin"
+    }),
+    GSO: Object.freeze({
+      source:
+        "./assets/destinations/gso-poster-7x8-candidate-v1.png",
+      title: "GREENSBORO",
+      location: "Greensboro, North Carolina"
     }),
     GSP: Object.freeze({
       source:
@@ -135,6 +159,12 @@
         "./assets/destinations/ord-poster-7x8-candidate-v2.png",
       title: "CHICAGO",
       location: "Chicago, Illinois"
+    }),
+    OMA: Object.freeze({
+      source:
+        "./assets/destinations/oma-poster-7x8-candidate-v1.png",
+      title: "OMAHA",
+      location: "Omaha, Nebraska"
     }),
     PHX: Object.freeze({
       source:
