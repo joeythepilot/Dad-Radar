@@ -3,8 +3,27 @@ const assert = require("node:assert/strict");
 const {
   calendarQueryWindow,
   isCalendarAuthorizationError,
-  startOfDisplayDay
+  startOfDisplayDay,
+  fetchCalendarPages
 } = require("./calendar-service");
+
+async function testCompleteBoundedCalendarRead() {
+  assert.equal(typeof fetchCalendarPages, "function", "Calendar reads must have a bounded, paginated fetch path.");
+  const requests = [];
+  const calendar = {events:{async list(params, transport) {
+    requests.push({params,transport});
+    return {data:params.pageToken
+      ? {items:[{id:"later-reserve"}],timeZone:"America/Chicago"}
+      : {items:[{id:"earlier-flight"}],timeZone:"America/Chicago",nextPageToken:"next"}};
+  }}};
+  const result = await fetchCalendarPages(calendar,{calendarId:"pilot",timeMin:"2026-09-20T00:00:00Z",timeMax:"2026-10-10T00:00:00Z",maxResults:100});
+  assert.deepEqual(result.items.map(event=>event.id),["earlier-flight","later-reserve"],
+    "A later calendar page must reach the family schedule.");
+  assert.equal(result.timeZone,"America/Chicago");
+  assert.deepEqual(requests.map(request=>request.params.pageToken),[undefined,"next"]);
+  assert(requests.every(request=>request.transport.timeout>0 && request.transport.timeout<=15000),
+    "Every Google request has a finite timeout, including subsequent pages.");
+}
 
 function testSummerDayBoundary() {
   const start = startOfDisplayDay(
@@ -95,17 +114,18 @@ function testExplicitMinimumDoesNotAddHistory() {
   );
 }
 
-function runTests() {
+async function runTests() {
   testSummerDayBoundary();
   testWinterDayBoundary();
   testInvalidBoundaryInput();
   testDefaultWindowIncludesLocationHistory();
   testExplicitMinimumDoesNotAddHistory();
   testExpiredAuthorizationDetection();
+  await testCompleteBoundedCalendarRead();
 
   console.log(
     "Calendar service tests passed."
   );
 }
 
-runTests();
+runTests().catch(error=>{console.error(error);process.exitCode=1;});

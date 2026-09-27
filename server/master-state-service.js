@@ -16,6 +16,7 @@ function createMasterStateService(options) {
   const storage = saved.storage && typeof saved.storage === "object" ? saved.storage : {};
   const legGuard = createFlightLegGuard(storage);
   const sequenceHistory = createSequenceHistoryService(storage, {now: clock});
+  const operationalTimeoutMs = options.operationalTimeoutMs ?? 10000;
   let envelope = {ok: false, resolved: null, calendarAt: null, liveAt: null,
     calendarOk: false, liveOk: true, publishedAt: null};
   let schedule = null;
@@ -121,6 +122,23 @@ function createMasterStateService(options) {
     };
   }
 
+  async function boundedOperational(event) {
+    const abort = new AbortController();
+    let timer;
+    const deadline = new Promise((_, reject) => {
+      timer = setTimeout(() => {
+        abort.abort();
+        reject(new Error("FlightAware lookup timed out; publishing the Calendar schedule."));
+      }, operationalTimeoutMs);
+      timer.unref?.();
+    });
+    try {
+      return await Promise.race([options.getOperational(event, {signal: abort.signal}), deadline]);
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
   async function enrichCalendar(value) {
     if (!value || !Array.isArray(value.events) || typeof options.getOperational !== "function") {
       return value;
@@ -131,7 +149,7 @@ function createMasterStateService(options) {
         return withOperational(event, previousOperational);
       }
       try {
-        const operational = await options.getOperational(event);
+        const operational = await boundedOperational(event);
         return withOperational(event, operational ?? previousOperational);
       } catch (error) {
         options.report?.("flightaware-operational-error", {

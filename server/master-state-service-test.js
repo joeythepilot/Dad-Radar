@@ -89,4 +89,38 @@ async function run() {
   } finally {master.stop(); fs.rmSync(dir, {recursive: true, force: true});}
   console.log("Master state tests passed: shared polling, arrival, outages, restart, tracks and schedule edits.");
 }
-run().catch(error => {console.error(error); process.exitCode = 1;});
+
+async function testCalendarPollingRecoversAfterOutage() {
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),"dad-calendar-recovery-"));
+  const jobs=new Map();
+  let clock=Date.parse("2026-09-27T01:00:00Z"), outage=false, airport="ORD";
+  const master=createMasterStateService({
+    file:path.join(dir,"state.json"),now:()=>clock,console:{error(){},warn(){}},
+    setInterval(fn,delay){const id={};jobs.set(id,{fn,delay});return id;},
+    clearInterval(id){jobs.delete(id);},
+    async getCalendar(){
+      if(outage)throw new Error("temporary DNS outage");
+      return {retrievedAt:new Date(clock).toISOString(),events:[{id:"overnight",kind:"layover",status:"confirmed",airport,
+        times:{startUtc:"2026-09-26T20:00:00Z",endUtc:"2026-09-28T12:00:00Z"}}]};
+    },
+    async getFlight(){return {attempts:[],snapshot:null};}
+  });
+  try {
+    await master.start();
+    const initial=master.read().calendarAt;
+    const calendarPoll=[...jobs.values()].find(job=>job.delay===60000);
+    assert(calendarPoll,"The home server polls Calendar every minute without a connected display.");
+    outage=true;clock+=60000;await calendarPoll.fn();
+    assert.equal(master.read().calendarOk,false);
+    assert.equal(master.readCalendar().events[0].airport,"ORD","A failed fetch keeps the last good schedule.");
+    outage=false;airport="MSN";clock+=60000;await calendarPoll.fn();
+    assert.equal(master.read().calendarOk,true);
+    assert.notEqual(master.read().calendarAt,initial);
+    assert.equal(master.readCalendar().events[0].airport,"MSN","The next poll publishes a changed schedule after connectivity returns.");
+  } finally {master.stop();fs.rmSync(dir,{recursive:true,force:true});}
+}
+
+run().then(async()=>{
+  await testCalendarPollingRecoversAfterOutage();
+  console.log("Master calendar polling recovers after a temporary outage and publishes schedule edits.");
+}).catch(error => {console.error(error); process.exitCode = 1;});

@@ -241,6 +241,16 @@ assert.equal(
   assert.equal(fetchCalls, 3,
     "A one-minute Calendar refresh must not create another AeroAPI request during cooldown.");
 
+  const abort = new AbortController();
+  await assert.rejects(() => getOperationalStatus(event, {
+    apiKey:"test-key",cache:new Map(),now:()=>Date.parse("2026-09-17T20:30:00Z"),signal:abort.signal,
+    async fetchImpl(_url,request) {
+      assert.equal(request.signal,abort.signal,"The master timeout must reach the FlightAware HTTP request.");
+      abort.abort();
+      throw new Error("aborted");
+    }
+  }),/aborted/);
+
   console.log("FlightAware operational-status service tests passed.");
 })().catch((error) => {
   console.error(error);

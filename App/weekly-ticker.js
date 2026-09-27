@@ -91,6 +91,19 @@
       return chars.slice(0,4);
     }
 
+    async function fetchUpcomingSchedule(root,timeoutMs=10000) {
+      const abort=typeof root.AbortController==="function"?new root.AbortController():null;
+      const timeout=abort?root.setTimeout(()=>abort.abort(),timeoutMs):null;
+      try {
+        const response=await root.fetch("/api/calendar/upcoming",{cache:"no-store",signal:abort?.signal});
+        const data=await response.json();
+        if(!response.ok || !Array.isArray(data?.events))throw new Error("Schedule unavailable");
+        return data;
+      } finally {
+        if(timeout!==null)root.clearTimeout(timeout);
+      }
+    }
+
     function buildWeeklyOvernightModules(schedule, providedOptions={}) {
       const options={
         homeAirport:providedOptions.homeAirport??"AVL",
@@ -527,9 +540,7 @@
         lastScheduleFetchAt=now;
         fetchRequest=(async()=>{
           try{
-            const response=await root.fetch("/api/calendar/upcoming",{cache:"no-store"});
-            const data=await response.json();
-            if(!response.ok || !data?.events)throw new Error("Schedule unavailable");
+            const data=await fetchUpcomingSchedule(root);
             const timeZone=root.dadRadarSettings?.displayTimeZone??"America/New_York";
             const operationalKey=operationalDateKey(new Date(),timeZone,OPERATIONAL_DAY_ROLLOVER_HOUR);
             const nextModules=buildWeeklyOvernightModules(data,{
@@ -580,7 +591,7 @@
     return {
       install,
       OVERNIGHT_MODULE_COUNT,OPERATIONAL_DAY_ROLLOVER_HOUR,MODULE_DESIGN_WIDTH,MODULE_DESIGN_HEIGHT,
-      MODULE_ASSET,operationalDateKey,normalizeOvernightCode,overnightCharacters,buildWeeklyOvernightModules
+      MODULE_ASSET,operationalDateKey,normalizeOvernightCode,overnightCharacters,buildWeeklyOvernightModules,fetchUpcomingSchedule
     };
   }
 );

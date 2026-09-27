@@ -131,7 +131,7 @@ async function requestFlights(candidate, options) {
   const baseUrl = String(options.baseUrl ?? FLIGHTAWARE_AEROAPI_BASE_URL).replace(/\/$/, "");
   const response = await options.fetchImpl(
     `${baseUrl}/flights/${encodeURIComponent(candidate)}`,
-    { headers: { Accept: "application/json", "x-apikey": options.apiKey } }
+    { headers: { Accept: "application/json", "x-apikey": options.apiKey }, signal: options.signal }
   );
   const data = await response.json().catch(() => null);
   if (!response.ok) {
@@ -180,7 +180,8 @@ async function getOperationalStatus(event, providedOptions = {}) {
   const options = {
     apiKey,
     baseUrl: providedOptions.baseUrl,
-    fetchImpl: providedOptions.fetchImpl ?? fetch
+    fetchImpl: providedOptions.fetchImpl ?? fetch,
+    signal: providedOptions.signal
   };
 
   let record = null;

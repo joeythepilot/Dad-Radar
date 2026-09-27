@@ -127,7 +127,30 @@ async function run() {
   console.log("Master operational enrichment tests passed.");
 }
 
-run().catch((error) => {
+async function testHungOperationalLookupCannotHoldCalendar() {
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),"dad-master-op-timeout-"));
+  const now=Date.parse("2026-09-27T01:00:00Z");
+  const master=createMasterStateService({
+    file:path.join(dir,"state.json"),now:()=>now,operationalTimeoutMs:10,
+    console:{warn(){},error(){}},
+    getCalendar:async()=>({retrievedAt:new Date(now).toISOString(),events:[{
+      id:"assigned-flight",kind:"flight",status:"confirmed",origin:"ORD",destination:"EVV",
+      times:{startUtc:"2026-09-27T01:30:00Z",endUtc:"2026-09-27T02:30:00Z"}
+    }]}),
+    getOperational:()=>new Promise(()=>{}),
+    getFlight:async()=>({attempts:[],snapshot:null})
+  });
+  try {
+    await Promise.race([master.start(),new Promise((_resolve,reject)=>setTimeout(()=>reject(new Error("Calendar waited on a hung FlightAware lookup")),150))]);
+    assert.equal(master.read().calendarOk,true,"Google schedule publishes even when optional operational lookup hangs.");
+    assert.equal(master.readCalendar().events[0].destination,"EVV");
+  } finally {master.stop();fs.rmSync(dir,{recursive:true,force:true});}
+}
+
+run().then(async()=>{
+  await testHungOperationalLookupCannotHoldCalendar();
+  console.log("Hung FlightAware enrichment cannot block a Google Calendar update.");
+}).catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });

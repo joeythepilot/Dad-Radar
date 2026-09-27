@@ -19,6 +19,7 @@ const TOKEN_PATH = path.join(
 );
 
 let calendarClientPromise = null;
+const CALENDAR_REQUEST_TIMEOUT_MS = 15 * 1000;
 
 function isCalendarAuthorizationError(
   error
@@ -181,6 +182,27 @@ async function getCalendarClient() {
   return calendarClientPromise;
 }
 
+async function fetchCalendarPages(calendar, params) {
+  const items = [];
+  const seenTokens = new Set();
+  let pageToken;
+  let timeZone = null;
+  do {
+    const response = await calendar.events.list(
+      {...params, ...(pageToken ? {pageToken} : {})},
+      {timeout: CALENDAR_REQUEST_TIMEOUT_MS}
+    );
+    items.push(...(response.data.items ?? []));
+    timeZone ??= response.data.timeZone ?? null;
+    pageToken = response.data.nextPageToken;
+    if (pageToken && seenTokens.has(pageToken)) {
+      throw new Error("Google Calendar repeated a page token; retaining the previous schedule.");
+    }
+    if (pageToken) seenTokens.add(pageToken);
+  } while (pageToken);
+  return {items, timeZone};
+}
+
 async function getUpcomingEvents(options = {}) {
   const {
     timeMin,
@@ -202,7 +224,7 @@ async function getUpcomingEvents(options = {}) {
 
   const calendar = await getCalendarClient();
 
-  const response = await calendar.events.list({
+  const result = await fetchCalendarPages(calendar, {
     calendarId: CALENDAR_ID,
     timeMin: startTime.toISOString(),
     timeMax: endTime.toISOString(),
@@ -211,12 +233,12 @@ async function getUpcomingEvents(options = {}) {
     orderBy: "startTime"
   });
 
-  const events = response.data.items ?? [];
+  const events = result.items;
 
   const rawCalendarData = {
     calendarId: CALENDAR_ID,
     calendarTimeZone:
-      response.data.timeZone ?? null,
+      result.timeZone,
     retrievedAt: new Date().toISOString(),
     events: events.map((event) => ({
       id: event.id ?? null,
@@ -241,5 +263,6 @@ module.exports = {
   calendarQueryWindow,
   isCalendarAuthorizationError,
   getUpcomingEvents,
+  fetchCalendarPages,
   startOfDisplayDay
 };
