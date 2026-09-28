@@ -287,6 +287,23 @@
         "LRD",
         "MAF"
       ]
+    },
+    {
+      "id": "envoy-gap-2026-09-28-r",
+      "label": "Envoy candidate route gap batch R",
+      "status": "approved",
+      "airportCodes": [
+        "MAR",
+        "MFE",
+        "MGM",
+        "MHH",
+        "MHK",
+        "MHT",
+        "MLI",
+        "MLU",
+        "MQT",
+        "MSO"
+      ]
     }
   ],
   "destinations": [
@@ -3730,6 +3747,336 @@
       ],
       "batch": "envoy-gap-2026-09-28-q",
       "status": "approved"
+    },
+    {
+      "code": "MAR",
+      "icao": "SVMC",
+      "city": "Maracaibo",
+      "region": "Zulia",
+      "title": "MARACAIBO",
+      "subtitle": "VENEZUELA",
+      "descriptor": "LAKE MARACAIBO • RAFAEL URDANETA BRIDGE • ZULIA",
+      "tagline": "At the Great Lake.",
+      "batch": "envoy-gap-2026-09-28-r",
+      "status": "approved",
+      "output": "assets/destinations/mar-poster-7x8-candidate-v2.png",
+      "visualProfileId": "maracaibo-lake-bridge-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Lake Maracaibo waterfront",
+          "Rafael Urdaneta Bridge spanning the lake"
+        ],
+        "skySignature": "Quiet blue-to-amber lake sunset with scarcely a cloud",
+        "seasonAndLight": "Warm waterfront sunset",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Vintage unbranded twin-engine transport above the Maracaibo bridge toward upper right",
+        "foreground": "Palms, flowers and waterfront promenade",
+        "avoid": [
+          "invented local geography or synthetic densely patterned clouds",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration"
+        ]
+      },
+      "referenceSources": [
+        "https://china.embajada.gob.ve/2024/09/01/lago-de-maracaibo-es-un-atractivo-turistico-fuerte-en-zulia/",
+        "https://venezuelatuya.com/occidente/puenterafaelurdaneta.htm"
+      ]
+    },
+    {
+      "code": "MFE",
+      "icao": "KMFE",
+      "city": "McAllen",
+      "region": "Texas",
+      "title": "MCALLEN",
+      "subtitle": "RIO GRANDE VALLEY",
+      "descriptor": "QUINTA MAZATLÁN • BIRDING • SOUTH TEXAS",
+      "tagline": "A Sanctuary in the Valley.",
+      "batch": "envoy-gap-2026-09-28-r",
+      "status": "approved",
+      "output": "assets/destinations/mfe-poster-7x8-candidate-v2.png",
+      "visualProfileId": "mcallen-quinta-mazatlan-birding-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Quinta Mazatlán historic adobe residence",
+          "Native Rio Grande Valley bird sanctuary and gardens"
+        ],
+        "skySignature": "Calm McAllen blue fading toward warm horizon",
+        "seasonAndLight": "Warm late afternoon",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Vintage unbranded twin-engine transport over the Quinta Mazatlán garden at upper right",
+        "foreground": "Green jay and native flowering brush",
+        "avoid": [
+          "invented local geography or synthetic densely patterned clouds",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration"
+        ]
+      },
+      "referenceSources": [
+        "https://www.quintamazatlan.com/visit-explore",
+        "https://mcallen.net/departments/quinta"
+      ]
+    },
+    {
+      "code": "MGM",
+      "icao": "KMGM",
+      "city": "Montgomery",
+      "region": "Alabama",
+      "title": "MONTGOMERY",
+      "subtitle": "ALABAMA",
+      "descriptor": "DEXTER AVENUE • STATE CAPITOL • RIVER REGION",
+      "tagline": "The Capitol on the Hill.",
+      "batch": "envoy-gap-2026-09-28-r",
+      "status": "approved",
+      "output": "assets/destinations/mgm-poster-7x8-candidate-v1.png",
+      "visualProfileId": "montgomery-dexter-avenue-capitol-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Alabama State Capitol on its hill",
+          "Dexter Avenue streetscape leading toward the Capitol"
+        ],
+        "skySignature": "Calm Southern blue with a few faint wisps",
+        "seasonAndLight": "Late afternoon over the civic streetscape",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Vintage unbranded twin-engine transport to the right of Montgomery Capitol dome",
+        "foreground": "Leafy Dexter Avenue and historic brick facades",
+        "avoid": [
+          "invented local geography or synthetic densely patterned clouds",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration"
+        ]
+      },
+      "referenceSources": [
+        "https://ahc.alabama.gov/alabama-state-capitol.aspx",
+        "https://alabama.travel/plan-your-trip/road-trips/montgomery-a-place-where-history-runs-deep/"
+      ]
+    },
+    {
+      "code": "MHH",
+      "icao": "MYAM",
+      "city": "Marsh Harbour",
+      "region": "Abaco",
+      "title": "MARSH HARBOUR",
+      "subtitle": "THE ABACOS",
+      "descriptor": "GREAT ABACO • HARBOUR • BAHAMAS",
+      "tagline": "A Harbour of Cays.",
+      "batch": "envoy-gap-2026-09-28-r",
+      "status": "approved",
+      "output": "assets/destinations/mhh-poster-7x8-candidate-v3.png",
+      "visualProfileId": "marsh-harbour-great-abaco-marina-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Sheltered Marsh Harbour on Great Abaco",
+          "Low cays and small sailboat marina"
+        ],
+        "skySignature": "Broad almost clear Bahamian blue above turquoise sea",
+        "seasonAndLight": "Bright tropical morning",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Vintage unbranded twin-engine transport above Marsh Harbour marina at upper right",
+        "foreground": "Palms, pastel buildings and boats on clear water",
+        "avoid": [
+          "invented local geography or synthetic densely patterned clouds",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration"
+        ]
+      },
+      "referenceSources": [
+        "https://www.bahamas.com/islands/abacos/popular-activities",
+        "https://www.abacobahamasmarina.com/"
+      ]
+    },
+    {
+      "code": "MHK",
+      "icao": "KMHK",
+      "city": "Manhattan",
+      "region": "Kansas",
+      "title": "MANHATTAN",
+      "subtitle": "KANSAS",
+      "descriptor": "FLINT HILLS • TALLGRASS PRAIRIE • LITTLE APPLE",
+      "tagline": "Gateway to Tallgrass.",
+      "batch": "envoy-gap-2026-09-28-r",
+      "status": "approved",
+      "output": "assets/destinations/mhk-poster-7x8-candidate-v1.png",
+      "visualProfileId": "manhattan-flint-hills-tallgrass-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Rolling Flint Hills near Manhattan",
+          "Tallgrass prairie with limestone outcrops"
+        ],
+        "skySignature": "Spacious Kansas blue above gold prairie",
+        "seasonAndLight": "Late summer over the tallgrass",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Vintage unbranded twin-engine transport high above Manhattan prairie at upper right",
+        "foreground": "Prairie wildflowers and limestone path",
+        "avoid": [
+          "invented local geography or synthetic densely patterned clouds",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration"
+        ]
+      },
+      "referenceSources": [
+        "https://www.manhattanks.gov/3596/Experience-the-Flint-Hills",
+        "https://www.visitmanhattanks.org/plan/flint-hills/"
+      ]
+    },
+    {
+      "code": "MHT",
+      "icao": "KMHT",
+      "city": "Manchester",
+      "region": "New Hampshire",
+      "title": "MANCHESTER",
+      "subtitle": "NEW HAMPSHIRE",
+      "descriptor": "AMOSKEAG MILLYARD • MERRIMACK RIVER • QUEEN CITY",
+      "tagline": "The Queen City River.",
+      "batch": "envoy-gap-2026-09-28-r",
+      "status": "approved",
+      "output": "assets/destinations/mht-poster-7x8-candidate-v2.png",
+      "visualProfileId": "manchester-amoskeag-merrimack-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Amoskeag red-brick millyard",
+          "Merrimack River and bridge"
+        ],
+        "skySignature": "Quiet New England blue with gentle diffuse wisps",
+        "seasonAndLight": "Warm autumn afternoon",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Vintage unbranded twin-engine transport over Manchester riverbank at upper right",
+        "foreground": "Autumn trees reflected in the Merrimack",
+        "avoid": [
+          "invented local geography or synthetic densely patterned clouds",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitmanchesternh.com/about-manchester/",
+        "https://www.visitmanchesternh.com/things-to-do/merrimack-river/"
+      ]
+    },
+    {
+      "code": "MLI",
+      "icao": "KMLI",
+      "city": "Moline",
+      "region": "Illinois",
+      "title": "MOLINE",
+      "subtitle": "ILLINOIS",
+      "descriptor": "MISSISSIPPI RIVER • QUAD CITIES • RIVERFRONT",
+      "tagline": "Along the Great River.",
+      "batch": "envoy-gap-2026-09-28-r",
+      "status": "approved",
+      "output": "assets/destinations/mli-poster-7x8-candidate-v2.png",
+      "visualProfileId": "moline-mississippi-riverfront-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Moline Mississippi River waterfront",
+          "Quad Cities bridge and riverboat"
+        ],
+        "skySignature": "Open Midwest blue with gentle gold at the river horizon",
+        "seasonAndLight": "Golden hour on the Mississippi",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Vintage unbranded twin-engine transport above Moline bridge at upper right",
+        "foreground": "Riverfront park path and paddleboat",
+        "avoid": [
+          "invented local geography or synthetic densely patterned clouds",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration"
+        ]
+      },
+      "referenceSources": [
+        "https://www.moline.il.us/818/John-Deere",
+        "https://www.enjoyillinois.com/explore/listing/john-deere-pavilion-and-store/"
+      ]
+    },
+    {
+      "code": "MLU",
+      "icao": "KMLU",
+      "city": "Monroe",
+      "region": "Louisiana",
+      "title": "MONROE",
+      "subtitle": "LOUISIANA",
+      "descriptor": "OUACHITA RIVER • BAYOU COUNTRY • NORTH LOUISIANA",
+      "tagline": "On the Ouachita.",
+      "batch": "envoy-gap-2026-09-28-r",
+      "status": "approved",
+      "output": "assets/destinations/mlu-poster-7x8-candidate-v1.png",
+      "visualProfileId": "monroe-ouachita-river-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Ouachita River in Monroe",
+          "Low downtown Monroe brick riverfront"
+        ],
+        "skySignature": "Quiet North Louisiana blue into amber over the river",
+        "seasonAndLight": "Soft late afternoon reflections",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Vintage unbranded twin-engine transport over the Ouachita at upper right",
+        "foreground": "Cypress, live oak and calm river water",
+        "avoid": [
+          "invented local geography or synthetic densely patterned clouds",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration"
+        ]
+      },
+      "referenceSources": [
+        "https://www.monroe-westmonroe.org/",
+        "https://www.explorelouisiana.com/cities/monroe"
+      ]
+    },
+    {
+      "code": "MQT",
+      "icao": "KSAW",
+      "city": "Marquette",
+      "region": "Michigan",
+      "title": "MARQUETTE",
+      "subtitle": "UPPER PENINSULA",
+      "descriptor": "LAKE SUPERIOR • ORE DOCK • NORTH SHORE",
+      "tagline": "Where Superior Meets Shore.",
+      "batch": "envoy-gap-2026-09-28-r",
+      "status": "approved",
+      "output": "assets/destinations/mqt-poster-7x8-candidate-v1.png",
+      "visualProfileId": "marquette-lower-harbor-ore-dock-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Marquette Lower Harbor Ore Dock",
+          "Lake Superior shore and forested peninsula"
+        ],
+        "skySignature": "Spacious cool Upper Peninsula blue with low natural haze",
+        "seasonAndLight": "Warm northern afternoon",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Vintage unbranded twin-engine transport above Marquette ore dock at upper right",
+        "foreground": "Pine and rugged sandstone shoreline",
+        "avoid": [
+          "invented local geography or synthetic densely patterned clouds",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration"
+        ]
+      },
+      "referenceSources": [
+        "https://www.travelmarquette.com/things-to-do/arts-culture/ore-docks/",
+        "https://www.travelmarquette.com/things-to-do/attractions/presque-isle-park/"
+      ]
+    },
+    {
+      "code": "MSO",
+      "icao": "KMSO",
+      "city": "Missoula",
+      "region": "Montana",
+      "title": "MISSOULA",
+      "subtitle": "MONTANA",
+      "descriptor": "CLARK FORK • MOUNT SENTINEL • FIVE VALLEYS",
+      "tagline": "At the Five Valleys.",
+      "batch": "envoy-gap-2026-09-28-r",
+      "status": "approved",
+      "output": "assets/destinations/mso-poster-7x8-candidate-v1.png",
+      "visualProfileId": "missoula-clark-fork-mount-sentinel-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Clark Fork River through Missoula",
+          "Mount Sentinel with the white M"
+        ],
+        "skySignature": "Open Montana blue with subtle valley warmth",
+        "seasonAndLight": "Late afternoon over western Montana",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Vintage unbranded twin-engine transport above Missoula valley at upper right",
+        "foreground": "Cottonwoods and Clark Fork reflections",
+        "avoid": [
+          "invented local geography or synthetic densely patterned clouds",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration"
+        ]
+      },
+      "referenceSources": [
+        "https://destinationmissoula.org/todo/hike-m",
+        "https://visitmt.com/listing/mount-sentinel-m-trail-17123"
+      ]
     }
   ]
 }

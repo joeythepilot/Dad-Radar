@@ -768,7 +768,7 @@
       "region": "Zulia",
       "country": "VE",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "MCI",
@@ -792,7 +792,7 @@
       "region": "Texas",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "MGM",
@@ -800,7 +800,7 @@
       "region": "Alabama",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "MHH",
@@ -808,7 +808,7 @@
       "region": null,
       "country": "BS",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "MHK",
@@ -816,7 +816,7 @@
       "region": "Kansas",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "MHT",
@@ -824,7 +824,7 @@
       "region": "New Hampshire",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "MIA",
@@ -840,7 +840,7 @@
       "region": "Illinois",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "MLU",
@@ -848,7 +848,7 @@
       "region": "Louisiana",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "MQT",
@@ -856,7 +856,7 @@
       "region": "Michigan",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "MSN",
@@ -872,7 +872,7 @@
       "region": "Montana",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "MSP",
@@ -1345,6 +1345,21 @@
       "LGA",
       "LRD",
       "MAF"
+    ]
+  },
+  "eighteenthBatch": {
+    "id": "envoy-gap-2026-09-28-r",
+    "codes": [
+      "MAR",
+      "MFE",
+      "MGM",
+      "MHH",
+      "MHK",
+      "MHT",
+      "MLI",
+      "MLU",
+      "MQT",
+      "MSO"
     ]
   }
 }
