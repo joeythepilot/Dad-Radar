@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "asOf": "2026-09-27",
-  "scope": "Working candidate airport inventory for Envoy-operated MQ flights; route lists can be historical or seasonal. This is not a complete verified current schedule.",
+  "asOf": "2026-09-28",
+  "scope": "Provisional poster-coverage airport inventory for Envoy-operated MQ/ENY evidence, including past or seasonal service. It is not a verified list of airports served today. Ground-handling contracts alone are not flight-operation evidence.",
   "sources": [
     {
       "label": "Envoy Air company destination total",
@@ -12,9 +12,24 @@
       "label": "FlightNerve Envoy Air MQ routes and destinations",
       "url": "https://www.flightnerve.com/airlines/MQ",
       "note": "Public route snapshot; airport codes assembled from destination and route/origin sections, not a complete authoritative list"
+    },
+    {
+      "label": "FlightNerve MQ route and flight-number pages, consulted 2026-09-28",
+      "url": "https://flightnerve.com/airlines/MQ",
+      "note": "Route-pair records across all seven pages; no travel-date proof or guarantee that every route is active today. Provides 21 additional code candidates."
+    },
+    {
+      "label": "AirportRoutes ENY observed operations, consulted 2026-09-28",
+      "url": "https://www.airportroutes.com/airlines/ENY/",
+      "note": "Recent observed ENY route examples with last-seen dates, drawn from FlightAware AeroAPI. Fifteen additional code candidates appear in its first 100 displayed routes; six overlap FlightNerve. Attribution and continuing service require verification."
+    },
+    {
+      "label": "Envoy Air company destination statement, consulted 2026-09-28",
+      "url": "https://www.envoyair.com/",
+      "note": "Company says over 160 destinations, but provides no airport-by-airport roster; this is a scale check, not evidence for any specific code."
     }
   ],
-  "method": "141 candidate codes transcribed from the public MQ route page and related route pages; four existing DadRadar poster codes retained as separately tagged local evidence. Recheck individual operating routes and source date before commercial publication.",
+  "method": "Original 141 MQ snapshot codes plus four existing-poster codes retained. Added 30 further provisional airport codes from named MQ flight-number route pairs (21) and/or recent ENY observed route pairs (15), with six cross-source overlaps. This cumulative coverage queue may include seasonal or former service; do not use its 175-code total as a current operating-network count. Verify individual routes before commercial publication.",
   "firstBatch": {
     "id": "envoy-gap-2026-09-27-a",
     "codes": [
@@ -139,12 +154,64 @@
       "posterStatus": "installed"
     },
     {
+      "code": "AXA",
+      "city": "The Valley",
+      "region": "Anguilla",
+      "country": "AI",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "flightnerve-mq-route-pages",
+          "exampleRoute": "MIA–AXA"
+        },
+        {
+          "source": "airportroutes-eny-observed",
+          "exampleRoute": "AXA–MIA",
+          "lastSeen": "2026-08-29"
+        }
+      ],
+      "posterStatus": "missing"
+    },
+    {
+      "code": "AZO",
+      "city": "Kalamazoo",
+      "region": "Michigan",
+      "country": "US",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "flightnerve-mq-route-pages",
+          "exampleRoute": "AZO–ORD"
+        },
+        {
+          "source": "airportroutes-eny-observed",
+          "exampleRoute": "AZO–ORD",
+          "lastSeen": "2026-05-10"
+        }
+      ],
+      "posterStatus": "missing"
+    },
+    {
       "code": "BDL",
       "city": "Windsor Locks",
       "region": "Connecticut",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
       "posterStatus": "installed"
+    },
+    {
+      "code": "BGR",
+      "city": "Bangor",
+      "region": "Maine",
+      "country": "US",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "flightnerve-mq-route-pages",
+          "exampleRoute": "BGR–ORD"
+        }
+      ],
+      "posterStatus": "missing"
     },
     {
       "code": "BHM",
@@ -161,6 +228,20 @@
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
       "posterStatus": "installed"
+    },
+    {
+      "code": "BIM",
+      "city": "South Bimini",
+      "region": "Bimini",
+      "country": "BS",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "flightnerve-mq-route-pages",
+          "exampleRoute": "MIA–BIM"
+        }
+      ],
+      "posterStatus": "missing"
     },
     {
       "code": "BIS",
@@ -459,6 +540,21 @@
       "posterStatus": "installed"
     },
     {
+      "code": "ELH",
+      "city": "North Eleuthera",
+      "region": "Eleuthera",
+      "country": "BS",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "airportroutes-eny-observed",
+          "exampleRoute": "ELH–MIA",
+          "lastSeen": "2026-08-08"
+        }
+      ],
+      "posterStatus": "missing"
+    },
+    {
       "code": "ELP",
       "city": "El Paso",
       "region": "Texas",
@@ -499,6 +595,40 @@
       "posterStatus": "installed"
     },
     {
+      "code": "FPO",
+      "city": "Freeport",
+      "region": "Grand Bahama",
+      "country": "BS",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "airportroutes-eny-observed",
+          "exampleRoute": "FPO–MIA",
+          "lastSeen": "2026-08-08"
+        }
+      ],
+      "posterStatus": "missing"
+    },
+    {
+      "code": "FSD",
+      "city": "Sioux Falls",
+      "region": "South Dakota",
+      "country": "US",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "flightnerve-mq-route-pages",
+          "exampleRoute": "PHX–FSD"
+        },
+        {
+          "source": "airportroutes-eny-observed",
+          "exampleRoute": "FSD–PHX",
+          "lastSeen": "2026-05-10"
+        }
+      ],
+      "posterStatus": "missing"
+    },
+    {
       "code": "FSM",
       "city": "Fort Smith",
       "region": "Arkansas",
@@ -529,6 +659,21 @@
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
       "posterStatus": "installed"
+    },
+    {
+      "code": "GGT",
+      "city": "George Town",
+      "region": "Exuma",
+      "country": "BS",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "airportroutes-eny-observed",
+          "exampleRoute": "GGT–MIA",
+          "lastSeen": "2026-08-08"
+        }
+      ],
+      "posterStatus": "missing"
     },
     {
       "code": "GJT",
@@ -601,6 +746,21 @@
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
       "posterStatus": "installed"
+    },
+    {
+      "code": "HHH",
+      "city": "Hilton Head Island",
+      "region": "South Carolina",
+      "country": "US",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "airportroutes-eny-observed",
+          "exampleRoute": "HHH–CLT",
+          "lastSeen": "2026-07-15"
+        }
+      ],
+      "posterStatus": "missing"
     },
     {
       "code": "HOU",
@@ -723,12 +883,60 @@
       "posterStatus": "installed"
     },
     {
+      "code": "LEX",
+      "city": "Lexington",
+      "region": "Kentucky",
+      "country": "US",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "airportroutes-eny-observed",
+          "exampleRoute": "LEX–DFW",
+          "lastSeen": "2026-08-08"
+        }
+      ],
+      "posterStatus": "missing"
+    },
+    {
+      "code": "LFT",
+      "city": "Lafayette",
+      "region": "Louisiana",
+      "country": "US",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "flightnerve-mq-route-pages",
+          "exampleRoute": "LFT–DFW"
+        },
+        {
+          "source": "airportroutes-eny-observed",
+          "exampleRoute": "LFT–DFW",
+          "lastSeen": "2026-08-08"
+        }
+      ],
+      "posterStatus": "missing"
+    },
+    {
       "code": "LGA",
       "city": "New York",
       "region": "New York",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
       "posterStatus": "installed"
+    },
+    {
+      "code": "LGB",
+      "city": "Long Beach",
+      "region": "California",
+      "country": "US",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "flightnerve-mq-route-pages",
+          "exampleRoute": "LGB–PHX"
+        }
+      ],
+      "posterStatus": "missing"
     },
     {
       "code": "LIT",
@@ -777,6 +985,21 @@
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
       "posterStatus": "installed"
+    },
+    {
+      "code": "MDT",
+      "city": "Harrisburg",
+      "region": "Pennsylvania",
+      "country": "US",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "airportroutes-eny-observed",
+          "exampleRoute": "MDT–ORD",
+          "lastSeen": "2026-05-09"
+        }
+      ],
+      "posterStatus": "missing"
     },
     {
       "code": "MEM",
@@ -851,12 +1074,41 @@
       "posterStatus": "installed"
     },
     {
+      "code": "MOB",
+      "city": "Mobile",
+      "region": "Alabama",
+      "country": "US",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "airportroutes-eny-observed",
+          "exampleRoute": "MOB–DFW",
+          "lastSeen": "2026-08-08"
+        }
+      ],
+      "posterStatus": "missing"
+    },
+    {
       "code": "MQT",
       "city": "Marquette",
       "region": "Michigan",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
       "posterStatus": "installed"
+    },
+    {
+      "code": "MRY",
+      "city": "Monterey",
+      "region": "California",
+      "country": "US",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "flightnerve-mq-route-pages",
+          "exampleRoute": "MRY–DFW"
+        }
+      ],
+      "posterStatus": "missing"
     },
     {
       "code": "MSN",
@@ -913,6 +1165,20 @@
       "country": "MX",
       "sourceTag": "public-mq-route-snapshot",
       "posterStatus": "installed"
+    },
+    {
+      "code": "NAS",
+      "city": "Nassau",
+      "region": "New Providence",
+      "country": "BS",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "flightnerve-mq-route-pages",
+          "exampleRoute": "NAS–MIA"
+        }
+      ],
+      "posterStatus": "missing"
     },
     {
       "code": "OKC",
@@ -1043,6 +1309,34 @@
       "posterStatus": "installed"
     },
     {
+      "code": "SAV",
+      "city": "Savannah",
+      "region": "Georgia",
+      "country": "US",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "flightnerve-mq-route-pages",
+          "exampleRoute": "SAV–MIA"
+        }
+      ],
+      "posterStatus": "missing"
+    },
+    {
+      "code": "SBA",
+      "city": "Santa Barbara",
+      "region": "California",
+      "country": "US",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "flightnerve-mq-route-pages",
+          "exampleRoute": "PHX–SBA"
+        }
+      ],
+      "posterStatus": "missing"
+    },
+    {
       "code": "SBP",
       "city": "San Luis Obispo",
       "region": "California",
@@ -1075,12 +1369,55 @@
       "posterStatus": "installed"
     },
     {
+      "code": "SHV",
+      "city": "Shreveport",
+      "region": "Louisiana",
+      "country": "US",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "airportroutes-eny-observed",
+          "exampleRoute": "SHV–DFW",
+          "lastSeen": "2026-08-08"
+        }
+      ],
+      "posterStatus": "missing"
+    },
+    {
       "code": "SPI",
       "city": "Springfield",
       "region": "Illinois",
       "country": "US",
       "sourceTag": "existing-poster-only",
       "posterStatus": "installed"
+    },
+    {
+      "code": "SPS",
+      "city": "Wichita Falls",
+      "region": "Texas",
+      "country": "US",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "flightnerve-mq-route-pages",
+          "exampleRoute": "SPS–DFW"
+        }
+      ],
+      "posterStatus": "missing"
+    },
+    {
+      "code": "SRQ",
+      "city": "Sarasota/Bradenton",
+      "region": "Florida",
+      "country": "US",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "flightnerve-mq-route-pages",
+          "exampleRoute": "MIA–SRQ"
+        }
+      ],
+      "posterStatus": "missing"
     },
     {
       "code": "STL",
@@ -1091,6 +1428,21 @@
       "posterStatus": "installed"
     },
     {
+      "code": "STS",
+      "city": "Santa Rosa",
+      "region": "California",
+      "country": "US",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "airportroutes-eny-observed",
+          "exampleRoute": "STS–PHX",
+          "lastSeen": "2026-03-17"
+        }
+      ],
+      "posterStatus": "missing"
+    },
+    {
       "code": "SYR",
       "city": "Syracuse",
       "region": "New York",
@@ -1099,12 +1451,50 @@
       "posterStatus": "installed"
     },
     {
+      "code": "TLH",
+      "city": "Tallahassee",
+      "region": "Florida",
+      "country": "US",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "flightnerve-mq-route-pages",
+          "exampleRoute": "MIA–TLH"
+        },
+        {
+          "source": "airportroutes-eny-observed",
+          "exampleRoute": "TLH–MIA",
+          "lastSeen": "2026-08-08"
+        }
+      ],
+      "posterStatus": "missing"
+    },
+    {
       "code": "TPA",
       "city": "Tampa",
       "region": "Florida",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
       "posterStatus": "installed"
+    },
+    {
+      "code": "TRC",
+      "city": "Torreón",
+      "region": "Coahuila",
+      "country": "MX",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "flightnerve-mq-route-pages",
+          "exampleRoute": "DFW–TRC"
+        },
+        {
+          "source": "airportroutes-eny-observed",
+          "exampleRoute": "TRC–DFW",
+          "lastSeen": "2026-08-08"
+        }
+      ],
+      "posterStatus": "missing"
     },
     {
       "code": "TRI",
@@ -1123,6 +1513,20 @@
       "posterStatus": "installed"
     },
     {
+      "code": "TUS",
+      "city": "Tucson",
+      "region": "Arizona",
+      "country": "US",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "flightnerve-mq-route-pages",
+          "exampleRoute": "TUS–PHX"
+        }
+      ],
+      "posterStatus": "missing"
+    },
+    {
       "code": "TVC",
       "city": "Traverse City",
       "region": "Michigan",
@@ -1131,12 +1535,68 @@
       "posterStatus": "installed"
     },
     {
+      "code": "TXK",
+      "city": "Texarkana",
+      "region": "Arkansas",
+      "country": "US",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "flightnerve-mq-route-pages",
+          "exampleRoute": "TXK–DFW"
+        }
+      ],
+      "posterStatus": "missing"
+    },
+    {
+      "code": "TYR",
+      "city": "Tyler",
+      "region": "Texas",
+      "country": "US",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "flightnerve-mq-route-pages",
+          "exampleRoute": "DFW–TYR"
+        }
+      ],
+      "posterStatus": "missing"
+    },
+    {
       "code": "TYS",
       "city": "Knoxville",
       "region": "Tennessee",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
       "posterStatus": "installed"
+    },
+    {
+      "code": "VER",
+      "city": "Veracruz",
+      "region": "Veracruz",
+      "country": "MX",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "flightnerve-mq-route-pages",
+          "exampleRoute": "VER–DFW"
+        }
+      ],
+      "posterStatus": "missing"
+    },
+    {
+      "code": "VPS",
+      "city": "Valparaiso/Fort Walton Beach",
+      "region": "Florida",
+      "country": "US",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "flightnerve-mq-route-pages",
+          "exampleRoute": "MIA–VPS"
+        }
+      ],
+      "posterStatus": "missing"
     },
     {
       "code": "XNA",
@@ -1176,6 +1636,20 @@
       "region": "Ontario",
       "country": "CA",
       "sourceTag": "public-mq-route-snapshot",
+      "posterStatus": "missing"
+    },
+    {
+      "code": "ZCL",
+      "city": "Zacatecas",
+      "region": "Zacatecas",
+      "country": "MX",
+      "sourceTag": "expanded-mq-eny-evidence-2026-09-28",
+      "routeEvidence": [
+        {
+          "source": "flightnerve-mq-route-pages",
+          "exampleRoute": "DFW–ZCL"
+        }
+      ],
       "posterStatus": "missing"
     },
     {
