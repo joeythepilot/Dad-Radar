@@ -17,7 +17,7 @@ function runTests() {
     null
   );
   assert.equal(
-    getPoster("BIL"),
+    getPoster("ABI"),
     null
   );
   assert.equal(
