@@ -757,6 +757,56 @@
       source: "./assets/destinations/mso-poster-7x8-candidate-v2.png",
       title: "MISSOULA",
       location: "Missoula, Montana"
+    }),
+    MTY: Object.freeze({
+      source: "./assets/destinations/mty-poster-7x8-candidate-v3.png",
+      title: "MONTERREY",
+      location: "Monterrey, Nuevo León"
+    }),
+    MZT: Object.freeze({
+      source: "./assets/destinations/mzt-poster-7x8-candidate-v3.png",
+      title: "MAZATLÁN",
+      location: "Mazatlán, Sinaloa"
+    }),
+    RAP: Object.freeze({
+      source: "./assets/destinations/rap-poster-7x8-candidate-v3.png",
+      title: "RAPID CITY",
+      location: "Rapid City, South Dakota"
+    }),
+    RDM: Object.freeze({
+      source: "./assets/destinations/rdm-poster-7x8-candidate-v3.png",
+      title: "REDMOND",
+      location: "Redmond, Oregon"
+    }),
+    RDU: Object.freeze({
+      source: "./assets/destinations/rdu-poster-7x8-candidate-v2.png",
+      title: "RALEIGH-DURHAM",
+      location: "Raleigh/Durham, North Carolina"
+    }),
+    ROW: Object.freeze({
+      source: "./assets/destinations/row-poster-7x8-candidate-v3.png",
+      title: "ROSWELL",
+      location: "Roswell, New Mexico"
+    }),
+    RST: Object.freeze({
+      source: "./assets/destinations/rst-poster-7x8-candidate-v3.png",
+      title: "ROCHESTER",
+      location: "Rochester, Minnesota"
+    }),
+    SBP: Object.freeze({
+      source: "./assets/destinations/sbp-poster-7x8-candidate-v2.png",
+      title: "SAN LUIS OBISPO",
+      location: "San Luis Obispo, California"
+    }),
+    TRI: Object.freeze({
+      source: "./assets/destinations/tri-poster-7x8-candidate-v3.png",
+      title: "TRI-CITIES",
+      location: "Tri-Cities, Tennessee"
+    }),
+    YUL: Object.freeze({
+      source: "./assets/destinations/yul-poster-7x8-candidate-v4.png",
+      title: "MONTRÉAL",
+      location: "Montréal, Québec"
     })
   });
 

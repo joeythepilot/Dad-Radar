@@ -896,7 +896,7 @@
       "region": "Nuevo Leon",
       "country": "MX",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "MYR",
@@ -912,7 +912,7 @@
       "region": "Sinaloa",
       "country": "MX",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "OKC",
@@ -984,7 +984,7 @@
       "region": "South Dakota",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "RDM",
@@ -992,7 +992,7 @@
       "region": "Oregon",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "RDU",
@@ -1000,7 +1000,7 @@
       "region": "North Carolina",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "RIC",
@@ -1024,7 +1024,7 @@
       "region": "New Mexico",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "RST",
@@ -1032,7 +1032,7 @@
       "region": "Minnesota",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "SAT",
@@ -1048,7 +1048,7 @@
       "region": "California",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "SDF",
@@ -1112,7 +1112,7 @@
       "region": "Tennessee",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "TUL",
@@ -1160,7 +1160,7 @@
       "region": "Quebec",
       "country": "CA",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "YUM",
@@ -1360,6 +1360,21 @@
       "MLU",
       "MQT",
       "MSO"
+    ]
+  },
+  "nineteenthBatch": {
+    "id": "envoy-gap-2026-09-28-s",
+    "codes": [
+      "MTY",
+      "MZT",
+      "RAP",
+      "RDM",
+      "RDU",
+      "ROW",
+      "RST",
+      "SBP",
+      "TRI",
+      "YUL"
     ]
   }
 }

@@ -304,6 +304,23 @@
         "MQT",
         "MSO"
       ]
+    },
+    {
+      "id": "envoy-gap-2026-09-28-s",
+      "label": "Envoy candidate route gap batch S",
+      "status": "approved",
+      "airportCodes": [
+        "MTY",
+        "MZT",
+        "RAP",
+        "RDM",
+        "RDU",
+        "ROW",
+        "RST",
+        "SBP",
+        "TRI",
+        "YUL"
+      ]
     }
   ],
   "destinations": [
@@ -4076,6 +4093,346 @@
       "referenceSources": [
         "https://destinationmissoula.org/todo/hike-m",
         "https://visitmt.com/listing/mount-sentinel-m-trail-17123"
+      ]
+    },
+    {
+      "code": "MTY",
+      "icao": "MMMY",
+      "city": "Monterrey",
+      "region": "Nuevo León",
+      "title": "MONTERREY",
+      "subtitle": "NUEVO LEÓN • MÉXICO",
+      "descriptor": "MACROPLAZA • CERRO DE LA SILLA • REGIOMONTANO",
+      "tagline": "Macroplaza and Cerro de la Silla.",
+      "batch": "envoy-gap-2026-09-28-s",
+      "status": "approved",
+      "output": "assets/destinations/mty-poster-7x8-candidate-v3.png",
+      "visualProfileId": "mty-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Macroplaza",
+          "Cerro de la Silla"
+        ],
+        "skySignature": "Quiet natural sky over Monterrey",
+        "seasonAndLight": "Warm late afternoon in Nuevo León",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport crossing the upper-right sky above Macroplaza and Cerro de la Silla",
+        "foreground": "Local vegetation framing Macroplaza and Cerro de la Silla",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://visitmexico.com/es/destino/2909/macro-plaza",
+        "https://visitmexico.com/es/estado/19"
+      ]
+    },
+    {
+      "code": "MZT",
+      "icao": "MMMZ",
+      "city": "Mazatlán",
+      "region": "Sinaloa",
+      "title": "MAZATLÁN",
+      "subtitle": "SINALOA • MÉXICO",
+      "descriptor": "MALECÓN • FARO DEL CRESTÓN • PACÍFICO",
+      "tagline": "Malecón and Cerro del Crestón lighthouse.",
+      "batch": "envoy-gap-2026-09-28-s",
+      "status": "approved",
+      "output": "assets/destinations/mzt-poster-7x8-candidate-v3.png",
+      "visualProfileId": "mzt-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Malecón",
+          "Cerro del Crestón lighthouse"
+        ],
+        "skySignature": "Quiet natural sky over Mazatlán",
+        "seasonAndLight": "Warm late afternoon in Sinaloa",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport crossing the upper-right sky above Malecón and Cerro del Crestón lighthouse",
+        "foreground": "Local vegetation framing Malecón and Cerro del Crestón lighthouse",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://visitmazatlan.travel/en/conoce-mazatlan/joyas-locales/malecon/",
+        "https://visitmazatlan.travel/en/conoce-mazatlan/joyas-locales/faro/"
+      ]
+    },
+    {
+      "code": "RAP",
+      "icao": "KRAP",
+      "city": "Rapid City",
+      "region": "South Dakota",
+      "title": "RAPID CITY",
+      "subtitle": "SOUTH DAKOTA",
+      "descriptor": "BLACK HILLS • MAIN STREET • GATEWAY WEST",
+      "tagline": "Historic downtown and the Black Hills.",
+      "batch": "envoy-gap-2026-09-28-s",
+      "status": "approved",
+      "output": "assets/destinations/rap-poster-7x8-candidate-v3.png",
+      "visualProfileId": "rap-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Historic downtown",
+          "the Black Hills"
+        ],
+        "skySignature": "Quiet natural sky over Rapid City",
+        "seasonAndLight": "Warm late afternoon in South Dakota",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport crossing the upper-right sky above Historic downtown and the Black Hills",
+        "foreground": "Local vegetation framing Historic downtown and the Black Hills",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitrapidcity.com/downtown-rapid-city/main-street-square/",
+        "https://www.visitrapidcity.com/outdoor-enthusiast/"
+      ]
+    },
+    {
+      "code": "RDM",
+      "icao": "KRDM",
+      "city": "Redmond",
+      "region": "Oregon",
+      "title": "REDMOND",
+      "subtitle": "CENTRAL OREGON",
+      "descriptor": "SMITH ROCK • CROOKED RIVER • HIGH DESERT",
+      "tagline": "Smith Rock and the Crooked River.",
+      "batch": "envoy-gap-2026-09-28-s",
+      "status": "approved",
+      "output": "assets/destinations/rdm-poster-7x8-candidate-v3.png",
+      "visualProfileId": "rdm-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Smith Rock",
+          "the Crooked River"
+        ],
+        "skySignature": "Quiet natural sky over Redmond",
+        "seasonAndLight": "Warm late afternoon in Oregon",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport crossing the upper-right sky above Smith Rock and the Crooked River",
+        "foreground": "Local vegetation framing Smith Rock and the Crooked River",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://stateparks.oregon.gov/index.cfm?do=park.profile&parkId=36",
+        "https://stateparks.oregon.gov/index.cfm?do=main.loadFile&load=_siteFiles%2Fpublications%2Fcombined093729.pdf"
+      ]
+    },
+    {
+      "code": "RDU",
+      "icao": "KRDU",
+      "city": "Raleigh/Durham",
+      "region": "North Carolina",
+      "title": "RALEIGH-DURHAM",
+      "subtitle": "NORTH CAROLINA",
+      "descriptor": "RESEARCH TRIANGLE • UMSTEAD • PIEDMONT",
+      "tagline": "Umstead State Park forest and lake.",
+      "batch": "envoy-gap-2026-09-28-s",
+      "status": "approved",
+      "output": "assets/destinations/rdu-poster-7x8-candidate-v2.png",
+      "visualProfileId": "rdu-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Umstead State Park forest",
+          "lake"
+        ],
+        "skySignature": "Quiet natural sky over Raleigh/Durham",
+        "seasonAndLight": "Warm late afternoon in North Carolina",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport crossing the upper-right sky above Umstead State Park forest and lake",
+        "foreground": "Local vegetation framing Umstead State Park forest and lake",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.ncparks.gov/state-parks/william-b-umstead-state-park",
+        "https://www.ncparks.gov/park-features/william-b-umstead-state-park-crabtree-creek-access"
+      ]
+    },
+    {
+      "code": "ROW",
+      "icao": "KROW",
+      "city": "Roswell",
+      "region": "New Mexico",
+      "title": "ROSWELL",
+      "subtitle": "NEW MEXICO",
+      "descriptor": "PECOS VALLEY • HIGH DESERT • SOUTHEAST NEW MEXICO",
+      "tagline": "Pecos Valley downtown and high desert.",
+      "batch": "envoy-gap-2026-09-28-s",
+      "status": "approved",
+      "output": "assets/destinations/row-poster-7x8-candidate-v3.png",
+      "visualProfileId": "row-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Pecos Valley downtown",
+          "high desert"
+        ],
+        "skySignature": "Quiet natural sky over Roswell",
+        "seasonAndLight": "Warm late afternoon in New Mexico",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport crossing the upper-right sky above Pecos Valley downtown and high desert",
+        "foreground": "Local vegetation framing Pecos Valley downtown and high desert",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.newmexico.org/places-to-visit/regions/southeast/roswell/",
+        "https://www.roswell-nm.gov/"
+      ]
+    },
+    {
+      "code": "RST",
+      "icao": "KRST",
+      "city": "Rochester",
+      "region": "Minnesota",
+      "title": "ROCHESTER",
+      "subtitle": "MINNESOTA",
+      "descriptor": "ZUMBRO RIVER • PLUMMER BUILDING • SOUTHERN MINNESOTA",
+      "tagline": "Zumbro River and Plummer Building.",
+      "batch": "envoy-gap-2026-09-28-s",
+      "status": "approved",
+      "output": "assets/destinations/rst-poster-7x8-candidate-v3.png",
+      "visualProfileId": "rst-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Zumbro River",
+          "Plummer Building"
+        ],
+        "skySignature": "Quiet natural sky over Rochester",
+        "seasonAndLight": "Warm late afternoon in Minnesota",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport crossing the upper-right sky above Zumbro River and Plummer Building",
+        "foreground": "Local vegetation framing Zumbro River and Plummer Building",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.rochestermn.gov/council-administration/who-we-are/history-of-rochester/",
+        "https://www.rochestermn.gov/business-development/heritage-preservation/landmark-properties-alterations/"
+      ]
+    },
+    {
+      "code": "SBP",
+      "icao": "KSBP",
+      "city": "San Luis Obispo",
+      "region": "California",
+      "title": "SAN LUIS OBISPO",
+      "subtitle": "CALIFORNIA",
+      "descriptor": "MISSION SAN LUIS OBISPO • CERRO SAN LUIS • CENTRAL COAST",
+      "tagline": "Mission San Luis Obispo and rolling hills.",
+      "batch": "envoy-gap-2026-09-28-s",
+      "status": "approved",
+      "output": "assets/destinations/sbp-poster-7x8-candidate-v2.png",
+      "visualProfileId": "sbp-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Mission San Luis Obispo",
+          "rolling hills"
+        ],
+        "skySignature": "Quiet natural sky over San Luis Obispo",
+        "seasonAndLight": "Warm late afternoon in California",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport crossing the upper-right sky above Mission San Luis Obispo and rolling hills",
+        "foreground": "Local vegetation framing Mission San Luis Obispo and rolling hills",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://visitslo.com/things-to-do/attractions/mission-san-luis-obispo-de-tolosa/",
+        "https://visitslo.com/neighborhoods/meet-us-in-downtown/"
+      ]
+    },
+    {
+      "code": "TRI",
+      "icao": "KTRI",
+      "city": "Tri-Cities",
+      "region": "Tennessee",
+      "title": "TRI-CITIES",
+      "subtitle": "TENNESSEE",
+      "descriptor": "SOUTH HOLSTON LAKE • APPALACHIAN RIDGES • TRI-CITIES",
+      "tagline": "South Holston Lake and Appalachian ridges.",
+      "batch": "envoy-gap-2026-09-28-s",
+      "status": "approved",
+      "output": "assets/destinations/tri-poster-7x8-candidate-v3.png",
+      "visualProfileId": "tri-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "South Holston Lake",
+          "Appalachian ridges"
+        ],
+        "skySignature": "Quiet natural sky over Tri-Cities",
+        "seasonAndLight": "Warm late afternoon in Tennessee",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport crossing the upper-right sky above South Holston Lake and Appalachian ridges",
+        "foreground": "Local vegetation framing South Holston Lake and Appalachian ridges",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.tva.com/energy/our-power-system/hydroelectric/south-holston",
+        "https://www.tnvacation.com/east-tennessee/tri-cities"
+      ]
+    },
+    {
+      "code": "YUL",
+      "icao": "CYUL",
+      "city": "Montréal",
+      "region": "Québec",
+      "title": "MONTRÉAL",
+      "subtitle": "QUÉBEC",
+      "descriptor": "OLD PORT • MOUNT ROYAL • SAINT LAWRENCE",
+      "tagline": "Old Port and Mount Royal.",
+      "batch": "envoy-gap-2026-09-28-s",
+      "status": "approved",
+      "output": "assets/destinations/yul-poster-7x8-candidate-v4.png",
+      "visualProfileId": "yul-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Old Port",
+          "Mount Royal"
+        ],
+        "skySignature": "Quiet natural sky over Montréal",
+        "seasonAndLight": "Warm late afternoon in Québec",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport crossing the upper-right sky above Old Port and Mount Royal",
+        "foreground": "Local vegetation framing Old Port and Mount Royal",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.mtl.org/en/what-to-do/activities/mount-royal-park",
+        "https://www.mtl.org/en/experience/beautiful-walks"
       ]
     }
   ]
