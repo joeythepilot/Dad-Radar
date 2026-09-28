@@ -40,7 +40,7 @@
       "region": "Texas",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "ABQ",
@@ -64,7 +64,7 @@
       "region": "Texas",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "AEX",
@@ -72,7 +72,7 @@
       "region": "Louisiana",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "AGU",
@@ -80,7 +80,7 @@
       "region": "Aguascalientes",
       "country": "MX",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "ALB",
@@ -136,7 +136,7 @@
       "region": "Pennsylvania",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "BDL",
@@ -1265,6 +1265,16 @@
       "CRP",
       "GJT",
       "ILM"
+    ]
+  },
+  "tenthBatch": {
+    "id": "envoy-gap-2026-09-28-j",
+    "codes": [
+      "ABI",
+      "ACT",
+      "AEX",
+      "AGU",
+      "AVP"
     ]
   }
 }

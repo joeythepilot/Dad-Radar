@@ -6,7 +6,7 @@ Envoy describes service to **over 160 destinations**, but its public site does n
 
 Sources: [Envoy Air](https://www.envoyair.com/), [FlightNerve MQ route listing](https://www.flightnerve.com/airlines/MQ). The latter's own destination count and visible code list vary between crawls; its 146/148 headline is not treated as a complete verified roster. Ground handling locations are a separate service and are not automatically destinations flown by Envoy.
 
-After Joey's batch A through I approvals, **82** airport codes have an installed poster and **63** have no active artwork in the 145-code working union. The JSON records each code, airport catalog geography, source tag, and poster status, so batches can be selected without conflating a candidate route with approved art.
+After Joey's batch A through J approvals, **87** airport codes have an installed poster and **58** have no active artwork in the 145-code working union. The JSON records each code, airport catalog geography, source tag, and poster status, so batches can be selected without conflating a candidate route with approved art.
 
 ## Batch A: approved and installed in the application catalog
 
@@ -115,6 +115,18 @@ The comparison `Docs/UI/envoy-gap-2026-09-27-h-avl-review.jpg` includes AVL at t
 | ILM | Wilmington, North Carolina | Cape Fear Riverwalk and Battleship NORTH CAROLINA | Approved with the same anonymous vintage-aircraft treatment. |
 
 Joey approved the five individual assets on 2026-09-28. No Batch I comparison sheet was requested or created. The locked AVL poster remains the unchanged style standard and must not be regenerated. Batch I also establishes the commercial reuse rule for future poster artwork: aircraft should be generic, unbranded vintage transports rather than carrier-specific modern jets; no airline logos, carrier liveries or readable registrations; and aircraft anatomy must remain believable, with exactly the intended engines/propellers and no phantom nacelles, duplicate wings or stray propellers. These are 1173 × 1341 screen assets, not print masters. Route status, landmark fidelity and commercial-use rights remain separate verification questions before sale.
+
+## Batch J: approved and installed — calmer skies
+
+| Code | City | Visual anchor | Review focus |
+| --- | --- | --- | --- |
+| ABI | Abilene, Texas | Paramount Theatre and historic Cypress Street | Check the theatre frontage, nearby Grace Museum and aircraft anatomy. |
+| ACT | Waco, Texas | Suspension Bridge and Brazos River | Check stone towers, cable layout and riverbank relationships. |
+| AEX | Alexandria, Louisiana | Hotel Bentley and Red River waterfront | Check hotel facade and the interpreted waterfront viewpoint. |
+| AGU | Aguascalientes, Mexico | Cathedral and Plaza de la Patria | Check cathedral facade and twin towers; the first aircraft had an extra apparent propeller and was corrected before approval. |
+| AVP | Scranton/Wilkes-Barre, Pennsylvania | Steamtown roundhouse and turntable in Scranton | Check roundhouse geometry, radial tracks and locomotive. |
+
+Joey approved all five on 2026-09-28 contingent on softening the aggressive, artificial-looking cloud textures. Each existing composition received a sky-only correction, with a second pass for ABI and AGU; the corrected v2 assets are wired into `config/posters.js`. The first uncorrected draft assets were superseded before publication, and no comparison sheet was made. The locked AVL original remains unchanged. These 1173 × 1341 screen images preserve the generic unbranded two-engine, two-propeller aircraft rule. The working inventory is now **87 installed / 58 missing / 145 provisional total**. Joey's approval is of the corrected poster direction, while physical-display observation, route status, landmark fidelity and commercial-use rights remain separate checks. Subject references remain in the batch manifest.
 
 ## Next passes
 

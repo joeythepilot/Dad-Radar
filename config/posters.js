@@ -502,6 +502,36 @@
         "./assets/destinations/ilm-poster-7x8-candidate-v1.png",
       title: "WILMINGTON",
       location: "Wilmington, North Carolina"
+    }),
+    ABI: Object.freeze({
+      source:
+        "./assets/destinations/abi-poster-7x8-candidate-v2.png",
+      title: "ABILENE",
+      location: "Abilene, Texas"
+    }),
+    ACT: Object.freeze({
+      source:
+        "./assets/destinations/act-poster-7x8-candidate-v2.png",
+      title: "WACO",
+      location: "Waco, Texas"
+    }),
+    AEX: Object.freeze({
+      source:
+        "./assets/destinations/aex-poster-7x8-candidate-v2.png",
+      title: "ALEXANDRIA",
+      location: "Alexandria, Louisiana"
+    }),
+    AGU: Object.freeze({
+      source:
+        "./assets/destinations/agu-poster-7x8-candidate-v2.png",
+      title: "AGUASCALIENTES",
+      location: "Aguascalientes, Mexico"
+    }),
+    AVP: Object.freeze({
+      source:
+        "./assets/destinations/avp-poster-7x8-candidate-v2.png",
+      title: "SCRANTON",
+      location: "Wilkes-Barre/Scranton, Pennsylvania"
     })
   });
 

@@ -191,6 +191,18 @@
         "GJT",
         "ILM"
       ]
+    },
+    {
+      "id": "envoy-gap-2026-09-28-j",
+      "label": "Envoy candidate route gap batch J — approved calmer-sky vintage-aircraft standard",
+      "status": "approved",
+      "airportCodes": [
+        "ABI",
+        "ACT",
+        "AEX",
+        "AGU",
+        "AVP"
+      ]
     }
   ],
   "destinations": [
@@ -2313,6 +2325,171 @@
       "referenceSources": [
         "https://www.wilmingtonandbeaches.com/things-to-do/river-district/",
         "https://battleshipnc.com/visit/"
+      ]
+    },
+    {
+      "code": "ABI",
+      "icao": "KABI",
+      "city": "Abilene",
+      "region": "Texas",
+      "title": "ABILENE",
+      "subtitle": "TEXAS",
+      "descriptor": "PRAIRIE • RAILS • CULTURE",
+      "tagline": "Where the Plains Begin.",
+      "batch": "envoy-gap-2026-09-28-j",
+      "status": "approved",
+      "output": "assets/destinations/abi-poster-7x8-candidate-v2.png",
+      "visualProfileId": "abilene-paramount-grace-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Paramount Theatre on historic Cypress Street",
+          "The Grace Museum in the former Hotel Grace"
+        ],
+        "skySignature": "Mostly open West Texas blue with soft low amber haze and restrained cloud texture",
+        "seasonAndLight": "Warm late-day prairie light",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded twin-engine transport high at upper right above Cypress Street",
+        "foreground": "Historic downtown storefronts and tree-lined avenue",
+        "avoid": [
+          "modern airline branding, logos, carrier-specific livery or readable registration",
+          "extra engines, extra propellers, duplicate wings or impossible aircraft anatomy"
+        ]
+      },
+      "referenceSources": [
+        "https://www.paramountabilene.com/history",
+        "https://thegracemuseum.org/about/"
+      ]
+    },
+    {
+      "code": "ACT",
+      "icao": "KACT",
+      "city": "Waco",
+      "region": "Texas",
+      "title": "WACO",
+      "subtitle": "TEXAS",
+      "descriptor": "BRAZOS • BRIDGE • HISTORY",
+      "tagline": "Across the Brazos.",
+      "batch": "envoy-gap-2026-09-28-j",
+      "status": "approved",
+      "output": "assets/destinations/act-poster-7x8-candidate-v2.png",
+      "visualProfileId": "waco-suspension-bridge-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Waco Suspension Bridge with stone towers and suspension cables",
+          "Brazos River and Indian Spring Park riverwalk"
+        ],
+        "skySignature": "Open Brazos blue fading gently to warm horizon haze with thin wisps",
+        "seasonAndLight": "Late-afternoon river reflections",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded twin-engine transport left of the nearer bridge tower",
+        "foreground": "Riverwalk trees and low historic downtown",
+        "avoid": [
+          "modern airline branding, logos, carrier-specific livery or readable registration",
+          "extra engines, extra propellers, duplicate wings or impossible aircraft anatomy"
+        ]
+      },
+      "referenceSources": [
+        "https://www.waco-texas.com/Departments/Parks-Recreation/Suspension-Bridge-Riverwalk-Area",
+        "https://www.waco-texas.com/About-Waco/175th/175-Suspension-Bridge"
+      ]
+    },
+    {
+      "code": "AEX",
+      "icao": "KAEX",
+      "city": "Alexandria",
+      "region": "Louisiana",
+      "title": "ALEXANDRIA",
+      "subtitle": "LOUISIANA",
+      "descriptor": "RED RIVER • HERITAGE • CYPRESS",
+      "tagline": "Along the Red River.",
+      "batch": "envoy-gap-2026-09-28-j",
+      "status": "approved",
+      "output": "assets/destinations/aex-poster-7x8-candidate-v2.png",
+      "visualProfileId": "alexandria-bentley-river-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Historic Hotel Bentley in downtown Alexandria",
+          "Alexandria Red River levee and riverfront"
+        ],
+        "skySignature": "Calm deep blue above gentle Red River sunset haze without clustered clouds",
+        "seasonAndLight": "Warm Louisiana evening on the Red River",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded twin-engine transport high right above the riverfront",
+        "foreground": "Cypress forms, river vegetation and waterside masonry",
+        "avoid": [
+          "modern airline branding, logos, carrier-specific livery or readable registration",
+          "extra engines, extra propellers, duplicate wings or impossible aircraft anatomy"
+        ]
+      },
+      "referenceSources": [
+        "https://www.cityofalexandriala.com/community/ahpc/maps/",
+        "https://www.cityofalexandriala.com/city-holds-groundbreaking-for-riverfront-amphitheater-bandshell/"
+      ]
+    },
+    {
+      "code": "AGU",
+      "icao": "MMAS",
+      "city": "Aguascalientes",
+      "region": "Aguascalientes",
+      "title": "AGUASCALIENTES",
+      "subtitle": "MÉXICO",
+      "descriptor": "PLAZA • CANTERA • TRADICIÓN",
+      "tagline": "Corazón de México.",
+      "batch": "envoy-gap-2026-09-28-j",
+      "status": "approved",
+      "output": "assets/destinations/agu-poster-7x8-candidate-v2.png",
+      "visualProfileId": "aguascalientes-cathedral-plaza-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Cathedral Basilica of Our Lady of the Assumption beside Plaza de la Patria",
+          "Arcaded historic center of Aguascalientes"
+        ],
+        "skySignature": "Clear blue above muted gold plaza haze, with minimal soft cloud traces",
+        "seasonAndLight": "Golden late afternoon in the historic center",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded twin-engine transport left of the cathedral towers",
+        "foreground": "Plaza stonework, trees and warm limestone arcades",
+        "avoid": [
+          "modern airline branding, logos, carrier-specific livery or readable registration",
+          "extra engines, extra propellers, duplicate wings or impossible aircraft anatomy"
+        ]
+      },
+      "referenceSources": [
+        "https://www.aguascalientes.gob.mx/VivaAgs/Mapa/Mapa.html",
+        "https://eservicios2.aguascalientes.gob.mx/NormatecaAdministrador/archivos/MUN-27-11.pdf"
+      ]
+    },
+    {
+      "code": "AVP",
+      "icao": "KAVP",
+      "city": "Wilkes-Barre/Scranton",
+      "region": "Pennsylvania",
+      "title": "SCRANTON",
+      "subtitle": "PENNSYLVANIA",
+      "descriptor": "RAILS • VALLEY • HERITAGE",
+      "tagline": "Where the Rails Remember.",
+      "batch": "envoy-gap-2026-09-28-j",
+      "status": "approved",
+      "output": "assets/destinations/avp-poster-7x8-candidate-v2.png",
+      "visualProfileId": "scranton-steamtown-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Steamtown National Historic Site roundhouse and turntable in Scranton",
+          "Historic railyard and green Lackawanna Valley slopes"
+        ],
+        "skySignature": "Open Pennsylvania blue with subtle haze above the Lackawanna Valley",
+        "seasonAndLight": "Soft autumn afternoon in the valley",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded twin-engine transport high right above the roundhouse",
+        "foreground": "Radial rails, locomotive and brick roundhouse bays",
+        "avoid": [
+          "modern airline branding, logos, carrier-specific livery or readable registration",
+          "extra engines, extra propellers, duplicate wings or impossible aircraft anatomy"
+        ]
+      },
+      "referenceSources": [
+        "https://www.nps.gov/stea/learn/historyculture/park-structures.htm",
+        "https://www.nps.gov/stea/planyourvisit/outdooractivities.htm"
       ]
     }
   ]
