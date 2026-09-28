@@ -251,6 +251,18 @@
         "FWA",
         "GCK"
       ]
+    },
+    {
+      "id": "envoy-gap-2026-09-28-o",
+      "label": "Envoy candidate route gap batch O — approved quiet-sky vintage-aircraft standard",
+      "status": "approved",
+      "airportCodes": [
+        "GGG",
+        "GNV",
+        "GRI",
+        "GRK",
+        "HOU"
+      ]
     }
   ],
   "destinations": [
@@ -3198,6 +3210,171 @@
       "referenceSources": [
         "https://www.visitgck.com/things-to-do/windsor-hotel/",
         "https://www.kansashistory.gov/kansapedia/windsor-hotel/19227"
+      ]
+    },
+    {
+      "code": "GGG",
+      "icao": "KGGG",
+      "city": "Longview",
+      "region": "Texas",
+      "title": "LONGVIEW",
+      "subtitle": "EAST TEXAS",
+      "descriptor": "RAILROAD • DOWNTOWN • PINEY WOODS",
+      "tagline": "East Texas by Rail.",
+      "batch": "envoy-gap-2026-09-28-o",
+      "status": "approved",
+      "output": "assets/destinations/ggg-poster-7x8-candidate-v2.png",
+      "visualProfileId": "longview-depot-pines-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Historic Longview Train Depot and railroad tracks",
+          "Downtown Longview brick buildings among East Texas pines"
+        ],
+        "skySignature": "Mostly open East Texas blue with a softly glowing amber horizon",
+        "seasonAndLight": "Warm East Texas late afternoon",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport above Longview's depot at upper right",
+        "foreground": "Rail tracks, flowers and pine trees framing the station",
+        "avoid": [
+          "aggressively speckled cloud texture or western desert scenery",
+          "carrier marks, extra engines, propellers, wings or shark fins"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitlongviewtexas.com/188/Getting-Here",
+        "https://www.visitlongviewtexas.com/249/About-Downtown"
+      ]
+    },
+    {
+      "code": "GNV",
+      "icao": "KGNV",
+      "city": "Gainesville",
+      "region": "Florida",
+      "title": "GAINESVILLE",
+      "subtitle": "FLORIDA",
+      "descriptor": "PRAIRIE • WETLANDS • OLD FLORIDA",
+      "tagline": "Wild Florida Awaits.",
+      "batch": "envoy-gap-2026-09-28-o",
+      "status": "approved",
+      "output": "assets/destinations/gnv-poster-7x8-candidate-v2.png",
+      "visualProfileId": "gainesville-paynes-prairie-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Paynes Prairie freshwater marsh and wet grassland",
+          "Live oaks and boardwalk on the Gainesville-area prairie"
+        ],
+        "skySignature": "Quiet open Florida blue with a delicate warm wetland horizon",
+        "seasonAndLight": "Golden late afternoon over freshwater wetlands",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport over the prairie at upper right",
+        "foreground": "Live oak, native marsh plants and wooden observation walk",
+        "avoid": [
+          "beaches, mountains or repeated artificial cloud speckles",
+          "airline livery, extra propellers, engines or dorsal fins"
+        ]
+      },
+      "referenceSources": [
+        "https://www.floridastateparks.org/parks-and-trails/paynes-prairie-preserve-state-park",
+        "https://www.gainesvillefl.gov/Parks/Sweetwater-Wetlands-Park"
+      ]
+    },
+    {
+      "code": "GRI",
+      "icao": "KGRI",
+      "city": "Grand Island",
+      "region": "Nebraska",
+      "title": "GRAND ISLAND",
+      "subtitle": "NEBRASKA",
+      "descriptor": "PLATTE RIVER • PRAIRIE • HERITAGE",
+      "tagline": "Across the Platte.",
+      "batch": "envoy-gap-2026-09-28-o",
+      "status": "approved",
+      "output": "assets/destinations/gri-poster-7x8-candidate-v2.png",
+      "visualProfileId": "grand-island-platte-prairie-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Broad braided Platte River and sandbars",
+          "Prairie heritage buildings near Grand Island"
+        ],
+        "skySignature": "Calm Nebraska blue graduating into a low prairie amber horizon",
+        "seasonAndLight": "Clear early autumn sunset along the Platte",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport high above the Platte River",
+        "foreground": "Golden cottonwoods, shallow river channels and prairie grass",
+        "avoid": [
+          "European architecture, mountains or etched cloud bands",
+          "extra engines, propellers, fins, duplicate wings or carrier identity"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitgrandisland.com/about",
+        "https://www.visitgrandisland.com/things-to-do"
+      ]
+    },
+    {
+      "code": "GRK",
+      "icao": "KGRK",
+      "city": "Fort Hood (Killeen)",
+      "region": "Texas",
+      "title": "KILLEEN",
+      "subtitle": "CENTRAL TEXAS",
+      "descriptor": "BELTON LAKE • LIMESTONE • HEARTLAND",
+      "tagline": "At the Heart of Texas.",
+      "batch": "envoy-gap-2026-09-28-o",
+      "status": "approved",
+      "output": "assets/destinations/grk-poster-7x8-candidate-v2.png",
+      "visualProfileId": "killeen-belton-lake-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Belton Lake in the Killeen area",
+          "Low limestone bluffs and cedar-covered Central Texas shore"
+        ],
+        "skySignature": "Mostly open Central Texas blue with soft golden lake horizon",
+        "seasonAndLight": "Warm late afternoon reflected across the lake",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport over Belton Lake at upper right",
+        "foreground": "Limestone path, oak, cedar and wildflowers along the bank",
+        "avoid": [
+          "military insignia, fantasy mesas or patterned cloud texture",
+          "shark fins, extra engines, propellers, wings or airline markings"
+        ]
+      },
+      "referenceSources": [
+        "https://visitkilleen.com/killeen-outdoors/",
+        "https://visitkilleen.com/places/belton-lake-outdoor-recreation-area-blora/"
+      ]
+    },
+    {
+      "code": "HOU",
+      "icao": "KHOU",
+      "city": "Houston",
+      "region": "Texas",
+      "title": "HOUSTON",
+      "subtitle": "TEXAS",
+      "descriptor": "BUFFALO BAYOU • DOWNTOWN • BAYOU CITY",
+      "tagline": "Where Bayou Meets City.",
+      "batch": "envoy-gap-2026-09-28-o",
+      "status": "approved",
+      "output": "assets/destinations/hou-poster-7x8-candidate-v2.png",
+      "visualProfileId": "houston-buffalo-bayou-skyline-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Buffalo Bayou Park and riverbank paths",
+          "Downtown Houston skyline behind Eleanor Tinsley Park"
+        ],
+        "skySignature": "Open Houston blue softened by a low late-day amber glow",
+        "seasonAndLight": "Warm late afternoon city and bayou reflections",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport beyond the downtown skyline at upper right",
+        "foreground": "Shaded bayou walk, bridge and reflected skyline",
+        "avoid": [
+          "beach resorts, mountains or synthetic streaked cloud bands",
+          "airline logos, registrations, extra engines, propellers or fins"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visithoustontexas.com/listings/eleanor-tinsley-park/20150/",
+        "https://www.visithoustontexas.com/things-to-do/attractions/free-things-to-do/"
       ]
     }
   ]

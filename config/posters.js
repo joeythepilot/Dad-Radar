@@ -632,6 +632,31 @@
       source: "./assets/destinations/gck-poster-7x8-candidate-v2.png",
       title: "GARDEN CITY",
       location: "Garden City, Kansas"
+    }),
+    GGG: Object.freeze({
+      source: "./assets/destinations/ggg-poster-7x8-candidate-v2.png",
+      title: "LONGVIEW",
+      location: "Longview, Texas"
+    }),
+    GNV: Object.freeze({
+      source: "./assets/destinations/gnv-poster-7x8-candidate-v2.png",
+      title: "GAINESVILLE",
+      location: "Gainesville, Florida"
+    }),
+    GRI: Object.freeze({
+      source: "./assets/destinations/gri-poster-7x8-candidate-v2.png",
+      title: "GRAND ISLAND",
+      location: "Grand Island, Nebraska"
+    }),
+    GRK: Object.freeze({
+      source: "./assets/destinations/grk-poster-7x8-candidate-v2.png",
+      title: "KILLEEN",
+      location: "Killeen, Texas"
+    }),
+    HOU: Object.freeze({
+      source: "./assets/destinations/hou-poster-7x8-candidate-v2.png",
+      title: "HOUSTON",
+      location: "Houston, Texas"
     })
   });
 

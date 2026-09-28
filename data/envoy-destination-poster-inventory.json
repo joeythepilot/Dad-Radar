@@ -528,7 +528,7 @@
       "region": "Texas",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "GJT",
@@ -544,7 +544,7 @@
       "region": "Florida",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "GPT",
@@ -568,7 +568,7 @@
       "region": "Nebraska",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "GRK",
@@ -576,7 +576,7 @@
       "region": "Texas",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "GRR",
@@ -608,7 +608,7 @@
       "region": "Texas",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "HPN",
@@ -1315,6 +1315,16 @@
       "FSM",
       "FWA",
       "GCK"
+    ]
+  },
+  "fifteenthBatch": {
+    "id": "envoy-gap-2026-09-28-o",
+    "codes": [
+      "GGG",
+      "GNV",
+      "GRI",
+      "GRK",
+      "HOU"
     ]
   }
 }
