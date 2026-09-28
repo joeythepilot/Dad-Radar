@@ -167,6 +167,18 @@
         "MEM",
         "PNS"
       ]
+    },
+    {
+      "id": "envoy-gap-2026-09-27-h",
+      "label": "Envoy candidate route gap batch H — AVL painted style",
+      "status": "candidate",
+      "airportCodes": [
+        "OKC",
+        "MYR",
+        "ORF",
+        "YQB",
+        "BTR"
+      ]
     }
   ],
   "destinations": [
@@ -1959,6 +1971,171 @@
       "referenceSources": [
         "https://www.visitpensacola.com/directory/palafox-pier-and-yacht-harbour-marina/",
         "https://www.visitpensacola.com/directory/plaza-de-luna/"
+      ]
+    },
+    {
+      "code": "OKC",
+      "icao": "KOKC",
+      "city": "Oklahoma City",
+      "region": "Oklahoma",
+      "title": "OKLAHOMA CITY",
+      "subtitle": "OKLAHOMA",
+      "descriptor": "PRAIRIES • PEOPLE • WIDE HORIZONS",
+      "tagline": "Naturally Welcoming.",
+      "batch": "envoy-gap-2026-09-27-h",
+      "status": "candidate",
+      "output": "assets/destinations/okc-poster-7x8-candidate-v1.png",
+      "visualProfileId": "oklahoma-skydance-avl-lithograph-gold",
+      "design": {
+        "landmarks": [
+          "Skydance Bridge white flycatcher-wing sculpture over Interstate 40",
+          "Scissortail Park and Devon tower downtown"
+        ],
+        "skySignature": "Muted blue with soft amber cloud banks",
+        "seasonAndLight": "Late summer golden evening",
+        "titleAlignment": "right",
+        "aircraftPlacement": "Two-engine plane at upper right, smooth unpowered nose",
+        "foreground": "Grassy Scissortail Park and highway beneath pedestrian bridge",
+        "avoid": [
+          "bridge over water",
+          "extra or nose propeller"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitokc.com/media-gallery/item/skydance-bridge/68b9a811d4a58b535b5d7ceb/",
+        "https://www.visitokc.com/things-to-do/arts-entertainment/public-art/"
+      ]
+    },
+    {
+      "code": "MYR",
+      "icao": "KMYR",
+      "city": "Myrtle Beach",
+      "region": "South Carolina",
+      "title": "MYRTLE BEACH",
+      "subtitle": "SOUTH CAROLINA",
+      "descriptor": "OCEANFRONT • FAMILY FUN • COASTAL BEAUTY",
+      "tagline": "Atlantic Days.",
+      "batch": "envoy-gap-2026-09-27-h",
+      "status": "candidate",
+      "output": "assets/destinations/myr-poster-7x8-candidate-v1.png",
+      "visualProfileId": "myrtle-boardwalk-avl-lithograph-amber",
+      "design": {
+        "landmarks": [
+          "Oceanfront Myrtle Beach Boardwalk and SkyWheel",
+          "Beach, nearby pier and Atlantic surf"
+        ],
+        "skySignature": "Soft amber clouds over blue sea",
+        "seasonAndLight": "Late summer coastal evening",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Two-engine plane at upper right after removal of extra apparent propeller",
+        "foreground": "Beach grass and dune fence bordering broad sand",
+        "avoid": [
+          "third or nose propeller",
+          "generic beach without boardwalk"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitmyrtlebeach.com/things-to-do/attractions/boardwalk",
+        "https://www.visitmyrtlebeach.com/list/things-to-do-on-the-myrtle-beach-boardwalk"
+      ]
+    },
+    {
+      "code": "ORF",
+      "icao": "KORF",
+      "city": "Norfolk",
+      "region": "Virginia",
+      "title": "NORFOLK",
+      "subtitle": "VIRGINIA",
+      "descriptor": "HARBOR • HISTORY • COAST",
+      "tagline": "Harbor Heritage.",
+      "batch": "envoy-gap-2026-09-27-h",
+      "status": "candidate",
+      "output": "assets/destinations/orf-poster-7x8-candidate-v1.png",
+      "visualProfileId": "norfolk-wisconsin-avl-lithograph-harbor",
+      "design": {
+        "landmarks": [
+          "USS Wisconsin battleship moored at Nauticus",
+          "Elizabeth River waterfront and downtown Norfolk"
+        ],
+        "skySignature": "Amber clouds under navy blue upper sky",
+        "seasonAndLight": "Autumn harbor sunset",
+        "titleAlignment": "right",
+        "aircraftPlacement": "Two-engine civil plane high at upper right, no nose propeller",
+        "foreground": "Waterside promenade with chain railing and flowers",
+        "avoid": [
+          "aircraft carrier instead of battleship",
+          "extra propeller"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitnorfolk.com/attraction/nauticus-battleship-wisconsin/",
+        "https://www.visitnorfolk.com/attraction/battleship-wisconsin/"
+      ]
+    },
+    {
+      "code": "YQB",
+      "icao": "CYQB",
+      "city": "Québec City",
+      "region": "Québec",
+      "title": "QUÉBEC CITY",
+      "subtitle": "QUÉBEC",
+      "descriptor": "OLD TOWN • RIVER • HERITAGE",
+      "tagline": "Old Québec Above the River.",
+      "batch": "envoy-gap-2026-09-27-h",
+      "status": "candidate",
+      "output": "assets/destinations/yqb-poster-7x8-candidate-v1.png",
+      "visualProfileId": "quebec-frontenac-avl-lithograph-autumn",
+      "design": {
+        "landmarks": [
+          "Château Frontenac tiered copper roof and towers",
+          "Dufferin Terrace over St. Lawrence River"
+        ],
+        "skySignature": "Quiet blue upper sky and warm cloud ribbon",
+        "seasonAndLight": "Autumn evening on stone ramparts",
+        "titleAlignment": "right",
+        "aircraftPlacement": "Small two-engine airliner high to the right, smooth nose",
+        "foreground": "Autumn foliage on the bluff",
+        "avoid": [
+          "AVL Asheville footer copy",
+          "fantasy castle or third propeller"
+        ]
+      },
+      "referenceSources": [
+        "https://www.quebec-cite.com/en/what-to-do-quebec-city/dufferin-terrace",
+        "https://www.quebec-cite.com/en/what-to-do-quebec-city/pierre-dugua-de-mons-terrace"
+      ]
+    },
+    {
+      "code": "BTR",
+      "icao": "KBTR",
+      "city": "Baton Rouge",
+      "region": "Louisiana",
+      "title": "BATON ROUGE",
+      "subtitle": "LOUISIANA",
+      "descriptor": "RIVER • HISTORY • SOUTH",
+      "tagline": "Above the Mississippi.",
+      "batch": "envoy-gap-2026-09-27-h",
+      "status": "candidate",
+      "output": "assets/destinations/btr-poster-7x8-candidate-v1.png",
+      "visualProfileId": "batonrouge-oldcapitol-avl-lithograph-magnolia",
+      "design": {
+        "landmarks": [
+          "Gothic Revival Old Louisiana State Capitol on Mississippi bluff",
+          "Modern Art Deco Louisiana State Capitol distant behind downtown"
+        ],
+        "skySignature": "Muted peach and blue clouds",
+        "seasonAndLight": "Warm late-afternoon river light",
+        "titleAlignment": "right",
+        "aircraftPlacement": "Two-engine plane upper right after removal of extra apparent propeller",
+        "foreground": "Magnolia blooms and live oak by river",
+        "avoid": [
+          "third or nose propeller",
+          "merging old and modern Capitol"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitbatonrouge.com/things-to-do/attractions/louisiana-state-capitol/old-state-capitol/",
+        "https://www.visitbatonrouge.com/things-to-do/attractions/louisiana-state-capitol/new-state-capitol/"
       ]
     }
   ]

@@ -92,6 +92,18 @@ Joey reset the entire set to the approved AVL poster after finding the first fiv
 
 `Docs/UI/envoy-gap-2026-09-27-g-avl-review.jpg` compares these five with AVL at equal review size. Joey approved the set on 2026-09-27, and all five are wired into `config/posters.js`. Each uses the 1173 × 1341 review canvas and the rich painted lithograph direction. The working Envoy route roster, landmark details, aircraft anatomy and commercial-use rights still require review before sale; publication to the branch does not verify home-display deployment.
 
+## Batch H: candidate proofs for review
+
+| Code | City | Visual anchor | Review note |
+| --- | --- | --- | --- |
+| OKC | Oklahoma City, Oklahoma | Skydance Bridge over I-40, Scissortail Park and downtown | First pass mistakenly placed the bridge over water; revised to the highway. Check sculpture geometry and skyline. |
+| MYR | Myrtle Beach, South Carolina | Boardwalk, SkyWheel, pier and Atlantic shore | An extra apparent propeller in the first proof was removed. Check pier and wheel placement. |
+| ORF | Norfolk, Virginia | USS Wisconsin at Nauticus on the Elizabeth River | Check ship silhouette, mooring and waterfront background. |
+| YQB | Québec City, Québec | Château Frontenac, Dufferin Terrace and St. Lawrence | A copied AVL footer caption was replaced. Check hotel and river viewpoint. |
+| BTR | Baton Rouge, Louisiana | Old State Capitol on Mississippi bluff and modern Capitol farther back | An extra apparent aircraft propeller was removed. Check Gothic building silhouette and relative Capitol placement. |
+
+The candidate comparison `Docs/UI/envoy-gap-2026-09-27-h-avl-review.jpg` includes AVL at the same visual scale. These five are **not installed** and require Joey's approval. The Myrtle Beach correction is in the candidate asset; the earlier faulty airplane is excluded. This 1173 × 1341 set is for screen review, not a print master. Landmark fidelity and route status need dedicated verification before commercial sale.
+
 ## Next passes
 
 1. Validate the roster against a current dated Envoy operating-carrier schedule, including international and seasonal routes. Add newly confirmed codes and retire stale ones without deleting provenance.
