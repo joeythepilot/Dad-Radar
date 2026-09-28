@@ -275,6 +275,18 @@
         "JFK",
         "LAN"
       ]
+    },
+    {
+      "id": "envoy-gap-2026-09-28-q",
+      "label": "Envoy candidate route gap batch Q",
+      "status": "approved",
+      "airportCodes": [
+        "LAW",
+        "LCH",
+        "LGA",
+        "LRD",
+        "MAF"
+      ]
     }
   ],
   "destinations": [
@@ -3553,6 +3565,171 @@
         "https://capitol.michigan.gov/about",
         "https://www.lansingmi.gov/436/Lansing-River-Trail"
       ]
+    },
+    {
+      "code": "LAW",
+      "icao": "KLAW",
+      "city": "Lawton",
+      "region": "Oklahoma",
+      "title": "LAWTON",
+      "subtitle": "OKLAHOMA",
+      "descriptor": "WICHITA MOUNTAINS • BISON • SOUTHWEST OKLAHOMA",
+      "tagline": "Where the Granite Rises.",
+      "output": "assets/destinations/law-poster-7x8-candidate-v2.png",
+      "visualProfileId": "lawton-wichita-mountains-bison-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Wichita Mountains Wildlife Refuge granite hills near Lawton",
+          "Bison in native prairie grassland"
+        ],
+        "skySignature": "Quiet high-plains blue with a gentle amber horizon",
+        "seasonAndLight": "Warm late afternoon across granite hills",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport over the Wichita Mountains at upper right",
+        "foreground": "Bison and prairie grasses against the granite foothills",
+        "avoid": [
+          "synthetic patterned clouds or distant alpine peaks",
+          "carrier markings, third engine, stray propeller or shark fins"
+        ]
+      },
+      "referenceSources": [
+        "https://www.fws.gov/refuge/wichita-mountains",
+        "https://www.fws.gov/refuge/wichita-mountains/visit-us"
+      ],
+      "batch": "envoy-gap-2026-09-28-q",
+      "status": "approved"
+    },
+    {
+      "code": "LCH",
+      "icao": "KLCH",
+      "city": "Lake Charles",
+      "region": "Louisiana",
+      "title": "LAKE CHARLES",
+      "subtitle": "LOUISIANA",
+      "descriptor": "LAKEFRONT • MARINA • SOUTHWEST LOUISIANA",
+      "tagline": "A Louisiana Lakefront.",
+      "output": "assets/destinations/lch-poster-7x8-candidate-v2.png",
+      "visualProfileId": "lake-charles-lakefront-marina-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Lake Charles lakefront and boardwalk",
+          "Marina and lakeside palms in southwest Louisiana"
+        ],
+        "skySignature": "Open warm Gulf Coast sky with sparse natural haze",
+        "seasonAndLight": "Golden late-afternoon light on the water",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport above the lakefront at upper right",
+        "foreground": "Calm water, boardwalk and reeds by the marina",
+        "avoid": [
+          "tropical ocean cliffs or densely painted cloud bands",
+          "extra propellers, engine pods, shark fins or airline logos"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitlakecharles.org/things-to-do/downtown-lake-charles/the-lakefront/",
+        "https://www.visitlakecharles.org/plan-your-visit/calcasieu-parish/lake-charles/"
+      ],
+      "batch": "envoy-gap-2026-09-28-q",
+      "status": "approved"
+    },
+    {
+      "code": "LGA",
+      "icao": "KLGA",
+      "city": "New York",
+      "region": "New York",
+      "title": "NEW YORK",
+      "subtitle": "LAGUARDIA • QUEENS",
+      "descriptor": "ASTORIA PARK • HELL GATE BRIDGE • EAST RIVER",
+      "tagline": "New York by the East River.",
+      "output": "assets/destinations/lga-poster-7x8-candidate-v2.png",
+      "visualProfileId": "laguardia-astoria-hell-gate-bridge-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Astoria Park on the East River in Queens",
+          "Hell Gate Bridge crossing above the river"
+        ],
+        "skySignature": "Restrained New York dusk with broad calm blue",
+        "seasonAndLight": "Amber evening on bridge steel and river",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport crossing the East River sky at upper right",
+        "foreground": "Park trees and a gently rippled East River shore",
+        "avoid": [
+          "Jamaica Bay marsh copied from JFK poster or excessive cloud texture",
+          "third propeller, duplicate wings, fin or carrier livery"
+        ]
+      },
+      "referenceSources": [
+        "https://www.nycgovparks.org/parks/astoria-park",
+        "https://www.nycgovparks.org/parks/astoria-park/history"
+      ],
+      "batch": "envoy-gap-2026-09-28-q",
+      "status": "approved"
+    },
+    {
+      "code": "LRD",
+      "icao": "KLRD",
+      "city": "Laredo",
+      "region": "Texas",
+      "title": "LAREDO",
+      "subtitle": "TEXAS",
+      "descriptor": "SAN AGUSTÍN PLAZA • BORDER HERITAGE • SOUTH TEXAS",
+      "tagline": "At the Borderlands.",
+      "output": "assets/destinations/lrd-poster-7x8-candidate-v2.png",
+      "visualProfileId": "laredo-san-agustin-plaza-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "San Agustín Plaza in historic Laredo",
+          "San Agustín Cathedral and surrounding streetscape"
+        ],
+        "skySignature": "Quiet sun-warmed South Texas blue with light natural haze",
+        "seasonAndLight": "Soft late afternoon on historic masonry",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport above the San Agustín Plaza rooftops",
+        "foreground": "Plaza shade trees and warm stone paving",
+        "avoid": [
+          "invented mountains or heavy synthetic cloud strokes",
+          "third propeller, dorsal shark fin or airline markings"
+        ]
+      },
+      "referenceSources": [
+        "https://visitlaredo.com/arts-culture/",
+        "https://visitlaredo.com/about-laredo/"
+      ],
+      "batch": "envoy-gap-2026-09-28-q",
+      "status": "approved"
+    },
+    {
+      "code": "MAF",
+      "icao": "KMAF",
+      "city": "Midland",
+      "region": "Texas",
+      "title": "MIDLAND",
+      "subtitle": "WEST TEXAS",
+      "descriptor": "YUCCA THEATRE • PERMIAN BASIN • WEST TEXAS",
+      "tagline": "A West Texas Evening.",
+      "output": "assets/destinations/maf-poster-7x8-candidate-v1.png",
+      "visualProfileId": "midland-yucca-theatre-permian-basin-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Historic Yucca Theatre and marquee in downtown Midland",
+          "Broad Permian Basin horizon"
+        ],
+        "skySignature": "Wide quiet West Texas sky fading to warm gold",
+        "seasonAndLight": "Late afternoon on the theatre facade",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport high above Midland at upper right",
+        "foreground": "Theatre entry and sunlit downtown street",
+        "avoid": [
+          "mountain range or busy repeated cloud texture",
+          "extra engines, phantom props, shark fin or logos"
+        ]
+      },
+      "referenceSources": [
+        "https://visitmidland.com/listing/yucca-theatre/",
+        "https://visitmidland.com/historic-sites-in-midland-featured-five/"
+      ],
+      "batch": "envoy-gap-2026-09-28-q",
+      "status": "approved"
     }
   ]
 }

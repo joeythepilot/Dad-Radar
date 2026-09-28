@@ -682,6 +682,31 @@
       source: "./assets/destinations/lan-poster-7x8-candidate-v2.png",
       title: "LANSING",
       location: "Lansing, Michigan"
+    }),
+    LAW: Object.freeze({
+      source: "./assets/destinations/law-poster-7x8-candidate-v2.png",
+      title: "LAWTON",
+      location: "Lawton, Oklahoma"
+    }),
+    LCH: Object.freeze({
+      source: "./assets/destinations/lch-poster-7x8-candidate-v2.png",
+      title: "LAKE CHARLES",
+      location: "Lake Charles, Louisiana"
+    }),
+    LGA: Object.freeze({
+      source: "./assets/destinations/lga-poster-7x8-candidate-v2.png",
+      title: "NEW YORK",
+      location: "New York (LaGuardia), New York"
+    }),
+    LRD: Object.freeze({
+      source: "./assets/destinations/lrd-poster-7x8-candidate-v2.png",
+      title: "LAREDO",
+      location: "Laredo, Texas"
+    }),
+    MAF: Object.freeze({
+      source: "./assets/destinations/maf-poster-7x8-candidate-v1.png",
+      title: "MIDLAND",
+      location: "Midland, Texas"
     })
   });
 

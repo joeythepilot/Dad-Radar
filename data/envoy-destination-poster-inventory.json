@@ -704,7 +704,7 @@
       "region": "Oklahoma",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "LBB",
@@ -720,7 +720,7 @@
       "region": "Louisiana",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "LGA",
@@ -728,7 +728,7 @@
       "region": "New York",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "LIT",
@@ -744,7 +744,7 @@
       "region": "Texas",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "LSE",
@@ -760,7 +760,7 @@
       "region": "Texas",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "MAR",
@@ -1335,6 +1335,16 @@
       "JAN",
       "JFK",
       "LAN"
+    ]
+  },
+  "seventeenthBatch": {
+    "id": "envoy-gap-2026-09-28-q",
+    "codes": [
+      "LAW",
+      "LCH",
+      "LGA",
+      "LRD",
+      "MAF"
     ]
   }
 }
