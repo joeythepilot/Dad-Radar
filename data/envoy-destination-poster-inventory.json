@@ -264,7 +264,7 @@
       "region": "Ohio",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "CCS",
@@ -272,7 +272,7 @@
       "region": "Vargas",
       "country": "VE",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "CHA",
@@ -296,7 +296,7 @@
       "region": "Iowa",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "CLD",
@@ -320,7 +320,7 @@
       "region": "Texas",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "CLT",
@@ -360,7 +360,7 @@
       "region": "Missouri",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "CRP",
@@ -1285,6 +1285,16 @@
       "BPT",
       "BUR",
       "CAE"
+    ]
+  },
+  "twelfthBatch": {
+    "id": "envoy-gap-2026-09-28-l",
+    "codes": [
+      "CAK",
+      "CCS",
+      "CID",
+      "CLL",
+      "COU"
     ]
   }
 }

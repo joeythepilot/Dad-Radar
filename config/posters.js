@@ -557,6 +557,31 @@
       source: "./assets/destinations/cae-poster-7x8-candidate-v1.png",
       title: "COLUMBIA",
       location: "Columbia, South Carolina"
+    }),
+    CAK: Object.freeze({
+      source: "./assets/destinations/cak-poster-7x8-candidate-v1.png",
+      title: "AKRON",
+      location: "Akron, Ohio"
+    }),
+    CCS: Object.freeze({
+      source: "./assets/destinations/ccs-poster-7x8-candidate-v1.png",
+      title: "CARACAS",
+      location: "Caracas, Venezuela"
+    }),
+    CID: Object.freeze({
+      source: "./assets/destinations/cid-poster-7x8-candidate-v2.png",
+      title: "CEDAR RAPIDS",
+      location: "Cedar Rapids, Iowa"
+    }),
+    CLL: Object.freeze({
+      source: "./assets/destinations/cll-poster-7x8-candidate-v1.png",
+      title: "COLLEGE STATION",
+      location: "College Station, Texas"
+    }),
+    COU: Object.freeze({
+      source: "./assets/destinations/cou-poster-7x8-candidate-v1.png",
+      title: "COLUMBIA",
+      location: "Columbia, Missouri"
     })
   });
 

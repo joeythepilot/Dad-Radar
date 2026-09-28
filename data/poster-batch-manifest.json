@@ -215,6 +215,18 @@
         "BUR",
         "CAE"
       ]
+    },
+    {
+      "id": "envoy-gap-2026-09-28-l",
+      "label": "Envoy candidate route gap batch L — approved quiet-sky vintage-aircraft standard",
+      "status": "approved",
+      "airportCodes": [
+        "CAK",
+        "CCS",
+        "CID",
+        "CLL",
+        "COU"
+      ]
     }
   ],
   "destinations": [
@@ -2667,6 +2679,171 @@
       "referenceSources": [
         "https://www.scstatehouse.gov/visit.php",
         "https://southcarolinaparks.com/education-and-history/state-house"
+      ]
+    },
+    {
+      "code": "CAK",
+      "icao": "KCAK",
+      "city": "Akron",
+      "region": "Ohio",
+      "title": "AKRON",
+      "subtitle": "OHIO",
+      "descriptor": "CANAL • CIVIC • RUBBER CITY",
+      "tagline": "Where Ingenuity Took Flight.",
+      "batch": "envoy-gap-2026-09-28-l",
+      "status": "approved",
+      "output": "assets/destinations/cak-poster-7x8-candidate-v1.png",
+      "visualProfileId": "akron-civic-canal-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Historic Akron Civic Theatre on South Main Street",
+          "Ohio and Erie Canal lock and downtown towpath"
+        ],
+        "skySignature": "Mostly open Akron blue with faint natural amber near the horizon",
+        "seasonAndLight": "Warm Ohio late afternoon",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded twin-engine vintage transport over the Civic Theatre at upper right",
+        "foreground": "Canal masonry, waterside planting and theater lights",
+        "avoid": [
+          "dense repetitive artificial cloud textures",
+          "extra engines, extra propellers, duplicated fins, carrier marks or impossible aircraft anatomy"
+        ]
+      },
+      "referenceSources": [
+        "https://www.akroncivic.com/history",
+        "https://akronhistorycenter.org/about/"
+      ]
+    },
+    {
+      "code": "CCS",
+      "icao": "SVMI",
+      "city": "Caracas",
+      "region": "Venezuela",
+      "title": "CARACAS",
+      "subtitle": "VENEZUELA",
+      "descriptor": "PLAZA • ÁVILA • VALLE",
+      "tagline": "Entre Montañas y Cielo.",
+      "batch": "envoy-gap-2026-09-28-l",
+      "status": "approved",
+      "output": "assets/destinations/ccs-poster-7x8-candidate-v1.png",
+      "visualProfileId": "caracas-plaza-avila-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Plaza Bolívar and equestrian statue in the historic center",
+          "Caracas Cathedral with El Ávila mountain ridge beyond the valley"
+        ],
+        "skySignature": "Clear Caracas mountain blue with thin valley haze",
+        "seasonAndLight": "Warm late afternoon on the plaza",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded twin-engine vintage transport above the eastern Ávila ridge",
+        "foreground": "Leafy historic plaza and civic facades",
+        "avoid": [
+          "dense repetitive artificial cloud textures",
+          "extra engines, extra propellers, duplicated fins, carrier marks or impossible aircraft anatomy"
+        ]
+      },
+      "referenceSources": [
+        "https://www.mintur.gob.ve/news/9f479a03-e4e0-4878-9ccf-08c62121b3ef",
+        "https://national-parks.org/venezuela/el-avila-national-park/"
+      ]
+    },
+    {
+      "code": "CID",
+      "icao": "KCID",
+      "city": "Cedar Rapids",
+      "region": "Iowa",
+      "title": "CEDAR RAPIDS",
+      "subtitle": "IOWA",
+      "descriptor": "CEDAR RIVER • CZECH VILLAGE • HERITAGE",
+      "tagline": "Where Stories Flow.",
+      "batch": "envoy-gap-2026-09-28-l",
+      "status": "approved",
+      "output": "assets/destinations/cid-poster-7x8-candidate-v2.png",
+      "visualProfileId": "cedar-rapids-museum-river-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "National Czech and Slovak Museum and Library in Cedar Rapids",
+          "Cedar River and Czech Village district"
+        ],
+        "skySignature": "Open Iowa blue above the river with thin, natural haze",
+        "seasonAndLight": "Golden river and neighborhood afternoon",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded twin-engine vintage transport at upper left over the Cedar River",
+        "foreground": "Brick village walk and waterside trees",
+        "avoid": [
+          "dense repetitive artificial cloud textures",
+          "extra engines, extra propellers, duplicated fins, carrier marks or impossible aircraft anatomy"
+        ]
+      },
+      "referenceSources": [
+        "https://ncsml.org/about-ncsml/",
+        "https://ncsml.org/visit/"
+      ]
+    },
+    {
+      "code": "CLL",
+      "icao": "KCLL",
+      "city": "College Station",
+      "region": "Texas",
+      "title": "COLLEGE STATION",
+      "subtitle": "TEXAS",
+      "descriptor": "CENTURY TREE • CAMPUS • BRAZOS",
+      "tagline": "Under the Old Oak.",
+      "batch": "envoy-gap-2026-09-28-l",
+      "status": "approved",
+      "output": "assets/destinations/cll-poster-7x8-candidate-v1.png",
+      "visualProfileId": "college-station-century-tree-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Historic Texas A&M Academic Building",
+          "Century Tree live oak beside campus walks"
+        ],
+        "skySignature": "Mostly clear Brazos Valley blue with faint soft amber haze",
+        "seasonAndLight": "Warm late-day light under the live oak",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded twin-engine vintage transport left of the Academic Building dome",
+        "foreground": "Century Tree boughs over brick campus path",
+        "avoid": [
+          "university marks and dense artificial cloud textures",
+          "extra engines, extra propellers, duplicated fins, carrier marks or impossible aircraft anatomy"
+        ]
+      },
+      "referenceSources": [
+        "https://www.arch.tamu.edu/impact/centers-institutes-outreach/chc/chc-research/texas-am-campus-remembered/",
+        "https://www.tamu.edu/campus-community/traditions/aggie-culture/century-tree.html"
+      ]
+    },
+    {
+      "code": "COU",
+      "icao": "KCOU",
+      "city": "Columbia",
+      "region": "Missouri",
+      "title": "COLUMBIA",
+      "subtitle": "MISSOURI",
+      "descriptor": "COLUMNS • QUADRANGLE • HEARTLAND",
+      "tagline": "Where the Columns Stand.",
+      "batch": "envoy-gap-2026-09-28-l",
+      "status": "approved",
+      "output": "assets/destinations/cou-poster-7x8-candidate-v1.png",
+      "visualProfileId": "columbia-missouri-columns-jesse-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Six limestone Columns on Francis Quadrangle",
+          "Jesse Hall dome at the University of Missouri"
+        ],
+        "skySignature": "Open Missouri blue with gentle gold at the horizon",
+        "seasonAndLight": "Heartland late-afternoon light",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded twin-engine vintage transport high right above Jesse Hall",
+        "foreground": "Shaded Francis Quadrangle lawn and trees",
+        "avoid": [
+          "university marks and dense artificial cloud textures",
+          "extra engines, extra propellers, duplicated fins, carrier marks or impossible aircraft anatomy"
+        ]
+      },
+      "referenceSources": [
+        "https://missouri.edu/about/traditions",
+        "https://reservations.missouri.edu/building/jesse-hall/"
       ]
     }
   ]
