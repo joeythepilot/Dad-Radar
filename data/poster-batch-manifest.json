@@ -203,6 +203,18 @@
         "AGU",
         "AVP"
       ]
+    },
+    {
+      "id": "envoy-gap-2026-09-28-k",
+      "label": "Envoy candidate route gap batch K — approved quiet-sky vintage-aircraft standard",
+      "status": "approved",
+      "airportCodes": [
+        "BDL",
+        "BIS",
+        "BPT",
+        "BUR",
+        "CAE"
+      ]
     }
   ],
   "destinations": [
@@ -2490,6 +2502,171 @@
       "referenceSources": [
         "https://www.nps.gov/stea/learn/historyculture/park-structures.htm",
         "https://www.nps.gov/stea/planyourvisit/outdooractivities.htm"
+      ]
+    },
+    {
+      "code": "BDL",
+      "icao": "KBDL",
+      "city": "Hartford",
+      "region": "Connecticut",
+      "title": "HARTFORD",
+      "subtitle": "CONNECTICUT",
+      "descriptor": "CAPITOL • PARK • NEW ENGLAND",
+      "tagline": "A City of Stories.",
+      "batch": "envoy-gap-2026-09-28-k",
+      "status": "approved",
+      "output": "assets/destinations/bdl-poster-7x8-candidate-v1.png",
+      "visualProfileId": "hartford-capitol-bushnell-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Connecticut State Capitol gilded dome in Hartford",
+          "Bushnell Park lawns and mature trees"
+        ],
+        "skySignature": "Mostly open Hartford blue with faint warm autumn haze",
+        "seasonAndLight": "Golden autumn afternoon at Bushnell Park",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Generic unbranded twin-engine vintage transport high right of the Capitol dome",
+        "foreground": "Autumn foliage and shaded park path",
+        "avoid": [
+          "dense artificial repeated cloud texture or cloud billows",
+          "extra engines, extra propellers, carrier marks or impossible aircraft anatomy"
+        ]
+      },
+      "referenceSources": [
+        "https://portal.ct.gov/about/state-symbols/the-state-capitol",
+        "https://bushnellpark.org/"
+      ]
+    },
+    {
+      "code": "BIS",
+      "icao": "KBIS",
+      "city": "Bismarck",
+      "region": "North Dakota",
+      "title": "BISMARCK",
+      "subtitle": "NORTH DAKOTA",
+      "descriptor": "PRAIRIE • CAPITOL • MISSOURI",
+      "tagline": "Where the Plains Meet.",
+      "batch": "envoy-gap-2026-09-28-k",
+      "status": "approved",
+      "output": "assets/destinations/bis-poster-7x8-candidate-v1.png",
+      "visualProfileId": "bismarck-capitol-heritage-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "North Dakota State Capitol Art Deco tower",
+          "North Dakota Heritage Center and State Museum on Capitol grounds"
+        ],
+        "skySignature": "Open northern-plains blue fading to soft gold above distant hills",
+        "seasonAndLight": "Late-day prairie sun with autumn foliage",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Generic unbranded twin-engine vintage transport crossing upper-right prairie sky",
+        "foreground": "Broad Capitol grounds and golden cottonwoods",
+        "avoid": [
+          "dense artificial repeated cloud texture or cloud billows",
+          "extra engines, extra propellers, carrier marks or impossible aircraft anatomy"
+        ]
+      },
+      "referenceSources": [
+        "https://www.omb.nd.gov/capitol-complex",
+        "https://statemuseum.nd.gov/"
+      ]
+    },
+    {
+      "code": "BPT",
+      "icao": "KBPT",
+      "city": "Beaumont/Port Arthur",
+      "region": "Texas",
+      "title": "PORT ARTHUR",
+      "subtitle": "TEXAS",
+      "descriptor": "NECHES • BRIDGE • GULF COAST",
+      "tagline": "Where the River Reaches the Gulf.",
+      "batch": "envoy-gap-2026-09-28-k",
+      "status": "approved",
+      "output": "assets/destinations/bpt-poster-7x8-candidate-v1.png",
+      "visualProfileId": "port-arthur-rainbow-bridge-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Rainbow Bridge steel through-truss crossing the Neches River",
+          "Neches River marsh edge near Port Arthur"
+        ],
+        "skySignature": "Broad calm Gulf Coast blue with thin natural river haze",
+        "seasonAndLight": "Warm low sun reflecting off the Neches River",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Generic unbranded twin-engine vintage transport high left above the Rainbow Bridge approach",
+        "foreground": "Marsh grasses and blue-green river water",
+        "avoid": [
+          "dense artificial repeated cloud texture or cloud billows",
+          "extra engines, extra propellers, carrier marks or impossible aircraft anatomy"
+        ]
+      },
+      "referenceSources": [
+        "https://atlas.thc.texas.gov/Details/5245010555",
+        "https://www.tshaonline.org/handbook/entries/rainbow-bridge"
+      ]
+    },
+    {
+      "code": "BUR",
+      "icao": "KBUR",
+      "city": "Burbank",
+      "region": "California",
+      "title": "BURBANK",
+      "subtitle": "CALIFORNIA",
+      "descriptor": "VALLEY • FOOTHILLS • CITY HALL",
+      "tagline": "Valley of Imagination.",
+      "batch": "envoy-gap-2026-09-28-k",
+      "status": "approved",
+      "output": "assets/destinations/bur-poster-7x8-candidate-v1.png",
+      "visualProfileId": "burbank-city-hall-verdugo-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Historic Burbank City Hall",
+          "Verdugo Mountains above Burbank"
+        ],
+        "skySignature": "Clear Southern California blue over distant foothill haze",
+        "seasonAndLight": "Bright late-afternoon Valley sunlight",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Generic unbranded twin-engine vintage transport above Burbank City Hall at upper right",
+        "foreground": "Landscaped civic grounds and flowering trees",
+        "avoid": [
+          "dense artificial repeated cloud texture or cloud billows",
+          "extra engines, extra propellers, carrier marks or impossible aircraft anatomy"
+        ]
+      },
+      "referenceSources": [
+        "https://www.burbankca.gov/web/community-development/historic-preservation",
+        "https://www.burbankca.gov/departments"
+      ]
+    },
+    {
+      "code": "CAE",
+      "icao": "KCAE",
+      "city": "Columbia",
+      "region": "South Carolina",
+      "title": "COLUMBIA",
+      "subtitle": "SOUTH CAROLINA",
+      "descriptor": "CAPITOL • PALMETTO • MIDLANDS",
+      "tagline": "Heart of the Midlands.",
+      "batch": "envoy-gap-2026-09-28-k",
+      "status": "approved",
+      "output": "assets/destinations/cae-poster-7x8-candidate-v1.png",
+      "visualProfileId": "columbia-state-house-palmetto-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "South Carolina State House copper dome and neoclassical portico",
+          "State House grounds and palmettos in Columbia"
+        ],
+        "skySignature": "Almost cloudless Midlands blue melting into a pale golden horizon",
+        "seasonAndLight": "Warm Carolina late-afternoon light",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Generic unbranded twin-engine vintage transport crossing right of the State House dome",
+        "foreground": "Palmettos and flowering State House gardens",
+        "avoid": [
+          "dense artificial repeated cloud texture or cloud billows",
+          "extra engines, extra propellers, carrier marks or impossible aircraft anatomy"
+        ]
+      },
+      "referenceSources": [
+        "https://www.scstatehouse.gov/visit.php",
+        "https://southcarolinaparks.com/education-and-history/state-house"
       ]
     }
   ]

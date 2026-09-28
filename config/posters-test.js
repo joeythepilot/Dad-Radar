@@ -16,10 +16,7 @@ function runTests() {
     getPoster("KAVL"),
     null
   );
-  assert.equal(
-    getPoster("BIS"),
-    null
-  );
+  assert.equal(getPoster("BIS").title, "BISMARCK");
   assert.equal(
     getPoster("lse").location,
     "La Crosse, Wisconsin"
@@ -46,7 +43,8 @@ function runTests() {
     "ALB", "CHA", "DSM", "MEM", "PNS",
     "OKC", "MYR", "ORF", "YQB", "BTR",
     "ACA", "BIL", "CRP", "GJT", "ILM",
-    "ABI", "ACT", "AEX", "AGU", "AVP"
+    "ABI", "ACT", "AEX", "AGU", "AVP",
+    "BDL", "BIS", "BPT", "BUR", "CAE"
   ]) {
     assert.ok(
       getPoster(code),
@@ -55,7 +53,7 @@ function runTests() {
   }
   assert.equal(
     Object.keys(posterByAirport).length,
-    87
+    92
   );
 
   for (const [code, poster] of

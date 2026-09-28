@@ -532,6 +532,31 @@
         "./assets/destinations/avp-poster-7x8-candidate-v2.png",
       title: "SCRANTON",
       location: "Wilkes-Barre/Scranton, Pennsylvania"
+    }),
+    BDL: Object.freeze({
+      source: "./assets/destinations/bdl-poster-7x8-candidate-v1.png",
+      title: "HARTFORD",
+      location: "Hartford, Connecticut"
+    }),
+    BIS: Object.freeze({
+      source: "./assets/destinations/bis-poster-7x8-candidate-v1.png",
+      title: "BISMARCK",
+      location: "Bismarck, North Dakota"
+    }),
+    BPT: Object.freeze({
+      source: "./assets/destinations/bpt-poster-7x8-candidate-v1.png",
+      title: "PORT ARTHUR",
+      location: "Beaumont/Port Arthur, Texas"
+    }),
+    BUR: Object.freeze({
+      source: "./assets/destinations/bur-poster-7x8-candidate-v1.png",
+      title: "BURBANK",
+      location: "Burbank, California"
+    }),
+    CAE: Object.freeze({
+      source: "./assets/destinations/cae-poster-7x8-candidate-v1.png",
+      title: "COLUMBIA",
+      location: "Columbia, South Carolina"
     })
   });
 

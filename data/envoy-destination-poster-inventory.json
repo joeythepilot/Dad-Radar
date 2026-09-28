@@ -144,7 +144,7 @@
       "region": "Connecticut",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "BHM",
@@ -168,7 +168,7 @@
       "region": "North Dakota",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "BMI",
@@ -208,7 +208,7 @@
       "region": "Texas",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "BRO",
@@ -240,7 +240,7 @@
       "region": "California",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "BWI",
@@ -256,7 +256,7 @@
       "region": "South Carolina",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "CAK",
@@ -1275,6 +1275,16 @@
       "AEX",
       "AGU",
       "AVP"
+    ]
+  },
+  "eleventhBatch": {
+    "id": "envoy-gap-2026-09-28-k",
+    "codes": [
+      "BDL",
+      "BIS",
+      "BPT",
+      "BUR",
+      "CAE"
     ]
   }
 }
