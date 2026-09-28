@@ -239,6 +239,18 @@
         "DOM",
         "ECP"
       ]
+    },
+    {
+      "id": "envoy-gap-2026-09-28-n",
+      "label": "Envoy candidate route gap batch N — approved quiet-sky vintage-aircraft standard",
+      "status": "approved",
+      "airportCodes": [
+        "EIS",
+        "EUG",
+        "FSM",
+        "FWA",
+        "GCK"
+      ]
     }
   ],
   "destinations": [
@@ -3021,6 +3033,171 @@
       "referenceSources": [
         "https://destinationpanamacity.com/neighborhoods/st-andrews-panama-city/",
         "https://destinationpanamacity.com/panama-citys-historic-districts/"
+      ]
+    },
+    {
+      "code": "EIS",
+      "icao": "TUPJ",
+      "city": "Road Town",
+      "region": "British Virgin Islands",
+      "title": "TORTOLA",
+      "subtitle": "BRITISH VIRGIN ISLANDS",
+      "descriptor": "TRELLIS BAY • BEEF ISLAND • TORTOLA",
+      "tagline": "Across the Blue.",
+      "batch": "envoy-gap-2026-09-28-n",
+      "status": "approved",
+      "output": "assets/destinations/eis-poster-7x8-candidate-v2.png",
+      "visualProfileId": "tortola-beef-island-trellis-bay-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Trellis Bay and the Beef Island shore",
+          "Tortola green hills across the Sir Francis Drake Channel"
+        ],
+        "skySignature": "Calm Caribbean blue with a very soft warm horizon and few natural wisps",
+        "seasonAndLight": "Warm tropical late afternoon",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport above Trellis Bay at upper right",
+        "foreground": "Shallow turquoise bay, sandy edge and small island boats",
+        "avoid": [
+          "aggressive textured clouds or invented mountain peaks",
+          "airline marks, extra engines, extra propellers or duplicate fins"
+        ]
+      },
+      "referenceSources": [
+        "https://www.bvitourism.com/ferry-schedules",
+        "https://bvi.gov.vg/content/our-history%26lang%3Den"
+      ]
+    },
+    {
+      "code": "EUG",
+      "icao": "KEUG",
+      "city": "Eugene",
+      "region": "Oregon",
+      "title": "EUGENE",
+      "subtitle": "OREGON",
+      "descriptor": "WILLAMETTE • SKINNER BUTTE • RIVER PATH",
+      "tagline": "Along the Willamette.",
+      "batch": "envoy-gap-2026-09-28-n",
+      "status": "approved",
+      "output": "assets/destinations/eug-poster-7x8-candidate-v1.png",
+      "visualProfileId": "eugene-willamette-skinner-butte-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Willamette River and Eugene river paths",
+          "Wooded Skinner Butte rising near downtown"
+        ],
+        "skySignature": "Open Willamette Valley blue with a low soft sunset wash",
+        "seasonAndLight": "Clear Oregon late afternoon",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport over the Willamette at upper right",
+        "foreground": "River path, deciduous trees and bridge reflections",
+        "avoid": [
+          "alpine peaks or patterned artificial clouds",
+          "airline identity, extra engines, propellers or shark-fin growths"
+        ]
+      },
+      "referenceSources": [
+        "https://www.eugenecascadescoast.org/eugene/",
+        "https://www.eugenecascadescoast.org/plan/faqs-travel-tips/"
+      ]
+    },
+    {
+      "code": "FSM",
+      "icao": "KFSM",
+      "city": "Fort Smith",
+      "region": "Arkansas",
+      "title": "FORT SMITH",
+      "subtitle": "ARKANSAS",
+      "descriptor": "RIVER • FORT • FRONTIER",
+      "tagline": "Where Rivers Meet History.",
+      "batch": "envoy-gap-2026-09-28-n",
+      "status": "approved",
+      "output": "assets/destinations/fsm-poster-7x8-candidate-v1.png",
+      "visualProfileId": "fort-smith-river-frontier-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Fort Smith National Historic Site by the Arkansas River",
+          "Historic brick downtown and the riverfront"
+        ],
+        "skySignature": "Quiet Arkansas River blue with gentle late-day warmth",
+        "seasonAndLight": "Warm early autumn afternoon",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport crossing the riverfront sky",
+        "foreground": "Shaded riverbank path, trees and historic masonry",
+        "avoid": [
+          "fantasy western cliffs or heavy artificial cloud bands",
+          "carrier paint, extra propellers, engines, duplicated wings or fins"
+        ]
+      },
+      "referenceSources": [
+        "https://www.nps.gov/fosm/planyourvisit/park-brochure.htm",
+        "https://www.nps.gov/fosm/learn/nature/environmentalfactors.htm"
+      ]
+    },
+    {
+      "code": "FWA",
+      "icao": "KFWA",
+      "city": "Fort Wayne",
+      "region": "Indiana",
+      "title": "FORT WAYNE",
+      "subtitle": "INDIANA",
+      "descriptor": "THREE RIVERS • PROMENADE • HEARTLAND",
+      "tagline": "At the Three Rivers.",
+      "batch": "envoy-gap-2026-09-28-n",
+      "status": "approved",
+      "output": "assets/destinations/fwa-poster-7x8-candidate-v1.png",
+      "visualProfileId": "fort-wayne-three-rivers-promenade-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Promenade Park riverfront boardwalk and canopy walk",
+          "Fort Wayne's three-river confluence and downtown skyline"
+        ],
+        "skySignature": "Open heartland blue above the rivers with a low amber glow",
+        "seasonAndLight": "Warm Indiana late afternoon",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport high over the three rivers",
+        "foreground": "Promenade river walk, native planting and water reflections",
+        "avoid": [
+          "generic mountain scenery or aggressive textured clouds",
+          "extra wings, engines, propellers, fins or carrier livery"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitfortwayne.com/things-to-do/parks-and-outdoors/riverfront-fort-wayne/",
+        "https://www.visitfortwayne.com/promenade-park/"
+      ]
+    },
+    {
+      "code": "GCK",
+      "icao": "KGCK",
+      "city": "Garden City",
+      "region": "Kansas",
+      "title": "GARDEN CITY",
+      "subtitle": "KANSAS",
+      "descriptor": "WINDSOR HOTEL • HIGH PLAINS • HERITAGE",
+      "tagline": "The High Plains Welcome.",
+      "batch": "envoy-gap-2026-09-28-n",
+      "status": "approved",
+      "output": "assets/destinations/gck-poster-7x8-candidate-v2.png",
+      "visualProfileId": "garden-city-windsor-high-plains-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Historic Windsor Hotel facade in Garden City",
+          "Wide Kansas high-plains horizon beyond the town"
+        ],
+        "skySignature": "Expansive clear high-plains blue with subtle warm horizon and no patterned clouds",
+        "seasonAndLight": "Golden Kansas late afternoon",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport above the Windsor Hotel at upper right",
+        "foreground": "Historic brick street, shade trees and prairie planting",
+        "avoid": [
+          "dense artificial clouds or invented hills",
+          "airline branding, extra engines, propellers or anatomical fins"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitgck.com/things-to-do/windsor-hotel/",
+        "https://www.kansashistory.gov/kansapedia/windsor-hotel/19227"
       ]
     }
   ]

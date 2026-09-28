@@ -607,6 +607,31 @@
       source: "./assets/destinations/ecp-poster-7x8-candidate-v1.png",
       title: "PANAMA CITY",
       location: "Panama City, Florida"
+    }),
+    EIS: Object.freeze({
+      source: "./assets/destinations/eis-poster-7x8-candidate-v2.png",
+      title: "TORTOLA",
+      location: "Tortola/Beef Island, British Virgin Islands"
+    }),
+    EUG: Object.freeze({
+      source: "./assets/destinations/eug-poster-7x8-candidate-v1.png",
+      title: "EUGENE",
+      location: "Eugene, Oregon"
+    }),
+    FSM: Object.freeze({
+      source: "./assets/destinations/fsm-poster-7x8-candidate-v1.png",
+      title: "FORT SMITH",
+      location: "Fort Smith, Arkansas"
+    }),
+    FWA: Object.freeze({
+      source: "./assets/destinations/fwa-poster-7x8-candidate-v1.png",
+      title: "FORT WAYNE",
+      location: "Fort Wayne, Indiana"
+    }),
+    GCK: Object.freeze({
+      source: "./assets/destinations/gck-poster-7x8-candidate-v2.png",
+      title: "GARDEN CITY",
+      location: "Garden City, Kansas"
     })
   });
 

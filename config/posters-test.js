@@ -46,7 +46,8 @@ function runTests() {
     "ABI", "ACT", "AEX", "AGU", "AVP",
     "BDL", "BIS", "BPT", "BUR", "CAE",
     "CAK", "CCS", "CID", "CLL", "COU",
-    "CUU", "CVG", "CWA", "DOM", "ECP"
+    "CUU", "CVG", "CWA", "DOM", "ECP",
+    "EIS", "EUG", "FSM", "FWA", "GCK"
   ]) {
     assert.ok(
       getPoster(code),
@@ -55,7 +56,7 @@ function runTests() {
   }
   assert.equal(
     Object.keys(posterByAirport).length,
-    102
+    107
   );
 
   for (const [code, poster] of

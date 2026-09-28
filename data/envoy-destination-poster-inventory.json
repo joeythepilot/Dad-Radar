@@ -456,7 +456,7 @@
       "region": null,
       "country": "VG",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "ELP",
@@ -472,7 +472,7 @@
       "region": "Oregon",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "EVV",
@@ -504,7 +504,7 @@
       "region": "Arkansas",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "FWA",
@@ -512,7 +512,7 @@
       "region": "Indiana",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "GCK",
@@ -520,7 +520,7 @@
       "region": "Kansas",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "GGG",
@@ -1305,6 +1305,16 @@
       "CWA",
       "DOM",
       "ECP"
+    ]
+  },
+  "fourteenthBatch": {
+    "id": "envoy-gap-2026-09-28-n",
+    "codes": [
+      "EIS",
+      "EUG",
+      "FSM",
+      "FWA",
+      "GCK"
     ]
   }
 }
