@@ -376,7 +376,7 @@
       "region": "Chihuahua",
       "country": "MX",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "CVG",
@@ -384,7 +384,7 @@
       "region": "Kentucky",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "CWA",
@@ -392,7 +392,7 @@
       "region": "Wisconsin",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "DAY",
@@ -424,7 +424,7 @@
       "region": "Saint-Andrew",
       "country": "DM",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "DSM",
@@ -448,7 +448,7 @@
       "region": "Florida",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "EIS",
@@ -1295,6 +1295,16 @@
       "CID",
       "CLL",
       "COU"
+    ]
+  },
+  "thirteenthBatch": {
+    "id": "envoy-gap-2026-09-28-m",
+    "codes": [
+      "CUU",
+      "CVG",
+      "CWA",
+      "DOM",
+      "ECP"
     ]
   }
 }

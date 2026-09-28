@@ -227,6 +227,18 @@
         "CLL",
         "COU"
       ]
+    },
+    {
+      "id": "envoy-gap-2026-09-28-m",
+      "label": "Envoy candidate route gap batch M — approved quiet-sky vintage-aircraft standard",
+      "status": "approved",
+      "airportCodes": [
+        "CUU",
+        "CVG",
+        "CWA",
+        "DOM",
+        "ECP"
+      ]
     }
   ],
   "destinations": [
@@ -2844,6 +2856,171 @@
       "referenceSources": [
         "https://missouri.edu/about/traditions",
         "https://reservations.missouri.edu/building/jesse-hall/"
+      ]
+    },
+    {
+      "code": "CUU",
+      "icao": "MMCU",
+      "city": "Chihuahua",
+      "region": "Chihuahua",
+      "title": "CHIHUAHUA",
+      "subtitle": "MEXICO",
+      "descriptor": "PLAZA DE ARMAS • CATHEDRAL • NORTHERN HORIZONS",
+      "tagline": "Timeless by Nature.",
+      "batch": "envoy-gap-2026-09-28-m",
+      "status": "approved",
+      "output": "assets/destinations/cuu-poster-7x8-candidate-v2.png",
+      "visualProfileId": "chihuahua-cathedral-plaza-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Chihuahua Metropolitan Cathedral and its two baroque towers",
+          "Plaza de Armas with the historic city and dry hills beyond"
+        ],
+        "skySignature": "Open Chihuahua blue with a low soft gold haze over dry northern hills",
+        "seasonAndLight": "Warm northern Mexico late afternoon",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport high right of the cathedral towers",
+        "foreground": "Plaza trees and wrought-iron gazebo framing cathedral masonry",
+        "avoid": [
+          "artificial repeated cloud textures",
+          "extra engines, extra propellers, wing-root shark fins, dangling discs or carrier marks"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitachihuahua.mx/en/chihuahua",
+        "https://www.visitachihuahua.mx/en/post/the-cathedral"
+      ]
+    },
+    {
+      "code": "CVG",
+      "icao": "KCVG",
+      "city": "Covington",
+      "region": "Kentucky",
+      "title": "CINCINNATI",
+      "subtitle": "NORTHERN KENTUCKY",
+      "descriptor": "OHIO RIVER • ROEBLING BRIDGE • COVINGTON",
+      "tagline": "Across the River.",
+      "batch": "envoy-gap-2026-09-28-m",
+      "status": "approved",
+      "output": "assets/destinations/cvg-poster-7x8-candidate-v2.png",
+      "visualProfileId": "cincinnati-covington-roebling-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "John A. Roebling Suspension Bridge across the Ohio River",
+          "Covington waterfront facing the Cincinnati skyline"
+        ],
+        "skySignature": "Mostly open Ohio River blue with a soft amber dusk horizon",
+        "seasonAndLight": "Warm late-day river reflections",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport above the Cincinnati skyline at upper right",
+        "foreground": "Covington brick river walk and planting beside the bridge",
+        "avoid": [
+          "dense artificial clouds or an inaccurate resort waterfront",
+          "middle-wing shark fins, duplicate wings, extra engines, propellers or carrier identity"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitcincy.com/neighborhoods/northern-kentucky/",
+        "https://roeblingbridge.org/"
+      ]
+    },
+    {
+      "code": "CWA",
+      "icao": "KCWA",
+      "city": "Mosinee",
+      "region": "Wisconsin",
+      "title": "WAUSAU",
+      "subtitle": "CENTRAL WISCONSIN",
+      "descriptor": "RIB MOUNTAIN • WISCONSIN RIVER • WAUSAU",
+      "tagline": "The Heart of Wisconsin.",
+      "batch": "envoy-gap-2026-09-28-m",
+      "status": "approved",
+      "output": "assets/destinations/cwa-poster-7x8-candidate-v1.png",
+      "visualProfileId": "wausau-rib-mountain-river-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Wooded Rib Mountain above the Wausau area",
+          "Wisconsin River curving through central Wausau"
+        ],
+        "skySignature": "Open central Wisconsin blue with a restrained natural amber horizon",
+        "seasonAndLight": "Clear autumn late afternoon",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Generic unbranded vintage twin-engine transport over the river valley to the upper right",
+        "foreground": "Autumn hardwoods along the river and bridges",
+        "avoid": [
+          "alpine peaks and aggressive patterned cloud texture",
+          "extra propellers, engines, fins, airline colors or registration"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitwausau.com/things-to-do/itineraries/weekend-getaway/",
+        "https://www.fly-cwa.org/about-cwa"
+      ]
+    },
+    {
+      "code": "DOM",
+      "icao": "TDPD",
+      "city": "Marigot",
+      "region": "Saint-Andrew",
+      "title": "DOMINICA",
+      "subtitle": "NATURE ISLAND",
+      "descriptor": "MARIGOT • WILD ATLANTIC COAST • EMERALD HILLS",
+      "tagline": "Nature Island.",
+      "batch": "envoy-gap-2026-09-28-m",
+      "status": "approved",
+      "output": "assets/destinations/dom-poster-7x8-candidate-v1.png",
+      "visualProfileId": "dominica-marigot-northeast-coast-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Marigot northeast Atlantic coast near Douglas-Charles Airport",
+          "Mountainous green Dominica shoreline and dark-sand cove"
+        ],
+        "skySignature": "Calm Atlantic blue-gold above the rugged northeast coastline",
+        "seasonAndLight": "Warm tropical late afternoon",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Generic unbranded vintage twin-engine transport offshore above Marigot at upper right",
+        "foreground": "Lush tropical village slope descending to surf and dark sand",
+        "avoid": [
+          "Dominican Republic landmarks, resort beaches or dense artificial clouds",
+          "extra propellers, engines, duplicate wings or airline-specific livery"
+        ]
+      },
+      "referenceSources": [
+        "https://www.domports.daspa.dm/index.php/airports/douglas-charles-airport/",
+        "https://legacy.discoverdominica.com/en/lists/29/beaches"
+      ]
+    },
+    {
+      "code": "ECP",
+      "icao": "KECP",
+      "city": "Panama City",
+      "region": "Florida",
+      "title": "PANAMA CITY",
+      "subtitle": "FLORIDA",
+      "descriptor": "ST. ANDREWS BAY • EMERALD COAST • MARINA",
+      "tagline": "Bayside by Nature.",
+      "batch": "envoy-gap-2026-09-28-m",
+      "status": "approved",
+      "output": "assets/destinations/ecp-poster-7x8-candidate-v1.png",
+      "visualProfileId": "panama-city-st-andrews-bay-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Historic St. Andrews bayside fishing village and marina",
+          "St. Andrews Bay and Panama City waterfront"
+        ],
+        "skySignature": "Mostly open Gulf Coast blue with a soft natural sunset glow",
+        "seasonAndLight": "Warm bayside dusk and water reflections",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport above the St. Andrews marina",
+        "foreground": "Fishing boats, weathered dock and live oak by the bay",
+        "avoid": [
+          "Panama the country, resort towers or artificial cloud bands",
+          "extra engines, propellers, fins, carrier marks or registrations"
+        ]
+      },
+      "referenceSources": [
+        "https://destinationpanamacity.com/neighborhoods/st-andrews-panama-city/",
+        "https://destinationpanamacity.com/panama-citys-historic-districts/"
       ]
     }
   ]

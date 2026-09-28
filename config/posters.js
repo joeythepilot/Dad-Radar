@@ -582,6 +582,31 @@
       source: "./assets/destinations/cou-poster-7x8-candidate-v1.png",
       title: "COLUMBIA",
       location: "Columbia, Missouri"
+    }),
+    CUU: Object.freeze({
+      source: "./assets/destinations/cuu-poster-7x8-candidate-v2.png",
+      title: "CHIHUAHUA",
+      location: "Chihuahua, Mexico"
+    }),
+    CVG: Object.freeze({
+      source: "./assets/destinations/cvg-poster-7x8-candidate-v2.png",
+      title: "CINCINNATI",
+      location: "Cincinnati/Northern Kentucky"
+    }),
+    CWA: Object.freeze({
+      source: "./assets/destinations/cwa-poster-7x8-candidate-v1.png",
+      title: "WAUSAU",
+      location: "Wausau/Mosinee, Wisconsin"
+    }),
+    DOM: Object.freeze({
+      source: "./assets/destinations/dom-poster-7x8-candidate-v1.png",
+      title: "DOMINICA",
+      location: "Marigot, Dominica"
+    }),
+    ECP: Object.freeze({
+      source: "./assets/destinations/ecp-poster-7x8-candidate-v1.png",
+      title: "PANAMA CITY",
+      location: "Panama City, Florida"
     })
   });
 
