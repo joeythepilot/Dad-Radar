@@ -442,6 +442,36 @@
       title: "NORTHWEST ARKANSAS",
       location:
         "Northwest Arkansas, Arkansas"
+    }),
+    OKC: Object.freeze({
+      source:
+        "./assets/destinations/okc-poster-7x8-candidate-v1.png",
+      title: "OKLAHOMA CITY",
+      location: "Oklahoma City, Oklahoma"
+    }),
+    MYR: Object.freeze({
+      source:
+        "./assets/destinations/myr-poster-7x8-candidate-v1.png",
+      title: "MYRTLE BEACH",
+      location: "Myrtle Beach, South Carolina"
+    }),
+    ORF: Object.freeze({
+      source:
+        "./assets/destinations/orf-poster-7x8-candidate-v1.png",
+      title: "NORFOLK",
+      location: "Norfolk, Virginia"
+    }),
+    YQB: Object.freeze({
+      source:
+        "./assets/destinations/yqb-poster-7x8-candidate-v1.png",
+      title: "QUÉBEC CITY",
+      location: "Québec City, Québec"
+    }),
+    BTR: Object.freeze({
+      source:
+        "./assets/destinations/btr-poster-7x8-candidate-v1.png",
+      title: "BATON ROUGE",
+      location: "Baton Rouge, Louisiana"
     })
   });
 

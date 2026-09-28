@@ -6,7 +6,7 @@ Envoy describes service to **over 160 destinations**, but its public site does n
 
 Sources: [Envoy Air](https://www.envoyair.com/), [FlightNerve MQ route listing](https://www.flightnerve.com/airlines/MQ). The latter's own destination count and visible code list vary between crawls; its 146/148 headline is not treated as a complete verified roster. Ground handling locations are a separate service and are not automatically destinations flown by Envoy.
 
-After Joey's batch A through G approvals, **72** airport codes have an installed poster and **73** have no active artwork in the 145-code working union. The JSON records each code, airport catalog geography, source tag, and poster status, so batches can be selected without conflating a candidate route with approved art.
+After Joey's batch A through H approvals, **77** airport codes have an installed poster and **68** have no active artwork in the 145-code working union. The JSON records each code, airport catalog geography, source tag, and poster status, so batches can be selected without conflating a candidate route with approved art.
 
 ## Batch A: approved and installed in the application catalog
 
@@ -92,7 +92,7 @@ Joey reset the entire set to the approved AVL poster after finding the first fiv
 
 `Docs/UI/envoy-gap-2026-09-27-g-avl-review.jpg` compares these five with AVL at equal review size. Joey approved the set on 2026-09-27, and all five are wired into `config/posters.js`. Each uses the 1173 × 1341 review canvas and the rich painted lithograph direction. The working Envoy route roster, landmark details, aircraft anatomy and commercial-use rights still require review before sale; publication to the branch does not verify home-display deployment.
 
-## Batch H: candidate proofs for review
+## Batch H: approved and installed in the application catalog
 
 | Code | City | Visual anchor | Review note |
 | --- | --- | --- | --- |
@@ -102,7 +102,7 @@ Joey reset the entire set to the approved AVL poster after finding the first fiv
 | YQB | Québec City, Québec | Château Frontenac, Dufferin Terrace and St. Lawrence | A copied AVL footer caption was replaced. Check hotel and river viewpoint. |
 | BTR | Baton Rouge, Louisiana | Old State Capitol on Mississippi bluff and modern Capitol farther back | An extra apparent aircraft propeller was removed. Check Gothic building silhouette and relative Capitol placement. |
 
-The candidate comparison `Docs/UI/envoy-gap-2026-09-27-h-avl-review.jpg` includes AVL at the same visual scale. These five are **not installed** and require Joey's approval. The Myrtle Beach correction is in the candidate asset; the earlier faulty airplane is excluded. This 1173 × 1341 set is for screen review, not a print master. Landmark fidelity and route status need dedicated verification before commercial sale.
+The comparison `Docs/UI/envoy-gap-2026-09-27-h-avl-review.jpg` includes AVL at the same visual scale. Joey approved all five on 2026-09-27, and their corrected review-size assets are wired into `config/posters.js`. The Myrtle Beach third-propeller error, Oklahoma City bridge-over-water error, Québec City copied AVL footer, and Baton Rouge extra apparent propeller were corrected before approval. Joey also reiterated a standing artwork rule: aircraft must remain anatomically believable, with no stray propellers, phantom engines, or other impossible geometry. This 1173 × 1341 set is for screen use, not a print master. Landmark fidelity, aircraft anatomy, route status, and commercial-use rights still require dedicated review before sale; publication to the branch does not verify home-display deployment.
 
 ## Next passes
 

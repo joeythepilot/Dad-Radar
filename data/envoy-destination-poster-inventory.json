@@ -224,7 +224,7 @@
       "region": "Louisiana",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "BUF",
@@ -904,7 +904,7 @@
       "region": "South Carolina",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "MZT",
@@ -920,7 +920,7 @@
       "region": "Oklahoma",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "OMA",
@@ -944,7 +944,7 @@
       "region": "Virginia",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "PHX",
@@ -1152,7 +1152,7 @@
       "region": "Quebec",
       "country": "CA",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "YUL",
@@ -1245,6 +1245,16 @@
       "DSM",
       "MEM",
       "PNS"
+    ]
+  },
+  "eighthBatch": {
+    "id": "envoy-gap-2026-09-27-h",
+    "codes": [
+      "OKC",
+      "MYR",
+      "ORF",
+      "YQB",
+      "BTR"
     ]
   }
 }

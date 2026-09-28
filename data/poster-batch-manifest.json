@@ -171,7 +171,7 @@
     {
       "id": "envoy-gap-2026-09-27-h",
       "label": "Envoy candidate route gap batch H — AVL painted style",
-      "status": "candidate",
+      "status": "approved",
       "airportCodes": [
         "OKC",
         "MYR",
@@ -1983,7 +1983,7 @@
       "descriptor": "PRAIRIES • PEOPLE • WIDE HORIZONS",
       "tagline": "Naturally Welcoming.",
       "batch": "envoy-gap-2026-09-27-h",
-      "status": "candidate",
+      "status": "approved",
       "output": "assets/destinations/okc-poster-7x8-candidate-v1.png",
       "visualProfileId": "oklahoma-skydance-avl-lithograph-gold",
       "design": {
@@ -2016,7 +2016,7 @@
       "descriptor": "OCEANFRONT • FAMILY FUN • COASTAL BEAUTY",
       "tagline": "Atlantic Days.",
       "batch": "envoy-gap-2026-09-27-h",
-      "status": "candidate",
+      "status": "approved",
       "output": "assets/destinations/myr-poster-7x8-candidate-v1.png",
       "visualProfileId": "myrtle-boardwalk-avl-lithograph-amber",
       "design": {
@@ -2049,7 +2049,7 @@
       "descriptor": "HARBOR • HISTORY • COAST",
       "tagline": "Harbor Heritage.",
       "batch": "envoy-gap-2026-09-27-h",
-      "status": "candidate",
+      "status": "approved",
       "output": "assets/destinations/orf-poster-7x8-candidate-v1.png",
       "visualProfileId": "norfolk-wisconsin-avl-lithograph-harbor",
       "design": {
@@ -2082,7 +2082,7 @@
       "descriptor": "OLD TOWN • RIVER • HERITAGE",
       "tagline": "Old Québec Above the River.",
       "batch": "envoy-gap-2026-09-27-h",
-      "status": "candidate",
+      "status": "approved",
       "output": "assets/destinations/yqb-poster-7x8-candidate-v1.png",
       "visualProfileId": "quebec-frontenac-avl-lithograph-autumn",
       "design": {
@@ -2115,7 +2115,7 @@
       "descriptor": "RIVER • HISTORY • SOUTH",
       "tagline": "Above the Mississippi.",
       "batch": "envoy-gap-2026-09-27-h",
-      "status": "candidate",
+      "status": "approved",
       "output": "assets/destinations/btr-poster-7x8-candidate-v1.png",
       "visualProfileId": "batonrouge-oldcapitol-avl-lithograph-magnolia",
       "design": {
