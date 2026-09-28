@@ -616,7 +616,7 @@
       "region": "New York",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "HRL",
@@ -624,7 +624,7 @@
       "region": "Texas",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "HSV",
@@ -672,7 +672,7 @@
       "region": "Mississippi",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "JAX",
@@ -688,7 +688,7 @@
       "region": "New York",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "LAN",
@@ -696,7 +696,7 @@
       "region": "Michigan",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "LAW",
@@ -1325,6 +1325,16 @@
       "GRI",
       "GRK",
       "HOU"
+    ]
+  },
+  "sixteenthBatch": {
+    "id": "envoy-gap-2026-09-28-p",
+    "codes": [
+      "HPN",
+      "HRL",
+      "JAN",
+      "JFK",
+      "LAN"
     ]
   }
 }

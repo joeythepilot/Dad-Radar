@@ -263,6 +263,18 @@
         "GRK",
         "HOU"
       ]
+    },
+    {
+      "id": "envoy-gap-2026-09-28-p",
+      "label": "Envoy candidate route gap batch P — approved quiet-sky vintage-aircraft standard",
+      "status": "approved",
+      "airportCodes": [
+        "HPN",
+        "HRL",
+        "JAN",
+        "JFK",
+        "LAN"
+      ]
     }
   ],
   "destinations": [
@@ -3375,6 +3387,171 @@
       "referenceSources": [
         "https://www.visithoustontexas.com/listings/eleanor-tinsley-park/20150/",
         "https://www.visithoustontexas.com/things-to-do/attractions/free-things-to-do/"
+      ]
+    },
+    {
+      "code": "HPN",
+      "icao": "KHPN",
+      "city": "White Plains",
+      "region": "New York",
+      "title": "WHITE PLAINS",
+      "subtitle": "WESTCHESTER • NEW YORK",
+      "descriptor": "KENSICO DAM • HUDSON HILLS • WESTCHESTER",
+      "tagline": "Westchester in Autumn.",
+      "batch": "envoy-gap-2026-09-28-p",
+      "status": "approved",
+      "output": "assets/destinations/hpn-poster-7x8-candidate-v2.png",
+      "visualProfileId": "white-plains-kensico-dam-westchester-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Kensico Dam in nearby Valhalla, Westchester County",
+          "Kensico Reservoir and wooded Westchester hills"
+        ],
+        "skySignature": "Quiet blue-to-amber Westchester dusk with sparse thin cloud wisps",
+        "seasonAndLight": "Warm autumn evening over the reservoir",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport above the reservoir at upper right",
+        "foreground": "Stone dam, park paths and layered fall foliage",
+        "avoid": [
+          "implying Kensico Dam is within White Plains city limits or adding Manhattan skyline",
+          "synthetic cloud bands, extra engines, propellers, fins or carrier marks"
+        ]
+      },
+      "referenceSources": [
+        "https://parks.westchestercountyny.gov/kensico-dam-plaza",
+        "https://www.nyc.gov/site/dep/water/kensico-reservoir.page"
+      ]
+    },
+    {
+      "code": "HRL",
+      "icao": "KHRL",
+      "city": "Harlingen",
+      "region": "Texas",
+      "title": "HARLINGEN",
+      "subtitle": "RIO GRANDE VALLEY",
+      "descriptor": "ARROYO COLORADO • BIRDING • SOUTH TEXAS",
+      "tagline": "Birding in the Valley.",
+      "batch": "envoy-gap-2026-09-28-p",
+      "status": "approved",
+      "output": "assets/destinations/hrl-poster-7x8-candidate-v2.png",
+      "visualProfileId": "harlingen-arroyo-colorado-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Arroyo Colorado waterway and birding habitat",
+          "Native South Texas brush near Hugh Ramsey Nature Park"
+        ],
+        "skySignature": "Open Rio Grande Valley blue fading gently into warm gold",
+        "seasonAndLight": "Low golden sun across the arroyo",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport crossing the Harlingen sky at upper right",
+        "foreground": "Heron, grasses, native brush and palms beside calm water",
+        "avoid": [
+          "ocean beach, mountains or dense repeated cloud flecks",
+          "carrier livery, shark fins, extra engines or propellers"
+        ]
+      },
+      "referenceSources": [
+        "https://visitharlingentexas.com/birding/",
+        "https://visitharlingentexas.com/trails-and-parks-2/"
+      ]
+    },
+    {
+      "code": "JAN",
+      "icao": "KJAN",
+      "city": "Jackson",
+      "region": "Mississippi",
+      "title": "JACKSON",
+      "subtitle": "MISSISSIPPI",
+      "descriptor": "STATE CAPITOL • MAGNOLIAS • MISSISSIPPI",
+      "tagline": "Capital in Bloom.",
+      "batch": "envoy-gap-2026-09-28-p",
+      "status": "approved",
+      "output": "assets/destinations/jan-poster-7x8-candidate-v2.png",
+      "visualProfileId": "jackson-mississippi-capitol-magnolias-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Mississippi State Capitol and its dome",
+          "Downtown Jackson framed with flowering magnolias"
+        ],
+        "skySignature": "Restrained warm Jackson horizon beneath calm blue",
+        "seasonAndLight": "Late afternoon on pale stone and magnolias",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport above the Jackson Capitol at upper right",
+        "foreground": "Magnolia blossoms and leafy streets around the statehouse",
+        "avoid": [
+          "invented downtown waterfront or patterned orange cloud banks",
+          "airline insignia, duplicate wings, extra propellers or dorsal fins"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitjackson.com/directory/mississippi-state-capitol/",
+        "https://www.visitjackson.com/plan-your-trip/neighborhoods/downtown/"
+      ]
+    },
+    {
+      "code": "JFK",
+      "icao": "KJFK",
+      "city": "New York",
+      "region": "New York",
+      "title": "NEW YORK",
+      "subtitle": "QUEENS • NEW YORK",
+      "descriptor": "JAMAICA BAY • QUEENS • CITY GATEWAY",
+      "tagline": "Where City Meets Bay.",
+      "batch": "envoy-gap-2026-09-28-p",
+      "status": "approved",
+      "output": "assets/destinations/jfk-poster-7x8-candidate-v2.png",
+      "visualProfileId": "jfk-jamaica-bay-queens-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Jamaica Bay Wildlife Refuge salt marsh and tidal channels",
+          "Distant New York skyline beyond the Queens bay landscape"
+        ],
+        "skySignature": "Spacious coastal blue with gentle amber horizon and scant wisps",
+        "seasonAndLight": "Golden evening over marsh and open water",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport over the Jamaica Bay marsh at upper right",
+        "foreground": "Saltmarsh grasses, wading shorebirds and shallow tidal pools",
+        "avoid": [
+          "placing Manhattan towers immediately beside the refuge or cloud patterning",
+          "stray center propeller, extra engine, fin, registration or airline logo"
+        ]
+      },
+      "referenceSources": [
+        "https://www.nps.gov/places/000/jamaica-bay-wildlife-refuge.htm",
+        "https://www.nps.gov/gate/learn/historyculture/jamaica-bay-wildlife-refuge.htm"
+      ]
+    },
+    {
+      "code": "LAN",
+      "icao": "KLAN",
+      "city": "Lansing",
+      "region": "Michigan",
+      "title": "LANSING",
+      "subtitle": "MICHIGAN",
+      "descriptor": "STATE CAPITOL • GRAND RIVER • MID-MICHIGAN",
+      "tagline": "Along the Grand River.",
+      "batch": "envoy-gap-2026-09-28-p",
+      "status": "approved",
+      "output": "assets/destinations/lan-poster-7x8-candidate-v2.png",
+      "visualProfileId": "lansing-capitol-grand-river-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Michigan State Capitol and cast-iron dome",
+          "Grand River and Lansing riverwalk setting"
+        ],
+        "skySignature": "Calm Michigan dusk with broad open blue and low soft gold",
+        "seasonAndLight": "Warm autumn light on the statehouse and river",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine transport above the Lansing riverfront at upper right",
+        "foreground": "Maples, river reflections and a modest bridge",
+        "avoid": [
+          "mountains, busy artificial clouds or a modern flat-vector sky",
+          "extra engines, detached propellers, shark fins or airline markings"
+        ]
+      },
+      "referenceSources": [
+        "https://capitol.michigan.gov/about",
+        "https://www.lansingmi.gov/436/Lansing-River-Trail"
       ]
     }
   ]

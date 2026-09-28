@@ -657,6 +657,31 @@
       source: "./assets/destinations/hou-poster-7x8-candidate-v2.png",
       title: "HOUSTON",
       location: "Houston, Texas"
+    }),
+    HPN: Object.freeze({
+      source: "./assets/destinations/hpn-poster-7x8-candidate-v2.png",
+      title: "WHITE PLAINS",
+      location: "White Plains, New York"
+    }),
+    HRL: Object.freeze({
+      source: "./assets/destinations/hrl-poster-7x8-candidate-v2.png",
+      title: "HARLINGEN",
+      location: "Harlingen, Texas"
+    }),
+    JAN: Object.freeze({
+      source: "./assets/destinations/jan-poster-7x8-candidate-v2.png",
+      title: "JACKSON",
+      location: "Jackson, Mississippi"
+    }),
+    JFK: Object.freeze({
+      source: "./assets/destinations/jfk-poster-7x8-candidate-v2.png",
+      title: "NEW YORK",
+      location: "New York (Queens), New York"
+    }),
+    LAN: Object.freeze({
+      source: "./assets/destinations/lan-poster-7x8-candidate-v2.png",
+      title: "LANSING",
+      location: "Lansing, Michigan"
     })
   });
 
