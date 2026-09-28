@@ -472,6 +472,36 @@
         "./assets/destinations/btr-poster-7x8-candidate-v1.png",
       title: "BATON ROUGE",
       location: "Baton Rouge, Louisiana"
+    }),
+    ACA: Object.freeze({
+      source:
+        "./assets/destinations/aca-poster-7x8-candidate-v1.png",
+      title: "ACAPULCO",
+      location: "Acapulco, Guerrero"
+    }),
+    BIL: Object.freeze({
+      source:
+        "./assets/destinations/bil-poster-7x8-candidate-v1.png",
+      title: "BILLINGS",
+      location: "Billings, Montana"
+    }),
+    CRP: Object.freeze({
+      source:
+        "./assets/destinations/crp-poster-7x8-candidate-v1.png",
+      title: "CORPUS CHRISTI",
+      location: "Corpus Christi, Texas"
+    }),
+    GJT: Object.freeze({
+      source:
+        "./assets/destinations/gjt-poster-7x8-candidate-v1.png",
+      title: "GRAND JUNCTION",
+      location: "Grand Junction, Colorado"
+    }),
+    ILM: Object.freeze({
+      source:
+        "./assets/destinations/ilm-poster-7x8-candidate-v1.png",
+      title: "WILMINGTON",
+      location: "Wilmington, North Carolina"
     })
   });
 

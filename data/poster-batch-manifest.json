@@ -179,6 +179,18 @@
         "YQB",
         "BTR"
       ]
+    },
+    {
+      "id": "envoy-gap-2026-09-28-i",
+      "label": "Envoy candidate route gap batch I — approved vintage-aircraft standard",
+      "status": "approved",
+      "airportCodes": [
+        "ACA",
+        "BIL",
+        "CRP",
+        "GJT",
+        "ILM"
+      ]
     }
   ],
   "destinations": [
@@ -2136,6 +2148,171 @@
       "referenceSources": [
         "https://www.visitbatonrouge.com/things-to-do/attractions/louisiana-state-capitol/old-state-capitol/",
         "https://www.visitbatonrouge.com/things-to-do/attractions/louisiana-state-capitol/new-state-capitol/"
+      ]
+    },
+    {
+      "code": "ACA",
+      "icao": "MMAA",
+      "city": "Acapulco",
+      "region": "Guerrero",
+      "title": "ACAPULCO",
+      "subtitle": "GUERRERO",
+      "descriptor": "PACIFIC • CLIFFS • BAY",
+      "tagline": "Pacific Horizons.",
+      "batch": "envoy-gap-2026-09-28-i",
+      "status": "approved",
+      "output": "assets/destinations/aca-poster-7x8-candidate-v1.png",
+      "visualProfileId": "acapulco-quebrada-avl-lithograph-pacific",
+      "design": {
+        "landmarks": [
+          "La Quebrada cliffs on Acapulco's Pacific coast",
+          "Acapulco Bay and layered tropical hills"
+        ],
+        "skySignature": "Restrained blue Pacific sky with warm low cloud band",
+        "seasonAndLight": "Late-afternoon tropical gold",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Generic unbranded vintage twin-engine prop transport at upper right, exactly two engines and two propellers",
+        "foreground": "Ochre sea cliffs, palms and bougainvillea above Pacific surf",
+        "avoid": [
+          "modern airline branding, logos, carrier-specific livery or readable registration",
+          "extra engines, extra propellers, duplicate wings or impossible aircraft anatomy"
+        ]
+      },
+      "referenceSources": [
+        "https://visitacapulco.travel/experiencias/la-quebrada/",
+        "https://www.guerrero.gob.mx/municipio/acapulco-de-juarez/"
+      ]
+    },
+    {
+      "code": "BIL",
+      "icao": "KBIL",
+      "city": "Billings",
+      "region": "Montana",
+      "title": "BILLINGS",
+      "subtitle": "MONTANA",
+      "descriptor": "RIMROCKS • RIVER • BIG SKY",
+      "tagline": "River to Rims.",
+      "batch": "envoy-gap-2026-09-28-i",
+      "status": "approved",
+      "output": "assets/destinations/bil-poster-7x8-candidate-v1.png",
+      "visualProfileId": "billings-rimrocks-avl-lithograph-autumn",
+      "design": {
+        "landmarks": [
+          "Sandstone Rimrocks overlooking Billings",
+          "Yellowstone River winding through the city valley"
+        ],
+        "skySignature": "Pale Montana blue with restrained cream clouds",
+        "seasonAndLight": "Dry autumn gold under soft afternoon light",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine prop transport high at upper right",
+        "foreground": "Golden grasses and sandstone Rimrock ledges",
+        "avoid": [
+          "modern airline branding, logos, carrier-specific livery or readable registration",
+          "extra engines, extra propellers, duplicate wings or impossible aircraft anatomy"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitbillings.com/outdoor-adventure/",
+        "https://www.visitbillings.com/attractions/yellowstone-river/"
+      ]
+    },
+    {
+      "code": "CRP",
+      "icao": "KCRP",
+      "city": "Corpus Christi",
+      "region": "Texas",
+      "title": "CORPUS CHRISTI",
+      "subtitle": "TEXAS",
+      "descriptor": "BAY • MARINA • GULF LIGHT",
+      "tagline": "Bayfront Breezes.",
+      "batch": "envoy-gap-2026-09-28-i",
+      "status": "approved",
+      "output": "assets/destinations/crp-poster-7x8-candidate-v1.png",
+      "visualProfileId": "corpus-bayfront-avl-lithograph-gulf",
+      "design": {
+        "landmarks": [
+          "Downtown Corpus Christi seawall and marina on Corpus Christi Bay",
+          "Harbor Bridge beyond the waterfront"
+        ],
+        "skySignature": "Soft coastal blue with a low cream cloud shelf",
+        "seasonAndLight": "Warm Gulf afternoon with clear bay reflections",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Generic unbranded vintage twin-engine prop transport high over the bay, exactly two propellers",
+        "foreground": "Palms, rocky bay edge and sailboats",
+        "avoid": [
+          "modern airline branding, logos, carrier-specific livery or readable registration",
+          "extra engines, extra propellers, duplicate wings or impossible aircraft anatomy"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitcorpuschristi.com/blog/post/first-time-visitors-guide-to-corpus-christi/",
+        "https://www.visitcorpuschristi.com/blog/post/cctx-marathon-in-corpus-christi/"
+      ]
+    },
+    {
+      "code": "GJT",
+      "icao": "KGJT",
+      "city": "Grand Junction",
+      "region": "Colorado",
+      "title": "GRAND JUNCTION",
+      "subtitle": "COLORADO",
+      "descriptor": "RED ROCK • VALLEY • HIGH DESERT",
+      "tagline": "Where Canyons Open.",
+      "batch": "envoy-gap-2026-09-28-i",
+      "status": "approved",
+      "output": "assets/destinations/gjt-poster-7x8-candidate-v1.png",
+      "visualProfileId": "grandjunction-monument-avl-lithograph-redrock",
+      "design": {
+        "landmarks": [
+          "Colorado National Monument red sandstone monoliths and canyon walls",
+          "Grand Valley opening toward Grand Junction"
+        ],
+        "skySignature": "High-desert blue with quiet amber-edged clouds",
+        "seasonAndLight": "Late-day amber across red rock",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small generic unbranded vintage twin-engine prop transport high at upper right",
+        "foreground": "Red sandstone spires and high-desert shrubs",
+        "avoid": [
+          "modern airline branding, logos, carrier-specific livery or readable registration",
+          "extra engines, extra propellers, duplicate wings or impossible aircraft anatomy"
+        ]
+      },
+      "referenceSources": [
+        "https://www.nps.gov/colm/planyourvisit/index.htm",
+        "https://www.visitgrandjunction.com/things-to-do/explore-the-area/colorado-national-monument/"
+      ]
+    },
+    {
+      "code": "ILM",
+      "icao": "KILM",
+      "city": "Wilmington",
+      "region": "North Carolina",
+      "title": "WILMINGTON",
+      "subtitle": "NORTH CAROLINA",
+      "descriptor": "RIVERWALK • HISTORY • CAPE FEAR",
+      "tagline": "River Stories.",
+      "batch": "envoy-gap-2026-09-28-i",
+      "status": "approved",
+      "output": "assets/destinations/ilm-poster-7x8-candidate-v1.png",
+      "visualProfileId": "wilmington-riverwalk-avl-lithograph-capefear",
+      "design": {
+        "landmarks": [
+          "Wilmington Riverwalk along the Cape Fear River",
+          "Battleship NORTH CAROLINA moored across from downtown"
+        ],
+        "skySignature": "Soft Carolina blue with restrained coastal haze",
+        "seasonAndLight": "Warm late-afternoon river light",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Generic unbranded vintage twin-engine prop transport high at upper right, exactly two engines",
+        "foreground": "Brick riverfront edge, railings, flowers and marsh grasses",
+        "avoid": [
+          "modern airline branding, logos, carrier-specific livery or readable registration",
+          "extra engines, extra propellers, duplicate wings or impossible aircraft anatomy"
+        ]
+      },
+      "referenceSources": [
+        "https://www.wilmingtonandbeaches.com/things-to-do/river-district/",
+        "https://battleshipnc.com/visit/"
       ]
     }
   ]

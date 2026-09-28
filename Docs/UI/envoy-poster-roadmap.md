@@ -6,7 +6,7 @@ Envoy describes service to **over 160 destinations**, but its public site does n
 
 Sources: [Envoy Air](https://www.envoyair.com/), [FlightNerve MQ route listing](https://www.flightnerve.com/airlines/MQ). The latter's own destination count and visible code list vary between crawls; its 146/148 headline is not treated as a complete verified roster. Ground handling locations are a separate service and are not automatically destinations flown by Envoy.
 
-After Joey's batch A through H approvals, **77** airport codes have an installed poster and **68** have no active artwork in the 145-code working union. The JSON records each code, airport catalog geography, source tag, and poster status, so batches can be selected without conflating a candidate route with approved art.
+After Joey's batch A through I approvals, **82** airport codes have an installed poster and **63** have no active artwork in the 145-code working union. The JSON records each code, airport catalog geography, source tag, and poster status, so batches can be selected without conflating a candidate route with approved art.
 
 ## Batch A: approved and installed in the application catalog
 
@@ -103,6 +103,18 @@ Joey reset the entire set to the approved AVL poster after finding the first fiv
 | BTR | Baton Rouge, Louisiana | Old State Capitol on Mississippi bluff and modern Capitol farther back | An extra apparent aircraft propeller was removed. Check Gothic building silhouette and relative Capitol placement. |
 
 The comparison `Docs/UI/envoy-gap-2026-09-27-h-avl-review.jpg` includes AVL at the same visual scale. Joey approved all five on 2026-09-27, and their corrected review-size assets are wired into `config/posters.js`. The Myrtle Beach third-propeller error, Oklahoma City bridge-over-water error, Québec City copied AVL footer, and Baton Rouge extra apparent propeller were corrected before approval. Joey also reiterated a standing artwork rule: aircraft must remain anatomically believable, with no stray propellers, phantom engines, or other impossible geometry. This 1173 × 1341 set is for screen use, not a print master. Landmark fidelity, aircraft anatomy, route status, and commercial-use rights still require dedicated review before sale; publication to the branch does not verify home-display deployment.
+
+## Batch I: approved and installed — individual assets only
+
+| Code | City | Visual anchor | Approval note |
+| --- | --- | --- | --- |
+| ACA | Acapulco, Guerrero | La Quebrada cliffs, Pacific surf, Acapulco Bay and tropical hills | Approved after replacing the carrier-branded modern jet with a generic vintage twin-engine prop transport. |
+| BIL | Billings, Montana | Rimrocks, Yellowstone River valley and autumn cityscape | Approved with the same anonymous vintage-aircraft treatment. |
+| CRP | Corpus Christi, Texas | Downtown seawall and marina, Corpus Christi Bay and Harbor Bridge | Approved with the same anonymous vintage-aircraft treatment. |
+| GJT | Grand Junction, Colorado | Colorado National Monument red rock and Grand Valley | Approved with the same anonymous vintage-aircraft treatment. |
+| ILM | Wilmington, North Carolina | Cape Fear Riverwalk and Battleship NORTH CAROLINA | Approved with the same anonymous vintage-aircraft treatment. |
+
+Joey approved the five individual assets on 2026-09-28. No Batch I comparison sheet was requested or created. The locked AVL poster remains the unchanged style standard and must not be regenerated. Batch I also establishes the commercial reuse rule for future poster artwork: aircraft should be generic, unbranded vintage transports rather than carrier-specific modern jets; no airline logos, carrier liveries or readable registrations; and aircraft anatomy must remain believable, with exactly the intended engines/propellers and no phantom nacelles, duplicate wings or stray propellers. These are 1173 × 1341 screen assets, not print masters. Route status, landmark fidelity and commercial-use rights remain separate verification questions before sale.
 
 ## Next passes
 
