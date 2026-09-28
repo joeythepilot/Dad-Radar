@@ -714,47 +714,47 @@
       location: "Maracaibo, Zulia, Venezuela"
     }),
     MFE: Object.freeze({
-      source: "./assets/destinations/mfe-poster-7x8-candidate-v2.png",
+      source: "./assets/destinations/mfe-poster-7x8-candidate-v3.png",
       title: "MCALLEN",
       location: "McAllen, Texas"
     }),
     MGM: Object.freeze({
-      source: "./assets/destinations/mgm-poster-7x8-candidate-v1.png",
+      source: "./assets/destinations/mgm-poster-7x8-candidate-v2.png",
       title: "MONTGOMERY",
       location: "Montgomery, Alabama"
     }),
     MHH: Object.freeze({
-      source: "./assets/destinations/mhh-poster-7x8-candidate-v3.png",
+      source: "./assets/destinations/mhh-poster-7x8-candidate-v4.png",
       title: "MARSH HARBOUR",
       location: "Marsh Harbour, Abaco, Bahamas"
     }),
     MHK: Object.freeze({
-      source: "./assets/destinations/mhk-poster-7x8-candidate-v1.png",
+      source: "./assets/destinations/mhk-poster-7x8-candidate-v2.png",
       title: "MANHATTAN",
       location: "Manhattan, Kansas"
     }),
     MHT: Object.freeze({
-      source: "./assets/destinations/mht-poster-7x8-candidate-v2.png",
+      source: "./assets/destinations/mht-poster-7x8-candidate-v3.png",
       title: "MANCHESTER",
       location: "Manchester, New Hampshire"
     }),
     MLI: Object.freeze({
-      source: "./assets/destinations/mli-poster-7x8-candidate-v2.png",
+      source: "./assets/destinations/mli-poster-7x8-candidate-v3.png",
       title: "MOLINE",
       location: "Moline, Illinois"
     }),
     MLU: Object.freeze({
-      source: "./assets/destinations/mlu-poster-7x8-candidate-v1.png",
+      source: "./assets/destinations/mlu-poster-7x8-candidate-v2.png",
       title: "MONROE",
       location: "Monroe, Louisiana"
     }),
     MQT: Object.freeze({
-      source: "./assets/destinations/mqt-poster-7x8-candidate-v1.png",
+      source: "./assets/destinations/mqt-poster-7x8-candidate-v2.png",
       title: "MARQUETTE",
       location: "Marquette, Michigan"
     }),
     MSO: Object.freeze({
-      source: "./assets/destinations/mso-poster-7x8-candidate-v1.png",
+      source: "./assets/destinations/mso-poster-7x8-candidate-v2.png",
       title: "MISSOULA",
       location: "Missoula, Montana"
     })
