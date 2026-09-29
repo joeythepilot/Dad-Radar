@@ -807,6 +807,66 @@
       source: "./assets/destinations/yul-poster-7x8-candidate-v4.png",
       title: "MONTRÉAL",
       location: "Montréal, Québec"
+    }),
+    AXA: Object.freeze({
+      source:
+        "./assets/destinations/axa-poster-7x8-candidate-v1.png",
+      title: "ANGUILLA",
+      location: "The Valley, Anguilla"
+    }),
+    AZO: Object.freeze({
+      source:
+        "./assets/destinations/azo-poster-7x8-candidate-v1.png",
+      title: "KALAMAZOO",
+      location: "Kalamazoo, Michigan"
+    }),
+    BGR: Object.freeze({
+      source:
+        "./assets/destinations/bgr-poster-7x8-candidate-v1.png",
+      title: "BANGOR",
+      location: "Bangor, Maine"
+    }),
+    BIM: Object.freeze({
+      source:
+        "./assets/destinations/bim-poster-7x8-candidate-v1.png",
+      title: "BIMINI",
+      location: "South Bimini, Bimini, Bahamas"
+    }),
+    ELH: Object.freeze({
+      source:
+        "./assets/destinations/elh-poster-7x8-candidate-v1.png",
+      title: "NORTH ELEUTHERA",
+      location: "North Eleuthera, Eleuthera, Bahamas"
+    }),
+    FPO: Object.freeze({
+      source:
+        "./assets/destinations/fpo-poster-7x8-candidate-v1.png",
+      title: "FREEPORT",
+      location: "Freeport, Grand Bahama, Bahamas"
+    }),
+    FSD: Object.freeze({
+      source:
+        "./assets/destinations/fsd-poster-7x8-candidate-v1.png",
+      title: "SIOUX FALLS",
+      location: "Sioux Falls, South Dakota"
+    }),
+    GGT: Object.freeze({
+      source:
+        "./assets/destinations/ggt-poster-7x8-candidate-v1.png",
+      title: "GEORGE TOWN",
+      location: "George Town, Exuma, Bahamas"
+    }),
+    HHH: Object.freeze({
+      source:
+        "./assets/destinations/hhh-poster-7x8-candidate-v1.png",
+      title: "HILTON HEAD",
+      location: "Hilton Head Island, South Carolina"
+    }),
+    LEX: Object.freeze({
+      source:
+        "./assets/destinations/lex-poster-7x8-candidate-v1.png",
+      title: "LEXINGTON",
+      location: "Lexington, Kentucky"
     })
   });
 
