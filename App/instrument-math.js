@@ -6,6 +6,12 @@
 (function initializeInstrumentMath(root) {
   "use strict";
 
+  function flightForInstruments(state) {
+    return String(state?.status ?? "").toUpperCase() === "ARRIVED"
+      ? null
+      : state?.flight ?? null;
+  }
+
   function altimeterNeedleAngles(
     rawAltitude
   ) {
@@ -31,7 +37,8 @@
   }
 
   const api = {
-    altimeterNeedleAngles
+    altimeterNeedleAngles,
+    flightForInstruments
   };
 
   if (

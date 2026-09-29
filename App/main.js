@@ -1345,7 +1345,8 @@ function updateInstrumentNeedles(
 
 function updateDashboardTelemetry(state) {
   const flight =
-    state?.flight ?? null;
+    globalThis.dadRadarInstrumentMath
+      .flightForInstruments(state);
 
   const hasAirspeed =
     flight?.airspeed !== null &&
@@ -1577,6 +1578,10 @@ function updateDashboard(state) {
   const flight =
     state.flight ?? null;
 
+  const instrumentFlight =
+    globalThis.dadRadarInstrumentMath
+      .flightForInstruments(state);
+
   const splitFlapFields =
     globalThis.dadRadarSplitFlapState
       ?.fieldsForState?.(state);
@@ -1669,41 +1674,41 @@ function updateDashboard(state) {
   }
 
   const hasAirspeed =
-    flight?.airspeed !== null &&
-    flight?.airspeed !== undefined &&
+    instrumentFlight?.airspeed !== null &&
+    instrumentFlight?.airspeed !== undefined &&
     Number.isFinite(
-      Number(flight.airspeed)
+      Number(instrumentFlight.airspeed)
     );
 
   const hasGroundSpeed =
-    flight?.groundSpeed !== null &&
-    flight?.groundSpeed !== undefined &&
+    instrumentFlight?.groundSpeed !== null &&
+    instrumentFlight?.groundSpeed !== undefined &&
     Number.isFinite(
-      Number(flight.groundSpeed)
+      Number(instrumentFlight.groundSpeed)
     );
 
   const displayedSpeed =
     hasAirspeed
-      ? Number(flight.airspeed)
+      ? Number(instrumentFlight.airspeed)
       : hasGroundSpeed
-        ? Number(flight.groundSpeed)
+        ? Number(instrumentFlight.groundSpeed)
         : null;
 
   const hasDisplayedSpeed =
     displayedSpeed !== null;
 
   const hasHeading =
-    flight?.heading !== null &&
-    flight?.heading !== undefined &&
+    instrumentFlight?.heading !== null &&
+    instrumentFlight?.heading !== undefined &&
     Number.isFinite(
-      Number(flight.heading)
+      Number(instrumentFlight.heading)
     );
 
   const hasAltitude =
-    flight?.altitude !== null &&
-    flight?.altitude !== undefined &&
+    instrumentFlight?.altitude !== null &&
+    instrumentFlight?.altitude !== undefined &&
     Number.isFinite(
-      Number(flight.altitude)
+      Number(instrumentFlight.altitude)
     );
 
   if (flight) {
@@ -1762,7 +1767,7 @@ function updateDashboard(state) {
           ? String(
               Math.round(
                 Number(
-                  flight.heading
+                  instrumentFlight.heading
                 )
               )
             ).padStart(3, "0")
@@ -1774,7 +1779,7 @@ function updateDashboard(state) {
         hasAltitude
           ? Math.round(
               Number(
-                flight.altitude
+                instrumentFlight.altitude
               )
             ).toLocaleString(
               "en-US"
@@ -1822,7 +1827,7 @@ function updateDashboard(state) {
       hasDisplayedSpeed ||
       hasHeading ||
       hasAltitude
-        ? flight
+        ? instrumentFlight
         : null,
       displayedSpeed
     );

@@ -1,6 +1,7 @@
 const assert = require("node:assert/strict");
 const {
-  altimeterNeedleAngles
+  altimeterNeedleAngles,
+  flightForInstruments
 } = require("./instrument-math");
 
 function normalized(angle) {
@@ -104,6 +105,29 @@ function testInvalidAltitudeSafety() {
 
 testTwoPointerAltimeter();
 testInvalidAltitudeSafety();
+
+function testArrivalClearsLastMotionFromInstruments() {
+  const flight = {
+    groundSpeed: 11,
+    heading: 239,
+    altitude: null,
+    latitude: 36.1,
+    longitude: -79.9
+  };
+
+  assert.equal(
+    flightForInstruments({status: "ARRIVED", flight}),
+    null,
+    "The last taxi speed and heading must not remain on the gauges after arrival."
+  );
+  assert.equal(
+    flightForInstruments({status: "TAXI IN", flight}),
+    flight,
+    "The taxi instruments should remain active until arrival is confirmed."
+  );
+}
+
+testArrivalClearsLastMotionFromInstruments();
 
 console.log(
   "Instrument math tests passed."
