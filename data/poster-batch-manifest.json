@@ -338,6 +338,23 @@
         "HHH",
         "LEX"
       ]
+    },
+    {
+      "id": "envoy-gap-2026-09-29-u",
+      "label": "Expanded destination poster batch U",
+      "status": "approved",
+      "airportCodes": [
+        "LFT",
+        "LGB",
+        "MDT",
+        "MOB",
+        "MRY",
+        "NAS",
+        "SAV",
+        "SBA",
+        "SHV",
+        "SPS"
+      ]
     }
   ],
   "destinations": [
@@ -4790,6 +4807,346 @@
       "referenceSources": [
         "https://www.visitlex.com/meetings/planner-toolkit/horse-capital-of-the-world/",
         "https://www.visitlex.com/meetings/intellectual-capital/equine/"
+      ]
+    },
+    {
+      "code": "LFT",
+      "icao": "KLFT",
+      "city": "Lafayette",
+      "region": "Louisiana",
+      "title": "LAFAYETTE",
+      "subtitle": "LOUISIANA",
+      "descriptor": "BAYOU • CULTURE • CAJUN SPIRIT",
+      "tagline": "Bayou Vermilion and Lafayette Acadian heritage.",
+      "batch": "envoy-gap-2026-09-29-u",
+      "status": "approved",
+      "output": "assets/destinations/lft-poster-7x8-candidate-v1.png",
+      "visualProfileId": "lft-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Bayou Vermilion",
+          "Vermilionville Acadian village"
+        ],
+        "skySignature": "Quiet natural sky over Lafayette",
+        "seasonAndLight": "Warm clear light in Louisiana",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above Bayou Vermilion at Lafayette",
+        "foreground": "Local vegetation framing Bayou Vermilion and Vermilionville Acadian village",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://bayouvermiliondistrict.org/visit/",
+        "https://www.lafayettetravel.com/"
+      ]
+    },
+    {
+      "code": "LGB",
+      "icao": "KLGB",
+      "city": "Long Beach",
+      "region": "California",
+      "title": "LONG BEACH",
+      "subtitle": "CALIFORNIA",
+      "descriptor": "OCEAN VIEWS • HARBOR LIFE • SUNSHINE",
+      "tagline": "Queen Mary and Long Beach waterfront.",
+      "batch": "envoy-gap-2026-09-29-u",
+      "status": "approved",
+      "output": "assets/destinations/lgb-poster-7x8-candidate-v1.png",
+      "visualProfileId": "lgb-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Queen Mary waterfront",
+          "Long Beach harbor"
+        ],
+        "skySignature": "Quiet natural sky over Long Beach",
+        "seasonAndLight": "Warm clear light in California",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above Queen Mary waterfront at Long Beach",
+        "foreground": "Local vegetation framing Queen Mary waterfront and Long Beach harbor",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitlongbeach.com/",
+        "https://www.longbeach.gov/visitors/"
+      ]
+    },
+    {
+      "code": "MDT",
+      "icao": "KMDT",
+      "city": "Harrisburg",
+      "region": "Pennsylvania",
+      "title": "HARRISBURG",
+      "subtitle": "PENNSYLVANIA",
+      "descriptor": "RIVER VIEWS • HISTORY • FRIENDLY SKIES",
+      "tagline": "Capitol dome over the Susquehanna River.",
+      "batch": "envoy-gap-2026-09-29-u",
+      "status": "approved",
+      "output": "assets/destinations/mdt-poster-7x8-candidate-v1.png",
+      "visualProfileId": "mdt-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Pennsylvania State Capitol",
+          "Susquehanna River"
+        ],
+        "skySignature": "Quiet natural sky over Harrisburg",
+        "seasonAndLight": "Warm clear light in Pennsylvania",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above Pennsylvania State Capitol at Harrisburg",
+        "foreground": "Local vegetation framing Pennsylvania State Capitol and Susquehanna River",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitpa.com/explore/regions/dutch-country-roads/harrisburg/",
+        "https://www.visithersheyharrisburg.org/harrisburg/"
+      ]
+    },
+    {
+      "code": "MOB",
+      "icao": "KMOB",
+      "city": "Mobile",
+      "region": "Alabama",
+      "title": "MOBILE",
+      "subtitle": "ALABAMA",
+      "descriptor": "GULF COAST • HISTORY • SOUTHERN CHARM",
+      "tagline": "Historic downtown and Mobile Bay.",
+      "batch": "envoy-gap-2026-09-29-u",
+      "status": "approved",
+      "output": "assets/destinations/mob-poster-7x8-candidate-v1.png",
+      "visualProfileId": "mob-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Cathedral Basilica of the Immaculate Conception",
+          "Mobile Bay"
+        ],
+        "skySignature": "Quiet natural sky over Mobile",
+        "seasonAndLight": "Warm clear light in Alabama",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above Cathedral Basilica of the Immaculate Conception at Mobile",
+        "foreground": "Local vegetation framing Cathedral Basilica of the Immaculate Conception and Mobile Bay",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.mobile.org/plan-your-visit/downtown/",
+        "https://www.cityofmobile.gov/visitors/"
+      ]
+    },
+    {
+      "code": "MRY",
+      "icao": "KMRY",
+      "city": "Monterey",
+      "region": "California",
+      "title": "MONTEREY",
+      "subtitle": "CALIFORNIA",
+      "descriptor": "OCEAN VIEWS • HISTORY • COASTAL BEAUTY",
+      "tagline": "Cannery Row on Monterey Bay.",
+      "batch": "envoy-gap-2026-09-29-u",
+      "status": "approved",
+      "output": "assets/destinations/mry-poster-7x8-candidate-v1.png",
+      "visualProfileId": "mry-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Cannery Row",
+          "Monterey Bay"
+        ],
+        "skySignature": "Quiet natural sky over Monterey",
+        "seasonAndLight": "Warm clear light in California",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above Cannery Row at Monterey",
+        "foreground": "Local vegetation framing Cannery Row and Monterey Bay",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://canneryrow.com/",
+        "https://www.visitcalifornia.com/experience/cannery-row/"
+      ]
+    },
+    {
+      "code": "NAS",
+      "icao": "MYNN",
+      "city": "Nassau",
+      "region": "New Providence, Bahamas",
+      "title": "NASSAU",
+      "subtitle": "BAHAMAS",
+      "descriptor": "OCEAN VIEWS • ISLAND CULTURE • WARM BREEZES",
+      "tagline": "Parliament Square and Nassau Harbour.",
+      "batch": "envoy-gap-2026-09-29-u",
+      "status": "approved",
+      "output": "assets/destinations/nas-poster-7x8-candidate-v1.png",
+      "visualProfileId": "nas-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Parliament Square",
+          "Nassau Harbour"
+        ],
+        "skySignature": "Quiet natural sky over Nassau",
+        "seasonAndLight": "Warm clear light in New Providence, Bahamas",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above Parliament Square at Nassau",
+        "foreground": "Local vegetation framing Parliament Square and Nassau Harbour",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.nassauparadiseisland.com/experiences/historic-landmarks/tour-parliament-square",
+        "https://www.bahamas.com/nassau-paradise-island/about"
+      ]
+    },
+    {
+      "code": "SAV",
+      "icao": "KSAV",
+      "city": "Savannah",
+      "region": "Georgia",
+      "title": "SAVANNAH",
+      "subtitle": "GEORGIA",
+      "descriptor": "HISTORY • HOSPITALITY • RIVER VIEWS",
+      "tagline": "Forsyth Park beneath Savannah live oaks.",
+      "batch": "envoy-gap-2026-09-29-u",
+      "status": "approved",
+      "output": "assets/destinations/sav-poster-7x8-candidate-v1.png",
+      "visualProfileId": "sav-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Forsyth Park fountain",
+          "historic live oak canopy"
+        ],
+        "skySignature": "Quiet natural sky over Savannah",
+        "seasonAndLight": "Warm clear light in Georgia",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above Forsyth Park fountain at Savannah",
+        "foreground": "Local vegetation framing Forsyth Park fountain and historic live oak canopy",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://visitsavannah.com/profile/forsyth-park/6094",
+        "https://savannahga.gov/4103/Forsyth-Park"
+      ]
+    },
+    {
+      "code": "SBA",
+      "icao": "KSBA",
+      "city": "Santa Barbara",
+      "region": "California",
+      "title": "SANTA BARBARA",
+      "subtitle": "CALIFORNIA",
+      "descriptor": "OCEAN • MOUNTAINS • SPANISH HERITAGE",
+      "tagline": "Courthouse gardens and Santa Ynez backdrop.",
+      "batch": "envoy-gap-2026-09-29-u",
+      "status": "approved",
+      "output": "assets/destinations/sba-poster-7x8-candidate-v1.png",
+      "visualProfileId": "sba-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Santa Barbara County Courthouse",
+          "Santa Ynez Mountains"
+        ],
+        "skySignature": "Quiet natural sky over Santa Barbara",
+        "seasonAndLight": "Warm clear light in California",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above Santa Barbara County Courthouse at Santa Barbara",
+        "foreground": "Local vegetation framing Santa Barbara County Courthouse and Santa Ynez Mountains",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://santabarbaraca.com/businesses/santa-barbara-county-courthouse/",
+        "https://santabarbaraca.com/"
+      ]
+    },
+    {
+      "code": "SHV",
+      "icao": "KSHV",
+      "city": "Shreveport",
+      "region": "Louisiana",
+      "title": "SHREVEPORT",
+      "subtitle": "LOUISIANA",
+      "descriptor": "RIVER LIFE • CULTURE • SOUTHERN HOSPITALITY",
+      "tagline": "Texas Street Bridge over the Red River.",
+      "batch": "envoy-gap-2026-09-29-u",
+      "status": "approved",
+      "output": "assets/destinations/shv-poster-7x8-candidate-v1.png",
+      "visualProfileId": "shv-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Red River waterfront",
+          "Texas Street Bridge"
+        ],
+        "skySignature": "Quiet natural sky over Shreveport",
+        "seasonAndLight": "Warm clear light in Louisiana",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above Red River waterfront at Shreveport",
+        "foreground": "Local vegetation framing Red River waterfront and Texas Street Bridge",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.explorelouisiana.com/historic-districts-sites/texas-street-bridge",
+        "https://www.visitshreveportbossier.org/plan-your-visit/communities-and-districts/"
+      ]
+    },
+    {
+      "code": "SPS",
+      "icao": "KSPS",
+      "city": "Wichita Falls",
+      "region": "Texas",
+      "title": "WICHITA FALLS",
+      "subtitle": "TEXAS",
+      "descriptor": "PRAIRIE RIVERS • BIG SKIES • GENUINE TEXAS",
+      "tagline": "Lucy Park cascades on the Wichita River.",
+      "batch": "envoy-gap-2026-09-29-u",
+      "status": "approved",
+      "output": "assets/destinations/sps-poster-7x8-candidate-v1.png",
+      "visualProfileId": "sps-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Lucy Park",
+          "Wichita River falls"
+        ],
+        "skySignature": "Quiet natural sky over Wichita Falls",
+        "seasonAndLight": "Warm clear light in Texas",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above Lucy Park at Wichita Falls",
+        "foreground": "Local vegetation framing Lucy Park and Wichita River falls",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.wichitafallstx.gov/75/The-Falls",
+        "https://www.wichitafallstx.gov/69/Lucy-Park"
       ]
     }
   ]

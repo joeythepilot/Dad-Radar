@@ -914,7 +914,7 @@
           "lastSeen": "2026-08-08"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "LGA",
@@ -936,7 +936,7 @@
           "exampleRoute": "LGB–PHX"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "LIT",
@@ -999,7 +999,7 @@
           "lastSeen": "2026-05-09"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "MEM",
@@ -1086,7 +1086,7 @@
           "lastSeen": "2026-08-08"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "MQT",
@@ -1108,7 +1108,7 @@
           "exampleRoute": "MRY–DFW"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "MSN",
@@ -1178,7 +1178,7 @@
           "exampleRoute": "NAS–MIA"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "OKC",
@@ -1320,7 +1320,7 @@
           "exampleRoute": "SAV–MIA"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "SBA",
@@ -1334,7 +1334,7 @@
           "exampleRoute": "PHX–SBA"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "SBP",
@@ -1381,7 +1381,7 @@
           "lastSeen": "2026-08-08"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "SPI",
@@ -1403,7 +1403,7 @@
           "exampleRoute": "SPS–DFW"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "SRQ",
@@ -1864,6 +1864,21 @@
       "GGT",
       "HHH",
       "LEX"
+    ]
+  },
+  "twentyFirstBatch": {
+    "id": "envoy-gap-2026-09-29-u",
+    "codes": [
+      "LFT",
+      "LGB",
+      "MDT",
+      "MOB",
+      "MRY",
+      "NAS",
+      "SAV",
+      "SBA",
+      "SHV",
+      "SPS"
     ]
   }
 }
