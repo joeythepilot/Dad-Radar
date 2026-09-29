@@ -963,10 +963,25 @@
       title: "FORT WALTON BEACH",
       location: "Valparaiso/Fort Walton Beach, Florida"
     }),
+    YUM: Object.freeze({
+      source: "./assets/destinations/yum-poster-7x8-candidate-v1.png",
+      title: "YUMA",
+      location: "Yuma, Arizona"
+    }),
+    YYZ: Object.freeze({
+      source: "./assets/destinations/yyz-poster-7x8-candidate-v1.png",
+      title: "TORONTO",
+      location: "Toronto/Mississauga, Ontario, Canada"
+    }),
     ZCL: Object.freeze({
       source: "./assets/destinations/zcl-poster-7x8-candidate-v1.png",
       title: "ZACATECAS",
       location: "Zacatecas, Zacatecas, Mexico"
+    }),
+    ZIH: Object.freeze({
+      source: "./assets/destinations/zih-poster-7x8-candidate-v1.png",
+      title: "ZIHUATANEJO",
+      location: "Ixtapa/Zihuatanejo, Guerrero, Mexico"
     })
   });
 
