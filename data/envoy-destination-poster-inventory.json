@@ -1628,7 +1628,7 @@
       "region": "Arizona",
       "country": "US",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "YYZ",
@@ -1636,7 +1636,7 @@
       "region": "Ontario",
       "country": "CA",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "ZCL",
@@ -1658,7 +1658,7 @@
       "region": "Guerrero",
       "country": "MX",
       "sourceTag": "public-mq-route-snapshot",
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     }
   ],
   "secondBatch": {
@@ -1894,6 +1894,14 @@
       "VER",
       "VPS",
       "ZCL"
+    ]
+  },
+  "twentyThirdBatch": {
+    "id": "envoy-gap-2026-09-29-w",
+    "codes": [
+      "YUM",
+      "YYZ",
+      "ZIH"
     ]
   }
 }

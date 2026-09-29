@@ -372,6 +372,16 @@
         "VPS",
         "ZCL"
       ]
+    },
+    {
+      "id": "envoy-gap-2026-09-29-w",
+      "label": "Final provisional destination poster batch W",
+      "status": "approved",
+      "airportCodes": [
+        "YUM",
+        "YYZ",
+        "ZIH"
+      ]
     }
   ],
   "destinations": [
@@ -5504,6 +5514,108 @@
       "referenceSources": [
         "https://www.zacatecastravel.com/en/detalle_producto.php?producto=25",
         "https://www.zacatecastravel.com/en/lugaresunicos"
+      ]
+    },
+    {
+      "code": "YUM",
+      "icao": "KYUM",
+      "city": "Yuma",
+      "region": "Arizona",
+      "title": "YUMA",
+      "subtitle": "ARIZONA",
+      "descriptor": "COLORADO RIVER • DESERT CROSSING • SUNSHINE",
+      "tagline": "Colorado River crossing at Yuma.",
+      "batch": "envoy-gap-2026-09-29-w",
+      "status": "approved",
+      "output": "assets/destinations/yum-poster-7x8-candidate-v1.png",
+      "visualProfileId": "yum-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Ocean-to-Ocean Highway Bridge",
+          "Colorado River"
+        ],
+        "skySignature": "Restrained amber desert sky above the Colorado River",
+        "seasonAndLight": "Warm sunset over Yuma",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Generic unbranded vintage twin-engine transport high above the Yuma river crossing",
+        "foreground": "Riverbank vegetation and desert blooms framing the bridge",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visityuma.com/things-to-do/museums/pivot-point-plaza/",
+        "https://www.visityuma.com/about-yuma/history/"
+      ]
+    },
+    {
+      "code": "YYZ",
+      "icao": "CYYZ",
+      "city": "Toronto",
+      "region": "Ontario, Canada",
+      "title": "TORONTO",
+      "subtitle": "ONTARIO",
+      "descriptor": "LAKE ONTARIO • HARBOURFRONT • CITY LIGHTS",
+      "tagline": "Toronto skyline over Lake Ontario.",
+      "batch": "envoy-gap-2026-09-29-w",
+      "status": "approved",
+      "output": "assets/destinations/yyz-poster-7x8-candidate-v1.png",
+      "visualProfileId": "yyz-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "CN Tower",
+          "Lake Ontario Harbourfront"
+        ],
+        "skySignature": "Quiet warm sky above the Toronto waterfront",
+        "seasonAndLight": "Warm evening light along Lake Ontario",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Generic unbranded vintage twin-engine transport over the Toronto skyline at upper right",
+        "foreground": "Lake Ontario shoreline and sailboats in the foreground",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.destinationtoronto.com/things-to-do/attractions/must-see-attractions/cn-tower/",
+        "https://www.destinationtoronto.com/neighbourhoods/waterfront-and-toronto-islands/waterfront/"
+      ]
+    },
+    {
+      "code": "ZIH",
+      "icao": "MMZH",
+      "city": "Ixtapa/Zihuatanejo",
+      "region": "Guerrero, Mexico",
+      "title": "ZIHUATANEJO",
+      "subtitle": "GUERRERO",
+      "descriptor": "PACIFIC BAY • PLAYA LA ROPA • COSTA GRANDE",
+      "tagline": "Playa La Ropa on Zihuatanejo Bay.",
+      "batch": "envoy-gap-2026-09-29-w",
+      "status": "approved",
+      "output": "assets/destinations/zih-poster-7x8-candidate-v1.png",
+      "visualProfileId": "zih-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Playa La Ropa",
+          "Zihuatanejo Bay"
+        ],
+        "skySignature": "Restrained tropical sky above Zihuatanejo Bay",
+        "seasonAndLight": "Warm Pacific coast light in Guerrero",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Generic unbranded vintage twin-engine transport crossing above Zihuatanejo Bay",
+        "foreground": "Palm trees and tropical flowers above the bay",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://visitmexico.com/en/destino/2316/playa-la-ropa",
+        "https://zihuatanejodeazueta.gob.mx/conoce-zihua"
       ]
     }
   ]
