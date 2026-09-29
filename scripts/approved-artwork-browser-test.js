@@ -75,6 +75,34 @@ const server = http.createServer((req,res) => {
    await page.waitForSelector('#dashboard:not([hidden])').catch(async e=>{console.log(await page.evaluate(()=>({url:location.href,boot:document.querySelector('.status-message')?.textContent,html:document.documentElement.outerHTML.slice(0,700)})));throw e;});
    await page.waitForFunction(()=>document.querySelector('#eta-value').textContent==='7:42 PM');
    await page.waitForFunction(()=>document.querySelector('#destination-poster').naturalWidth>0);
+   if (name === 'kiosk') {
+     const arrivalInstruments = await page.evaluate(() => {
+       const arrived = {...dadRadarVisualState, status:'ARRIVED', flight:{
+         ...dadRadarVisualState.flight, airspeed:null, groundSpeed:11,
+         heading:239, altitude:null
+       }};
+       const readings = () => ({
+         speed:document.querySelector('#airspeed-value').textContent,
+         heading:document.querySelector('#heading-value').textContent,
+         altitude:document.querySelector('#altitude-value').textContent,
+         speedNeedle:document.querySelector('#airspeed-needle').style.transform,
+         headingCard:document.querySelector('#heading-card').style.transform
+       });
+       updateDashboard(arrived);
+       const full = readings();
+       updateDashboardTelemetry(arrived);
+       const telemetry = readings();
+       updateDashboard(dadRadarVisualState);
+       return {full, telemetry};
+     });
+     for (const readings of Object.values(arrivalInstruments)) {
+       assert.equal(readings.speed,'---','Arrival clears the last taxi speed');
+       assert.equal(readings.heading,'---','Arrival clears the last taxi heading');
+       assert.equal(readings.altitude,'-----','Arrival clears altitude');
+       assert.equal(readings.speedNeedle,'rotate(0deg)');
+       assert.equal(readings.headingCard,'rotate(0deg)');
+     }
+   }
    await page.locator('.daily-schedule-card-art').evaluate(image=>image.decode());
    const dutyProof=await page.locator('.daily-schedule-panel').evaluate(panel=>{
      const box=panel.getBoundingClientRect();
