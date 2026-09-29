@@ -917,6 +917,56 @@
       source: "./assets/destinations/sps-poster-7x8-candidate-v1.png",
       title: "WICHITA FALLS",
       location: "Wichita Falls, Texas"
+    }),
+    SRQ: Object.freeze({
+      source: "./assets/destinations/srq-poster-7x8-candidate-v1.png",
+      title: "SARASOTA",
+      location: "Sarasota/Bradenton, Florida"
+    }),
+    STS: Object.freeze({
+      source: "./assets/destinations/sts-poster-7x8-candidate-v1.png",
+      title: "SANTA ROSA",
+      location: "Santa Rosa, California"
+    }),
+    TLH: Object.freeze({
+      source: "./assets/destinations/tlh-poster-7x8-candidate-v1.png",
+      title: "TALLAHASSEE",
+      location: "Tallahassee, Florida"
+    }),
+    TRC: Object.freeze({
+      source: "./assets/destinations/trc-poster-7x8-candidate-v1.png",
+      title: "TORREÓN",
+      location: "Torreón, Coahuila, Mexico"
+    }),
+    TUS: Object.freeze({
+      source: "./assets/destinations/tus-poster-7x8-candidate-v1.png",
+      title: "TUCSON",
+      location: "Tucson, Arizona"
+    }),
+    TXK: Object.freeze({
+      source: "./assets/destinations/txk-poster-7x8-candidate-v1.png",
+      title: "TEXARKANA",
+      location: "Texarkana, Texas/Arkansas"
+    }),
+    TYR: Object.freeze({
+      source: "./assets/destinations/tyr-poster-7x8-candidate-v1.png",
+      title: "TYLER",
+      location: "Tyler, Texas"
+    }),
+    VER: Object.freeze({
+      source: "./assets/destinations/ver-poster-7x8-candidate-v1.png",
+      title: "VERACRUZ",
+      location: "Veracruz, Veracruz, Mexico"
+    }),
+    VPS: Object.freeze({
+      source: "./assets/destinations/vps-poster-7x8-candidate-v2.png",
+      title: "FORT WALTON BEACH",
+      location: "Valparaiso/Fort Walton Beach, Florida"
+    }),
+    ZCL: Object.freeze({
+      source: "./assets/destinations/zcl-poster-7x8-candidate-v1.png",
+      title: "ZACATECAS",
+      location: "Zacatecas, Zacatecas, Mexico"
     })
   });
 
