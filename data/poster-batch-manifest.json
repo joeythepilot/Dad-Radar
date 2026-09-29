@@ -355,6 +355,23 @@
         "SHV",
         "SPS"
       ]
+    },
+    {
+      "id": "envoy-gap-2026-09-29-v",
+      "label": "Expanded destination poster batch V",
+      "status": "approved",
+      "airportCodes": [
+        "SRQ",
+        "STS",
+        "TLH",
+        "TRC",
+        "TUS",
+        "TXK",
+        "TYR",
+        "VER",
+        "VPS",
+        "ZCL"
+      ]
     }
   ],
   "destinations": [
@@ -5147,6 +5164,346 @@
       "referenceSources": [
         "https://www.wichitafallstx.gov/75/The-Falls",
         "https://www.wichitafallstx.gov/69/Lucy-Park"
+      ]
+    },
+    {
+      "code": "SRQ",
+      "icao": "KSRQ",
+      "city": "Sarasota/Bradenton",
+      "region": "Florida",
+      "title": "SARASOTA",
+      "subtitle": "FLORIDA",
+      "descriptor": "GULF COAST • ARTS • BEACHES",
+      "tagline": "Ca' d'Zan and Sarasota Bay.",
+      "batch": "envoy-gap-2026-09-29-v",
+      "status": "approved",
+      "output": "assets/destinations/srq-poster-7x8-candidate-v1.png",
+      "visualProfileId": "srq-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Ca' d'Zan",
+          "Sarasota Bay"
+        ],
+        "skySignature": "Quiet natural sky over Sarasota/Bradenton",
+        "seasonAndLight": "Warm clear light in Florida",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above Ca' d'Zan at Sarasota/Bradenton",
+        "foreground": "Local vegetation framing Ca' d'Zan and Sarasota Bay",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitsarasota.com/attractions-tours/ringling",
+        "https://www.ringling.org/visit/venues/"
+      ]
+    },
+    {
+      "code": "STS",
+      "icao": "KSTS",
+      "city": "Santa Rosa",
+      "region": "California",
+      "title": "SANTA ROSA",
+      "subtitle": "CALIFORNIA",
+      "descriptor": "VINEYARDS • GARDENS • REDWOODS",
+      "tagline": "Luther Burbank gardens and Sonoma vineyards.",
+      "batch": "envoy-gap-2026-09-29-v",
+      "status": "approved",
+      "output": "assets/destinations/sts-poster-7x8-candidate-v1.png",
+      "visualProfileId": "sts-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Luther Burbank Home and Gardens",
+          "Sonoma vineyard hills"
+        ],
+        "skySignature": "Quiet natural sky over Santa Rosa",
+        "seasonAndLight": "Warm clear light in California",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above Luther Burbank Home and Gardens at Santa Rosa",
+        "foreground": "Local vegetation framing Luther Burbank Home and Gardens and Sonoma vineyard hills",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitsantarosa.com/plan-your-trip/getting-here-getting-around/neighborhoods-and-walking-tours/",
+        "https://www.visitcalifornia.com/places-to-visit/santa-rosa/"
+      ]
+    },
+    {
+      "code": "TLH",
+      "icao": "KTLH",
+      "city": "Tallahassee",
+      "region": "Florida",
+      "title": "TALLAHASSEE",
+      "subtitle": "FLORIDA",
+      "descriptor": "HISTORY • NATURE • SOUTHERN CHARM",
+      "tagline": "Capitol and shaded North Florida streets.",
+      "batch": "envoy-gap-2026-09-29-v",
+      "status": "approved",
+      "output": "assets/destinations/tlh-poster-7x8-candidate-v1.png",
+      "visualProfileId": "tlh-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Florida Capitol complex",
+          "tree-canopied Tallahassee roads"
+        ],
+        "skySignature": "Quiet natural sky over Tallahassee",
+        "seasonAndLight": "Warm clear light in Florida",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above Florida Capitol complex at Tallahassee",
+        "foreground": "Local vegetation framing Florida Capitol complex and tree-canopied Tallahassee roads",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://visittallahassee.com/blog/canopy-roads/",
+        "https://visittallahassee.com/things-to-do/"
+      ]
+    },
+    {
+      "code": "TRC",
+      "icao": "MMTC",
+      "city": "Torreón",
+      "region": "Coahuila, Mexico",
+      "title": "TORREÓN",
+      "subtitle": "COAHUILA • MÉXICO",
+      "descriptor": "DESIERTO • HISTORIA • GENTE",
+      "tagline": "Cristo de las Noas over Torreón.",
+      "batch": "envoy-gap-2026-09-29-v",
+      "status": "approved",
+      "output": "assets/destinations/trc-poster-7x8-candidate-v1.png",
+      "visualProfileId": "trc-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Cerro de las Noas",
+          "Cristo de las Noas"
+        ],
+        "skySignature": "Quiet natural sky over Torreón",
+        "seasonAndLight": "Warm clear light in Coahuila, Mexico",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above Cerro de las Noas at Torreón",
+        "foreground": "Local vegetation framing Cerro de las Noas and Cristo de las Noas",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.torreon.gob.mx/turismo/cristodelasnoas.html",
+        "https://www.torreon.gob.mx/turismo/puertonoas.html"
+      ]
+    },
+    {
+      "code": "TUS",
+      "icao": "KTUS",
+      "city": "Tucson",
+      "region": "Arizona",
+      "title": "TUCSON",
+      "subtitle": "ARIZONA",
+      "descriptor": "DESERTS • CULTURE • SUNSHINE",
+      "tagline": "Saguaro desert beneath the Santa Catalinas.",
+      "batch": "envoy-gap-2026-09-29-v",
+      "status": "approved",
+      "output": "assets/destinations/tus-poster-7x8-candidate-v1.png",
+      "visualProfileId": "tus-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Sonoran saguaros",
+          "Santa Catalina Mountains"
+        ],
+        "skySignature": "Quiet natural sky over Tucson",
+        "seasonAndLight": "Warm clear light in Arizona",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above Sonoran saguaros at Tucson",
+        "foreground": "Local vegetation framing Sonoran saguaros and Santa Catalina Mountains",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visittucson.org/things-to-do/outdoors/mountains/santa-catalina-mountains/",
+        "https://www.nps.gov/sagu/index.htm"
+      ]
+    },
+    {
+      "code": "TXK",
+      "icao": "KTXK",
+      "city": "Texarkana",
+      "region": "Texas/Arkansas",
+      "title": "TEXARKANA",
+      "subtitle": "TEXAS • ARKANSAS",
+      "descriptor": "STATE LINE • HISTORY • TWO STATES",
+      "tagline": "Historic courthouse on the Texas-Arkansas line.",
+      "batch": "envoy-gap-2026-09-29-v",
+      "status": "approved",
+      "output": "assets/destinations/txk-poster-7x8-candidate-v1.png",
+      "visualProfileId": "txk-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "State Line Avenue",
+          "Federal Post Office and Courthouse"
+        ],
+        "skySignature": "Quiet natural sky over Texarkana",
+        "seasonAndLight": "Warm clear light in Texas/Arkansas",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above State Line Avenue at Texarkana",
+        "foreground": "Local vegetation framing State Line Avenue and Federal Post Office and Courthouse",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.texarkana.org/visit",
+        "https://www.visittexarkanadistrict.com/courthouse-square-connections"
+      ]
+    },
+    {
+      "code": "TYR",
+      "icao": "KTYR",
+      "city": "Tyler",
+      "region": "Texas",
+      "title": "TYLER",
+      "subtitle": "TEXAS",
+      "descriptor": "ROSES • HERITAGE • PINEY WOODS",
+      "tagline": "Rose Garden in the East Texas pine woods.",
+      "batch": "envoy-gap-2026-09-29-v",
+      "status": "approved",
+      "output": "assets/destinations/tyr-poster-7x8-candidate-v1.png",
+      "visualProfileId": "tyr-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Tyler Municipal Rose Garden",
+          "East Texas pine woods"
+        ],
+        "skySignature": "Quiet natural sky over Tyler",
+        "seasonAndLight": "Warm clear light in Texas",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above Tyler Municipal Rose Garden at Tyler",
+        "foreground": "Local vegetation framing Tyler Municipal Rose Garden and East Texas pine woods",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visittyler.com/business/tylerrosegarden",
+        "https://www.tylerparksandrec.com/Facilities/Tyler-Rose-Complex/Tyler-Rose-Garden"
+      ]
+    },
+    {
+      "code": "VER",
+      "icao": "MMVR",
+      "city": "Veracruz",
+      "region": "Veracruz, Mexico",
+      "title": "VERACRUZ",
+      "subtitle": "MÉXICO",
+      "descriptor": "HISTORY • CULTURE • COASTLINE",
+      "tagline": "Fortress and promenade at Veracruz port.",
+      "batch": "envoy-gap-2026-09-29-v",
+      "status": "approved",
+      "output": "assets/destinations/ver-poster-7x8-candidate-v1.png",
+      "visualProfileId": "ver-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "San Juan de Ulúa",
+          "Veracruz malecón"
+        ],
+        "skySignature": "Quiet natural sky over Veracruz",
+        "seasonAndLight": "Warm clear light in Veracruz, Mexico",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above San Juan de Ulúa at Veracruz",
+        "foreground": "Local vegetation framing San Juan de Ulúa and Veracruz malecón",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://visitmexico.com/es/destino/17801/puerto-de-veracruz",
+        "https://www.sanjuandeulua.inah.gob.mx/"
+      ]
+    },
+    {
+      "code": "VPS",
+      "icao": "KVPS",
+      "city": "Valparaiso/Fort Walton Beach",
+      "region": "Florida",
+      "title": "FORT WALTON BEACH",
+      "subtitle": "FLORIDA",
+      "descriptor": "SUGAR WHITE SANDS • EMERALD WATER • COASTAL CHARM",
+      "tagline": "White sand and emerald water at Okaloosa Island.",
+      "batch": "envoy-gap-2026-09-29-v",
+      "status": "approved",
+      "output": "assets/destinations/vps-poster-7x8-candidate-v2.png",
+      "visualProfileId": "vps-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Okaloosa Island beach",
+          "Okaloosa Island Pier"
+        ],
+        "skySignature": "Quiet natural sky over Valparaiso/Fort Walton Beach",
+        "seasonAndLight": "Warm clear light in Florida",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above Okaloosa Island beach at Valparaiso/Fort Walton Beach",
+        "foreground": "Local vegetation framing Okaloosa Island beach and Okaloosa Island Pier",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitflorida.com/places-to-go/northwest/fort-walton-beach/",
+        "https://www.myokaloosa.com/parks/pier"
+      ]
+    },
+    {
+      "code": "ZCL",
+      "icao": "MMZC",
+      "city": "Zacatecas",
+      "region": "Zacatecas, Mexico",
+      "title": "ZACATECAS",
+      "subtitle": "MÉXICO",
+      "descriptor": "HISTORY • CULTURE • HIGH DESERT BEAUTY",
+      "tagline": "Pink-stone cathedral below Cerro de la Bufa.",
+      "batch": "envoy-gap-2026-09-29-v",
+      "status": "approved",
+      "output": "assets/destinations/zcl-poster-7x8-candidate-v1.png",
+      "visualProfileId": "zcl-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Zacatecas Cathedral",
+          "Cerro de la Bufa"
+        ],
+        "skySignature": "Quiet natural sky over Zacatecas",
+        "seasonAndLight": "Warm clear light in Zacatecas, Mexico",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above Zacatecas Cathedral at Zacatecas",
+        "foreground": "Local vegetation framing Zacatecas Cathedral and Cerro de la Bufa",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.zacatecastravel.com/en/detalle_producto.php?producto=25",
+        "https://www.zacatecastravel.com/en/lugaresunicos"
       ]
     }
   ]

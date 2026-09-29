@@ -1417,7 +1417,7 @@
           "exampleRoute": "MIA–SRQ"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "STL",
@@ -1440,7 +1440,7 @@
           "lastSeen": "2026-03-17"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "SYR",
@@ -1467,7 +1467,7 @@
           "lastSeen": "2026-08-08"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "TPA",
@@ -1494,7 +1494,7 @@
           "lastSeen": "2026-08-08"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "TRI",
@@ -1524,7 +1524,7 @@
           "exampleRoute": "TUS–PHX"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "TVC",
@@ -1546,7 +1546,7 @@
           "exampleRoute": "TXK–DFW"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "TYR",
@@ -1560,7 +1560,7 @@
           "exampleRoute": "DFW–TYR"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "TYS",
@@ -1582,7 +1582,7 @@
           "exampleRoute": "VER–DFW"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "VPS",
@@ -1596,7 +1596,7 @@
           "exampleRoute": "MIA–VPS"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "XNA",
@@ -1650,7 +1650,7 @@
           "exampleRoute": "DFW–ZCL"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "ZIH",
@@ -1879,6 +1879,21 @@
       "SBA",
       "SHV",
       "SPS"
+    ]
+  },
+  "twentySecondBatch": {
+    "id": "envoy-gap-2026-09-29-v",
+    "codes": [
+      "SRQ",
+      "STS",
+      "TLH",
+      "TRC",
+      "TUS",
+      "TXK",
+      "TYR",
+      "VER",
+      "VPS",
+      "ZCL"
     ]
   }
 }
