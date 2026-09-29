@@ -54,6 +54,7 @@ async function checkWeeklyTicker(page, compact, label, output, expectedModules) 
     const canvases = [...bank.querySelectorAll(".weekly-overnight-module-canvas")];
     const stack = document.querySelector(".center-map-stack");
     const mapPanel = stack.querySelector(".map-panel");
+    const dashboard = document.querySelector(".dashboard");
     const lower = document.querySelector(".lower-display-grid");
     const posterStack = document.querySelector(".left-module-stack");
     const instruments = document.querySelector(".instrument-rail");
@@ -64,8 +65,9 @@ async function checkWeeklyTicker(page, compact, label, output, expectedModules) 
     const firstCanvasStyle = getComputedStyle(canvases[0]);
     return {
       portrait:document.documentElement.classList.contains("family-full-portrait"),
+      physical:getComputedStyle(stack).display === "contents",
       lowerRowGap:parseFloat(lowerStyle.rowGap) || 0,
-      stack:rect(stack),mapPanel:rect(mapPanel),bank:rect(bank),lower:rect(lower),
+      dashboard:rect(dashboard),stack:rect(stack),mapPanel:rect(mapPanel),bank:rect(bank),lower:rect(lower),
       posterStack:posterStack ? rect(posterStack) : null,
       instruments:instruments ? rect(instruments) : null,
       bayRects:bays.map(rect),
@@ -130,9 +132,14 @@ async function checkWeeklyTicker(page, compact, label, output, expectedModules) 
   assert(Math.abs(data.bank.left-data.mapPanel.left)<=1 && Math.abs(data.bank.right-data.mapPanel.right)<=1,
     "Weekly bank occupies only the center-map column");
   assert(data.bank.top>=data.mapPanel.bottom-1,"Weekly bank sits directly below the map, never over it");
-  assert(data.bank.bottom<=data.stack.bottom+1,"Weekly bank remains inside the existing center-stack height");
-
-  if (data.portrait) {
+  if (data.physical) {
+    // The home faceplate positions both openings against the dashboard. Its
+    // center-map-stack is display:contents and has no measurable box.
+    assert(data.bank.left>=data.dashboard.left-1 && data.bank.right<=data.dashboard.right+1 &&
+      data.bank.bottom<=data.dashboard.bottom+1,
+      "Physical weekly bank stays inside the dashboard faceplate");
+  } else if (data.portrait) {
+    assert(data.bank.bottom<=data.stack.bottom+1,"Weekly bank remains inside the existing center-stack height");
     const expectedMapRowHeight=(data.lower.height-data.lowerRowGap)/2;
     assert(Math.abs(data.stack.top-data.lower.top)<=1,
       "Portrait weekly bank stays at the top of the existing lower grid map row");
@@ -153,13 +160,15 @@ async function checkWeeklyTicker(page, compact, label, output, expectedModules) 
         "Portrait instruments still end at the existing lower-grid bottom");
     }
   } else {
+    assert(data.bank.bottom<=data.stack.bottom+1,"Weekly bank remains inside the existing center-stack height");
     assert(Math.abs(data.stack.top-data.lower.top)<=1 && Math.abs(data.stack.bottom-data.lower.bottom)<=1,
       "Adding the weekly bank does not increase the cabinet/lower-grid height");
   }
 
-  assert(data.mapPanel.height/data.stack.height>=.80 && data.mapPanel.height/data.stack.height<=.86,
+  const centerHeight=data.physical ? data.mapPanel.height+data.bank.height : data.stack.height;
+  assert(data.mapPanel.height/centerHeight>=.80 && data.mapPanel.height/centerHeight<=.86,
     "The map still owns most of the center column");
-  assert(data.bank.height/data.stack.height>=.14 && data.bank.height/data.stack.height<=.18,
+  assert(data.bank.height/centerHeight>=.14 && data.bank.height/centerHeight<=.18,
     "Weekly bank remains inside the former ticker aperture");
 
   for (const paint of [data.bankPaint,data.canvasPaint]) {
