@@ -867,6 +867,56 @@
         "./assets/destinations/lex-poster-7x8-candidate-v1.png",
       title: "LEXINGTON",
       location: "Lexington, Kentucky"
+    }),
+    LFT: Object.freeze({
+      source: "./assets/destinations/lft-poster-7x8-candidate-v1.png",
+      title: "LAFAYETTE",
+      location: "Lafayette, Louisiana"
+    }),
+    LGB: Object.freeze({
+      source: "./assets/destinations/lgb-poster-7x8-candidate-v1.png",
+      title: "LONG BEACH",
+      location: "Long Beach, California"
+    }),
+    MDT: Object.freeze({
+      source: "./assets/destinations/mdt-poster-7x8-candidate-v1.png",
+      title: "HARRISBURG",
+      location: "Harrisburg, Pennsylvania"
+    }),
+    MOB: Object.freeze({
+      source: "./assets/destinations/mob-poster-7x8-candidate-v1.png",
+      title: "MOBILE",
+      location: "Mobile, Alabama"
+    }),
+    MRY: Object.freeze({
+      source: "./assets/destinations/mry-poster-7x8-candidate-v1.png",
+      title: "MONTEREY",
+      location: "Monterey, California"
+    }),
+    NAS: Object.freeze({
+      source: "./assets/destinations/nas-poster-7x8-candidate-v1.png",
+      title: "NASSAU",
+      location: "Nassau, Bahamas"
+    }),
+    SAV: Object.freeze({
+      source: "./assets/destinations/sav-poster-7x8-candidate-v1.png",
+      title: "SAVANNAH",
+      location: "Savannah, Georgia"
+    }),
+    SBA: Object.freeze({
+      source: "./assets/destinations/sba-poster-7x8-candidate-v1.png",
+      title: "SANTA BARBARA",
+      location: "Santa Barbara, California"
+    }),
+    SHV: Object.freeze({
+      source: "./assets/destinations/shv-poster-7x8-candidate-v1.png",
+      title: "SHREVEPORT",
+      location: "Shreveport, Louisiana"
+    }),
+    SPS: Object.freeze({
+      source: "./assets/destinations/sps-poster-7x8-candidate-v1.png",
+      title: "WICHITA FALLS",
+      location: "Wichita Falls, Texas"
     })
   });
 

@@ -56,7 +56,9 @@ function runTests() {
     "MTY", "MZT", "RAP", "RDM", "RDU",
     "ROW", "RST", "SBP", "TRI", "YUL",
     "AXA", "AZO", "BGR", "BIM", "ELH",
-    "FPO", "FSD", "GGT", "HHH", "LEX"
+    "FPO", "FSD", "GGT", "HHH", "LEX",
+    "LFT", "LGB", "MDT", "MOB", "MRY",
+    "NAS", "SAV", "SBA", "SHV", "SPS"
   ]) {
     assert.ok(
       getPoster(code),
@@ -65,7 +67,7 @@ function runTests() {
   }
   assert.equal(
     Object.keys(posterByAirport).length,
-    152
+    162
   );
 
   for (const [code, poster] of
