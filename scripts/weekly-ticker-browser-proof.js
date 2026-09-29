@@ -187,9 +187,13 @@ async function checkWeeklyTicker(page, compact, label, output, expectedModules) 
     code:"DFW",
     characters:["D","F","W"," "]
   };
-  await page.evaluate(next=>{
-    document.getElementById("weekly-overnight-bank").dadRadarWeeklyOvernight.setModules(next,{animate:true,rollover:false});
+  const changedLabel=await page.evaluate(next=>{
+    const bank=document.getElementById("weekly-overnight-bank");
+    bank.dadRadarWeeklyOvernight.setModules(next,{animate:true,rollover:false});
+    return bank.querySelector(".weekly-overnight-bay").getAttribute("aria-label");
   },changed);
+  assert.equal(changedLabel,changed[0].day+" overnight DFW",
+    "Changed bay updates its accessible overnight value");
   await page.waitForFunction(() => document.getElementById("weekly-overnight-bank")?.dataset.animating === "true",
     null,{timeout:1200,polling:20});
   await page.waitForTimeout(120);
@@ -200,9 +204,6 @@ async function checkWeeklyTicker(page, compact, label, output, expectedModules) 
     null,{timeout:2600,polling:20});
   const after = await bank.screenshot();
   assert(!first.equals(after),"Mechanical wheel animation settles into a changed final state");
-  assert.equal(await page.locator(".weekly-overnight-bay").first().getAttribute("aria-label"),
-    changed[0].day+" overnight DFW","Changed bay updates its accessible overnight value");
-
   if (label === "chromium-ticker-desktop" || label === "webkit-ticker-desktop") {
     fs.writeFileSync(path.join(output, `${label}-weekly-overnight-b.png`), after);
   }
