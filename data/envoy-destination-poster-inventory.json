@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "asOf": "2026-09-28",
+  "asOf": "2026-09-29",
   "scope": "Provisional poster-coverage airport inventory for Envoy-operated MQ/ENY evidence, including past or seasonal service. It is not a verified list of airports served today. Ground-handling contracts alone are not flight-operation evidence.",
   "sources": [
     {
@@ -170,7 +170,7 @@
           "lastSeen": "2026-08-29"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "AZO",
@@ -189,7 +189,7 @@
           "lastSeen": "2026-05-10"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "BDL",
@@ -211,7 +211,7 @@
           "exampleRoute": "BGR–ORD"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "BHM",
@@ -241,7 +241,7 @@
           "exampleRoute": "MIA–BIM"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "BIS",
@@ -552,7 +552,7 @@
           "lastSeen": "2026-08-08"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "ELP",
@@ -607,7 +607,7 @@
           "lastSeen": "2026-08-08"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "FSD",
@@ -626,7 +626,7 @@
           "lastSeen": "2026-05-10"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "FSM",
@@ -673,7 +673,7 @@
           "lastSeen": "2026-08-08"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "GJT",
@@ -760,7 +760,7 @@
           "lastSeen": "2026-07-15"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "HOU",
@@ -895,7 +895,7 @@
           "lastSeen": "2026-08-08"
         }
       ],
-      "posterStatus": "missing"
+      "posterStatus": "installed"
     },
     {
       "code": "LFT",
@@ -1849,6 +1849,21 @@
       "SBP",
       "TRI",
       "YUL"
+    ]
+  },
+  "twentiethBatch": {
+    "id": "envoy-gap-2026-09-29-t",
+    "codes": [
+      "AXA",
+      "AZO",
+      "BGR",
+      "BIM",
+      "ELH",
+      "FPO",
+      "FSD",
+      "GGT",
+      "HHH",
+      "LEX"
     ]
   }
 }

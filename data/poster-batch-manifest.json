@@ -321,6 +321,23 @@
         "TRI",
         "YUL"
       ]
+    },
+    {
+      "id": "envoy-gap-2026-09-29-t",
+      "label": "Expanded destination poster batch T",
+      "status": "approved",
+      "airportCodes": [
+        "AXA",
+        "AZO",
+        "BGR",
+        "BIM",
+        "ELH",
+        "FPO",
+        "FSD",
+        "GGT",
+        "HHH",
+        "LEX"
+      ]
     }
   ],
   "destinations": [
@@ -4433,6 +4450,346 @@
       "referenceSources": [
         "https://www.mtl.org/en/what-to-do/activities/mount-royal-park",
         "https://www.mtl.org/en/experience/beautiful-walks"
+      ]
+    },
+    {
+      "code": "AXA",
+      "icao": "TQPF",
+      "city": "The Valley",
+      "region": "Anguilla",
+      "title": "ANGUILLA",
+      "subtitle": "THE VALLEY • ANGUILLA",
+      "descriptor": "SHOAL BAY • ISLAND LIGHT • CARIBBEAN SEA",
+      "tagline": "Shoal Bay East and low limestone shore.",
+      "batch": "envoy-gap-2026-09-29-t",
+      "status": "approved",
+      "output": "assets/destinations/axa-poster-7x8-candidate-v1.png",
+      "visualProfileId": "axa-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Shoal Bay East",
+          "low limestone shore"
+        ],
+        "skySignature": "Quiet natural sky over The Valley",
+        "seasonAndLight": "Warm clear light in Anguilla",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above Shoal Bay East at The Valley",
+        "foreground": "Local vegetation framing Shoal Bay East and low limestone shore",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://ivisitanguilla.com/explore-our-island/",
+        "https://ivisitanguilla.com/listing_location/shoal-bay/"
+      ]
+    },
+    {
+      "code": "AZO",
+      "icao": "KAZO",
+      "city": "Kalamazoo",
+      "region": "Michigan",
+      "title": "KALAMAZOO",
+      "subtitle": "MICHIGAN",
+      "descriptor": "RIVER VALLEY • ARTS • MICHIGAN",
+      "tagline": "downtown Kalamazoo Mall and Kalamazoo River valley.",
+      "batch": "envoy-gap-2026-09-29-t",
+      "status": "approved",
+      "output": "assets/destinations/azo-poster-7x8-candidate-v1.png",
+      "visualProfileId": "azo-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "downtown Kalamazoo Mall",
+          "Kalamazoo River valley"
+        ],
+        "skySignature": "Quiet natural sky over Kalamazoo",
+        "seasonAndLight": "Warm clear light in Michigan",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above downtown Kalamazoo Mall at Kalamazoo",
+        "foreground": "Local vegetation framing downtown Kalamazoo Mall and Kalamazoo River valley",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.discoverkalamazoo.com/plan-your-trip/day-trips/downtown-kalamazoo/",
+        "https://www.discoverkalamazoo.com/things-to-do/shopping/downtown-kalamazoo-mall/"
+      ]
+    },
+    {
+      "code": "BGR",
+      "icao": "KBGR",
+      "city": "Bangor",
+      "region": "Maine",
+      "title": "BANGOR",
+      "subtitle": "MAINE",
+      "descriptor": "PENOBSCOT • PINES • MAINE",
+      "tagline": "Penobscot River waterfront and historic Bangor downtown.",
+      "batch": "envoy-gap-2026-09-29-t",
+      "status": "approved",
+      "output": "assets/destinations/bgr-poster-7x8-candidate-v1.png",
+      "visualProfileId": "bgr-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Penobscot River waterfront",
+          "historic Bangor downtown"
+        ],
+        "skySignature": "Quiet natural sky over Bangor",
+        "seasonAndLight": "Warm clear light in Maine",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above Penobscot River waterfront at Bangor",
+        "foreground": "Local vegetation framing Penobscot River waterfront and historic Bangor downtown",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.bangormaine.gov/715/Waterfront",
+        "https://bangormaine.gov/432/Trails"
+      ]
+    },
+    {
+      "code": "BIM",
+      "icao": "MYBS",
+      "city": "South Bimini",
+      "region": "Bimini, Bahamas",
+      "title": "BIMINI",
+      "subtitle": "THE BAHAMAS",
+      "descriptor": "SHALLOW BANKS • MANGROVES • ISLAND BREEZE",
+      "tagline": "Bimini shallow banks and mangrove shoreline.",
+      "batch": "envoy-gap-2026-09-29-t",
+      "status": "approved",
+      "output": "assets/destinations/bim-poster-7x8-candidate-v1.png",
+      "visualProfileId": "bim-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Bimini shallow banks",
+          "mangrove shoreline"
+        ],
+        "skySignature": "Quiet natural sky over South Bimini",
+        "seasonAndLight": "Warm clear light in Bimini, Bahamas",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above Bimini shallow banks at South Bimini",
+        "foreground": "Local vegetation framing Bimini shallow banks and mangrove shoreline",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.bahamas.com/islands/bimini",
+        "https://www.bahamas.com/plan-your-trip/things-to-do/the-healing-hole"
+      ]
+    },
+    {
+      "code": "ELH",
+      "icao": "MYEH",
+      "city": "North Eleuthera",
+      "region": "Eleuthera, Bahamas",
+      "title": "NORTH ELEUTHERA",
+      "subtitle": "THE BAHAMAS",
+      "descriptor": "ELEUTHERA • CLEAR WATER • QUIET SHORES",
+      "tagline": "North Eleuthera limestone shoreline and nearby low cays.",
+      "batch": "envoy-gap-2026-09-29-t",
+      "status": "approved",
+      "output": "assets/destinations/elh-poster-7x8-candidate-v1.png",
+      "visualProfileId": "elh-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "North Eleuthera limestone shoreline",
+          "nearby low cays"
+        ],
+        "skySignature": "Quiet natural sky over North Eleuthera",
+        "seasonAndLight": "Warm clear light in Eleuthera, Bahamas",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above North Eleuthera limestone shoreline at North Eleuthera",
+        "foreground": "Local vegetation framing North Eleuthera limestone shoreline and nearby low cays",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.bahamas.com/islands/eleuthera-harbour-island/getting-around",
+        "https://www.bahamas.com/islands/eleuthera-harbour-island/getting-to-eleuthera-harbour-island"
+      ]
+    },
+    {
+      "code": "FPO",
+      "icao": "MYGF",
+      "city": "Freeport",
+      "region": "Grand Bahama, Bahamas",
+      "title": "FREEPORT",
+      "subtitle": "GRAND BAHAMA",
+      "descriptor": "GOLD ROCK • TURQUOISE TIDE • GRAND BAHAMA",
+      "tagline": "Gold Rock Beach and Lucayan National Park.",
+      "batch": "envoy-gap-2026-09-29-t",
+      "status": "approved",
+      "output": "assets/destinations/fpo-poster-7x8-candidate-v1.png",
+      "visualProfileId": "fpo-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Gold Rock Beach",
+          "Lucayan National Park"
+        ],
+        "skySignature": "Quiet natural sky over Freeport",
+        "seasonAndLight": "Warm clear light in Grand Bahama, Bahamas",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above Gold Rock Beach at Freeport",
+        "foreground": "Local vegetation framing Gold Rock Beach and Lucayan National Park",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.bahamas.com/natural-wonders/gold-rock-beach",
+        "https://www.bahamas.com/islands/freeport-grand-bahama-island"
+      ]
+    },
+    {
+      "code": "FSD",
+      "icao": "KFSD",
+      "city": "Sioux Falls",
+      "region": "South Dakota",
+      "title": "SIOUX FALLS",
+      "subtitle": "SOUTH DAKOTA",
+      "descriptor": "PINK QUARTZITE • BIG SIOUX • FALLS PARK",
+      "tagline": "Falls Park and pink Sioux quartzite cascades.",
+      "batch": "envoy-gap-2026-09-29-t",
+      "status": "approved",
+      "output": "assets/destinations/fsd-poster-7x8-candidate-v1.png",
+      "visualProfileId": "fsd-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Falls Park",
+          "pink Sioux quartzite cascades"
+        ],
+        "skySignature": "Quiet natural sky over Sioux Falls",
+        "seasonAndLight": "Warm clear light in South Dakota",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above Falls Park at Sioux Falls",
+        "foreground": "Local vegetation framing Falls Park and pink Sioux quartzite cascades",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.siouxfalls.gov/government/about/history",
+        "https://www.siouxfalls.gov/activities-recreation/parks-trails/directory/parks/falls"
+      ]
+    },
+    {
+      "code": "GGT",
+      "icao": "MYEF",
+      "city": "George Town",
+      "region": "Exuma, Bahamas",
+      "title": "GEORGE TOWN",
+      "subtitle": "THE EXUMAS • BAHAMAS",
+      "descriptor": "ELIZABETH HARBOUR • STOCKING ISLAND • EXUMA",
+      "tagline": "Elizabeth Harbour and Stocking Island.",
+      "batch": "envoy-gap-2026-09-29-t",
+      "status": "approved",
+      "output": "assets/destinations/ggt-poster-7x8-candidate-v1.png",
+      "visualProfileId": "ggt-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Elizabeth Harbour",
+          "Stocking Island"
+        ],
+        "skySignature": "Quiet natural sky over George Town",
+        "seasonAndLight": "Warm clear light in Exuma, Bahamas",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above Elizabeth Harbour at George Town",
+        "foreground": "Local vegetation framing Elizabeth Harbour and Stocking Island",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.bahamas.com/natural-wonders/stocking-island",
+        "https://www.bahamas.com/the-exumas/history"
+      ]
+    },
+    {
+      "code": "HHH",
+      "icao": "KHXD",
+      "city": "Hilton Head Island",
+      "region": "South Carolina",
+      "title": "HILTON HEAD",
+      "subtitle": "SOUTH CAROLINA",
+      "descriptor": "HARBOUR TOWN • SALT MARSH • ISLAND LIGHT",
+      "tagline": "Harbour Town Lighthouse and tidal salt marsh.",
+      "batch": "envoy-gap-2026-09-29-t",
+      "status": "approved",
+      "output": "assets/destinations/hhh-poster-7x8-candidate-v1.png",
+      "visualProfileId": "hhh-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Harbour Town Lighthouse",
+          "tidal salt marsh"
+        ],
+        "skySignature": "Quiet natural sky over Hilton Head Island",
+        "seasonAndLight": "Warm clear light in South Carolina",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above Harbour Town Lighthouse at Hilton Head Island",
+        "foreground": "Local vegetation framing Harbour Town Lighthouse and tidal salt marsh",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.hiltonheadisland.org/see-do/shopping/harbour-town-lighthouse-museum-shop",
+        "https://compass.hiltonheadisland.org/island-time/recreation/where-go-paddling-hilton-head-island"
+      ]
+    },
+    {
+      "code": "LEX",
+      "icao": "KLEX",
+      "city": "Lexington",
+      "region": "Kentucky",
+      "title": "LEXINGTON",
+      "subtitle": "KENTUCKY",
+      "descriptor": "BLUEGRASS • HORSE COUNTRY • KENTUCKY",
+      "tagline": "Bluegrass horse farms and fence-lined pastures.",
+      "batch": "envoy-gap-2026-09-29-t",
+      "status": "approved",
+      "output": "assets/destinations/lex-poster-7x8-candidate-v1.png",
+      "visualProfileId": "lex-regional-scene-avl-lithograph",
+      "design": {
+        "landmarks": [
+          "Bluegrass horse farms",
+          "fence-lined pastures"
+        ],
+        "skySignature": "Quiet natural sky over Lexington",
+        "seasonAndLight": "Warm clear light in Kentucky",
+        "titleAlignment": "center",
+        "aircraftPlacement": "Small unbranded vintage twin-engine transport crossing high above Bluegrass horse farms at Lexington",
+        "foreground": "Local vegetation framing Bluegrass horse farms and fence-lined pastures",
+        "avoid": [
+          "invented geography or patterned cloud textures",
+          "third propeller, duplicate engine, dorsal shark fin, airline logo or registration",
+          "missing three-letter airport code in the bottom footer"
+        ]
+      },
+      "referenceSources": [
+        "https://www.visitlex.com/meetings/planner-toolkit/horse-capital-of-the-world/",
+        "https://www.visitlex.com/meetings/intellectual-capital/equine/"
       ]
     }
   ]
