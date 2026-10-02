@@ -16,6 +16,12 @@ The instrument rail turns live flight information into calm, tactile aviation mo
 
 Groundspeed may drive the speed instrument because no indicated-airspeed source is available, but the readout must continue to say Ground Speed.
 
+## Home bearing pointer
+
+The orange pointer in the heading instrument uses home airport as its pivot and aims toward the aircraft's reported position. Its angle is the great-circle bearing from home to the aircraft, minus the heading shown by the rotating card, so it reads as a relative direction beneath the fixed airplane symbol. It is a family display cue, not navigation equipment.
+
+The current home anchor is AVL from `config/settings.js`. The pointer uses observed coordinates during flight. When a ground location is confirmed, it uses that airport's coordinates; within roughly one mile of home it rests upright, independent of any retained arrival heading. When no position is known, the pointer is hidden rather than pointing at a scheduled destination. The supplied orange needle art is stored unchanged in `assets/instruments/heading/home-bearing-needle.png`.
+
 ## Altimeter behavior
 
 The altimeter uses the conventional three-pointer relationship:

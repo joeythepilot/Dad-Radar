@@ -28,7 +28,7 @@
 
   <link
     rel="stylesheet"
-    href="./UI/styles.css?v=city-label-scale-20"
+    href="./UI/styles.css?v=home-bearing-1"
   >
 
   <link
@@ -949,6 +949,16 @@
                 >
 
                 <img
+                  class="heading-layer home-bearing-needle"
+                  id="home-bearing-needle"
+                  src="./assets/instruments/heading/home-bearing-needle.png"
+                  alt=""
+                  aria-hidden="true"
+                  draggable="false"
+                  hidden
+                >
+
+                <img
                   class="heading-layer heading-bezel-body"
                   src="./assets/instruments/heading/heading-bezel-body.png"
                   alt=""
@@ -1080,7 +1090,7 @@
   <script src="./App/boot-diagnostic.js?v=1"></script>
 
   <script
-    src="./App/dad-radar-browser.js?v=home-paper-1"
+    src="./App/dad-radar-browser.js?v=home-bearing-1"
     onerror="window.__dadRadarBoot.fail('BROWSER BUNDLE DID NOT LOAD')"
   ></script>
 

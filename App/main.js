@@ -133,6 +133,9 @@ const airspeedNeedle =
 const headingCard =
   document.getElementById("heading-card");
 
+const homeBearingNeedle =
+  document.getElementById("home-bearing-needle");
+
 const altitudeNeedle =
   document.getElementById("altitude-needle");
 
@@ -1231,6 +1234,24 @@ function resetHeadingIndicator() {
   }
 }
 
+function updateHomeBearingNeedle(state) {
+  if (!homeBearingNeedle) return;
+
+  const lookup = globalThis.dadRadarAirports?.getAirportCoordinates;
+  const home = lookup?.(dadRadarSettings.homeAirport);
+  const position = globalThis.dadRadarInstrumentMath
+    .homePointerPosition(state, lookup);
+  const heading = globalThis.dadRadarInstrumentMath
+    .flightForInstruments(state)?.heading;
+  const angle = globalThis.dadRadarInstrumentMath
+    .homePointerAngle({home, position, heading});
+
+  homeBearingNeedle.hidden = angle === null;
+  if (angle !== null) {
+    homeBearingNeedle.style.transform = `rotate(${angle}deg) scale(0.78)`;
+  }
+}
+
 
 /* ---------------------------------------------------------
    Instrument needles
@@ -1430,6 +1451,7 @@ function updateDashboardTelemetry(state) {
       : null,
     displayedSpeed
   );
+  updateHomeBearingNeedle(state);
 }
 
 function renderDailySchedule(
@@ -1831,6 +1853,7 @@ function updateDashboard(state) {
         : null,
       displayedSpeed
     );
+    updateHomeBearingNeedle(state);
   } else {
     if (mapPanel) {
       mapPanel.hidden =
@@ -1874,6 +1897,7 @@ function updateDashboard(state) {
     }
 
     updateInstrumentNeedles(null);
+    updateHomeBearingNeedle(state);
   }
 }
 

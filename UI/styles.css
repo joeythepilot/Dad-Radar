@@ -2180,6 +2180,17 @@ h1 {
     3;
 }
 
+.home-bearing-needle {
+  z-index: 2;
+  transform-origin: 50% 50%;
+  transition: transform 650ms cubic-bezier(0.18, 0.72, 0.24, 1);
+  will-change: transform;
+}
+
+.home-bearing-needle[hidden] {
+  display: none;
+}
+
 .heading-glass-overlay {
   z-index:
     4;
@@ -2511,6 +2522,7 @@ h1 {
 
   .airspeed-needle-layer,
   .heading-compass-card,
+  .home-bearing-needle,
   .altimeter-ten-thousands-needle-layer,
   .altimeter-thousands-needle-layer,
   .altimeter-needle-layer {

@@ -1,8 +1,11 @@
 const assert = require("node:assert/strict");
 const {
   altimeterNeedleAngles,
-  flightForInstruments
+  flightForInstruments,
+  homePointerAngle,
+  homePointerPosition
 } = require("./instrument-math");
+const airports = require("../data/airport-catalog");
 
 function normalized(angle) {
   return (
@@ -128,6 +131,90 @@ function testArrivalClearsLastMotionFromInstruments() {
 }
 
 testArrivalClearsLastMotionFromInstruments();
+
+function testHomePointer() {
+  const home = airports.getAirportCoordinates("AVL");
+  assertClose(
+    homePointerAngle({
+      home: {latitude: 0, longitude: 0},
+      position: {latitude: 0, longitude: 1},
+      heading: 90
+    }),
+    0,
+    "An eastbound aircraft east of home appears straight ahead."
+  );
+  for (const heading of [0, 90, 239]) {
+    const screenAngle = homePointerAngle({
+      home: {latitude: 0, longitude: 0},
+      position: {latitude: 0, longitude: -1},
+      heading
+    });
+    assertClose(
+      normalized(screenAngle + heading),
+      270,
+      "West of home aligns with 270 on the card at every aircraft heading."
+    );
+  }
+  assertClose(
+    homePointerAngle({
+      home,
+      position: {latitude: home.latitude + 1, longitude: home.longitude},
+      heading: 90
+    }),
+    -90,
+    "North of home points left when the aircraft faces east."
+  );
+  assert.equal(
+    homePointerAngle({home, position: home, heading: 239}),
+    0,
+    "At home the needle rests upright regardless of the last heading."
+  );
+  assert.equal(
+    homePointerAngle({home, position: null, heading: 90}),
+    null,
+    "An unknown position cannot yield a truthful pointer."
+  );
+  assert.equal(
+    homePointerAngle({home, position: {latitude: null, longitude: -80}}),
+    null,
+    "A partial position cannot masquerade as a zero-degree coordinate."
+  );
+}
+
+testHomePointer();
+
+function testHomePointerPosition() {
+  const lookup = airports.getAirportCoordinates;
+  assert.deepEqual(
+    homePointerPosition({
+      status: "AIRBORNE",
+      flight: {latitude: 41, longitude: -87, destination: "AVL"}
+    }, lookup),
+    {latitude: 41, longitude: -87},
+    "The live position wins over a future destination."
+  );
+  assert.deepEqual(
+    homePointerPosition({
+      status: "ARRIVED", locationAirport: "AVL",
+      flight: {latitude: 41, longitude: -87, heading: 239}
+    }, lookup),
+    lookup("AVL"),
+    "Confirmed home arrival rests at home rather than retaining the last aircraft fix."
+  );
+  assert.deepEqual(
+    homePointerPosition({status: "ARRIVED", flight: {
+      destination: "AVL", latitude: 41, longitude: -87
+    }}, lookup),
+    lookup("AVL"),
+    "Confirmed arrival can use the destination when locationAirport is absent."
+  );
+  assert.equal(
+    homePointerPosition({status: "AIRBORNE", flight: {destination: "AVL"}}, lookup),
+    null,
+    "A planned destination cannot stand in for a missing position."
+  );
+}
+testHomePointerPosition();
 
 console.log(
   "Instrument math tests passed."
