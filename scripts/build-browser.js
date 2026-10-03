@@ -25,6 +25,7 @@ const browserSources = [
   "App/split-flap-audio.js",
   "App/map-roll-audio.js",
   "App/altitude-chime.js",
+  "App/station-ident.js",
   "App/split-flap-state.js",
   "App/daily-schedule-layout.js",
   "App/poster-image-loader.js",
