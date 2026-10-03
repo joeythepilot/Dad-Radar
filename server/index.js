@@ -50,6 +50,7 @@ const serverInstanceId =
   createServerInstanceId();
 app.locals.displayRevision = Object.freeze({version: deploymentVersion, instanceId: serverInstanceId});
 let shutterTestToken = null;
+let stationIdentTest = null;
 
 function stampDisplayHtml(html) {
   return html.replace("</head>",
@@ -138,17 +139,20 @@ app.get("/api/state", (_request, response) => {
   const state = masterState.read();
   let payload = state;
 
-  if (shutterTestToken && state.resolved?.state) {
+  const stationIdentToken = stationIdentTest && Date.now() - stationIdentTest.at < 45000
+    ? stationIdentTest.token : null;
+  if ((shutterTestToken || stationIdentToken) && state.resolved?.state) {
     payload = {
       ...state,
-      revision: `${state.revision}|shutter:${shutterTestToken}`,
+      revision: `${state.revision}|shutter:${shutterTestToken || ""}|ident:${stationIdentToken || ""}`,
       resolved: {
         ...state.resolved,
         state: {
           ...state.resolved.state,
           diagnostics: {
             ...(state.resolved.state.diagnostics || {}),
-            shutterTestToken
+            shutterTestToken,
+            stationIdentTestToken: stationIdentToken
           }
         }
       }
@@ -178,10 +182,22 @@ app.post("/api/diagnostics/shutters-test", (_request, response) => {
   response.json({ok: true, token: shutterTestToken});
 });
 
+app.post("/api/diagnostics/station-ident-test", (request, response) => {
+  if (!["127.0.0.1", "::1", "::ffff:127.0.0.1"].includes(request.socket.remoteAddress)) {
+    response.status(403).json({ok: false, error: "Local diagnostic only."});
+    return;
+  }
+  const token = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  stationIdentTest = {token, at: Date.now()};
+  addDiagnostic("station-ident-request", {token});
+  response.json({ok: true, token});
+});
+
 app.post("/api/diagnostics/event", (request, response) => {
   const allowed = new Set([
     "altitude-chime-crossing",
-    "altitude-chime-test"
+    "altitude-chime-test",
+    "station-ident-test"
   ]);
   const type = String(request.body?.type ?? "");
   if (!allowed.has(type)) {

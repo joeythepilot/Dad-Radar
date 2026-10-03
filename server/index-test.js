@@ -117,6 +117,14 @@ async function runTests() {
       "Health distinguishes FlightAware operational status from filed-route enrichment.");
     assert.equal(typeof health.flightData.operationalStatus.configured, "boolean");
 
+    const testFire = await fetch(`${baseUrl}/api/diagnostics/station-ident-test`, {method: "POST"});
+    assert.equal(testFire.status, 200, "Only a local request may arm the display sound diagnostic");
+    const testFireBody = await testFire.json();
+    assert.match(testFireBody.token, /^\d+-[a-z0-9]+$/);
+    const diagnostics = await (await fetch(`${baseUrl}/api/diagnostics/recent`)).json();
+    assert(diagnostics.entries.some(entry => entry.type === "station-ident-request"),
+      "The server records the physical-display test request");
+
     const collisionServer = startServer({
       port: address.port,
       host: "127.0.0.1"
