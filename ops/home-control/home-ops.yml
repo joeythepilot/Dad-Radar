@@ -29,6 +29,29 @@ jobs:
           DADRADAR_ISSUE_BODY: ${{ github.event.issue.body }}
         run: |
           $ErrorActionPreference = 'Stop'
+
+          if ($env:DADRADAR_ISSUE_TITLE -eq '[DADRADAR] ident-test') {
+            if (-not [string]::IsNullOrWhiteSpace($env:DADRADAR_ISSUE_BODY)) {
+              throw 'Station identifier test body must be empty.'
+            }
+            $base = 'http://127.0.0.1:4173'
+            $fire = Invoke-RestMethod -Uri "$base/api/diagnostics/station-ident-test" -Method Post -TimeoutSec 5
+            Write-Host "Requested MAX identifier from the physical display (token $($fire.token))."
+            for ($attempt = 1; $attempt -le 30; $attempt++) {
+              Start-Sleep -Seconds 2
+              $recent = Invoke-RestMethod -Uri "$base/api/diagnostics/recent?limit=100" -Method Get -TimeoutSec 5
+              $result = @($recent.entries) | Where-Object {
+                $_.type -eq 'station-ident-test' -and $_.token -eq $fire.token
+              } | Select-Object -First 1
+              if ($result) {
+                if ($result.played -ne $true) { throw 'The physical display reported that audio playback was blocked.' }
+                Write-Host 'The physical display reported MAX playback started.'
+                exit 0
+              }
+            }
+            throw 'The physical display did not acknowledge the sound request.'
+          }
+
           & 'C:\DadRadarOps\DadRadarRemote.ps1' `
             -IssueTitle $env:DADRADAR_ISSUE_TITLE `
             -IssueBody $env:DADRADAR_ISSUE_BODY

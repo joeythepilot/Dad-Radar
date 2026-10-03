@@ -26,6 +26,7 @@ Create issues in the private control repository using one of these exact titles:
 - `[DADRADAR] restart`
 - `[DADRADAR] logs`
 - `[DADRADAR] rollback`
+- `[DADRADAR] ident-test` — ask the physical MAXWELLHOUSE display to sound MAX once, then report whether browser playback started. The issue body must be empty. This does not mark any flight as identified.
 
 For deploy, the issue body must be exactly:
 
@@ -40,6 +41,7 @@ lines=200
 ```
 
 The executor does not provide an arbitrary shell command.
+The private workflow handles `ident-test` as one fixed localhost-only diagnostic request; the installed executor's maintenance allowlist is unchanged. It cannot prove speaker volume acoustically, so a listener at the unit should confirm what was heard.
 
 ## Low-privilege restart broker
 
