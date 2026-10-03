@@ -238,6 +238,16 @@ const altitudeChimeController =
         })
     : null;
 
+const stationIdentSettings = dadRadarSettings.audio?.stationIdent ?? {};
+const stationIdentController =
+  stationIdentSettings.enabled !== false && globalThis.dadRadarStationIdent
+    ? globalThis.dadRadarStationIdent.createStationIdentController({
+        identifier: stationIdentSettings.identifier,
+        volume: stationIdentSettings.volume,
+        canPlay: () => activeSplitFlapCells.size === 0
+      })
+    : null;
+
 const activeSplitFlapCells =
   new Set();
 
@@ -2104,12 +2114,17 @@ function observeAltitudeChime(nextState) {
   }
 }
 
+function observeStationIdent(nextState) {
+  stationIdentController?.observe(nextState);
+}
+
 window.addEventListener(
   "dad-radar:state-change",
   (event) => {
     observeAltitudeChime(
       event.detail.state
     );
+    observeStationIdent(event.detail.state);
   }
 );
 
@@ -2119,6 +2134,7 @@ window.addEventListener(
     const nextState = event.detail.state;
 
     observeAltitudeChime(nextState);
+    observeStationIdent(nextState);
 
     if (event.detail.telemetryOnly) {
       updateDashboardTelemetry(
@@ -2139,7 +2155,8 @@ window.addEventListener(
 
 const audioControllers = [
   splitFlapAudioController,
-  altitudeChimeController
+  altitudeChimeController,
+  stationIdentController
 ].filter(Boolean);
 
 let audioUnlockPending = false;
