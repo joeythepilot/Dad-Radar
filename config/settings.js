@@ -39,6 +39,11 @@ const dadRadarSettings = {
   },
 
   audio: {
+    stationIdent: {
+      enabled: true,
+      identifier: 'MAX',
+      volume: 0.48
+    },
     splitFlap: {
       enabled: true,
       source:
