@@ -53,9 +53,11 @@ async function run() {
   assert.equal(controller.observe(sample('leg-1')), false);
   const afterReload = createStationIdentController(options);
   assert.equal(afterReload.observe(sample('leg-1')), false, 'A display reload must not replay an identified flight');
+  assert.equal(await afterReload.playTest(), true, 'A diagnostic can play on demand');
+  assert.equal(afterReload.observe(sample('leg-1')), false, 'A diagnostic must not change the flight record');
   assert.equal(afterReload.observe(sample('leg-2')), true, 'A new flight gets a new identification');
   await new Promise(resolve => setImmediate(resolve));
-  assert.equal(plays, 2);
+  assert.equal(plays, 3);
 
   const frAdsb = sample('leg-3', {
     source: 'flightradar24',
@@ -63,7 +65,7 @@ async function run() {
   });
   assert.equal(afterReload.observe(frAdsb), true, 'A genuine ADS-B feed relayed by FR24 qualifies');
   await new Promise(resolve => setImmediate(resolve));
-  assert.equal(plays, 3);
+  assert.equal(plays, 4);
 
   let attempts = 0;
   const retry = createStationIdentController({
@@ -95,7 +97,7 @@ async function run() {
   const start = main.indexOf('function observeStationIdent(');
   assert.ok(start >= 0, 'The display must subscribe the station ID to flight state');
   const end = main.indexOf('\nwindow.addEventListener(', start);
-  const integration = {stationIdentController: createStationIdentController({
+  const integration = {location: {pathname: '/display'}, stationIdentController: createStationIdentController({
     ...options, storage: {getItem() {return null;}, setItem() {}},
     audioFactory: () => ({play() {plays++; return Promise.resolve();}, pause() {}, currentTime: 0})
   })};
@@ -103,7 +105,19 @@ async function run() {
   vm.runInContext(main.slice(start, end), integration);
   integration.observeStationIdent(sample('integration-leg'));
   await new Promise(resolve => setImmediate(resolve));
-  assert.equal(plays, 5, 'The real display adapter plays the identifier on a fresh ADS-B flight');
+  assert.equal(plays, 6, 'The real display adapter plays the identifier on a fresh ADS-B flight');
+  const results = [];
+  integration.reportClientDiagnostic = (type, result) => results.push({type, result});
+  integration.observeStationIdentTest({diagnostics: {stationIdentTestToken: 'fire-1'}});
+  integration.observeStationIdentTest({diagnostics: {stationIdentTestToken: 'fire-1'}});
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(plays, 7, 'The physical display fires each diagnostic token only once');
+  integration.location.pathname = '/mobile/full';
+  integration.observeStationIdentTest({diagnostics: {stationIdentTestToken: 'fire-mobile'}});
+  assert.equal(plays, 7, 'A family phone must not play the home-display diagnostic');
+  assert.deepEqual(JSON.parse(JSON.stringify(results)), [{type: 'station-ident-test', result: {token: 'fire-1', played: true}}]);
+  assert.equal(integration.observeStationIdent(sample('integration-leg')), undefined);
+  assert.equal(plays, 7, 'A sound test never changes the flight playback record');
   console.log('Station identifier tests passed.');
 }
 

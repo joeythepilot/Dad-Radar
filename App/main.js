@@ -2118,6 +2118,17 @@ function observeStationIdent(nextState) {
   stationIdentController?.observe(nextState);
 }
 
+let lastStationIdentTestToken = null;
+function observeStationIdentTest(nextState) {
+  if (!["/", "/display", "/index.html"].includes(globalThis.location?.pathname)) return;
+  const token = nextState?.diagnostics?.stationIdentTestToken;
+  if (!token || token === lastStationIdentTestToken || !stationIdentController) return;
+  lastStationIdentTestToken = token;
+  void stationIdentController.playTest().then(played => {
+    reportClientDiagnostic("station-ident-test", {token, played});
+  });
+}
+
 window.addEventListener(
   "dad-radar:state-change",
   (event) => {
@@ -2125,6 +2136,7 @@ window.addEventListener(
       event.detail.state
     );
     observeStationIdent(event.detail.state);
+    observeStationIdentTest(event.detail.state);
   }
 );
 
@@ -2135,6 +2147,7 @@ window.addEventListener(
 
     observeAltitudeChime(nextState);
     observeStationIdent(nextState);
+    observeStationIdentTest(nextState);
 
     if (event.detail.telemetryOnly) {
       updateDashboardTelemetry(

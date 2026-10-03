@@ -132,6 +132,16 @@
       return true;
     }
 
+    async function playTest() {
+      const instance = ensureAudio();
+      if (!instance) return false;
+      try {
+        instance.currentTime = 0;
+        await instance.play();
+        return true;
+      } catch (_) { return false; }
+    }
+
     async function unlock() {
       const instance = ensureAudio();
       if (!instance) return false;
@@ -152,7 +162,7 @@
       objectUrl = null;
     }
 
-    return Object.freeze({observe, unlock, destroy});
+    return Object.freeze({observe, playTest, unlock, destroy});
   }
 
   return Object.freeze({createStationIdentWav, createStationIdentController});
