@@ -234,7 +234,9 @@ const server = http.createServer((request, response) => {
         );
         await assertBrowserSettled(engine);
 
-        await page.locator(".flight-strip-module").screenshot({
+        // The physical faceplate uses display:contents for the strip wrapper.
+        // Capture its visible dashboard rather than a wrapper without a box.
+        await page.locator("#dashboard").screenshot({
           path: path.join(output, `split-flap-matte-${engine}.png`)
         });
         fs.writeFileSync(
