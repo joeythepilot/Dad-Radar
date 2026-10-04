@@ -39,7 +39,11 @@ function changedPaths(base) {
 }
 if(require.main===module) {
   const release=process.env.DADRADAR_TEST_MODE==='release';
-  const {files,uncertain}=release?{files:[],uncertain:false}:changedPaths(process.env.DADRADAR_DIFF_BASE);
+  let base=process.env.DADRADAR_DIFF_BASE;
+  if(!base && process.env.GITHUB_EVENT_NAME==='workflow_dispatch' && !release) {
+    try {base=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();} catch {}
+  }
+  const {files,uncertain}=release?{files:[],uncertain:false}:changedPaths(base);
   const plan=selectPlan(files,{release,uncertain});
   console.log(JSON.stringify(plan,null,2));
   if(process.env.GITHUB_OUTPUT)fs.appendFileSync(process.env.GITHUB_OUTPUT,

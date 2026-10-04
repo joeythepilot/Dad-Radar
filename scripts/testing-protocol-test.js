@@ -3,6 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
 const os=require('node:os');
+const {execFileSync}=require('node:child_process');
 const {selectPlan,fullMatrix}=require('./browser-test-plan');
 const suites=files=>[...new Set(selectPlan(files).matrix.map(j=>j.suite))];
 assert.deepEqual(suites(['App/clock-drums.js']),['clocks'],'A clock edit selects clocks, not map transport');
@@ -31,4 +32,16 @@ try {
   assert.equal(fs.readFileSync(marker,'utf8'),'ran','Later independent suites must run after failure');
   assert.notEqual(result.results[0].artifactDirectory,result.results[1].artifactDirectory,'Evidence is isolated per suite/engine');
 } finally {fs.rmSync(tmp,{recursive:true,force:true});}
+const repo=fs.mkdtempSync(path.join(os.tmpdir(),'dad-radar-diff-'));
+try {
+  const git=(...args)=>execFileSync('git',args,{cwd:repo,stdio:'pipe'});
+  git('init');
+  for(const text of ['before','after']) {
+    fs.writeFileSync(path.join(repo,'README.md'),text);git('add','README.md');
+    git('-c','user.name=Protocol Test','-c','user.email=protocol@example.invalid','commit','-m',text);
+  }
+  const result=JSON.parse(execFileSync(process.execPath,[path.join(__dirname,'browser-test-plan.js')],{cwd:repo,encoding:'utf8',env:{...process.env,GITHUB_OUTPUT:'',GITHUB_STEP_SUMMARY:'',GITHUB_EVENT_NAME:'workflow_dispatch',DADRADAR_TEST_MODE:'focused',DADRADAR_DIFF_BASE:''}}));
+  assert.equal(result.regression,false,'Manual focused verification must compare the previous commit rather than always running everything');
+  assert.deepEqual(result.files,['README.md']);
+} finally {fs.rmSync(repo,{recursive:true,force:true});}
 console.log('Testing protocol selection and independent failure collection passed.');
