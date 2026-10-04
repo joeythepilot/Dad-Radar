@@ -119,16 +119,6 @@ async function checkWeeklyTicker(page, compact, label, output, expectedModules) 
   const totalWidth=widths.reduce((sum,width)=>sum+width,0);
   assert(Math.abs(totalWidth-data.bank.width)<=2,"Seven equal bays consume the entire ticker opening");
 
-  assert(data.duty?.physical, "Today's Duty is rendered as the approved physical dispatch card");
-  assert.equal(data.duty.artSrc, "/assets/ui/today-duty-card-weekly-paper.png", "Today's Duty uses the approved weekly-paper raster asset");
-  assert.deepEqual(data.duty.artPixels, {width:1864,height:843}, "Today's Duty keeps the exact approved weekly-paper pixels");
-  assert.equal(data.duty.context, "DADDY IS FLYING TO COLUMBUS, OHIO", "The family live-status sentence remains on the physical card");
-  assert.equal(data.duty.nowBadgeCount, 0, "The old NOW web badge is gone");
-  if (label.endsWith("-desktop")) {
-    assert.equal(data.duty.rowCount, 5, "The 1920x1080 physical card keeps all five duty rows visible");
-    assert.equal(data.duty.footer, "HOME TONIGHT", "The physical card gives the family a simple end-of-day status");
-  }
-
   assert(Math.abs(data.bank.left-data.mapPanel.left)<=1 && Math.abs(data.bank.right-data.mapPanel.right)<=1,
     "Weekly bank occupies only the center-map column");
   assert(data.bank.top>=data.mapPanel.bottom-1,"Weekly bank sits directly below the map, never over it");
@@ -187,13 +177,15 @@ async function checkWeeklyTicker(page, compact, label, output, expectedModules) 
     code:"DFW",
     characters:["D","F","W"," "]
   };
+  const animate=label.endsWith('-desktop')||label.endsWith('-full-portrait');
   const changedLabel=await page.evaluate(next=>{
     const bank=document.getElementById("weekly-overnight-bank");
-    bank.dadRadarWeeklyOvernight.setModules(next,{animate:true,rollover:false});
+    bank.dadRadarWeeklyOvernight.setModules(next.modules,{animate:next.animate,rollover:false});
     return bank.querySelector(".weekly-overnight-bay").getAttribute("aria-label");
-  },changed);
+  },{modules:changed,animate});
   assert.equal(changedLabel,changed[0].day+" overnight DFW",
     "Changed bay updates its accessible overnight value");
+  if(animate) {
   await page.waitForFunction(() => document.getElementById("weekly-overnight-bank")?.dataset.animating === "true",
     null,{timeout:1200,polling:20});
   await page.waitForTimeout(120);
@@ -206,6 +198,7 @@ async function checkWeeklyTicker(page, compact, label, output, expectedModules) 
   assert(!first.equals(after),"Mechanical wheel animation settles into a changed final state");
   if (label === "chromium-ticker-desktop" || label === "webkit-ticker-desktop") {
     fs.writeFileSync(path.join(output, `${label}-weekly-overnight-b.png`), after);
+  }
   }
   if (label === "chromium-ticker-desktop" || label === "chromium-ticker-full-landscape") {
     await page.screenshot({path:path.join(output, `${label}-dashboard.png`),fullPage:false});

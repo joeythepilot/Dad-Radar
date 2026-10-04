@@ -248,13 +248,55 @@ function Record-GoodDeployment([string]$PreviousSha, [string]$CurrentSha) {
   Set-Content -LiteralPath $CurrentGoodPath -Value $CurrentSha -Encoding ascii
 }
 
-function Deploy-Sha([object]$Config, [string]$TargetSha) {
+# Public hosted results are read-only evidence; the private runner never runs
+# browser workflows or gains administrative task-control privileges.
+function Assert-VerifiedRelease([string]$TargetSha, [string]$Baseline) {
+  $headers = @{ 'User-Agent' = 'DadRadar-Home-Control'; 'Accept' = 'application/vnd.github+json' }
+  $url = "https://api.github.com/repos/joeythepilot/Dad-Radar/actions/workflows/map-hardware-beta.yml/runs?head_sha=$TargetSha&status=success&per_page=20"
+  $runs = Invoke-RestMethod -Uri $url -Headers $headers -TimeoutSec 20
+  foreach ($run in @($runs.workflow_runs)) {
+    if ($run.head_sha -ne $TargetSha -or $run.conclusion -ne 'success') { continue }
+    $jobs = Invoke-RestMethod -Uri "$($run.url)/jobs?per_page=100" -Headers $headers -TimeoutSec 20
+    foreach ($job in @($jobs.jobs)) {
+      if ($job.conclusion -ne 'success') { continue }
+      if ($job.name -eq 'release-gate (full)' -or (
+        $Baseline -match $ShaPattern -and $job.name -eq "release-gate (base $Baseline)"
+      )) {
+        Write-Host "Hosted release verified: SHA $TargetSha, baseline $Baseline, run $($run.id), gate $($job.name)."
+        return
+      }
+    }
+  }
+  throw 'No successful exact-SHA full gate or scoped gate matching the running baseline was found.'
+}
+
+function Assert-HostedWindowsContract([object]$Config, [string]$TargetSha, [string]$Baseline) {
+  $paths = Get-GitValue $Config @('diff', '--name-only', '--no-renames', $Baseline, $TargetSha)
+  if ($paths -notmatch '(?m)^(ops/home-control/(?!verified-baseline\.json$)|package\.json$|\.github/workflows/home-control-contract\.yml$)') { return }
+  $headers = @{ 'User-Agent' = 'DadRadar-Home-Control'; 'Accept' = 'application/vnd.github+json' }
+  $url = "https://api.github.com/repos/joeythepilot/Dad-Radar/actions/workflows/home-control-contract.yml/runs?head_sha=$TargetSha&status=success&per_page=20"
+  $runs = Invoke-RestMethod -Uri $url -Headers $headers -TimeoutSec 20
+  if (-not (@($runs.workflow_runs) | Where-Object { $_.head_sha -eq $TargetSha -and $_.conclusion -eq 'success' })) {
+    throw 'The exact-SHA hosted Windows control contract has not passed.'
+  }
+}
+
+function Deploy-Sha([object]$Config, [string]$TargetSha, [switch]$Rollback) {
   Assert-CleanTree $Config
   Fetch-ConfiguredBranch $Config
   Assert-DeploySha $Config $TargetSha
 
   $TargetSha = $TargetSha.ToLowerInvariant()
   $beforeSha = (Get-GitValue $Config @("rev-parse", "HEAD")).ToLowerInvariant()
+  $beforeHealth = Get-DadRadarHealth $Config
+  $baseline = Get-OptionalProperty $beforeHealth 'version' ''
+  if ($baseline -match $ShaPattern -and $baseline -ne $beforeSha) {
+    throw 'Checkout and running deployment differ; resolve the installation before deploying.'
+  }
+  if (-not $Rollback) {
+    Assert-VerifiedRelease $TargetSha $baseline
+    Assert-HostedWindowsContract $Config $TargetSha $beforeSha
+  }
   $movedCheckout = $false
 
   Write-Section "Deploying Dad Radar $TargetSha"
@@ -265,7 +307,12 @@ function Deploy-Sha([object]$Config, [string]$TargetSha) {
     $movedCheckout = $true
 
     Invoke-External $Config.npmPath @("ci") $Config.repoPath
-    Invoke-External $Config.npmPath @("test") $Config.repoPath
+    if ($Rollback -or $baseline -notmatch $ShaPattern) {
+      Invoke-External $Config.npmPath @("test") $Config.repoPath
+    }
+    else {
+      Invoke-External $Config.npmPath @("run", "test:deploy", "--", "--base", $baseline) $Config.repoPath
+    }
 
     if (-not (Request-DadRadarRestart $Config $TargetSha)) {
       throw "Dad Radar did not restart on deployment $TargetSha within the verification window."
@@ -333,6 +380,7 @@ function Get-TaskState([string]$TaskName) {
 }
 
 function Show-Status([object]$Config) {
+  Write-Host "Executor SHA256: $((Get-FileHash -LiteralPath $PSCommandPath -Algorithm SHA256).Hash.ToLowerInvariant())"
   Write-Section "Dad Radar home status"
   Fetch-ConfiguredBranch $Config
 
@@ -456,7 +504,7 @@ switch ($action) {
     Show-Logs $config $IssueBody
   }
   "rollback" {
-    Deploy-Sha $config (Read-PreviousGoodSha)
+    Deploy-Sha $config (Read-PreviousGoodSha) -Rollback
   }
   default {
     throw "Unsupported Dad Radar remote action."

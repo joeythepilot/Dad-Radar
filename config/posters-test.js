@@ -33,45 +33,9 @@ function runTests() {
     getPoster("TPA").title,
     "TAMPA"
   );
-  for (const code of [
-    "AMA", "LIT", "ATW", "FAR", "BRO",
-    "GRR", "SAT", "ABQ", "GPT", "ICT",
-    "ATL", "BOS", "BOI", "EYW", "MCI",
-    "AUS", "CHS", "CLE", "ELP", "PIT",
-    "IAH", "MSP", "RIC", "SEA", "STL",
-    "BHM", "BUF", "COS", "JAX", "SDF",
-    "ALB", "CHA", "DSM", "MEM", "PNS",
-    "OKC", "MYR", "ORF", "YQB", "BTR",
-    "ACA", "BIL", "CRP", "GJT", "ILM",
-    "ABI", "ACT", "AEX", "AGU", "AVP",
-    "BDL", "BIS", "BPT", "BUR", "CAE",
-    "CAK", "CCS", "CID", "CLL", "COU",
-    "CUU", "CVG", "CWA", "DOM", "ECP",
-    "EIS", "EUG", "FSM", "FWA", "GCK",
-    "GGG", "GNV", "GRI", "GRK", "HOU",
-    "HPN", "HRL", "JAN", "JFK", "LAN",
-    "LAW", "LCH", "LGA", "LRD", "MAF",
-    "MAR", "MFE", "MGM", "MHH", "MHK",
-    "MHT", "MLI", "MLU", "MQT", "MSO",
-    "MTY", "MZT", "RAP", "RDM", "RDU",
-    "ROW", "RST", "SBP", "TRI", "YUL",
-    "AXA", "AZO", "BGR", "BIM", "ELH",
-    "FPO", "FSD", "GGT", "HHH", "LEX",
-    "LFT", "LGB", "MDT", "MOB", "MRY",
-    "NAS", "SAV", "SBA", "SHV", "SPS",
-    "SRQ", "STS", "TLH", "TRC", "TUS",
-    "TXK", "TYR", "VER", "VPS", "ZCL",
-    "YUM", "YYZ", "ZIH"
-  ]) {
-    assert.ok(
-      getPoster(code),
-      `${code} approved poster should be installed`
-    );
-  }
-  assert.equal(
-    Object.keys(posterByAirport).length,
-    175
-  );
+  const approved=require('../data/approved-poster-inventory.json').codes;
+  assert.equal(new Set(approved).size,approved.length,'Approved inventory has no duplicate codes');
+  for(const code of approved)assert.ok(getPoster(code),`${code}: independently approved poster cannot disappear`);
 
   for (const [code, poster] of
     Object.entries(posterByAirport)) {

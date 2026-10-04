@@ -110,7 +110,7 @@ async function runTests() {
       const body = await page.text();
       assert(body.includes(`name="dad-radar-instance" content="${health.instanceId}"`), `${route}: page carries its serving instance`);
       assert(body.includes(`name="dad-radar-version" content="${health.version || ""}"`), `${route}: page carries deployment version`);
-      assert.match(body, /<script defer src="\/App\/deployment-refresh.js\?v=page-version-1"><\/script>/, `${route}: independent refresh watchdog`);
+      assert.match(body, /<script defer src="\/App\/deployment-refresh.js\?v=[\w-]+"><\/script>/, `${route}: independent refresh watchdog`);
     }
     assert.equal(health.flightData.filedRoute.provider, "flightaware");
     assert.equal(health.flightData.operationalStatus.provider, "flightaware",

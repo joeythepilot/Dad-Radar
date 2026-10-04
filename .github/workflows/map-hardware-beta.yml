@@ -5,10 +5,14 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: Full release or focused comparison with the previous commit
+        description: Scoped release since verified deployment, or explicit full audit
         type: choice
-        options: [release, focused]
-        default: release
+        options: [scoped, full]
+        default: scoped
+      baseline:
+        description: Verified running SHA; blank uses recorded baseline
+        type: string
+        required: false
       preserve_source:
         description: Also archive the complete source for local rendering
         type: boolean
@@ -24,12 +28,13 @@ jobs:
     outputs:
       regression: ${{ steps.select.outputs.regression }}
       full: ${{ steps.select.outputs.full }}
+      base: ${{ steps.select.outputs.base }}
       has_browser: ${{ steps.select.outputs.has_browser }}
       matrix: ${{ steps.select.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
@@ -37,9 +42,15 @@ jobs:
       - id: select
         name: Select coverage conservatively
         env:
-          DADRADAR_TEST_MODE: ${{ startsWith(github.ref, 'refs/heads/verify/release/') && 'release' || inputs.mode || 'focused' }}
-          DADRADAR_DIFF_BASE: ${{ github.event.before }}
+          DADRADAR_TEST_MODE: ${{ startsWith(github.ref, 'refs/heads/verify/release/') && 'full' || inputs.mode || 'scoped' }}
+          DADRADAR_DIFF_BASE: ${{ inputs.baseline }}
+          DADRADAR_PLAN_PATH: coverage-plan.json
         run: node scripts/browser-test-plan.js
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-plan-${{ github.sha }}-${{ github.run_id }}
+          path: coverage-plan.json
+          retention-days: 7
   regression:
     needs: plan
     if: needs.plan.outputs.regression == 'true'
@@ -79,7 +90,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
-    name: browser (${{ matrix.suite }}, ${{ matrix.engine }})
+    name: browser (${{ matrix.engine }})
     steps:
       - uses: actions/checkout@v4
         with:
@@ -98,7 +109,7 @@ jobs:
       - name: Run the selected component and engine
         shell: bash
         env:
-          DADRADAR_SUITE: ${{ matrix.suite }}
+          DADRADAR_SUITE: ${{ matrix.suites }}
           DADRADAR_ENGINE: ${{ matrix.engine }}
         run: |
           set -o pipefail
@@ -112,25 +123,34 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: browser-${{ matrix.suite }}-${{ matrix.engine }}-${{ github.sha }}-${{ github.run_id }}
+          name: browser-${{ matrix.engine }}-${{ github.sha }}-${{ github.run_id }}
           path: artifacts/browser/
           retention-days: 7
   release-gate:
     needs: [plan, regression, browser]
-    if: always() && needs.plan.outputs.full == 'true'
+    if: always()
+    name: release-gate (${{ needs.plan.outputs.full == 'true' && 'full' || format('base {0}', needs.plan.outputs.base) }})
     runs-on: ubuntu-latest
     steps:
-      - name: Require all exact-SHA release checks
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Require selected exact-SHA release checks
         env:
           PLAN_RESULT: ${{ needs.plan.result }}
           REGRESSION_RESULT: ${{ needs.regression.result }}
           BROWSER_RESULT: ${{ needs.browser.result }}
           SOURCE_SHA: ${{ github.sha }}
+          NEED_REGRESSION: ${{ needs.plan.outputs.regression }}
+          NEED_BROWSER: ${{ needs.plan.outputs.has_browser }}
+          BASE_SHA: ${{ needs.plan.outputs.base }}
         run: |
-          test "$PLAN_RESULT" = success
-          test "$REGRESSION_RESULT" = success
-          test "$BROWSER_RESULT" = success
-          echo "Full release checks passed for $SOURCE_SHA" >> "$GITHUB_STEP_SUMMARY"
+          node - <<'NODE'
+          const {assertReleaseResults}=require('./scripts/browser-test-plan');
+          assertReleaseResults({regression:process.env.NEED_REGRESSION==='true',matrix:process.env.NEED_BROWSER==='true'?[{}]:[]},
+            {plan:process.env.PLAN_RESULT,regression:process.env.REGRESSION_RESULT,browser:process.env.BROWSER_RESULT});
+          NODE
+          echo "Selected release checks passed for $SOURCE_SHA; baseline $BASE_SHA" >> "$GITHUB_STEP_SUMMARY"
   source-archive:
     if: github.event_name == 'workflow_dispatch' && inputs.preserve_source
     runs-on: ubuntu-latest

@@ -36,7 +36,11 @@ assert.match(remote, /Config\.npmPath/, "remote executor must use the installer-
 assert.doesNotMatch(remote, /Invoke-External\s+"git"/, "remote executor must not depend on the runner service PATH for Git");
 assert.doesNotMatch(remote, /Invoke-External\s+"npm\.cmd"/, "remote executor must not depend on the runner service PATH for npm");
 assert.match(remote, /npmPath[^\r\n]*@\("ci"\)|Config\.npmPath[^\r\n]*@\("ci"\)/i, "deploy must restore dependencies with npm ci");
-assert.match(remote, /npmPath[^\r\n]*@\("test"\)|Config\.npmPath[^\r\n]*@\("test"\)/i, "deploy must run the full Dad Radar tests");
+const deploy=remote.slice(remote.indexOf('function Deploy-Sha'),remote.indexOf('function Get-TaskState'));
+assert.match(deploy,/Assert-VerifiedRelease/,'Deployment requires exact-SHA hosted release evidence');
+assert.match(deploy,/"test:deploy"/,'Deployment uses explicit affected Windows verification');
+assert.match(remote,/release-gate/,'Evidence requires the selected public release gate');
+assert.match(remote,/base \$Baseline/,'Scoped evidence must match the previous running deployment');
 assert.match(remote, /deployed-sha\.txt/, "remote deployment must record the exact installed SHA for the running server");
 assert.match(remote, /remote-restart-request\.json/, "remote deployment must request restart through the local SYSTEM host marker");
 assert.match(remote, /instanceId/, "remote deployment must verify that a new server instance came online");

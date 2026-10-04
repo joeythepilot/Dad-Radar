@@ -26,9 +26,9 @@ if(require.main===module) {
     if(args[i]==='--suite')suite=args[i+1];else if(args[i]==='--engine')engine=args[i+1];else throw new Error('Unknown browser option: '+args[i]);
     if(!args[i+1])throw new Error('Missing browser option value');
   }
-  if(suite&&!SUITES.some(s=>s.suite===suite))throw new Error('Unknown browser suite: '+suite);
+  if(suite&&suite.split(',').some(name=>!SUITES.some(s=>s.suite===name)))throw new Error('Unknown browser suite: '+suite);
   if(engine&&!['chromium','webkit'].includes(engine))throw new Error('Unknown browser engine: '+engine);
-  const cases=fullMatrix().filter(j=>(!suite||j.suite===suite)&&(!engine||j.engine===engine)).map(j=>({...j,...SUITES.find(s=>s.suite===j.suite),engine:j.engine}));
+  const cases=fullMatrix().filter(j=>(!suite||suite.split(',').includes(j.suite))&&(!engine||j.engine===engine)).map(j=>({...j,...SUITES.find(s=>s.suite===j.suite),engine:j.engine}));
   if(!cases.length)throw new Error('No supported browser cases selected');
   const result=runCases(cases);console.log(JSON.stringify(result,null,2));process.exitCode=result.exitCode;
 }

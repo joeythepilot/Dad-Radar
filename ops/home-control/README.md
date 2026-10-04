@@ -28,7 +28,7 @@ Create issues in the private control repository using one of these exact titles:
 - `[DADRADAR] rollback`
 - `[DADRADAR] ident-test` — ask the physical MAXWELLHOUSE display to sound MAX once, then report whether browser playback started. The issue body must be empty. This does not mark any flight as identified.
 
-Before deploy, require the full exact-SHA public `DadRadar verification` release gate described in [Testing protocol](../../Docs/Testing-protocol.md). A focused browser run is not release approval. The private executor still runs its full Windows tests and verifies the managed restart.
+Before deploy, require the successful selected exact-SHA public `DadRadar verification` release gate described in [Testing protocol](../../Docs/Testing-protocol.md). A scoped gate must match the running baseline; broad/unknown changes require full coverage. The installed executor checks this proof, requires hosted Windows contract results for control/package changes, runs explicit affected Windows verification and verifies the managed restart.
 
 For deploy, the issue body must be exactly:
 
@@ -47,7 +47,7 @@ The private workflow handles `ident-test` as one fixed localhost-only diagnostic
 
 ## Low-privilege restart broker
 
-The GitHub runner does **not** stop or start the SYSTEM-owned `Dad Radar Family Beta` scheduled task. After an exact SHA passes `npm ci` and the full local test suite, the fixed executor writes:
+The GitHub runner does **not** stop or start the SYSTEM-owned `Dad Radar Family Beta` scheduled task. After an exact SHA passes hosted release verification, `npm ci` and `test:deploy` (deployment smoke or full Windows verification according to its complete baseline diff), the fixed executor writes:
 
 ```text
 runtime\deployed-sha.txt
@@ -126,3 +126,9 @@ Remote deployment refuses a dirty working tree and rejects SHAs that are not in 
 `[DADRADAR] rollback` deploys the recorded previous-good SHA through the same validation, test, restart-broker, and health-verification path.
 
 To disable remote control immediately, stop the GitHub Actions runner service in Windows Services. Dad Radar's normal SYSTEM background server and local display remain independent of the runner.
+
+## Updating the installed verification protocol
+
+The repository executor does not update `C:\DadRadarOps\DadRadarRemote.ps1` automatically. Use the Administrator installer above, or a reviewed fixed installation step in the private workflow pinned to the passing source SHA and its SHA256. The step may install only this exact executor file after checking hosted full verification and Windows syntax/contract evidence. It must not execute arbitrary checkout scripts, widen the maintenance allowlist or change runner privileges. Keep a backup until installation and status checks succeed.
+
+Status reports `Executor SHA256` as well as app identity. Record both after installation. A source-only update is not proof the home executor changed. `test` remains the manual full suite; rollback uses the known previous-good SHA and full tests.

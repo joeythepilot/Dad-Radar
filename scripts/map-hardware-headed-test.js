@@ -3,7 +3,6 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const engines = require("playwright");
-const {checkFamilyDuty} = require("./family-duty-browser-proof");
 const {checkClockRods} = require("./clock-rods-browser-proof");
 const output = path.resolve(process.env.DADRADAR_ARTIFACT_ROOT || path.join(__dirname,"../artifacts"),"map-hardware");
 fs.mkdirSync(output,{recursive:true});
@@ -31,7 +30,7 @@ for (const name of ["chromium","webkit"]) {
       const screenshot = page.screenshot.bind(page);
       page.screenshot = async options => {
         await checkClockRods(page);
-        await checkFamilyDuty(page, options?.path);
+        // Detailed duty fit belongs to the focused duty suite.
         const defects = await page.evaluate(() => {
           const defects=[];
           const map=document.querySelector('.map-roll-regional-sheet .route-map-svg');

@@ -2,15 +2,13 @@ name: Home control contract
 
 on:
   push:
-    paths:
-      - "ops/home-control/**"
-      - "package.json"
-      - ".github/workflows/home-control-contract.yml"
   pull_request:
-    paths:
-      - "ops/home-control/**"
-      - "package.json"
-      - ".github/workflows/home-control-contract.yml"
+  workflow_dispatch:
+    inputs:
+      baseline:
+        description: Verified deployed baseline SHA (optional override)
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -22,12 +20,32 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Select Windows contract from complete baseline diff
+        id: plan
+        shell: bash
+        env:
+          DADRADAR_DIFF_BASE: ${{ inputs.baseline }}
+        run: |
+          node <<'NODE'
+          const fs=require('node:fs');
+          const {changedPaths,needsWindowsContract}=require('./scripts/browser-test-plan');
+          const base=process.env.DADRADAR_DIFF_BASE||JSON.parse(fs.readFileSync('ops/home-control/verified-baseline.json','utf8')).sha;
+          const diff=changedPaths(base);
+          const required=needsWindowsContract(diff.files,diff);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`required=${required}\n`);
+          console.log(JSON.stringify({base,required,...diff},null,2));
+          NODE
 
       - name: Verify source security contract
+        if: steps.plan.outputs.required == 'true'
         shell: cmd
         run: node ops\home-control\home-control-contract-test.js
 
       - name: Parse control scripts with Windows PowerShell 5.1
+        if: steps.plan.outputs.required == 'true'
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'

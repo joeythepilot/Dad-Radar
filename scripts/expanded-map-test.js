@@ -63,11 +63,11 @@ assert(mapSource.indexOf('class="great-lakes"') > mapSource.indexOf('class="stat
 
 assert.match(
   dashboardSource,
-  /north-america-caribbean-vintage\.svg\?v=antique-chart-4-us-borders/
+  /north-america-caribbean-vintage\.svg\?v=[\w-]+/
 );
 assert.match(
   dashboardSource,
-  /class="map-terrain-relief"[\s\S]*?north-america-caribbean-relief-hires\.jpg\?v=terrain-direct-4/,
+  /class="map-terrain-relief"[\s\S]*?north-america-caribbean-relief-hires\.jpg\?v=[\w-]+/,
   "Terrain must be a direct sibling layer in the live map SVG."
 );
 assert.doesNotMatch(dashboardSource, /map-us-detail/);
@@ -75,3 +75,7 @@ assert.doesNotMatch(dashboardSource, /map-us-detail/);
 console.log(
   "Expanded textured map tests passed."
 );
+
+const compactSource=fs.readFileSync(path.join(projectRoot,'Mobile/index.html'),'utf8');
+assert.match(compactSource,/north-america-caribbean-vintage\.svg\?v=[\w-]+/);
+assert.match(compactSource,/class="map-terrain-relief"[\s\S]*?north-america-caribbean-relief-hires\.jpg\?v=[\w-]+/,'Compact map keeps terrain in the live SVG');

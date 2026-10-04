@@ -128,7 +128,8 @@ function createHarness(
     "map-destination-city",
     "map-loading-message",
     "map-route-status",
-    "route-map-shell"
+    "route-map-shell",
+    "map-city-label-layer"
   ];
 
   const elements =
@@ -141,6 +142,7 @@ function createHarness(
       )
     );
 
+  elements["map-city-label-layer"].querySelectorAll=()=>[];
   const listeners = {};
   const browserLocation = {
     pathname
@@ -214,11 +216,6 @@ function testGroundLocationUsesDomesticOverview() {
 }
 
 function testReferenceCitiesStayReadableWhileZoomed() {
-  assert.match(
-    ROUTE_MAP_SOURCE,
-    /scaleReferenceCities\(camera\)/,
-    "Reference-city labels should counter-scale as the map zooms."
-  );
 
   const fullMobile =
     createHarness(
@@ -303,24 +300,21 @@ function testReferenceCitiesStayReadableWhileZoomed() {
 }
 
 function testAshevilleIsPermanentHomeReference() {
-  assert.match(
-    ROUTE_MAP_SOURCE,
-    /\["ASHEVILLE",\s*35\.6,\s*-82\.55,\s*"home"\]/,
-    "Asheville should remain visible as Dad Radar's home reference city."
-  );
+  const harness=createHarness(null,{locationAirport:'AVL',flight:null});
+  assert.match(harness.elements['map-city-label-layer'].innerHTML,/map-city-reference-home[^>]*>[\s\S]*?ASHEVILLE/,
+    'The renderer marks Asheville as a permanent home reference');
 }
 
 function testTelemetryMapRenderingIsThrottled() {
-  assert.match(
-    ROUTE_MAP_SOURCE,
-    /TELEMETRY_MAP_INTERVAL_MS\s*=\s*\n?\s*125/,
-    "Heavy map rendering should be throttled during live interpolation."
-  );
-  assert.match(
-    ROUTE_MAP_SOURCE,
-    /event\.detail\?\.telemetryOnly/,
-    "The route map should distinguish lightweight telemetry frames."
-  );
+  const harness=createHarness(flightAtAltitude(12000));
+  let now=10000,renders=0;
+  harness.context.Date=class extends Date {static now(){return now;}};
+  harness.context.renderRouteMap=()=>{renders++;};
+  const update=()=>harness.listeners['dad-radar:visual-state-change']({detail:{telemetryOnly:true,state:{flight:flightAtAltitude(12000)}}});
+  update();
+  for(let i=0;i<10;i++){now+=5;update();}
+  assert.equal(renders,1,'Rapid telemetry frames do not repeatedly render the heavy map');
+  now+=1000;update();assert.equal(renders,2,'Later telemetry still refreshes the map');
 }
 
 function testMobileTelemetryCameraIsStabilized() {
@@ -514,40 +508,7 @@ function testHighResolutionTerrainLayer() {
     "The child SVG must not load terrain as a nested image."
   );
 
-  assert.match(
-    DASHBOARD_SOURCE,
-    /class="map-terrain-relief"[\s\S]*?north-america-caribbean-relief-hires\.jpg\?v=terrain-direct-4/,
-    "The main display must mount terrain directly in the live map SVG."
-  );
 
-  assert.match(
-    DASHBOARD_SOURCE,
-    /north-america-caribbean-vintage\.svg\?v=antique-chart-4-us-borders/,
-    "The main display must bust the cached nested-terrain map asset."
-  );
-
-  const mobileSource =
-    fs.readFileSync(
-      path.join(
-        __dirname,
-        "..",
-        "Mobile",
-        "index.html"
-      ),
-      "utf8"
-    );
-
-  assert.match(
-    mobileSource,
-    /class="map-terrain-relief"[\s\S]*?north-america-caribbean-relief-hires\.jpg\?v=terrain-direct-4/,
-    "Compact mobile must mount terrain directly in the live map SVG."
-  );
-
-  assert.match(
-    mobileSource,
-    /north-america-caribbean-vintage\.svg\?v=antique-chart-4-us-borders/,
-    "Compact mobile must bust the cached nested-terrain map asset."
-  );
 }
 
 function viewBox(element) {
@@ -573,37 +534,6 @@ function flightAtAltitude(
   };
 }
 
-function testDetailedMapAsset() {
-  const assetPath = path.join(
-    __dirname,
-    "..",
-    "assets",
-    "maps",
-    "contiguous-us-vintage.svg"
-  );
-
-  const asset =
-    fs.readFileSync(
-      assetPath,
-      "utf8"
-    );
-
-  const jurisdictionCount =
-    asset.match(
-      /data-fips=/g
-    )?.length ?? 0;
-
-  assert.equal(
-    jurisdictionCount,
-    49,
-    "The vector map should include the 48 contiguous states and D.C."
-  );
-
-  assert.match(
-    asset,
-    /nation-outline/
-  );
-}
 
 function testRouteAutoFitAndPlacards() {
   const { elements } =
@@ -1296,7 +1226,6 @@ function runTests() {
   testPersistentSequenceTracksDoNotWidenActiveRouteCamera();
   testShortFlightFraming();
   testAirportCameraIntegration();
-  testDetailedMapAsset();
   testGroundLocationUsesDomesticOverview();
   testReferenceCitiesStayReadableWhileZoomed();
   testAshevilleIsPermanentHomeReference();

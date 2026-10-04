@@ -59,7 +59,8 @@
     "pretest:browser": "npm run build:browser",
     "test:browser": "node scripts/run-browser-tests.js",
     "test:browser:clocks": "npm run test:browser -- --suite clocks",
-    "test:protocol": "node scripts/testing-protocol-test.js"
+    "test:protocol": "node scripts/testing-protocol-test.js",
+    "test:deploy": "node scripts/deployment-tests.js"
   },
   "repository": {
     "type": "git",

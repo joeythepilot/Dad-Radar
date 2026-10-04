@@ -10,52 +10,9 @@ const clockFocus=process.env.DADRADAR_BROWSER_FOCUS==='clocks';
 const engine=process.env.DADRADAR_BROWSER_ENGINE||'chromium';
 if(!['chromium','webkit'].includes(engine))throw new Error('Unknown artwork browser engine');
 
-const root = path.resolve(__dirname, "..");
+const {root,state,payload,server}=require('./display-browser-fixture').createDisplayFixture();
 const output = path.join(process.env.DADRADAR_ARTIFACT_ROOT || path.join(root,"artifacts"),"approved-artwork");
 fs.mkdirSync(output, {recursive: true});
-const state = {
-  status:"EN ROUTE", message:"", locationAirport:"AVL", flight:{
-    number:"3761",origin:"ORD",destination:"AVL",destinationCity:"ASHEVILLE",
-    airspeed:438,heading:171,altitude:34000,progress:62,eta:"7:42 PM",
-    latitude:37.3,longitude:-84.8
-  },
-  diagnostics:{shutterTestToken:"saved-command-before-page-load"},
-  sequenceHistory:{scheduledLegCount:16,totalDistanceNm:1468, completedLegCount:6, estimatedLegCount:6, legs:Array.from({length:6}, () => ({origin:"ORD",destination:"AVL"}))},
-  dailySchedule:{dateLabel:"SUN SEP 13",timeZoneLabel:"EASTERN TIME",context:"DADDY IS ON LAYOVER IN SPRINGFIELD, ILLINOIS",entries:[
-    {time:"7:58 AM",departureTime:"7:58 AM",arrivalTime:"10:14 AM",label:"ORD → BWI",tag:"FLT 3761",status:"completed",kind:"flight"},
-    {time:"11:23 AM",departureTime:"11:23 AM",arrivalTime:"1:40 PM",label:"BWI → ORD",tag:"FLT 3762",status:"current",kind:"flight",operationalStamp:{kind:"delay",label:"DELAYED",detail:"45 MINUTES"}},
-    {time:"3:20 PM",label:"LAYOVER · Springfield",tag:"GROUND",status:"upcoming",kind:"layover"}
-  ]}
-};
-const now = new Date().toISOString();
-const payload = {ok:true,revision:1,publishedAt:now,calendarOk:true,liveOk:true,calendarAt:now,liveAt:now,resolved:{mode:"EN_ROUTE",state,event:null}};
-const html = fs.readFileSync(path.join(root,"index.html"),"utf8");
-// Use the server's exact family HTML expression, not a second hand-copied layout.
-const serverCode = fs.readFileSync(path.join(root,"server/index.js"),"utf8");
-const expression = serverCode.match(/const familyHtml = ([\s\S]*?);\n  response/)[1];
-const fullHtml = new Function("displayHtml", `return ${expression};`)(html);
-const types = {".html":"text/html",".js":"application/javascript",".css":"text/css",".svg":"image/svg+xml",".png":"image/png",".json":"application/json",".webmanifest":"application/manifest+json"};
-const server = http.createServer((req,res) => {
-  const url = new URL(req.url,"http://localhost");
-  if (url.pathname === "/api/diagnostics/shutters-test" && req.method === "POST") {
-    state.diagnostics.shutterTestToken = `intentional-${++payload.revision}`;
-    res.setHeader("Content-Type","application/json");
-    res.end(JSON.stringify({ok:true,token:state.diagnostics.shutterTestToken}));return;
-  }
-  if (url.pathname === "/api/calendar/upcoming") {
-    res.setHeader("Content-Type","application/json");res.end(JSON.stringify({ok:true,events:[]}));return;
-  }
-  if (url.pathname.startsWith("/api/")) {
-    if (url.pathname.startsWith("/api/weather")) {res.writeHead(204);res.end();return;}
-    res.setHeader("Content-Type","application/json");
-    res.end(JSON.stringify(url.pathname.includes("/surface") ? {pending:true,retryAfterMs:3600000} : payload));return;
-  }
-  if (url.pathname === "/mobile/full") {res.setHeader("Content-Type","text/html");res.end(fullHtml);return;}
-  const file = path.resolve(root,"." + (url.pathname === "/mobile" ? "/Mobile/index.html" : url.pathname === "/" ? "/index.html" : url.pathname));
-  if (!file.startsWith(root + path.sep) || !fs.existsSync(file) || !fs.statSync(file).isFile()) {res.writeHead(404);res.end();return;}
-  res.setHeader("Content-Type",types[path.extname(file)] || "application/octet-stream");
-  fs.createReadStream(file).pipe(res);
-});
 
 
 (async()=>{
@@ -110,38 +67,6 @@ const server = http.createServer((req,res) => {
      }
    }
    if(!clockFocus) {
-   await page.locator('.daily-schedule-card-art').evaluate(image=>image.decode());
-   await page.waitForFunction(()=>document.querySelectorAll('.daily-schedule-entry .daily-schedule-flight').length===3);
-   const dutyProof=await page.locator('.daily-schedule-panel').evaluate(panel=>{
-     const box=panel.getBoundingClientRect();
-     const rows=[...panel.querySelectorAll('.daily-schedule-entry')];
-     const fields=[...panel.querySelectorAll('.daily-schedule-time span')];
-     return {zone:panel.querySelector('.daily-schedule-time-zone').textContent,
-       labels:fields.map(n=>n.textContent),
-       contained:fields.every(n=>{const r=n.getBoundingClientRect();return r.left>=box.left&&r.right<=box.right&&n.scrollWidth<=n.clientWidth+1;}),
-       headings:[...panel.querySelectorAll('.daily-schedule-column-headings span')].map(n=>n.textContent),
-       separated:rows.every(n=>{
-         const fields=[n.querySelector('.daily-schedule-flight'),n.querySelector('.daily-schedule-label'),...n.querySelectorAll('.daily-schedule-time span')].filter(f=>getComputedStyle(f).display!=='none');
-         const rects=fields.map(f=>f.getBoundingClientRect());
-         return fields.every((f,i)=>f.scrollWidth<=f.clientWidth+1 && (!i || rects[i-1].right<=rects[i].left+1)) && Math.abs(rects.at(-2).top-rects.at(-1).top)<1;
-       }),
-       adjacent:rows.every((n,i)=>!i || rows[i-1].getBoundingClientRect().bottom<=n.getBoundingClientRect().top+1),
-       slots:rows.map(n=>n.style.gridRow),
-       boxes:rows.map(n=>({row:n.getBoundingClientRect().toJSON(),route:n.querySelector('.daily-schedule-label').getBoundingClientRect().toJSON(),time:n.querySelector('.daily-schedule-time').getBoundingClientRect().toJSON(),grid:getComputedStyle(n).gridTemplateRows})),
-       stampClear:rows.every(n=>{
-         const s=n.querySelector('.daily-schedule-operational-stamp');
-         if(!s)return true;
-         const a=s.getBoundingClientRect();
-         return [n.querySelector('.daily-schedule-flight'),n.querySelector('.daily-schedule-label'),...n.querySelectorAll('.daily-schedule-time span')].every(f=>{
-           const b=f.getBoundingClientRect();return a.right<=b.left || a.left>=b.right || a.bottom<=b.top || a.top>=b.bottom;
-         });
-       })};
-   });
-   assert.match(dutyProof.zone,/EASTERN TIME/);
-   assert(dutyProof.labels.includes('11:23 AM') && dutyProof.labels.includes('1:40 PM'),`${name}: current flight has both times`);
-   assert.deepEqual(dutyProof.headings,['FLIGHT','ROUTE','DEPART','ARRIVE']);
-   assert(dutyProof.contained && dutyProof.separated && dutyProof.stampClear && dutyProof.adjacent,`${name}: duty times fit and clear neighboring rows/route/stamp: ${JSON.stringify(dutyProof)}`);
-   assert.deepEqual(dutyProof.slots,['span 1','span 1','span 1'],'Each assignment occupies one ruled line');
    const leaders=await page.locator('.airport-marker-group:has(.airport-leader-fitting) .airport-leader').evaluateAll(nodes=>nodes.map(n=>getComputedStyle(n).stroke));
    assert.deepEqual(leaders,['none','none'],'Physical pointers must not have a flat red connector painted behind them');
    await page.locator('.daily-schedule-panel').screenshot({path:path.join(output,`duty-${name}.png`)});
@@ -215,6 +140,7 @@ const server = http.createServer((req,res) => {
    if(!clockFocus&&name==='kiosk')await page.locator('.heading-instrument').screenshot({path:path.join(output,'heading-detail.png')});
    if(!clockFocus&&name==='kiosk')await page.locator('.airspeed-instrument').screenshot({path:path.join(output,'airspeed-detail.png')});
    if(name.startsWith('family-'))for(const tile of geometry.tiles)assert(tile.left>=geometry.board.left-1&&tile.right<=geometry.board.right+1,'Split-flap tiles remain inside board');
+   if(clockFocus) {
    for (const eta of ['7:42 PM','--:--','DELAYED','ARRIVED','AWAITING UPDATED ARRIVAL TIME']) {
      // Exercise the existing render function; the artwork must consume its output.
      await page.evaluate(value=>updateDashboard({...dadRadarVisualState,flight:{...dadRadarVisualState.flight,eta:value}}),eta);
@@ -234,16 +160,17 @@ const server = http.createServer((req,res) => {
    const timeBefore=await page.locator('#clock-value').textContent();
    await page.waitForFunction(before=>document.querySelector('#clock-value').textContent!==before,timeBefore);
    assert.equal(await page.locator('[data-clock="current"] [data-drum]').count(),4,'Current time uses four mechanical drums');
+   }
    await page.waitForFunction(()=>[...document.querySelectorAll('.sequence-housing-art image')].length===1);
-   const assets=await page.evaluate(async()=>{
-     const paths=[...document.querySelectorAll('image,img')].map(n=>n.getAttribute('href')||n.getAttribute('src')).filter(s=>s&&/assets\/hardware\/(airport-|instrument-|clock-drum-)/.test(s));
+   const assets=await page.evaluate(async(clockOnly)=>{
+     const paths=[...document.querySelectorAll('image,img')].map(n=>n.getAttribute('href')||n.getAttribute('src')).filter(s=>s&&(clockOnly?/assets\/hardware\/clock-drum-/:/assets\/hardware\/(airport-|instrument-|clock-drum-)/).test(s));
      return Promise.all([...new Set(paths)].map(src=>new Promise(resolve=>{const i=new Image();i.onload=()=>resolve({src,w:i.naturalWidth,h:i.naturalHeight});i.onerror=()=>resolve({src,w:0});i.src=src;})));
-   });
+   },clockFocus);
    for(const name of ['clock-drum-mechanism.png','clock-drum-lighting.png']) {
      const asset=assets.find(item=>item.src.endsWith(name));
      assert.deepEqual([asset?.w,asset?.h],[1825,460],`${name}: approved registered clock layer loads at production dimensions`);
    }
-   assert.equal(assets.length,9);assert(assets.every(a=>a.w>0),'Approved map, wheel and clock PNGs decode');
+   assert.equal(assets.length,clockFocus?2:9);assert(assets.every(a=>a.w>0),'Approved map, wheel and clock PNGs decode');
    if(!clockFocus) {
    const fitting=await page.locator('.airport-leader-fitting').first().getAttribute('transform');
    assert.match(fitting,/translate\(.+\) rotate\(/,'End fitting follows positioned leader');
@@ -288,21 +215,8 @@ const server = http.createServer((req,res) => {
    await page.screenshot({path:path.join(output,`${name}.png`),fullPage:true});
    await assertBrowserSettled(name);
    assert.deepEqual(errors,[],`${name}: no missing asset errors`);
-   if(!clockFocus) {
-   const fiveFlightState={...state,dailySchedule:{...state.dailySchedule,entries:Array.from({length:5},(_,i)=>({kind:'flight',flightNumber:String(3637+i),tag:i===0?'COMMUTE':`FLT ${3637+i}`,label:'SPI → ORD',departureTime:'11:23 AM',arrivalTime:'12:59 PM',status:i===2?'current':'upcoming'}))}};
-   await page.evaluate(s=>window.dispatchEvent(new CustomEvent('dad-radar:state-change',{detail:{state:s}})),fiveFlightState);
-   await page.waitForFunction(()=>document.querySelectorAll('.daily-schedule-entry.has-flight-times').length===5);
-   const fiveProof=await page.locator('.daily-schedule-list').evaluate(list=>{
-     const rows=[...list.children],bounds=list.getBoundingClientRect();
-     return {count:rows.length,commute:rows[0].title,flight:rows[0].querySelector('.daily-schedule-flight').textContent,
-       fits:rows.every((row,i)=>{const r=row.getBoundingClientRect();return r.bottom<=bounds.bottom+1 && (!i||rows[i-1].getBoundingClientRect().bottom<=r.top+1) && [...row.querySelectorAll('.daily-schedule-flight,.daily-schedule-label,.daily-schedule-time span')].every(f=>f.scrollWidth<=f.clientWidth+1);})};
-   });
-   assert.equal(fiveProof.count,5);assert(fiveProof.fits,`${name}: five complete flight rows fit the paper`);
-   assert.equal(fiveProof.flight,'3637');assert.match(fiveProof.commute,/COMMUTE/);
-   await page.locator('.daily-schedule-panel').screenshot({path:path.join(output,`duty-five-${name}.png`)});
-   }
-   if(name==='kiosk') {
-     if(!clockFocus)await require('./printed-ink-browser-proof').checkPrintedInk(page);
+   if(name==='kiosk'&&!clockFocus)await require('./printed-ink-browser-proof').checkPrintedInk(page);
+   if(name==='kiosk'&&clockFocus) {
      await page.setViewportSize({width:1366,height:768});
      await assertBrowserSettled('kiosk after resize');
      const centered=await page.locator('[data-clock="eta"]').evaluate(n=>{
@@ -324,6 +238,7 @@ const server = http.createServer((req,res) => {
    }
    results.push({name,geometry,assets});await page.close();
  }
+ if(clockFocus) {
  // Arrival retires a stale ETA even when early; the next active leg restores it.
  const arrivalPage=await browser.newPage({viewport:{width:1920,height:1080}});
  state.status='ARRIVED';state.flight.eta='7:56 AM';
@@ -332,7 +247,7 @@ const server = http.createServer((req,res) => {
  assert.equal(await arrivalPage.locator('#eta-value').textContent(),'ARRIVED','Confirmed arrival must retire the previous ETA');
  assert.deepEqual(await arrivalPage.locator('[data-clock="eta"] [data-drum]').evaluateAll(nodes=>nodes.map(n=>n.getAttribute('data-digit'))),
    ['', '', '', ''],'Confirmed arrival blanks all four physical drums');
- await arrivalPage.waitForTimeout(500);
+ await arrivalPage.waitForFunction(()=>getComputedStyle(document.querySelector('[data-clock="eta"] .drum-clock-lighting')).opacity==='0');
  await arrivalPage.locator('.twin-clock-panel').screenshot({path:path.join(output,'clock-arrived.png')});
  state.status='BOARDING';state.flight.eta='11:21 AM';
  await arrivalPage.evaluate(s=>window.dispatchEvent(new CustomEvent('dad-radar:visual-state-change',{detail:{state:s}})),state);
@@ -346,6 +261,7 @@ const server = http.createServer((req,res) => {
  await arrivalPage.waitForFunction(()=>[...document.querySelectorAll('[data-clock="eta"] [data-drum]')]
    .every(n=>n.getAttribute('data-digit')===''));
  await arrivalPage.close();
+ }
  if(!clockFocus) {
  // A short predeparture leg must not be framed around yesterday's tracks.
  state.flight={number:"TEST",origin:"ORD",destination:"IND",destinationCity:"INDIANAPOLIS",
