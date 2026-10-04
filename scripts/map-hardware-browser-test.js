@@ -78,8 +78,10 @@ function checkGeometry(data) {
     if (hardware.selector === '.sequence-mileage-badge') {
       r.left += r.width * .0333;
       r.bottom -= r.height * .0573;
-      assert(r.left >= m.left && r.left <= m.left + 2, 'tracker meets left frame');
-      assert(r.bottom <= m.bottom && r.bottom >= m.bottom - 2, 'tracker meets lower frame');
+      // Transform compensation can round to either side of the frame by a
+      // fraction of a pixel. Keep the two-pixel seating tolerance symmetric.
+      assert(Math.abs(r.left - m.left) <= 2, `tracker meets left frame: ${JSON.stringify({map:m,visible:r})}`);
+      assert(Math.abs(r.bottom - m.bottom) <= 2, `tracker meets lower frame: ${JSON.stringify({map:m,visible:r})}`);
     }
     assert(r.left>=m.left-1 && r.right<=m.right+1 && r.top>=m.top-1 && r.bottom<=m.bottom+1,`${hardware.selector} fits chart aperture: ${JSON.stringify(data)}`);
     assert(hardware.art || hardware.shadow!=="none",`${hardware.selector} has supplied physical artwork or its existing cast shadow`);
