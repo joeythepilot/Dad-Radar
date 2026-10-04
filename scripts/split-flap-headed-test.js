@@ -8,7 +8,7 @@ const {observeBrowserErrors} = require("./browser-error-proof");
 const {chromium, webkit} = require("playwright");
 
 const root = path.resolve(__dirname, "..");
-const output = path.join(root, "artifacts", "map-hardware");
+const output = path.join(process.env.DADRADAR_ARTIFACT_ROOT || path.join(root,"artifacts"),"map-hardware");
 fs.mkdirSync(output, {recursive: true});
 
 const stamp = new Date().toISOString();
@@ -228,8 +228,7 @@ const server = http.createServer((request, response) => {
         assert(evidence.individualLights.length>10&&evidence.individualLights.every(light=>/radial-gradient/.test(light)),
           `${engine}: every flap, including blank flaps, has its own light source`);
         assert.ok(
-          evidence.boardBorderColor === "rgba(205, 177, 121, 0.09)" ||
-            evidence.boardBorderColor === "rgba(205, 177, 121, 0.09)",
+          evidence.boardBorderColor === "rgba(205, 177, 121, 0.09)",
           `${engine}: board edge light should remain at the restrained calibrated value`
         );
         await assertBrowserSettled(engine);

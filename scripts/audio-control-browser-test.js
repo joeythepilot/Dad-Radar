@@ -8,7 +8,7 @@ const http = require("node:http");
 const {chromium} = require("playwright");
 
 const root = path.resolve(__dirname, "..");
-const output = path.join(root, "artifacts/audio-control");
+const output = path.join(process.env.DADRADAR_ARTIFACT_ROOT || path.join(root,"artifacts"),"audio-control");
 fs.mkdirSync(output, {recursive: true});
 const state = {
   status:"EN ROUTE", message:"", locationAirport:"AVL", flight:{

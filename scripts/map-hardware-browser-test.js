@@ -8,7 +8,7 @@ const {observeBrowserErrors} = require("./browser-error-proof");
 const {chromium, webkit} = require("playwright");
 const {checkInitialReplay,checkFullHardware,checkDiagnosticRoundTrip} = require("./map-startup-mobile-browser-proof");
 const root = path.resolve(__dirname, "..");
-const output = path.join(root, "artifacts/map-hardware");
+const output = path.join(process.env.DADRADAR_ARTIFACT_ROOT || path.join(root,"artifacts"),"map-hardware");
 fs.mkdirSync(output, {recursive: true});
 const state = {
   status:"HOME", message:"DADDY IS HOME", locationAirport:"AVL", flight:null,

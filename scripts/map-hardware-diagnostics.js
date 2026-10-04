@@ -3,7 +3,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const engines = require("playwright");
-const output = path.resolve(__dirname,"../artifacts/map-hardware");
+const output = path.resolve(process.env.DADRADAR_ARTIFACT_ROOT || path.join(__dirname,"../artifacts"),"map-hardware");
 fs.mkdirSync(output,{recursive:true});
 for (const name of ["chromium","webkit"]) {
   const launch = engines[name].launch.bind(engines[name]);

@@ -1,41 +1,63 @@
-name: Map hardware beta verification
+name: DadRadar verification
 on:
   push:
-    branches: [agent/mobile-companion]
-    paths: ['App/**', 'UI/**', 'Mobile/**', 'server/**', 'services/**', 'models/**', 'config/**', 'assets/**', 'data/**', 'ops/home-control/**', 'scripts/**', 'index.html', 'package*.json', '.github/workflows/map-hardware-beta.yml']
+    branches: [agent/mobile-companion, 'verify/release/**']
   workflow_dispatch:
+    inputs:
+      mode:
+        description: Full release or focused comparison with the previous commit
+        type: choice
+        options: [release, focused]
+        default: release
+      preserve_source:
+        description: Also archive the complete source for local rendering
+        type: boolean
+        default: false
 permissions:
   contents: read
 concurrency:
-  group: map-hardware-beta-${{ github.ref }}
+  group: dad-radar-verification-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      regression: ${{ steps.select.outputs.regression }}
+      full: ${{ steps.select.outputs.full }}
+      has_browser: ${{ steps.select.outputs.has_browser }}
+      matrix: ${{ steps.select.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - id: select
+        name: Select coverage conservatively
+        env:
+          DADRADAR_TEST_MODE: ${{ startsWith(github.ref, 'refs/heads/verify/release/') && 'release' || inputs.mode || 'focused' }}
+          DADRADAR_DIFF_BASE: ${{ github.event.before }}
+        run: node scripts/browser-test-plan.js
   regression:
+    needs: plan
+    if: needs.plan.outputs.regression == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Preserve exact source for local rendering
-        run: |
-          mkdir -p /tmp/dad-radar-beta-source
-          git archive --format=tar.gz -o /tmp/dad-radar-beta-source/source.tar.gz HEAD
-          git rev-parse HEAD > /tmp/dad-radar-beta-source/commit.txt
-      - uses: actions/upload-artifact@v4
-        with:
-          name: beta-source-${{ github.sha }}
-          path: /tmp/dad-radar-beta-source/
-          retention-days: 3
-          compression-level: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: npm
       - run: npm ci
-      - name: Complete application regression suite
+      - name: Complete deterministic regression suite
         shell: bash
         run: |
+          set -o pipefail
           mkdir -p artifacts/map-regression
           npm test 2>&1 | tee artifacts/map-regression/tests.log
       - name: Record source checkpoint
@@ -46,12 +68,18 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: map-regression-${{ github.sha }}
+          name: map-regression-${{ github.sha }}-${{ github.run_id }}
           path: artifacts/map-regression/
           retention-days: 7
   browser:
+    needs: plan
+    if: needs.plan.outputs.has_browser == 'true'
     runs-on: macos-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    name: browser (${{ matrix.suite }}, ${{ matrix.engine }})
     steps:
       - uses: actions/checkout@v4
         with:
@@ -61,24 +89,63 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
-      - run: npm run build:browser
-      - name: Browser geometry, transport, ticker, and split-flap regression on macOS
-        shell: bash
+      - name: Install the selected browser
+        env:
+          DADRADAR_ENGINE: ${{ matrix.engine }}
         run: |
           npm install --no-save --package-lock=false playwright@1.63.0
-          npx playwright install chromium webkit
-          mkdir -p artifacts/map-hardware
-          npm run test:browser 2>&1 | tee artifacts/map-hardware/browser.log
-      - name: Keep exact-SHA verification evidence
+          npx playwright install "$DADRADAR_ENGINE"
+      - name: Run the selected component and engine
+        shell: bash
+        env:
+          DADRADAR_SUITE: ${{ matrix.suite }}
+          DADRADAR_ENGINE: ${{ matrix.engine }}
+        run: |
+          set -o pipefail
+          mkdir -p artifacts/browser
+          npm run test:browser -- --suite "$DADRADAR_SUITE" --engine "$DADRADAR_ENGINE" 2>&1 | tee artifacts/browser/browser.log
+      - name: Record source checkpoint
         if: always()
         run: |
-          mkdir -p artifacts/map-hardware
-          git rev-parse HEAD > artifacts/map-hardware/commit.txt
+          mkdir -p artifacts/browser
+          git rev-parse HEAD > artifacts/browser/commit.txt
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: map-hardware-beta-${{ github.sha }}
-          path: |
-            artifacts/map-hardware/
-            artifacts/approved-artwork/
+          name: browser-${{ matrix.suite }}-${{ matrix.engine }}-${{ github.sha }}-${{ github.run_id }}
+          path: artifacts/browser/
           retention-days: 7
+  release-gate:
+    needs: [plan, regression, browser]
+    if: always() && needs.plan.outputs.full == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require all exact-SHA release checks
+        env:
+          PLAN_RESULT: ${{ needs.plan.result }}
+          REGRESSION_RESULT: ${{ needs.regression.result }}
+          BROWSER_RESULT: ${{ needs.browser.result }}
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          test "$PLAN_RESULT" = success
+          test "$REGRESSION_RESULT" = success
+          test "$BROWSER_RESULT" = success
+          echo "Full release checks passed for $SOURCE_SHA" >> "$GITHUB_STEP_SUMMARY"
+  source-archive:
+    if: github.event_name == 'workflow_dispatch' && inputs.preserve_source
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Archive source only when explicitly requested
+        run: |
+          mkdir -p artifacts/source
+          git archive --format=tar.gz -o artifacts/source/source.tar.gz HEAD
+          git rev-parse HEAD > artifacts/source/commit.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: beta-source-${{ github.sha }}-${{ github.run_id }}
+          path: artifacts/source/
+          retention-days: 3
+          compression-level: 0

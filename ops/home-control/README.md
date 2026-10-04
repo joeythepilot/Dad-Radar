@@ -28,6 +28,8 @@ Create issues in the private control repository using one of these exact titles:
 - `[DADRADAR] rollback`
 - `[DADRADAR] ident-test` — ask the physical MAXWELLHOUSE display to sound MAX once, then report whether browser playback started. The issue body must be empty. This does not mark any flight as identified.
 
+Before deploy, require the full exact-SHA public `DadRadar verification` release gate described in [Testing protocol](../../Docs/Testing-protocol.md). A focused browser run is not release approval. The private executor still runs its full Windows tests and verifies the managed restart.
+
 For deploy, the issue body must be exactly:
 
 ```text

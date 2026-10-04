@@ -26,7 +26,7 @@ If Google reports that its refresh token expired or was revoked, run `npm.cmd ru
 
 For temporary development use, `npm.cmd run beta:start` remains available as a manual fallback.
 
-Run all deterministic tests with `npm test`.
+Run all deterministic tests with `npm test`. Use component browser checks while iterating and require the full exact-SHA release gate before deployment. See [Testing protocol](Docs/Testing-protocol.md) for focused commands, CI selection and release verification.
 
 The complete Windows desktop and iPad setup, safety notes, poster behavior, and field-test checklist are in `Docs/Family-beta-guide.md`.
 

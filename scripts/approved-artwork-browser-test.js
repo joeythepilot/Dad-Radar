@@ -5,10 +5,13 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const http = require("node:http");
-const {chromium} = require("playwright");
+const {chromium,webkit} = require("playwright");
+const clockFocus=process.env.DADRADAR_BROWSER_FOCUS==='clocks';
+const engine=process.env.DADRADAR_BROWSER_ENGINE||'chromium';
+if(!['chromium','webkit'].includes(engine))throw new Error('Unknown artwork browser engine');
 
 const root = path.resolve(__dirname, "..");
-const output = path.join(root, "artifacts/approved-artwork");
+const output = path.join(process.env.DADRADAR_ARTIFACT_ROOT || path.join(root,"artifacts"),"approved-artwork");
 fs.mkdirSync(output, {recursive: true});
 const state = {
   status:"EN ROUTE", message:"", locationAirport:"AVL", flight:{
@@ -57,14 +60,15 @@ const server = http.createServer((req,res) => {
 
 (async()=>{
  await new Promise(r=>server.listen(0,'127.0.0.1',r));
- const browser=await chromium.launch({headless:true,
-   ...(process.env.DADRADAR_BROWSER_EXECUTABLE ? {executablePath:process.env.DADRADAR_BROWSER_EXECUTABLE,args:['--no-sandbox','--disable-dev-shm-usage','--disable-gpu']} : {})});
+ const browser=await ({chromium,webkit})[engine].launch({headless:true,
+   ...(engine==='chromium' && process.env.DADRADAR_BROWSER_EXECUTABLE ? {executablePath:process.env.DADRADAR_BROWSER_EXECUTABLE,args:['--no-sandbox','--disable-dev-shm-usage','--disable-gpu']} : {})});
  try {
  const results=[];
  for (const [name,width,height,route] of [
    ['kiosk',1920,1080,'/'],['desktop',1440,900,'/'],['tablet',1024,768,'/'],
    ['family-landscape',844,390,'/mobile/full?layout=full'],['family-portrait',390,844,'/mobile/full?layout=full']
  ]) {
+   if(clockFocus&&!['kiosk','family-portrait'].includes(name))continue;
    console.log('Checking '+name);
    const page=await browser.newPage({viewport:{width,height}}),errors=[];
    const assertBrowserSettled = observeBrowserErrors(page);
@@ -75,7 +79,7 @@ const server = http.createServer((req,res) => {
    await page.waitForSelector('#dashboard:not([hidden])').catch(async e=>{console.log(await page.evaluate(()=>({url:location.href,boot:document.querySelector('.status-message')?.textContent,html:document.documentElement.outerHTML.slice(0,700)})));throw e;});
    await page.waitForFunction(()=>document.querySelector('#eta-value').textContent==='7:42 PM');
    await page.waitForFunction(()=>document.querySelector('#destination-poster').naturalWidth>0);
-   if (name === 'kiosk') {
+   if (!clockFocus && name === 'kiosk') {
      const arrivalInstruments = await page.evaluate(() => {
        const arrived = {...dadRadarVisualState, status:'ARRIVED', flight:{
          ...dadRadarVisualState.flight, airspeed:null, groundSpeed:11,
@@ -105,6 +109,7 @@ const server = http.createServer((req,res) => {
        assert.equal(readings.headingCard,'rotate(0deg)');
      }
    }
+   if(!clockFocus) {
    await page.locator('.daily-schedule-card-art').evaluate(image=>image.decode());
    await page.waitForFunction(()=>document.querySelectorAll('.daily-schedule-entry .daily-schedule-flight').length===3);
    const dutyProof=await page.locator('.daily-schedule-panel').evaluate(panel=>{
@@ -185,6 +190,7 @@ const server = http.createServer((req,res) => {
    assert.equal(headingProof.changedOutsidePointer,0,'Original index arrow and upper-right reflection are preserved pixel-for-pixel');
    assert.equal(await page.locator('.destination-stage').evaluate(node=>getComputedStyle(node).backgroundImage), 'none',
      'The loaded poster must have one foreground rendering path.');
+   }
    assert.equal(await page.locator('.twin-clock-panel').count(),1,'Approved single twin-clock housing must exist');
    assert.equal(await page.locator('.clock-block,.eta-block,.clock-support-rod').count(),0,'Old housings and mounts removed');
    assert.equal(await page.locator('.drum-clock').count(),2,'The one housing contains two registered drum mechanisms');
@@ -206,8 +212,8 @@ const server = http.createServer((req,res) => {
    assert(Math.abs(geometry.artWidth-geometry.rail.width)<2,'Visible clock housing matches rail width');
    } else { await require('./physical-faceplate-browser-proof').checkPhysicalFaceplate(page,name); }
    assert.equal(geometry.weekly,7);assert.equal(geometry.gauge,3);
-   if(name==='kiosk')await page.locator('.heading-instrument').screenshot({path:path.join(output,'heading-detail.png')});
-   if(name==='kiosk')await page.locator('.airspeed-instrument').screenshot({path:path.join(output,'airspeed-detail.png')});
+   if(!clockFocus&&name==='kiosk')await page.locator('.heading-instrument').screenshot({path:path.join(output,'heading-detail.png')});
+   if(!clockFocus&&name==='kiosk')await page.locator('.airspeed-instrument').screenshot({path:path.join(output,'airspeed-detail.png')});
    if(name.startsWith('family-'))for(const tile of geometry.tiles)assert(tile.left>=geometry.board.left-1&&tile.right<=geometry.board.right+1,'Split-flap tiles remain inside board');
    for (const eta of ['7:42 PM','--:--','DELAYED','ARRIVED','AWAITING UPDATED ARRIVAL TIME']) {
      // Exercise the existing render function; the artwork must consume its output.
@@ -238,6 +244,7 @@ const server = http.createServer((req,res) => {
      assert.deepEqual([asset?.w,asset?.h],[1825,460],`${name}: approved registered clock layer loads at production dimensions`);
    }
    assert.equal(assets.length,9);assert(assets.every(a=>a.w>0),'Approved map, wheel and clock PNGs decode');
+   if(!clockFocus) {
    const fitting=await page.locator('.airport-leader-fitting').first().getAttribute('transform');
    assert.match(fitting,/translate\(.+\) rotate\(/,'End fitting follows positioned leader');
    assert.match(fitting,/scale\(0\.75\)/,'Pointer shrinks with the plaque');
@@ -277,9 +284,11 @@ const server = http.createServer((req,res) => {
    assert(legibility.plaque.every(p=>p.codeOnly&&p.centered&&p.contained&&p.codeSize>=26),`${name}: only a large centered code is printed inside the plaque ${JSON.stringify(legibility)}`);
 
    await require("./instrument-wheels-browser-proof").checkInstrumentWheels(page,name);
+   }
    await page.screenshot({path:path.join(output,`${name}.png`),fullPage:true});
    await assertBrowserSettled(name);
    assert.deepEqual(errors,[],`${name}: no missing asset errors`);
+   if(!clockFocus) {
    const fiveFlightState={...state,dailySchedule:{...state.dailySchedule,entries:Array.from({length:5},(_,i)=>({kind:'flight',flightNumber:String(3637+i),tag:i===0?'COMMUTE':`FLT ${3637+i}`,label:'SPI → ORD',departureTime:'11:23 AM',arrivalTime:'12:59 PM',status:i===2?'current':'upcoming'}))}};
    await page.evaluate(s=>window.dispatchEvent(new CustomEvent('dad-radar:state-change',{detail:{state:s}})),fiveFlightState);
    await page.waitForFunction(()=>document.querySelectorAll('.daily-schedule-entry.has-flight-times').length===5);
@@ -291,8 +300,9 @@ const server = http.createServer((req,res) => {
    assert.equal(fiveProof.count,5);assert(fiveProof.fits,`${name}: five complete flight rows fit the paper`);
    assert.equal(fiveProof.flight,'3637');assert.match(fiveProof.commute,/COMMUTE/);
    await page.locator('.daily-schedule-panel').screenshot({path:path.join(output,`duty-five-${name}.png`)});
+   }
    if(name==='kiosk') {
-     await require('./printed-ink-browser-proof').checkPrintedInk(page);
+     if(!clockFocus)await require('./printed-ink-browser-proof').checkPrintedInk(page);
      await page.setViewportSize({width:1366,height:768});
      await assertBrowserSettled('kiosk after resize');
      const centered=await page.locator('[data-clock="eta"]').evaluate(n=>{
@@ -336,6 +346,7 @@ const server = http.createServer((req,res) => {
  await arrivalPage.waitForFunction(()=>[...document.querySelectorAll('[data-clock="eta"] [data-drum]')]
    .every(n=>n.getAttribute('data-digit')===''));
  await arrivalPage.close();
+ if(!clockFocus) {
  // A short predeparture leg must not be framed around yesterday's tracks.
  state.flight={number:"TEST",origin:"ORD",destination:"IND",destinationCity:"INDIANAPOLIS",
    altitude:null,airspeed:null,heading:null,progress:0,eta:"7:42 PM"};
@@ -359,7 +370,8 @@ const server = http.createServer((req,res) => {
    await page.close();
  }
  console.log('Boarding and delayed ORD–IND browser framing passed with historical tracks retained.');
+ }
  fs.writeFileSync(path.join(output,'verification.json'),JSON.stringify(results,null,2));
- console.log('Approved artwork browser checks passed: '+results.map(r=>r.name).join(', '));
+ console.log((clockFocus?'Focused clock':'Approved artwork')+' browser checks passed: '+results.map(r=>r.name).join(', '));
  } finally {await browser.close();await new Promise(r=>server.close(r));}
 })().catch(e=>{console.error(e);process.exitCode=1;});

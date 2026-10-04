@@ -12,7 +12,7 @@ const weeklyTicker = require("../App/weekly-ticker");
 const airports = require("../data/airport-catalog");
 
 const root = path.resolve(__dirname, "..");
-const output = path.join(root, "artifacts/map-hardware");
+const output = path.join(process.env.DADRADAR_ARTIFACT_ROOT || path.join(root,"artifacts"),"map-hardware");
 fs.mkdirSync(output, {recursive: true});
 
 const referenceNow = new Date();

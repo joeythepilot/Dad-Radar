@@ -29,13 +29,10 @@ assert(moduleSource.includes("buildDutyCardView"), "The renderer consumes the de
 assert(moduleSource.includes("data-family-full"), "The physical duty-card renderer must recognize Mobile Full mode.");
 assert(moduleSource.includes("rowCapacity"), "Mobile Full must request the physical card's full ruled-row capacity.");
 assert(moduleSource.includes("daily-schedule-operational-stamp"), "The physical-card renderer must create a live operational stamp for delayed rows.");
-assert(moduleSource.includes("daily-schedule-operational-stamp"), "The physical-card renderer must render live operational revision stamps.");
 assert(css.includes(".daily-schedule-card-art"), "Duty-card geometry is anchored to the raster artwork.");
 assert(css.includes(".daily-schedule-operational-stamp"), "The operational stamp has dedicated physical-overlay geometry.");
 assert(css.includes("rgba(139, 32, 25"), "The operational stamp uses aged red dispatch ink.");
 assert(css.includes("background: transparent"), "The live overlay stays transparent so CSS does not repaint the physical card.");
-assert(css.includes(".daily-schedule-operational-stamp"), "Today’s Duty must include geometry for the operational revision stamp.");
-assert(css.includes("rgba(139, 32, 25"), "Operational delay stamps use the muted red dispatch-ink treatment.");
 assert(!css.includes("linear-gradient") && !css.includes("radial-gradient"), "CSS does not fabricate card material, lighting, or aging.");
 assert(build.includes('"App/daily-duty-card.js"'), "The modern browser bundle includes the physical-card renderer.");
 assert(mobileLayout.includes("is-physical-duty-card"), "Mobile Full must detect the physical Today’s Duty card before applying narrow-panel reflow.");

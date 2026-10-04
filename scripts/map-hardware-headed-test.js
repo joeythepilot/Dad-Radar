@@ -5,7 +5,7 @@ const path = require("node:path");
 const engines = require("playwright");
 const {checkFamilyDuty} = require("./family-duty-browser-proof");
 const {checkClockRods} = require("./clock-rods-browser-proof");
-const output = path.resolve(__dirname,"../artifacts/map-hardware");
+const output = path.resolve(process.env.DADRADAR_ARTIFACT_ROOT || path.join(__dirname,"../artifacts"),"map-hardware");
 fs.mkdirSync(output,{recursive:true});
 for (const name of ["chromium","webkit"]) {
   const launch = engines[name].launch.bind(engines[name]);
