@@ -184,6 +184,8 @@ const server = http.createServer((req,res) => {
      'The loaded poster must have one foreground rendering path.');
    assert.equal(await page.locator('.twin-clock-panel').count(),1,'Approved single twin-clock housing must exist');
    assert.equal(await page.locator('.clock-block,.eta-block,.clock-support-rod').count(),0,'Old housings and mounts removed');
+   assert.equal(await page.locator('.drum-clock').count(),2,'The one housing contains two registered drum mechanisms');
+   assert.equal(await page.locator('.drum-clock-lighting').count(),2,'Each mechanism has its own independently dimmable illumination layer');
    const geometry=await page.evaluate(()=>{
      const box=s=>document.querySelector(s).getBoundingClientRect().toJSON();
      const clock=document.querySelector('.twin-clock-art');
@@ -207,29 +209,32 @@ const server = http.createServer((req,res) => {
    for (const eta of ['7:42 PM','--:--','DELAYED','ARRIVED','AWAITING UPDATED ARRIVAL TIME']) {
      // Exercise the existing render function; the artwork must consume its output.
      await page.evaluate(value=>updateDashboard({...dadRadarVisualState,flight:{...dadRadarVisualState.flight,eta:value}}),eta);
-     await page.waitForTimeout(30);
-     const ink=await page.locator('#eta-value').evaluate(n=>({box:((r)=>({x:r.x,y:r.y,width:r.width,height:r.height}))(n.getBBox()),text:n.textContent}));
-     assert.equal(ink.text,eta);assert(ink.box.x>=360&&ink.box.x+ink.box.width<=1415,'ETA remains within parchment width');
-     assert(ink.box.y>=535&&ink.box.y+ink.box.height<=715,'ETA avoids plaques/frame');
-     const printed=await page.locator('[data-clock-print="eta-value"]').evaluate(n=>{
-       const b=n.getBBox(),t=n.transform.baseVal.consolidate().matrix;
-       return {text:n.getAttribute('data-printed-ink'),x:b.x+t.e,y:b.y+t.f,width:b.width,height:b.height};
-     });
-     assert.equal(printed.text,eta,'Printed arrival lettering follows the authoritative live value');
-     assert(printed.width>0&&printed.x>=360&&printed.x+printed.width<=1415&&printed.y>=535&&printed.y+printed.height<=715,
-       'Actual printed glyphs fit the clock aperture, including long arrival messages');
+     await page.waitForFunction(value=>document.querySelector('#eta-value').textContent===value,eta);
+     const expected=eta==='7:42 PM' ? ['', '7', '4', '2'] : ['', '', '', ''];
+     await page.waitForFunction(digits=>[...document.querySelectorAll('[data-clock="eta"] [data-drum]')]
+       .every((drum,index)=>drum.getAttribute('data-digit')===digits[index]),expected);
+     const physical=await page.locator('[data-clock="eta"]').evaluate(n=>({
+       lit:n.classList.contains('is-lit'),prints:[...n.querySelectorAll('.drum-print:not(.drum-exit) [data-printed-ink]')].map(ink=>ink.getAttribute('data-printed-ink')),
+       browserText:n.querySelectorAll('text').length
+     }));
+     assert.deepEqual(physical.prints,expected.filter(Boolean),'Only physical wheel positions carry printed numeral outlines');
+     assert.equal(physical.browserText,0,'No browser text floats above the drums');
+     assert.equal(physical.lit,eta==='7:42 PM','The ETA lighting fades when no readable ETA exists');
    }
    await page.evaluate(()=>updateDashboard(dadRadarVisualState));
    const timeBefore=await page.locator('#clock-value').textContent();
    await page.waitForFunction(before=>document.querySelector('#clock-value').textContent!==before,timeBefore);
-   const clockInk=await page.locator('#clock-value').evaluate(n=>((r)=>({x:r.x,y:r.y,width:r.width,height:r.height}))(n.getBBox()));
-   assert(clockInk.x>=360&&clockInk.x+clockInk.width<=1415&&clockInk.y>=155&&clockInk.y+clockInk.height<=340,'Clock remains within upper parchment');
+   assert.equal(await page.locator('[data-clock="current"] [data-drum]').count(),4,'Current time uses four mechanical drums');
    await page.waitForFunction(()=>[...document.querySelectorAll('.sequence-housing-art image')].length===1);
    const assets=await page.evaluate(async()=>{
-     const paths=[...document.querySelectorAll('image,img')].map(n=>n.getAttribute('href')||n.getAttribute('src')).filter(s=>s&&/assets\/hardware\/(airport-|instrument-)/.test(s));
+     const paths=[...document.querySelectorAll('image,img')].map(n=>n.getAttribute('href')||n.getAttribute('src')).filter(s=>s&&/assets\/hardware\/(airport-|instrument-|clock-drum-)/.test(s));
      return Promise.all([...new Set(paths)].map(src=>new Promise(resolve=>{const i=new Image();i.onload=()=>resolve({src,w:i.naturalWidth,h:i.naturalHeight});i.onerror=()=>resolve({src,w:0});i.src=src;})));
    });
-   assert.equal(assets.length,7);assert(assets.every(a=>a.w>0),'Approved map and wheel PNGs decode');
+   for(const name of ['clock-drum-mechanism.png','clock-drum-lighting.png']) {
+     const asset=assets.find(item=>item.src.endsWith(name));
+     assert.deepEqual([asset?.w,asset?.h],[1825,460],`${name}: approved registered clock layer loads at production dimensions`);
+   }
+   assert.equal(assets.length,9);assert(assets.every(a=>a.w>0),'Approved map, wheel and clock PNGs decode');
    const fitting=await page.locator('.airport-leader-fitting').first().getAttribute('transform');
    assert.match(fitting,/translate\(.+\) rotate\(/,'End fitting follows positioned leader');
    assert.match(fitting,/scale\(0\.75\)/,'Pointer shrinks with the plaque');
@@ -287,20 +292,22 @@ const server = http.createServer((req,res) => {
      await require('./printed-ink-browser-proof').checkPrintedInk(page);
      await page.setViewportSize({width:1366,height:768});
      await assertBrowserSettled('kiosk after resize');
-     const centered=await page.locator('#eta-value').evaluate(n=>{
-       const box=n.getBBox(),matrix=n.getScreenCTM();
-       return {anchor:+n.getAttribute('x'),align:getComputedStyle(n).textAnchor,
-         pixelError:Math.abs(box.x+box.width/2-887)*Math.abs(matrix.a)};
+     const centered=await page.locator('[data-clock="eta"]').evaluate(n=>{
+       const housing=n.closest('.twin-clock-panel').getBoundingClientRect();
+       const opening=n.getBoundingClientRect();
+       const mechanism=n.querySelector('.drum-clock-mechanism').getBoundingClientRect();
+       const lighting=n.querySelector('.drum-clock-lighting').getBoundingClientRect();
+       return {housing:housing.toJSON(),opening:opening.toJSON(),mechanism:mechanism.toJSON(),lighting:lighting.toJSON()};
      });
-     // SVG ink bearings differ across platform fonts. Compare visible pixels,
-     // as the other geometry assertions do, while preserving the exact anchor.
-     assert.equal(centered.anchor,887);assert.equal(centered.align,'middle');
-     assert(centered.pixelError<1,`Live ETA remains centered after resize: ${JSON.stringify(centered)}`);
-     await page.locator('.twin-clock-panel').evaluate(n=>n.style.display='none');
-     await page.locator('#eta-value').evaluate(n=>n.textContent='AWAITING UPDATED ARRIVAL TIME');
-     await page.waitForTimeout(30);
-     await page.locator('.twin-clock-panel').evaluate(n=>n.style.removeProperty('display'));
-     await page.waitForFunction(()=>document.querySelector('#eta-value').getComputedTextLength()<=1011);
+     assert(Math.abs(centered.mechanism.x-centered.opening.x)<.5 &&
+       Math.abs(centered.mechanism.right-centered.opening.right)<.5,
+       'Approved mechanism fills the original clock opening without side gutters');
+     assert(Math.abs(centered.mechanism.x-centered.lighting.x)<.5 &&
+       Math.abs(centered.mechanism.width-centered.lighting.width)<.5,
+       'Lighting remains registered on the mechanism after a resize');
+     assert(centered.mechanism.x>=centered.housing.x &&
+       centered.mechanism.right<=centered.housing.right,
+       'The mechanism stays inside the approved housing footprint');
    }
    results.push({name,geometry,assets});await page.close();
  }
@@ -310,14 +317,21 @@ const server = http.createServer((req,res) => {
  await arrivalPage.goto(`http://127.0.0.1:${server.address().port}/`);
  await arrivalPage.waitForSelector('#dashboard:not([hidden])');
  assert.equal(await arrivalPage.locator('#eta-value').textContent(),'ARRIVED','Confirmed arrival must retire the previous ETA');
+ assert.deepEqual(await arrivalPage.locator('[data-clock="eta"] [data-drum]').evaluateAll(nodes=>nodes.map(n=>n.getAttribute('data-digit'))),
+   ['', '', '', ''],'Confirmed arrival blanks all four physical drums');
+ await arrivalPage.waitForTimeout(500);
  await arrivalPage.locator('.twin-clock-panel').screenshot({path:path.join(output,'clock-arrived.png')});
  state.status='BOARDING';state.flight.eta='11:21 AM';
  await arrivalPage.evaluate(s=>window.dispatchEvent(new CustomEvent('dad-radar:visual-state-change',{detail:{state:s}})),state);
  assert.equal(await arrivalPage.locator('#eta-value').textContent(),'11:21 AM','Next active flight restores its own ETA');
+ await arrivalPage.waitForFunction(()=>[...document.querySelectorAll('[data-clock="eta"] [data-drum]')]
+   .map(n=>n.getAttribute('data-digit')).join('')==='1121');
  assert.equal(await arrivalPage.locator('#eta-value').getAttribute('aria-label'),'Estimated arrival');
  state.status='ARRIVED';state.flight.eta='11:59 PM';
  await arrivalPage.evaluate(s=>window.dispatchEvent(new CustomEvent('dad-radar:visual-state-change',{detail:{state:s}})),state);
  assert.equal(await arrivalPage.locator('#eta-value').textContent(),'ARRIVED','Arrival immediately retires a future ETA without a page refresh');
+ await arrivalPage.waitForFunction(()=>[...document.querySelectorAll('[data-clock="eta"] [data-drum]')]
+   .every(n=>n.getAttribute('data-digit')===''));
  await arrivalPage.close();
  // A short predeparture leg must not be framed around yesterday's tracks.
  state.flight={number:"TEST",origin:"ORD",destination:"IND",destinationCity:"INDIANAPOLIS",

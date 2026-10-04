@@ -36,6 +36,7 @@ const browserSources = [
   "App/sequence-history-display.js",
   "App/printed-glyphs.js",
   "App/printed-ink.js",
+  "App/clock-drums.js",
   "App/weekly-ticker.js",
   "App/main.js",
   "App/daily-duty-card.js",

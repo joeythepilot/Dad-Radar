@@ -13,6 +13,16 @@ for (const entry of manifest.files) {
   assert.equal(bytes.readUInt32BE(20), entry.height);
   assert.equal(bytes[25], 6, `${entry.file}: preserve RGBA transparency`);
 }
+for (const [file, sha256] of Object.entries({
+  "clock-drum-mechanism.png": "0962edd06b180ec505b0f770a7196f89af74a3f444f0afc7f18ca3b3326416d4",
+  "clock-drum-lighting.png": "fb6e0cb9a5162cc9437d6f289d7904937a2ff47aaeb0fbbc48a0980e1e3279e4"
+})) {
+  const bytes = fs.readFileSync(path.join(root, "assets/hardware", file));
+  assert.equal(crypto.createHash("sha256").update(bytes).digest("hex"), sha256, `${file}: preserve Joey's approved production layer`);
+  assert.equal(bytes.readUInt32BE(16), 1825);
+  assert.equal(bytes.readUInt32BE(20), 460);
+  assert.equal(bytes[25], 6, `${file}: registered transparent PNG`);
+}
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
 assert.doesNotMatch(html, /instrument-(?:current-time|estimated-arrival)\.png|class="(?:clock-block|eta-block)"/);
 for (const id of ["clock-value", "eta-value", "eta-zone"]) {

@@ -95,7 +95,7 @@ async function inspect(page,name) {
       paperOpacity:getComputedStyle(paper).opacity,
       paperFilter:getComputedStyle(paper).filter,
       geographyFilter:getComputedStyle(document.querySelector('.map-vector-geography')).filter,
-      clockPaper:document.querySelector('.twin-clock-art')?[...document.querySelectorAll('.clock-paper-tone')].map(n=>getComputedStyle(n).fill):null,
+      clockDrums:document.querySelector('.twin-clock-art')?[...document.querySelectorAll('.drum-clock')].map(n=>n.querySelectorAll('[data-drum]').length):null,
       hardwareFilters:[...document.querySelectorAll('.airport-placard-art,.twin-clock-art,.weekly-overnight-module-art')].map(n=>getComputedStyle(n).filter),
       dutyFilter:document.querySelector('.daily-schedule-card-art')?getComputedStyle(document.querySelector('.daily-schedule-card-art')).filter:null,
       dayTone:document.querySelector('.weekly-overnight-bay')?getComputedStyle(document.querySelector('.weekly-overnight-bay'),'::after').backgroundColor:null};
@@ -113,7 +113,7 @@ async function inspect(page,name) {
   assert(brightness(proof.paperFilter)<1 && Number(proof.paperOpacity)>=.6,'Aged paper suppresses highlights rather than brightening the chart');
   assert(brightness(proof.geographyFilter)<=.9,'Printed geography has reduced exposure independently of live overlays');
   assert(proof.hardwareFilters.every(filter=>filter==='none'||/route-map-aircraft-shadow/.test(filter)),'Paper calibration must preserve existing hardware filters');
-  if(proof.clockPaper)assert.equal(proof.clockPaper.length,2,'Both clock paper apertures receive tone independently of their housing');
+  if(proof.clockDrums)assert.deepEqual(proof.clockDrums,[4,4],'Both clock apertures have four drum wheels inside the approved housing');
   if(proof.dutyFilter)assert(brightness(proof.dutyFilter)<.9,'Duty paper receives a gentler exposure reduction');
   if(proof.dayTone)assert.notEqual(proof.dayTone,'rgba(0, 0, 0, 0)','Weekday paper has its own aperture-only tone');
   const overlaps=(a,b)=>a.left<b.right-.5&&a.right>b.left+.5&&a.top<b.bottom-.5&&a.bottom>b.top+.5;

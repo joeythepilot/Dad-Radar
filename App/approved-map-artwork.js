@@ -1,35 +1,31 @@
 (function fitApprovedArtworkInk() {
   "use strict";
-  // Observe the existing runtime values. No second clock or ETA state/timer.
+  // Existing time/ETA controllers own both values; these are only their physical readouts.
   const panel = document.querySelector(".twin-clock-panel");
   if (!panel) return;
-  const values = panel.querySelectorAll(".twin-clock-value");
-  const printedValues=new Map();
+  const values = panel.querySelectorAll(".clock-live-value");
+  const clocks = [panel.querySelector('[data-clock="current"]'), panel.querySelector('[data-clock="eta"]')];
   const sequence = document.querySelector(".sequence-mileage-badge");
   const sequenceValues = sequence ? sequence.querySelectorAll(".sequence-mileage-label,.sequence-mileage-value,.sequence-mileage-detail") : [];
+  function syncDrums() {
+    values.forEach((value, index) => {
+      const clock = clocks[index];
+      if (!clock) return;
+      const digits = window.dadRadarClockDrums.readDrumTime(value.textContent);
+      window.dadRadarClockDrums.paintClock(clock, value.textContent, window.dadRadarPrintedInk);
+      clock.classList.toggle("is-lit", digits.some(Boolean));
+      clock.setAttribute("aria-label", index === 0
+        ? `Current Eastern time ${value.textContent}`
+        : value.textContent === "ARRIVED" ? "Arrival confirmed"
+          : digits.some(Boolean) ? `Estimated arrival ${value.textContent} Eastern time`
+            : "Estimated arrival unavailable");
+    });
+  }
   function fit() {
     // Portrait uses a narrower rail. Match the visible housing, not an empty
     // letterboxed SVG viewport, without stretching its physical artwork.
     panel.parentElement.style.setProperty("--twin-clock-height", `${panel.clientWidth * 824 / 1418}px`);
-    values.forEach(value => {
-      value.style.fontSize = "142px";
-      const width = value.getComputedTextLength();
-      if (width > 1010) value.style.fontSize = `${142 * 1010 / width}px`;
-      // Retain the original text as the authoritative, accessible live value.
-      // The visible print uses bundled outlines, not a device-dependent font.
-      value.style.opacity="0";
-      const text=value.textContent;
-      if(printedValues.get(value)?.text!==text){
-        printedValues.get(value)?.element.remove();
-        const print=window.dadRadarPrintedInk.svg(document,text,{
-          height:105,cellWidth:80,maxWidth:1010,ink:"#382b1e",material:"paper",seed:value.id
-        });
-        print.element.setAttribute("data-clock-print",value.id);
-        print.element.setAttribute("transform",`translate(${Number(value.getAttribute("x"))-print.width/2} ${Number(value.getAttribute("y"))-print.height/2})`);
-        value.parentNode.appendChild(print.element);
-        printedValues.set(value,{element:print.element,text});
-      }
-    });
+    syncDrums();
     sequenceValues.forEach(value => {
       const size = value.classList.contains("sequence-mileage-value") ? 26 :
         value.classList.contains("sequence-mileage-label") ? 12 : 12;

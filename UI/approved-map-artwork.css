@@ -7,10 +7,30 @@
 .panel-shell > .lower-display-grid { grid-column: 1 / -1; grid-row: 2; }
 .twin-clock-panel { grid-column: 2; grid-row: 1; min-width: 0; min-height: 0; position: relative; }
 .twin-clock-art { display: block; width: 100%; height: 100%; overflow: hidden; }
-.twin-clock-value {
-  fill: #382b1e;
-  font: bold 142px "Courier New", monospace;
-  letter-spacing: 0;
+.clock-live-value { opacity: 0; pointer-events: none; }
+.drum-clock { overflow: hidden; }
+.drum-clock-lighting { opacity: 0; transition: opacity 850ms ease-in-out; pointer-events: none; }
+.drum-clock.is-lit .drum-clock-lighting { opacity: .62; }
+.drum-print {
+  animation: drum-index 410ms cubic-bezier(.19,.72,.16,1) both;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.drum-index-after { animation-delay: 90ms; }
+.drum-exit { animation: drum-release 215ms ease-in both; }
+@keyframes drum-release {
+  from { transform: translateY(0) scaleY(1); opacity: 1; filter: blur(0); }
+  to { transform: translateY(105px) scaleY(.68); opacity: .16; filter: blur(5px); }
+}
+@keyframes drum-index {
+  0% { transform: translateY(-112px) scaleY(.67); opacity: .25; filter: blur(5px); }
+  64% { transform: translateY(14px) scaleY(1.06); opacity: 1; filter: blur(1px); }
+  82% { transform: translateY(-5px) scaleY(.98); filter: blur(0); }
+  100% { transform: translateY(0) scaleY(1); opacity: 1; filter: blur(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .drum-print, .drum-exit { animation: none; }
+  .drum-clock-lighting { transition: none; }
 }
 /* The existing tile artwork scales into its shorter top-left bay. */
 html:not([data-family-full]) .flight-strip-module {

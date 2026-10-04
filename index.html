@@ -203,15 +203,37 @@
             <!-- Ignore transparent side gutters for physical alignment; PNG bytes stay intact. -->
             <image href="./assets/hardware/instrument-twin-clock-panel-final.png"
                    x="0" y="0" width="1738" height="829" preserveAspectRatio="xMidYMid meet"></image>
-            <!-- Exposure tint stays within the two photographed paper apertures. -->
-            <g fill="rgba(90,56,15,0.12)" pointer-events="none" aria-hidden="true">
-              <rect class="clock-paper-tone" x="346" y="152" width="1083" height="189" rx="16"></rect>
-              <rect class="clock-paper-tone" x="346" y="533" width="1083" height="188" rx="16"></rect>
+            <!-- The original housing and its frame stay in place; only the paper apertures change. -->
+            <g aria-hidden="true">
+              <rect x="350" y="155" width="1075" height="182" rx="9" fill="#090b0a"></rect>
+              <rect x="350" y="535" width="1075" height="182" rx="9" fill="#090b0a"></rect>
             </g>
-            <text id="clock-value" class="twin-clock-value" x="887" y="252"
-                  text-anchor="middle" dominant-baseline="middle" aria-label="Current time">--:--</text>
-            <text id="eta-value" class="twin-clock-value" x="887" y="630"
-                  text-anchor="middle" dominant-baseline="middle" aria-label="Estimated arrival">--:--</text>
+            <svg class="drum-clock" data-clock="current" x="350" y="155" width="1075" height="182"
+                 viewBox="0 75.5 1825 309" preserveAspectRatio="xMidYMid meet" overflow="hidden"
+                 role="img" aria-label="Current Eastern time">
+              <image class="drum-clock-mechanism" href="./assets/hardware/clock-drum-mechanism.png"
+                     x="0" y="0" width="1825" height="460" aria-hidden="true"></image>
+              <g data-drum="0" transform="translate(245 235)"></g>
+              <g data-drum="1" transform="translate(650 235)"></g>
+              <g data-drum="2" transform="translate(1200 235)"></g>
+              <g data-drum="3" transform="translate(1605 235)"></g>
+              <image class="drum-clock-lighting" href="./assets/hardware/clock-drum-lighting.png"
+                     x="0" y="0" width="1825" height="460" aria-hidden="true"></image>
+            </svg>
+            <svg class="drum-clock" data-clock="eta" x="350" y="535" width="1075" height="182"
+                 viewBox="0 75.5 1825 309" preserveAspectRatio="xMidYMid meet" overflow="hidden"
+                 role="img" aria-label="Estimated arrival Eastern time">
+              <image class="drum-clock-mechanism" href="./assets/hardware/clock-drum-mechanism.png"
+                     x="0" y="0" width="1825" height="460" aria-hidden="true"></image>
+              <g data-drum="0" transform="translate(245 235)"></g>
+              <g data-drum="1" transform="translate(650 235)"></g>
+              <g data-drum="2" transform="translate(1200 235)"></g>
+              <g data-drum="3" transform="translate(1605 235)"></g>
+              <image class="drum-clock-lighting" href="./assets/hardware/clock-drum-lighting.png"
+                     x="0" y="0" width="1825" height="460" aria-hidden="true"></image>
+            </svg>
+            <text id="clock-value" class="clock-live-value" x="887" y="252" aria-label="Current time">--:--</text>
+            <text id="eta-value" class="clock-live-value" x="887" y="630" aria-label="Estimated arrival">--:--</text>
           </svg>
           <span id="eta-zone" class="visually-hidden">EASTERN TIME</span>
         </section>
