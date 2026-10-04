@@ -1,5 +1,7 @@
 # Testing Protocol Implementation Plan
 
+Historical implementation plan. Its unconditional full release/Windows requirement is superseded by [the current testing protocol](../../Testing-protocol.md).
+
 > **For agentic workers:** Execute natively in this session, following the approved testing-protocol review; no agent delegation.
 
 **Goal:** Reduce routine verification cost while retaining full exact-SHA release and Windows deployment gates.
