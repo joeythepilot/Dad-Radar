@@ -1,0 +1,81 @@
+/* DadRadar Unit 001 CRT map startup prototype.
+   Isolated to the map aperture; normal map-roll/state behavior is untouched. */
+.route-map-shell.crt-booting { background:#020302; overflow:hidden; }
+.route-map-shell .crt-boot-mask {
+  position:absolute; inset:0; z-index:90; pointer-events:none; overflow:hidden;
+  background:#010201; opacity:1;
+}
+.route-map-shell .crt-boot-phosphor {
+  position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse at center, rgba(247,241,197,.96) 0 1%, rgba(188,213,178,.72) 4%, rgba(93,127,102,.28) 13%, transparent 31%);
+  opacity:0; transform:scale(.02,.008);
+  filter:blur(5px) brightness(2.4);
+}
+.route-map-shell .crt-boot-scan {
+  position:absolute; left:-5%; right:-5%; top:49.5%; height:1.2%;
+  background:rgba(238,246,210,.95);
+  box-shadow:0 0 18px rgba(221,238,194,.9),0 0 48px rgba(179,205,164,.55);
+  opacity:0; transform:scaleX(.02);
+}
+.route-map-shell .crt-boot-raster {
+  position:absolute; inset:-6%;
+  background:repeating-linear-gradient(to bottom,rgba(230,240,210,.08) 0,rgba(230,240,210,.08) 1px,transparent 2px,transparent 4px);
+  opacity:0;
+}
+.route-map-shell.crt-booting > :not(.crt-boot-mask) {
+  transform-origin:center;
+  animation:crt-map-picture 3.85s cubic-bezier(.2,.7,.2,1) both;
+}
+.route-map-shell.crt-booting .crt-boot-phosphor { animation:crt-phosphor 1.65s ease-out .38s both; }
+.route-map-shell.crt-booting .crt-boot-scan { animation:crt-scanline 1.35s ease-out .58s both; }
+.route-map-shell.crt-booting .crt-boot-raster { animation:crt-raster 2.35s linear 1.05s both; }
+.route-map-shell.crt-booting .crt-boot-mask { animation:crt-mask 3.85s linear both; }
+
+@keyframes crt-map-picture {
+  0%,18% { opacity:0; filter:brightness(0) blur(12px) contrast(.2); transform:scaleY(.015) scaleX(.04) translateY(0); }
+  25% { opacity:.35; filter:brightness(2.5) blur(9px) contrast(.55); transform:scaleY(.06) scaleX(.96) translateY(9%); }
+  36% { opacity:.62; filter:brightness(2.05) blur(7px) contrast(.65); transform:scaleY(.72) scaleX(1.025) translateY(-7%); }
+  45% { opacity:.78; filter:brightness(1.75) blur(5px) contrast(.72); transform:scaleY(1.06) scaleX(.99) translateY(3%); }
+  54% { opacity:.9; filter:brightness(1.42) blur(3px) contrast(.82); transform:scaleY(.985) scaleX(1.006) translateY(-1%); }
+  68% { opacity:1; filter:brightness(1.18) blur(1.3px) contrast(.92); transform:none; }
+  82% { filter:brightness(1.07) blur(.45px) contrast(.97); }
+  100% { opacity:1; filter:none; transform:none; }
+}
+@keyframes crt-phosphor {
+  0% {opacity:0;transform:scale(.02,.008)}
+  18% {opacity:1;transform:scale(.08,.018)}
+  45% {opacity:.95;transform:scale(1.15,.055)}
+  68% {opacity:.55;transform:scale(1.35,.42)}
+  100% {opacity:0;transform:scale(1.5,1.25)}
+}
+@keyframes crt-scanline {
+  0% {opacity:0;transform:scaleX(.02)}
+  22% {opacity:1;transform:scaleX(.18)}
+  48% {opacity:.95;transform:scaleX(1)}
+  70% {opacity:.45;transform:scaleX(1);top:42%}
+  100% {opacity:0;transform:scaleX(1);top:56%}
+}
+@keyframes crt-raster {
+  0% {opacity:0;transform:translateY(-16%)}
+  15% {opacity:.55}
+  28% {transform:translateY(11%)}
+  43% {transform:translateY(-6%)}
+  58% {transform:translateY(3%)}
+  78% {opacity:.28;transform:none}
+  100% {opacity:0;transform:none}
+}
+@keyframes crt-mask {
+  0%,16% {background:#010201;opacity:1}
+  25% {background:rgba(4,8,5,.88);opacity:1}
+  45% {background:rgba(8,13,9,.48);opacity:1}
+  68% {background:rgba(7,10,7,.16);opacity:.7}
+  88%,100% {background:transparent;opacity:0}
+}
+@media (prefers-reduced-motion:reduce) {
+  .route-map-shell.crt-booting > :not(.crt-boot-mask),
+  .route-map-shell.crt-booting .crt-boot-phosphor,
+  .route-map-shell.crt-booting .crt-boot-scan,
+  .route-map-shell.crt-booting .crt-boot-raster,
+  .route-map-shell.crt-booting .crt-boot-mask { animation-duration:.01ms!important; animation-delay:0ms!important; }
+}
