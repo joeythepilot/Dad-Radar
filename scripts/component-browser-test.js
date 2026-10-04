@@ -35,11 +35,11 @@ fs.mkdirSync(output,{recursive:true});
     await page.locator('#destination-poster').evaluate(image=>image.decode());
     const actual=await page.locator('#destination-poster').evaluate(n=>({src:n.getAttribute('src'),w:n.naturalWidth,h:n.naturalHeight,visible:!n.hidden,background:getComputedStyle(n.parentElement).backgroundImage}));
     assert(actual.w>0&&actual.h>0&&actual.visible,'Selected destination poster decodes and is visible');
-    assert(actual.src.endsWith(require('../config/posters').getPoster('AVL').source.replace(/^\.\//,'')),'Correct approved AVL poster is selected');
+    assert.equal(new URL(actual.src,origin).pathname,new URL(require('../config/posters').getPoster('AVL').source,origin).pathname,'Correct approved AVL poster is selected, independently of cache/retry parameters');
     assert.equal(actual.background,'none','Poster has one foreground rendering path');
    } else {
-    await page.waitForFunction(()=>document.querySelector('#flight-number')?.textContent.replace(/\s/g,'').includes('3761')&&document.querySelector('#flight-destination')?.textContent.replace(/\s/g,'')==='AVL');
-    assert.equal(await page.locator('#flight-destination').textContent().then(t=>t.replace(/\s/g,'')),'AVL');
+    await page.waitForFunction(()=>document.querySelector('#flight-number')?.getAttribute('aria-label')==='3761'&&document.querySelector('#flight-destination')?.getAttribute('aria-label')==='AVL');
+    assert.equal(await page.locator('#flight-destination').getAttribute('aria-label'),'AVL');
     assert(await page.locator(name==='family-compact'?'#duty-entries':'.daily-schedule-panel').isVisible(),'Family route renders duty alongside the flight');
     assert.equal(await page.locator('script[src*="deployment-refresh.js"]').count(),1,'Independent refresh watchdog is present');
    }
