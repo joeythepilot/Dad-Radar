@@ -154,6 +154,9 @@ const server = http.createServer((request, response) => {
         assert.equal(await page.locator('.flap-character[data-value=" "]').first().evaluate(n=>getComputedStyle(n,'::after').opacity),'0',
           `${engine}: a settled blank flap has its light off`);
         await page.evaluate(()=>flipFlapOnce(document.querySelector('.flap-character'),'A'));
+        // The lamp has its own 180 ms fade; a settled card is not proof that
+        // its computed light opacity has reached the end of that transition.
+        await page.waitForFunction(()=>getComputedStyle(document.querySelector('.flap-character'),'::after').opacity==='1',null,{timeout:1500});
         assert.equal(await page.locator('.flap-character').first().evaluate(n=>getComputedStyle(n,'::after').opacity),'1',
           `${engine}: a flap displaying a character has its light on`);
         assert.equal(await page.locator('.flap-character').first().locator('.flap-glyph svg [data-printed-ink="A"]').count(),2,
