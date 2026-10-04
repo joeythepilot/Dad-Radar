@@ -9,8 +9,9 @@
 .twin-clock-art { display: block; width: 100%; height: 100%; overflow: hidden; }
 .clock-live-value { opacity: 0; pointer-events: none; }
 .drum-clock { overflow: hidden; }
-.drum-clock-lighting { opacity: 0; transition: opacity 850ms ease-in-out; pointer-events: none; }
-.drum-clock.is-lit .drum-clock-lighting { opacity: .62; }
+.drum-lamp { opacity: 0; transition: opacity 850ms ease-in-out; pointer-events: none; }
+.drum-clock.is-lit .drum-lamp[data-lit="true"] { opacity: .8; }
+.period-print { animation: drum-index 410ms cubic-bezier(.19,.72,.16,1) both; }
 .drum-print {
   animation: drum-index 410ms cubic-bezier(.19,.72,.16,1) both;
   transform-box: fill-box;
@@ -29,8 +30,8 @@
   100% { transform: translateY(0) scaleY(1); opacity: 1; filter: blur(0); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .drum-print, .drum-exit { animation: none; }
-  .drum-clock-lighting { transition: none; }
+  .drum-print, .drum-exit, .period-print { animation: none; }
+  .drum-lamp { transition: none; }
 }
 /* The existing tile artwork scales into its shorter top-left bay. */
 html:not([data-family-full]) .flight-strip-module {

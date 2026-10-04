@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="110" height="70" viewBox="0 0 110 70">
+  <defs>
+    <linearGradient id="bronze" x2="0" y2="1">
+      <stop stop-color="#795c36"/><stop offset=".13" stop-color="#b89255"/>
+      <stop offset=".32" stop-color="#3c3022"/><stop offset=".72" stop-color="#30291f"/>
+      <stop offset=".89" stop-color="#aa7b42"/><stop offset="1" stop-color="#4b3623"/>
+    </linearGradient>
+    <linearGradient id="roller" x2="0" y2="1">
+      <stop stop-color="#0d0e0d"/><stop offset=".2" stop-color="#282925"/>
+      <stop offset=".48" stop-color="#171917"/><stop offset=".73" stop-color="#101211"/>
+      <stop offset="1" stop-color="#050707"/>
+    </linearGradient>
+    <linearGradient id="wear" x2="0" y2="1">
+      <stop stop-color="#f0c987" stop-opacity=".38"/>
+      <stop offset=".23" stop-color="#c69454" stop-opacity=".06"/>
+      <stop offset=".77" stop-color="#d3ac72" stop-opacity=".03"/>
+      <stop offset="1" stop-color="#c69959" stop-opacity=".3"/>
+    </linearGradient>
+  </defs>
+  <rect x="1" y="1" width="108" height="68" rx="11" fill="#090a09" stroke="#181510" stroke-width="2"/>
+  <rect x="4" y="4" width="102" height="62" rx="8" fill="url(#bronze)" stroke="#c29b60" stroke-opacity=".65"/>
+  <rect x="9" y="9" width="92" height="52" rx="5" fill="#090b0b" stroke="#1d1c18" stroke-width="3"/>
+  <rect x="14" y="12" width="82" height="46" rx="3" fill="url(#roller)" stroke="#95734a" stroke-width="1.5"/>
+  <path d="M17 18h76 M17 52h76" stroke="#cf9e61" stroke-opacity=".24"/>
+  <rect x="17" y="14" width="76" height="42" fill="url(#wear)"/>
+  <path d="M22 15v41 M88 15v41" stroke="#0a0b0a" stroke-width="2"/>
+  <path d="M27 21h19 M70 48h13 M34 53h11 M64 18h13" stroke="#ab7c4a" stroke-opacity=".12" stroke-width=".6"/>
+  <circle cx="8" cy="35" r="2" fill="#7c5b37" stroke="#c39a5c" stroke-width=".6"/>
+  <circle cx="102" cy="35" r="2" fill="#7c5b37" stroke="#c39a5c" stroke-width=".6"/>
+</svg>

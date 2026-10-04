@@ -119,7 +119,9 @@ fs.mkdirSync(output, {recursive: true});
    assert.equal(await page.locator('.twin-clock-panel').count(),1,'Approved single twin-clock housing must exist');
    assert.equal(await page.locator('.clock-block,.eta-block,.clock-support-rod').count(),0,'Old housings and mounts removed');
    assert.equal(await page.locator('.drum-clock').count(),2,'The one housing contains two registered drum mechanisms');
-   assert.equal(await page.locator('.drum-clock-lighting').count(),2,'Each mechanism has its own independently dimmable illumination layer');
+   assert.equal(await page.locator('.drum-lamp').count(),8,'Each physical drum has a restrained, independently gated lamp');
+   assert.equal(await page.locator('.drum-clock-lighting').count(),0,'The blown-out lighting PNG is retained on disk but no longer composited over the clock');
+   assert.equal(await page.locator('.period-window-art').count(),2,'Each clock has an illustrated mechanical period window');
    const geometry=await page.evaluate(()=>{
      const box=s=>document.querySelector(s).getBoundingClientRect().toJSON();
      const clock=document.querySelector('.twin-clock-art');
@@ -150,26 +152,38 @@ fs.mkdirSync(output, {recursive: true});
        .every((drum,index)=>drum.getAttribute('data-digit')===digits[index]),expected);
      const physical=await page.locator('[data-clock="eta"]').evaluate(n=>({
        lit:n.classList.contains('is-lit'),prints:[...n.querySelectorAll('.drum-print:not(.drum-exit) [data-printed-ink]')].map(ink=>ink.getAttribute('data-printed-ink')),
-       browserText:n.querySelectorAll('text').length
+       browserText:n.querySelectorAll('text').length,
+       period:n.parentNode.querySelector('[data-period="eta"] .period-ink').getAttribute('data-period-value'),
+       periodPrint:n.parentNode.querySelector('[data-period="eta"] .period-ink [data-printed-ink]')?.getAttribute('data-printed-ink')||''
      }));
      assert.deepEqual(physical.prints,expected.filter(Boolean),'Only physical wheel positions carry printed numeral outlines');
      assert.equal(physical.browserText,0,'No browser text floats above the drums');
      assert.equal(physical.lit,eta==='7:42 PM','The ETA lighting fades when no readable ETA exists');
+     assert.equal(physical.period,eta==='7:42 PM'?'PM':'','The period roller follows a valid ETA and blanks with the drums');
+     assert.equal(physical.periodPrint,physical.period,'Period ink is a physical outline, not browser text');
    }
    await page.evaluate(()=>updateDashboard(dadRadarVisualState));
    const timeBefore=await page.locator('#clock-value').textContent();
    await page.waitForFunction(before=>document.querySelector('#clock-value').textContent!==before,timeBefore);
    assert.equal(await page.locator('[data-clock="current"] [data-drum]').count(),4,'Current time uses four mechanical drums');
+   const currentPeriod=await page.evaluate(()=>({
+     label:document.querySelector('#clock-value').textContent,
+     physical:document.querySelector('[data-period="current"] .period-ink').getAttribute('data-period-value')
+   }));
+   assert.equal(currentPeriod.physical,currentPeriod.label.match(/\b(?:AM|PM)\b/)?.[0],
+     'The current Eastern clock shows the correct physical AM/PM position');
    }
    await page.waitForFunction(()=>[...document.querySelectorAll('.sequence-housing-art image')].length===1);
    const assets=await page.evaluate(async(clockOnly)=>{
-     const paths=[...document.querySelectorAll('image,img')].map(n=>n.getAttribute('href')||n.getAttribute('src')).filter(s=>s&&(clockOnly?/assets\/hardware\/clock-drum-/:/assets\/hardware\/(airport-|instrument-|clock-drum-)/).test(s));
+     const paths=[...document.querySelectorAll('image,img')].map(n=>n.getAttribute('href')||n.getAttribute('src')).filter(s=>s&&(clockOnly?/assets\/hardware\/(clock-drum-|clock-period-)/:/assets\/hardware\/(airport-|instrument-|clock-drum-|clock-period-)/).test(s));
      return Promise.all([...new Set(paths)].map(src=>new Promise(resolve=>{const i=new Image();i.onload=()=>resolve({src,w:i.naturalWidth,h:i.naturalHeight});i.onerror=()=>resolve({src,w:0});i.src=src;})));
    },clockFocus);
-   for(const name of ['clock-drum-mechanism.png','clock-drum-lighting.png']) {
+   for(const name of ['clock-drum-mechanism.png']) {
      const asset=assets.find(item=>item.src.endsWith(name));
      assert.deepEqual([asset?.w,asset?.h],[1825,460],`${name}: approved registered clock layer loads at production dimensions`);
    }
+   const periodAsset=assets.find(item=>item.src.endsWith('clock-period-window.svg'));
+   assert.deepEqual([periodAsset?.w,periodAsset?.h],[110,70],'The mechanically framed period art loads at its native size');
    assert.equal(assets.length,clockFocus?2:9);assert(assets.every(a=>a.w>0),'Approved map, wheel and clock PNGs decode');
    if(!clockFocus) {
    const fitting=await page.locator('.airport-leader-fitting').first().getAttribute('transform');
@@ -223,18 +237,20 @@ fs.mkdirSync(output, {recursive: true});
        const housing=n.closest('.twin-clock-panel').getBoundingClientRect();
        const opening=n.getBoundingClientRect();
        const mechanism=n.querySelector('.drum-clock-mechanism').getBoundingClientRect();
-       const lighting=n.querySelector('.drum-clock-lighting').getBoundingClientRect();
-       return {housing:housing.toJSON(),opening:opening.toJSON(),mechanism:mechanism.toJSON(),lighting:lighting.toJSON()};
+       const lamps=[...n.querySelectorAll('.drum-lamp')].map(l=>l.getBoundingClientRect().toJSON());
+       const period=n.parentNode.querySelector('[data-period="eta"] .period-window-art').getBoundingClientRect();
+       return {housing:housing.toJSON(),opening:opening.toJSON(),mechanism:mechanism.toJSON(),lamps,period:period.toJSON()};
      });
      assert(Math.abs(centered.mechanism.x-centered.opening.x)<.5 &&
        Math.abs(centered.mechanism.right-centered.opening.right)<.5,
        'Approved mechanism fills the original clock opening without side gutters');
-     assert(Math.abs(centered.mechanism.x-centered.lighting.x)<.5 &&
-       Math.abs(centered.mechanism.width-centered.lighting.width)<.5,
-       'Lighting remains registered on the mechanism after a resize');
+     assert(centered.lamps.every(l=>l.x>=centered.opening.x-1&&l.right<=centered.opening.right+1),
+       'Per-drum illumination stays inside the cropped aperture after a resize');
      assert(centered.mechanism.x>=centered.housing.x &&
        centered.mechanism.right<=centered.housing.right,
        'The mechanism stays inside the approved housing footprint');
+     assert(centered.period.x>=centered.opening.right && centered.period.right<=centered.housing.right,
+       'The illustrated period window sits on the spare housing rail, outside the four drums');
    }
    results.push({name,geometry,assets});await page.close();
  }
@@ -247,7 +263,10 @@ fs.mkdirSync(output, {recursive: true});
  assert.equal(await arrivalPage.locator('#eta-value').textContent(),'ARRIVED','Confirmed arrival must retire the previous ETA');
  assert.deepEqual(await arrivalPage.locator('[data-clock="eta"] [data-drum]').evaluateAll(nodes=>nodes.map(n=>n.getAttribute('data-digit'))),
    ['', '', '', ''],'Confirmed arrival blanks all four physical drums');
- await arrivalPage.waitForFunction(()=>getComputedStyle(document.querySelector('[data-clock="eta"] .drum-clock-lighting')).opacity==='0');
+ await arrivalPage.waitForFunction(()=>[...document.querySelectorAll('[data-clock="eta"] .drum-lamp')]
+   .every(n=>getComputedStyle(n).opacity==='0'));
+ assert.equal(await arrivalPage.locator('[data-period="eta"] .period-ink').getAttribute('data-period-value'),'',
+   'Arrival blanks the physical AM/PM position too');
  await arrivalPage.locator('.twin-clock-panel').screenshot({path:path.join(output,'clock-arrived.png')});
  state.status='BOARDING';state.flight.eta='11:21 AM';
  await arrivalPage.evaluate(s=>window.dispatchEvent(new CustomEvent('dad-radar:visual-state-change',{detail:{state:s}})),state);
