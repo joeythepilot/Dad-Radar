@@ -16,15 +16,26 @@ function selectPlan(files,{release=false,uncertain=false}={}) {
   const paths=files.filter(p=>p&&!docs(p));
   let full=release||uncertain;
   const selected=new Set();
+  const known={
+    clocks:['App/clock-drums.js','App/clock-drums-test.js','assets/hardware/clock-drum-mechanism.png','assets/hardware/clock-drum-lighting.png'],
+    weekly:['App/weekly-ticker.js','App/weekly-ticker-test.js','App/weekly-calendar-sync-test.js','App/weekly-overnight-update-test.js','scripts/weekly-ticker-headed-test.js','scripts/weekly-ticker-browser-proof.js'],
+    'split-flap':['App/split-flap-state.js','App/split-flap-state-test.js','UI/split-flap-matte.css','scripts/split-flap-headed-test.js','scripts/split-flap-visual-style-test.js','assets/split-flap/split-flap-tile.png'],
+    map:['App/map-cartography.js','App/map-cartography-test.js','App/route-map.js','App/route-map-test.js','App/descent-camera.js','App/descent-camera-test.js','App/map-roll-transition.js','App/map-roll-transition-test.js','App/map-roll-lifecycle-test.js','scripts/map-hardware-headed-test.js','scripts/map-hardware-browser-test.js','scripts/map-hardware-diagnostics.js','scripts/map-startup-mobile-browser-proof.js'],
+    deployment:['App/deployment-refresh.js','App/deployment-refresh-test.js','scripts/deployment-refresh-browser-test.js'],
+    audio:['scripts/audio-control-browser-test.js']
+  };
   for(const p of paths) {
-    if(/^(App\/clock-drums(?:-test)?\.js|assets\/hardware\/clock-drum-[^/]+\.png)$/.test(p))selected.add('clocks');
-    else if(/^(App\/weekly-[^/]+\.js|UI\/weekly-ticker[^/]*\.css|scripts\/weekly-ticker[^/]*\.js)$/.test(p))['weekly','artwork'].forEach(s=>selected.add(s));
-    else if(/^(App\/split-flap[^/]*\.js|UI\/split-flap[^/]*\.css|scripts\/split-flap[^/]*\.js|assets\/split-flap\/)/.test(p))['split-flap','artwork'].forEach(s=>selected.add(s));
-    else if(/^(App\/(map-|route-map|descent-camera)|scripts\/(map-hardware|map-startup|maproll|graphite-history)|assets\/maps\/)/.test(p))['map','artwork'].forEach(s=>selected.add(s));
-    else if(/^(App\/deployment-refresh|scripts\/deployment-refresh)/.test(p))selected.add('deployment');
-    else if(/^scripts\/audio-control-browser-test\.js$/.test(p))selected.add('audio');
-    else if(/^scripts\/approved-artwork-browser-test\.js$/.test(p))['artwork','clocks'].forEach(s=>selected.add(s));
-    else full=true; // Shared consumers, new files and unknown dependencies are broad by default.
+    const component=Object.keys(known).find(s=>known[s].includes(p));
+    if(component) {
+      selected.add(component);
+      if(['weekly','split-flap','map'].includes(component))selected.add('artwork');
+    } else if(['App/split-flap-audio.js','App/split-flap-audio-test.js'].includes(p)) {
+      ['split-flap','artwork','audio'].forEach(s=>selected.add(s));
+    } else if(['App/map-roll-audio.js','App/map-roll-audio-test.js'].includes(p)) {
+      ['map','artwork','audio'].forEach(s=>selected.add(s));
+    } else if(p==='scripts/approved-artwork-browser-test.js') {
+      ['artwork','clocks'].forEach(s=>selected.add(s));
+    } else full=true; // Shared consumers, new files and unknown dependencies are broad by default.
   }
   const matrix=full?fullMatrix():fullMatrix().filter(j=>selected.has(j.suite));
   return {regression:full||paths.length>0,full,matrix,files};

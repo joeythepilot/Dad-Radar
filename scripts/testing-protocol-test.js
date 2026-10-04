@@ -16,6 +16,10 @@ for(const file of ['index.html','Mobile/layout.css','scripts/build-browser.js','
   assert.equal(selectPlan([file]).full,true,`${file}: shared/unknown code needs broad coverage`);
   assert.deepEqual(selectPlan([file]).matrix,fullMatrix());
 }
+for(const file of ['UI/weekly-ticker-layout.css','App/map-new-shared.js','App/weekly-new-shared.js']) {
+  assert.equal(selectPlan([file]).full,true,`${file}: unverified/shared dependencies receive full coverage`);
+}
+assert(suites(['App/split-flap-audio.js']).includes('audio'),'Split-flap audio changes include the shared unlock consumer');
 assert.equal(selectPlan([], {release:true}).full,true,'A release always tests the whole candidate');
 assert.equal(selectPlan([], {uncertain:true}).full,true,'Unknown diffs never silently skip coverage');
 assert.deepEqual(suites(['App/clock-drums.js','UI/physical-faceplate-v3.css']),['weekly','split-flap','map','artwork','deployment','audio','clocks']);
