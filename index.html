@@ -197,22 +197,22 @@
              =============================================== -->
 
         <!-- One photographed housing; the existing controllers own both values. -->
-        <section class="twin-clock-panel electromechanical-clocks" aria-label="Current time and estimated arrival">
-          <img class="twin-clock-housing" src="./assets/hardware/instrument-twin-clock-panel-final.png" alt="" aria-hidden="true">
-          <div class="drum-clock drum-clock-current" aria-label="Current Eastern time">
-            <img class="drum-clock-mechanism" src="./assets/hardware/clock-drum-mechanism.png" alt="" aria-hidden="true">
-            <span class="drum-digit" data-drum="0">-</span><span class="drum-digit" data-drum="1">-</span>
-            <span class="drum-digit" data-drum="2">-</span><span class="drum-digit" data-drum="3">-</span>
-            <img class="drum-clock-lighting" src="./assets/hardware/clock-drum-lighting.png" alt="" aria-hidden="true">
-            <span id="clock-value" class="visually-hidden">--:--</span>
-          </div>
-          <div class="drum-clock drum-clock-eta" aria-label="Estimated arrival">
-            <img class="drum-clock-mechanism" src="./assets/hardware/clock-drum-mechanism.png" alt="" aria-hidden="true">
-            <span class="drum-digit" data-drum="0">-</span><span class="drum-digit" data-drum="1">-</span>
-            <span class="drum-digit" data-drum="2">-</span><span class="drum-digit" data-drum="3">-</span>
-            <img class="drum-clock-lighting" src="./assets/hardware/clock-drum-lighting.png" alt="" aria-hidden="true">
-            <span id="eta-value" class="visually-hidden">--:--</span>
-          </div>
+        <section class="twin-clock-panel" aria-label="Current time and estimated arrival">
+          <svg class="twin-clock-art" viewBox="178 2 1418 824" preserveAspectRatio="xMidYMid meet"
+               role="group" aria-label="Eastern Time clocks">
+            <!-- Ignore transparent side gutters for physical alignment; PNG bytes stay intact. -->
+            <image href="./assets/hardware/instrument-twin-clock-panel-final.png"
+                   x="0" y="0" width="1738" height="829" preserveAspectRatio="xMidYMid meet"></image>
+            <!-- Exposure tint stays within the two photographed paper apertures. -->
+            <g fill="rgba(90,56,15,0.12)" pointer-events="none" aria-hidden="true">
+              <rect class="clock-paper-tone" x="346" y="152" width="1083" height="189" rx="16"></rect>
+              <rect class="clock-paper-tone" x="346" y="533" width="1083" height="188" rx="16"></rect>
+            </g>
+            <text id="clock-value" class="twin-clock-value" x="887" y="252"
+                  text-anchor="middle" dominant-baseline="middle" aria-label="Current time">--:--</text>
+            <text id="eta-value" class="twin-clock-value" x="887" y="630"
+                  text-anchor="middle" dominant-baseline="middle" aria-label="Estimated arrival">--:--</text>
+          </svg>
           <span id="eta-zone" class="visually-hidden">EASTERN TIME</span>
         </section>
 
