@@ -92,7 +92,9 @@ const server = http.createServer((req,res) => {
        const full = readings();
        updateDashboardTelemetry(arrived);
        const telemetry = readings();
-       updateDashboard(dadRadarVisualState);
+       // Restore through the production event path so the physical duty-card
+       // renderer also replaces the temporary legacy rows made by this probe.
+       window.dispatchEvent(new CustomEvent('dad-radar:visual-state-change',{detail:{state:dadRadarVisualState}}));
        return {full, telemetry};
      });
      for (const readings of Object.values(arrivalInstruments)) {
@@ -104,6 +106,7 @@ const server = http.createServer((req,res) => {
      }
    }
    await page.locator('.daily-schedule-card-art').evaluate(image=>image.decode());
+   await page.waitForFunction(()=>document.querySelectorAll('.daily-schedule-entry .daily-schedule-flight').length===3);
    const dutyProof=await page.locator('.daily-schedule-panel').evaluate(panel=>{
      const box=panel.getBoundingClientRect();
      const rows=[...panel.querySelectorAll('.daily-schedule-entry')];
