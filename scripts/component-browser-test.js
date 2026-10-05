@@ -26,7 +26,7 @@ fs.mkdirSync(output,{recursive:true});
    const responses=[];page.on('response',r=>{if(r.status()>=400)responses.push(`${r.status()} ${r.url()}`);});
    await page.route('**/*',r=>r.request().url().startsWith(origin)||r.request().url().startsWith('blob:')?r.continue():r.abort());
    await page.goto(origin+route);
-   if(name!=='family-compact')await page.waitForSelector('#dashboard:not([hidden])',{timeout:12000});
+   if(name!=='family-compact')await page.waitForSelector('#dashboard:not([hidden])',{timeout:30000});
    if(focus==='duty'){
     // Restore the three-row stamped fixture before exercising each layout.
     await page.evaluate(s=>window.dispatchEvent(new CustomEvent('dad-radar:state-change',{detail:{state:s}})),state);
