@@ -3,7 +3,7 @@
 const {lookupAirport} = require("../data/airport-catalog");
 const {distanceNauticalMiles} = require("./flightradar24-service");
 
-const STORAGE_KEY = "dad-radar.flight-leg-guard.v1";
+const STORAGE_KEY = "dad-radar.flight-leg-guard.v2";
 const number = value => value === null || value === undefined || value === "" ? null :
   Number.isFinite(Number(value)) ? Number(value) : null;
 const upper = value => String(value ?? "").trim().toUpperCase();
@@ -26,7 +26,7 @@ function bearing(from, to) {
 function createFlightLegGuard(storage) {
   let saved;
   try {saved = JSON.parse(storage[STORAGE_KEY] || "null");} catch (_) { /* First use. */ }
-  let state = saved?.version === 1 ? saved : null;
+  let state = saved?.version === 2 ? saved : null;
   function save() {storage[STORAGE_KEY] = JSON.stringify(state);}
 
   return {
@@ -35,7 +35,7 @@ function createFlightLegGuard(storage) {
     },
     inspect(event, snapshot, now = Date.now()) {
       const key = legKey(event);
-      if (state?.key !== key) state = {version: 1, key};
+      if (state?.key !== key) state = {version: 2, key};
       const reject = (reason, uncertain = false) => ({accepted: false, reason, uncertain});
       if (state.closed) return reject("completed-leg");
       if ((snapshot.origin && upper(snapshot.origin) !== upper(event.origin)) ||
@@ -82,11 +82,20 @@ function createFlightLegGuard(storage) {
       }
 
       const callsignOnly = snapshot.provider === "adsb.lol" || snapshot.routeSource === "schedule";
-      if (callsignOnly && !state.airborne && airborne && away &&
-          distanceFromOrigin > 15 && distanceToDestination > 10) {
-        // A new session cannot attach an aircraft travelling in the reverse
-        // direction merely because the callsign matches. Wait for better evidence.
-        return reject("direction-unconfirmed", true);
+      const actualOut = Date.parse(event.operational?.actualOut ?? "");
+      const confirmedOut = Number.isFinite(actualOut) && actualOut <= now;
+      if (callsignOnly && !state.airborne && !state.groundAt) {
+        if (!confirmedOut && distanceFromOrigin < 15 && point.onGround === true) {
+          // A same-number inbound can be deplaning at this leg's origin.
+          return reject("departure-unconfirmed", true);
+        }
+        if (airborne && (away || (!confirmedOut &&
+            (distanceFromOrigin <= 4 || speed === null || speed <= 100 ||
+              (headingDifference === null && distanceToDestination > 15))))) {
+          // Do not acquire on the inbound approach, a maneuver near the gate,
+          // or a callsign with no direction evidence. Wait for departure.
+          return reject("direction-unconfirmed", true);
+        }
       }
       if (callsignOnly && state.approachAt && at - state.approachAt >= 600000 &&
           airborne && away && distanceToDestination > 12) {

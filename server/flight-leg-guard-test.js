@@ -3,7 +3,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
-const {createFlightLegGuard} = require("./flight-leg-guard");
+const {createFlightLegGuard, legKey} = require("./flight-leg-guard");
 const {createMasterStateService} = require("./master-state-service");
 const {normalizeAdsbSnapshot} = require("./adsb-lol-service");
 const {normalizeLookup} = require("./flightradar24-service");
@@ -70,6 +70,46 @@ function testGoAroundAndAmbiguity() {
     "A bounce or touch-and-go immediately after one ground report does not close the leg");
 }
 
+function testSameNumberInboundBeforeOutbound() {
+  const bmiToDfw = {id: "bmi-dfw-3364", kind: "flight", origin: "BMI", destination: "DFW",
+    flightNumber: "3364", carrierCode: "MQ", liveLookupCandidates: ["ENY3364"],
+    times: {startUtc: "2026-10-05T22:00:00Z", endUtc: "2026-10-06T00:00:00Z"}};
+  let now = Date.parse("2026-10-05T21:40:00Z");
+  const inboundNearBmi = {hex: "abc123", flight: "ENY3364",
+    lat: bmi.latitude - .08, lon: bmi.longitude - .08,
+    alt_baro: 8000, gs: 210, track: 45, seen_pos: 0};
+  const inboundFarther = {...inboundNearBmi,
+    lat: bmi.latitude - .4, lon: bmi.longitude - .4};
+  const inboundAtGate = {...inboundNearBmi,
+    lat: bmi.latitude, lon: bmi.longitude, alt_baro: "ground", gs: 0};
+  const guard = createFlightLegGuard({});
+  assert.equal(guard.inspect(bmiToDfw, snapshot(inboundNearBmi, now, bmiToDfw), now).accepted, false,
+    "An inbound approach close to BMI cannot acquire the same-number BMI-DFW leg");
+  const legacyStorage = {"dad-radar.flight-leg-guard.v1": JSON.stringify({
+    version: 1, key: legKey(bmiToDfw), airborne: true, hex: "ABC123"})};
+  assert.equal(createFlightLegGuard(legacyStorage).inspect(bmiToDfw,
+    snapshot(inboundNearBmi, now, bmiToDfw), now).accepted, false,
+    "A prior version's mistaken airborne latch must not survive the deployment restart");
+  now += 10000;
+  assert.equal(guard.inspect(bmiToDfw, snapshot(inboundFarther, now, bmiToDfw), now).accepted, false,
+    "An inbound callsign must not latch and then bypass direction checks");
+  assert.equal(createFlightLegGuard({}).inspect(bmiToDfw,
+    snapshot({...inboundFarther, track: null}, now, bmiToDfw), now).accepted, false,
+    "A route-less report without heading cannot identify a same-number outbound leg");
+  now += 10000;
+  assert.equal(guard.inspect(bmiToDfw, snapshot(inboundAtGate, now, bmiToDfw), now).accepted, false,
+    "Deplaning at BMI is not evidence that the outbound leg has pushed back");
+  now += 10000;
+  const genuineOutbound = {...inboundNearBmi, lat: bmi.latitude - .1, lon: bmi.longitude - .1,
+    alt_baro: 7000, gs: 230, track: 235};
+  assert.equal(guard.inspect(bmiToDfw, snapshot(genuineOutbound, now, bmiToDfw), now).accepted, true,
+    "An airborne departure moving toward DFW can acquire the scheduled leg");
+  const outConfirmed = {...bmiToDfw, operational: {actualOut: new Date(now).toISOString()}};
+  assert.equal(createFlightLegGuard({}).inspect(outConfirmed,
+    snapshot(inboundAtGate, now, outConfirmed), now).accepted, true,
+    "A route-matched airline OUT can identify the ground phase before takeoff");
+}
+
 async function testMasterContinuity() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "dad-leg-"));
   let now = Date.parse("2026-09-12T17:40:00Z"), record = inbound;
@@ -102,5 +142,6 @@ async function testMasterContinuity() {
 
 testAssociation();
 testGoAroundAndAmbiguity();
+testSameNumberInboundBeforeOutbound();
 testMasterContinuity().then(() => console.log("Flight leg tests passed: reverse callsign, aircraft continuity, taxi-in, restart, go-around and reassignment."))
   .catch(error => {console.error(error); process.exitCode = 1;});
