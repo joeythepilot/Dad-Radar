@@ -31,6 +31,9 @@ const DEADHEAD_SUMMARY_PATTERN =
 
 const DEADHEAD_PATTERN = /\bDEADHEAD\b/i;
 
+const IMPORTED_FLIGHT_SUMMARY_PATTERN =
+  /^(DHD\s+)?FLT\s*(\d{1,4})\s*$/i;
+
 const LAYOVER_SUMMARY_PATTERN =
   /^Layover\s+(?:in\s+)?([A-Z]{3})\b(?:\s+\(([^)]+)\))?/i;
 
@@ -360,6 +363,9 @@ function parsePilotEvent(
   const descriptionFlight =
     parseFlightDescription(description);
 
+  const importedFlightMatch =
+    summary.match(IMPORTED_FLIGHT_SUMMARY_PATTERN);
+
   const isCommute =
     Boolean(commuteMatch) ||
     Boolean(
@@ -372,15 +378,15 @@ function parsePilotEvent(
   const isDeadhead =
     DEADHEAD_PATTERN.test(
       `${summary} ${description}`
-    );
+    ) || Boolean(importedFlightMatch?.[1]);
 
   if (
     commuteMatch ||
     flightMatch ||
     deadheadMatch ||
-    (/^FLT\s+\d{1,4}\s*$/i.test(summary) && descriptionFlight && summary.match(/\d+/)[0] === descriptionFlight.flightNumber) ||
+    (importedFlightMatch && descriptionFlight && importedFlightMatch[2] === descriptionFlight.flightNumber) ||
     (isCommute && descriptionFlight) ||
-    (isDeadhead && descriptionFlight)
+    (isDeadhead && !importedFlightMatch && descriptionFlight)
   ) {
     const summaryCarrier =
       commuteMatch

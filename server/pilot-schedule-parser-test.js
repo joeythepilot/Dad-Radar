@@ -403,6 +403,20 @@ function runTests() {
   assert.equal(parsePilotEvent(createEvent({summary:'Layover in EVV'})).kind, 'layover');
   assert.equal(parsePilotEvent(createEvent({summary:'FLT 3632'})).kind, 'other');
   assert.equal(parsePilotEvent({...cci, summary:'FLT 9999'}).kind, 'other', 'Do not associate mismatched flight numbers');
+  const deadheadCci = {...cci, description:cci.description.replace(/3632/g, '3679')};
+  for (const summary of ['DHD FLT3679', 'DHD FLT 3679']) {
+    const deadhead = parsePilotEvent({...deadheadCci, summary});
+    assert.equal(deadhead.kind, 'flight');
+    assert.equal(deadhead.isDeadhead, true);
+    assert.equal(deadhead.travelRole, 'deadhead');
+    assert.equal(deadhead.flightNumber, '3679');
+    assert.equal(deadhead.route, 'ORD→EVV');
+    assert.deepEqual(deadhead.liveLookupCandidates, ['AA3679', 'MQ3679', 'ENY3679']);
+    assert.equal(deadhead.times.startUtc, '2026-09-28T03:37:00.000Z');
+  }
+  assert.equal(parsePilotEvent({...deadheadCci, summary:'FLT3679'}).kind, 'flight');
+  assert.equal(parsePilotEvent({...deadheadCci, summary:'DHD FLT9999'}).kind, 'other', 'Do not pair a deadhead title with another flight number');
+  assert.equal(parsePilotEvent(createEvent({summary:'DHD FLT3679'})).kind, 'other', 'A shorthand title needs flight details');
   assert.equal(parsePilotEvent({...cci, description:cci.description.replace('04:58 UTC', '02:58 UTC')}).kind, 'other', 'Reject reversed explicit UTC times');
   const weekly = require('../App/weekly-ticker');
   const overnight = parsePilotEvent(createEvent({summary:'Layover in EVV',start:{dateTime:'2026-09-27T23:58:00-04:00'},end:{dateTime:'2026-09-28T15:53:00-04:00'}}));
