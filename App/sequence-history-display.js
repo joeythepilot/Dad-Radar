@@ -1,9 +1,6 @@
 (function initializeSequenceHistoryDisplay(global) {
   "use strict";
 
-  const compactMobile = global.location?.pathname?.replace(/\/$/, "") === "/mobile";
-  if (compactMobile) return;
-
   let badge = null;
   let valueElement = null;
   let detailElement = null;

@@ -251,7 +251,7 @@ function testReferenceCitiesStayReadableWhileZoomed() {
     "Full-mobile city labels should read as restrained map print rather than oversized interface text."
   );
 
-  const compactMobile =
+  const familyMobile =
     createHarness(
       flightAtAltitude(12000),
       null,
@@ -259,25 +259,23 @@ function testReferenceCitiesStayReadableWhileZoomed() {
       "/mobile"
     );
 
-  compactMobile.elements[
+  familyMobile.elements[
     "route-map-svg"
   ].rectangle.width = 600;
 
-  const compactBoost =
-    compactMobile.context
+  const familyBoost =
+    familyMobile.context
       .referenceCityPresentationScale();
 
-  const compactFontPixels =
+  const familyFontPixels =
     11 *
-    compactBoost *
+    familyBoost *
     600 /
     1200;
 
-  assert(
-    compactFontPixels >= 5.5 &&
-    compactFontPixels <= 6.25,
-    "Compact-mobile city labels should remain legible while staying subordinate to flight information."
-  );
+  assert.equal(familyBoost, fullBoost, "The family address uses the same map ink scale as the legacy Full address.");
+  assert(familyFontPixels >= 6 && familyFontPixels <= 7,
+    "Full family city labels stay legible at the normal mobile address.");
 
   const desktop =
     createHarness(

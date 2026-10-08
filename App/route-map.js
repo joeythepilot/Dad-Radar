@@ -210,13 +210,7 @@ function referenceCityPresentationScale() {
     return 1;
   }
 
-  const compactMobile =
-    CURRENT_MAP_PATH === "/mobile";
-
-  const targetPixels =
-    compactMobile
-      ? 5.75
-      : 6.5;
+  const targetPixels = 6.5;
 
   const nominalFontSize = 11;
 
