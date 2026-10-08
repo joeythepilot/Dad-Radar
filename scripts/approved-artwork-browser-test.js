@@ -116,9 +116,12 @@ fs.mkdirSync(output, {recursive: true});
    assert.equal(await page.locator('.destination-stage').evaluate(node=>getComputedStyle(node).backgroundImage), 'none',
      'The loaded poster must have one foreground rendering path.');
    }
-   assert.equal(await page.locator('.twin-clock-panel').count(),1,'Approved single twin-clock housing must exist');
+    assert.equal(await page.locator('.twin-clock-panel').count(),1,'The primary twin clocks keep their faceplate opening');
    assert.equal(await page.locator('.clock-block,.eta-block,.clock-support-rod').count(),0,'Old housings and mounts removed');
-   assert.equal(await page.locator('.drum-clock').count(),2,'The one housing contains two registered drum mechanisms');
+    assert.equal(await page.locator('.twin-clock-art > image,.period-window-art').count(),0,'The photographed housing and small period frames are absent');
+    assert.equal(await page.locator('.drum-clock').count(),2,'Current and ETA each have a mechanical clock row');
+    assert.equal(await page.locator('.clock-wheel').count(),8,'Each row has four numeral wheels');
+    assert.equal(await page.locator('.period-wheel').count(),2,'Each row has a full-size period wheel');
    assert.equal(await page.locator('.drum-lamp').count(),8,'Each physical drum has a restrained, independently gated lamp');
    assert.equal(await page.locator('.drum-clock-lighting').count(),0,'The blown-out lighting PNG is retained on disk but no longer composited over the clock');
    assert.equal(await page.locator('.period-window-art').count(),2,'Each clock has an illustrated mechanical period window');
@@ -127,7 +130,7 @@ fs.mkdirSync(output, {recursive: true});
      const clock=document.querySelector('.twin-clock-art');
      const ink=[...clock.querySelectorAll('text')].map(n=>({id:n.id,box:((r)=>({x:r.x,y:r.y,width:r.width,height:r.height}))(n.getBBox()),text:n.textContent}));
      return {panel:box('.twin-clock-panel'),strip:box('.flight-strip-module'),rail:box('.instrument-rail'),
-       ink,artHeight:824*clock.getScreenCTM().d,artWidth:1418*clock.getScreenCTM().a,scale:clock.getScreenCTM().toString(),weekly:document.querySelectorAll('.weekly-overnight-bay').length,
+        ink,artHeight:824*clock.getScreenCTM().d,artWidth:1418*clock.getScreenCTM().a,scale:clock.getScreenCTM().toString(),weekly:document.querySelectorAll('.weekly-overnight-bay').length,
        gauge:document.querySelectorAll('.instrument-slot').length,
        board:box('.flight-board'),tiles:[...document.querySelectorAll('.flap-character')].map(n=>n.getBoundingClientRect().toJSON())};
    });
@@ -135,8 +138,8 @@ fs.mkdirSync(output, {recursive: true});
    assert(Math.abs(geometry.panel.left-geometry.rail.left)<1,'Clock aligns with rail left');
    assert(Math.abs(geometry.panel.right-geometry.rail.right)<1,'Clock aligns with rail right');
    assert(Math.abs(geometry.panel.height-geometry.strip.height)<1,'Clock bay matches split-flap height');
-   assert(Math.abs(geometry.artHeight-geometry.strip.height)<2,'Visible clock housing matches split-flap height');
-   assert(Math.abs(geometry.artWidth-geometry.rail.width)<2,'Visible clock housing matches rail width');
+    assert(Math.abs(geometry.artHeight-geometry.strip.height)<2,'Clock art keeps the split-flap bay height');
+    assert(Math.abs(geometry.artWidth-geometry.rail.width)<2,'Clock art keeps the instrument rail width');
    } else { await require('./physical-faceplate-browser-proof').checkPhysicalFaceplate(page,name); }
    assert.equal(geometry.weekly,7);assert.equal(geometry.gauge,3);
    if(!clockFocus&&name==='kiosk')await page.locator('.heading-instrument').screenshot({path:path.join(output,'heading-detail.png')});
@@ -182,9 +185,9 @@ fs.mkdirSync(output, {recursive: true});
      const asset=assets.find(item=>item.src.endsWith(name));
      assert.deepEqual([asset?.w,asset?.h],[1825,460],`${name}: approved registered clock layer loads at production dimensions`);
    }
-   const periodAsset=assets.find(item=>item.src.endsWith('clock-period-window.svg'));
-   assert.deepEqual([periodAsset?.w,periodAsset?.h],[110,70],'The mechanically framed period art loads at its native size');
-   assert.equal(assets.length,clockFocus?2:9);assert(assets.every(a=>a.w>0),'Approved map, wheel and clock PNGs decode');
+    assert(!assets.some(item=>/instrument-twin-clock-panel-final|clock-period-window/.test(item.src)),
+      'Removed housing assets are not composited');
+    assert.equal(assets.length,clockFocus?1:7);assert(assets.every(a=>a.w>0),'Approved map, wheel and clock PNGs decode');
    if(!clockFocus) {
    const fitting=await page.locator('.airport-leader-fitting').first().getAttribute('transform');
    assert.match(fitting,/translate\(.+\) rotate\(/,'End fitting follows positioned leader');
@@ -233,24 +236,25 @@ fs.mkdirSync(output, {recursive: true});
    if(name==='kiosk'&&clockFocus) {
      await page.setViewportSize({width:1366,height:768});
      await assertBrowserSettled('kiosk after resize');
-     const centered=await page.locator('[data-clock="eta"]').evaluate(n=>{
-       const housing=n.closest('.twin-clock-panel').getBoundingClientRect();
-       const opening=n.getBoundingClientRect();
-       const mechanism=n.querySelector('.drum-clock-mechanism').getBoundingClientRect();
-       const lamps=[...n.querySelectorAll('.drum-lamp')].map(l=>l.getBoundingClientRect().toJSON());
-       const period=n.parentNode.querySelector('[data-period="eta"] .period-window-art').getBoundingClientRect();
-       return {housing:housing.toJSON(),opening:opening.toJSON(),mechanism:mechanism.toJSON(),lamps,period:period.toJSON()};
-     });
-     assert(Math.abs(centered.mechanism.x-centered.opening.x)<.5 &&
-       Math.abs(centered.mechanism.right-centered.opening.right)<.5,
-       'Approved mechanism fills the original clock opening without side gutters');
-     assert(centered.lamps.every(l=>l.x>=centered.opening.x-1&&l.right<=centered.opening.right+1),
-       'Per-drum illumination stays inside the cropped aperture after a resize');
-     assert(centered.mechanism.x>=centered.housing.x &&
-       centered.mechanism.right<=centered.housing.right,
-       'The mechanism stays inside the approved housing footprint');
-     assert(centered.period.x>=centered.opening.right && centered.period.right<=centered.housing.right,
-       'The illustrated period window sits on the spare housing rail, outside the four drums');
+      const rows=await page.locator('.drum-clock').evaluateAll(nodes=>nodes.map(n=>{
+        const panel=n.closest('.twin-clock-panel').getBoundingClientRect();
+        const wheels=[...n.querySelectorAll('.clock-wheel')];
+        const period=n.querySelector('.period-wheel');
+        const boxes=[...wheels,period].map(w=>w.getBoundingClientRect().toJSON());
+        return {panel:panel.toJSON(),boxes,caption:n.querySelector('.clock-caption')?.textContent};
+      }));
+      assert.deepEqual(rows.map(row=>row.caption),['CURRENT TIME','ESTIMATED ARRIVAL']);
+      for(const row of rows){
+        assert.equal(row.boxes.length,5,'Four numerals and one period wheel remain visible');
+        const [first,...rest]=row.boxes;
+        assert(rest.every(b=>Math.abs(b.width-first.width)<1 && Math.abs(b.height-first.height)<1),
+          'AM/PM wheel matches the numeral wheel dimensions');
+        assert(row.boxes.every(b=>b.left>=row.panel.left-1 && b.right<=row.panel.right+1 &&
+          b.top>=row.panel.top-1 && b.bottom<=row.panel.bottom+1),
+          'Every wheel stays within the unchanged physical opening after resize');
+        assert(row.boxes.every((b,i)=>!i || b.left>=row.boxes[i-1].right-1),
+          'Adjacent wheel windows do not overlap');
+      }
    }
    results.push({name,geometry,assets});await page.close();
  }
@@ -310,3 +314,4 @@ fs.mkdirSync(output, {recursive: true});
  console.log((clockFocus?'Focused clock':'Approved artwork')+' browser checks passed: '+results.map(r=>r.name).join(', '));
  } finally {await browser.close();await new Promise(r=>server.close(r));}
 })().catch(e=>{console.error(e);process.exitCode=1;});
+

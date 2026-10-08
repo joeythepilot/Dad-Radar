@@ -58,12 +58,14 @@
     });
     const period = clock.parentNode?.querySelector?.(`[data-period="${clock.getAttribute?.("data-clock")}"] .period-ink`);
     const nextPeriod = readDrumPeriod(value);
+    Array.from(clock.querySelectorAll(".period-lamp")).forEach(lamp =>
+      lamp.setAttribute("data-lit", String(Boolean(nextPeriod))));
     if (period && period.getAttribute("data-period-value") !== nextPeriod) {
       period.setAttribute("data-period-value", nextPeriod);
       period.replaceChildren();
       if (nextPeriod) {
         const print = printedInk.svg(clock.ownerDocument, nextPeriod, {
-          height: 34, cellWidth: 33, material: "wheel", ink: "#e9d9b5",
+          height: 125, cellWidth: 95, material: "wheel", ink: "#e9d9b5",
           seed: `clock-period-${clock.getAttribute?.("data-clock")}`,
           idPrefix: `clock-period-${clock.getAttribute?.("data-clock")}-${nextPeriod}-${++printSerial}`
         });
@@ -80,3 +82,4 @@
   if (typeof module === "object" && module.exports) module.exports = api;
   else root.dadRadarClockDrums = api;
 })(globalThis);
+

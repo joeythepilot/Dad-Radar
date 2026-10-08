@@ -39,8 +39,9 @@ const document = {createElementNS(namespace, tag) {
 const drums = Array.from({length:4}, () => document.createElementNS("svg", "g"));
 const lamps = Array.from({length:4}, () => document.createElementNS("svg", "ellipse"));
 const period = document.createElementNS("svg", "g");
+ const periodLamp = document.createElementNS("svg", "ellipse");
 const clock = {ownerDocument: document, getAttribute() { return "eta"; },
-  querySelectorAll(selector) { return selector === ".drum-lamp" ? lamps : drums; },
+   querySelectorAll(selector) { return selector === ".drum-lamp" ? lamps : selector === ".period-lamp" ? [periodLamp] : drums; },
   parentNode: {querySelector() { return period; }}};
 assert.deepEqual(paintClock(clock, "9:07 AM", printedInk), [1, 2, 3]);
 assert.deepEqual(lamps.map(lamp=>lamp.getAttribute("data-lit")),["false","true","true","true"],
@@ -51,6 +52,7 @@ assert.equal(drums[1].children[0].children[0].attributes["data-printed-ink"], "9
 assert(drums[1].children[0].children[0].children.some(node => node.tag === "g" && node.children.some(child => child.tag === "path")),
   "The actual number is an SVG outline on the drum");
 assert.equal(period.getAttribute("data-period-value"), "AM", "The physical indicator indexes to morning");
+ assert.equal(periodLamp.getAttribute("data-lit"), "true", "The full-size period drum illuminates with a valid time");
 assert.equal(period.children[0].children[0].attributes["data-printed-ink"], "AM",
   "The period is screen-printed outlined ink, not floating browser text");
 assert.deepEqual(paintClock(clock, "9:07:59 AM", printedInk), [],
@@ -63,5 +65,7 @@ assert.deepEqual(paintClock(clock, "ARRIVED", printedInk), [1, 2, 3]);
 assert(drums.every(drum => drum.children.length === 0), "Arrival clears ink from every ETA wheel");
 assert(lamps.every(lamp=>lamp.getAttribute("data-lit")==="false"), "Arrival turns off every ETA lamp");
 assert.equal(period.getAttribute("data-period-value"), "", "Arrival mechanically blanks the period");
+ assert.equal(periodLamp.getAttribute("data-lit"), "false", "Arrival extinguishes the period drum");
 assert.equal(period.children.length, 0, "The blank period has no ink");
 console.log("Clock drum interpretation and indexing passed.");
+

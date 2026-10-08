@@ -196,71 +196,100 @@
              20% vertical instrument rail
              =============================================== -->
 
-        <!-- One photographed housing; the existing controllers own both values. -->
+        <!-- Both mechanical rows fit the existing faceplate opening; the photographed housing is omitted. -->
         <section class="twin-clock-panel" aria-label="Current time and estimated arrival">
           <svg class="twin-clock-art" viewBox="178 2 1418 824" preserveAspectRatio="xMidYMid meet"
                role="group" aria-label="Eastern Time clocks">
-            <!-- Ignore transparent side gutters for physical alignment; PNG bytes stay intact. -->
-            <image href="./assets/hardware/instrument-twin-clock-panel-final.png"
-                   x="0" y="0" width="1738" height="829" preserveAspectRatio="xMidYMid meet"></image>
-            <!-- The original housing and its frame stay in place; only the paper apertures change. -->
-            <g aria-hidden="true">
-              <rect x="350" y="155" width="1075" height="182" rx="9" fill="#090b0a"></rect>
-              <rect x="350" y="535" width="1075" height="182" rx="9" fill="#090b0a"></rect>
-            </g>
-            <svg class="drum-clock" data-clock="current" x="350" y="155" width="1075" height="182"
-                 viewBox="0 75.5 1825 309" preserveAspectRatio="xMidYMid meet" overflow="hidden"
-                 role="img" aria-label="Current Eastern time">
-              <image class="drum-clock-mechanism" href="./assets/hardware/clock-drum-mechanism.png"
-                     x="0" y="0" width="1825" height="460" aria-hidden="true"></image>
-              <defs><radialGradient id="clock-lamp-current">
-                <stop stop-color="#f4cb90" stop-opacity=".24"></stop>
-                <stop offset=".42" stop-color="#ecad62" stop-opacity=".12"></stop>
-                <stop offset="1" stop-color="#d48b3d" stop-opacity="0"></stop>
-              </radialGradient></defs>
-              <g aria-hidden="true">
+            <defs><radialGradient id="clock-lamp-current">
+              <stop stop-color="#f4cb90" stop-opacity=".24"></stop>
+              <stop offset=".42" stop-color="#ecad62" stop-opacity=".12"></stop>
+              <stop offset="1" stop-color="#d48b3d" stop-opacity="0"></stop>
+            </radialGradient><radialGradient id="clock-lamp-eta">
+              <stop stop-color="#f4cb90" stop-opacity=".24"></stop>
+              <stop offset=".42" stop-color="#ecad62" stop-opacity=".12"></stop>
+              <stop offset="1" stop-color="#d48b3d" stop-opacity="0"></stop>
+            </radialGradient></defs>
+            <g class="drum-clock" data-clock="current" role="img" aria-label="CURRENT TIME Eastern time">
+              <text class="clock-caption" x="220" y="103">CURRENT TIME</text>
+              <svg class="clock-wheel" data-wheel="0" x="220" y="130" width="210" height="210"
+                   viewBox="90 75.5 310 309" preserveAspectRatio="xMidYMid meet" overflow="hidden">
+                <image class="drum-clock-mechanism" href="./assets/hardware/clock-drum-mechanism.png"
+                       x="0" y="0" width="1825" height="460" aria-hidden="true"></image>
                 <ellipse class="drum-lamp" cx="245" cy="151" rx="128" ry="86" fill="url(#clock-lamp-current)"></ellipse>
+                <g data-drum="0" transform="translate(245 235)"></g>
+              </svg>
+              <svg class="clock-wheel" data-wheel="1" x="480" y="130" width="210" height="210"
+                   viewBox="495 75.5 310 309" preserveAspectRatio="xMidYMid meet" overflow="hidden">
+                <image class="drum-clock-mechanism" href="./assets/hardware/clock-drum-mechanism.png"
+                       x="0" y="0" width="1825" height="460" aria-hidden="true"></image>
                 <ellipse class="drum-lamp" cx="650" cy="151" rx="128" ry="86" fill="url(#clock-lamp-current)"></ellipse>
+                <g data-drum="1" transform="translate(650 235)"></g>
+              </svg>
+              <svg class="clock-wheel" data-wheel="2" x="820" y="130" width="210" height="210"
+                   viewBox="1045 75.5 310 309" preserveAspectRatio="xMidYMid meet" overflow="hidden">
+                <image class="drum-clock-mechanism" href="./assets/hardware/clock-drum-mechanism.png"
+                       x="0" y="0" width="1825" height="460" aria-hidden="true"></image>
                 <ellipse class="drum-lamp" cx="1200" cy="151" rx="128" ry="86" fill="url(#clock-lamp-current)"></ellipse>
+                <g data-drum="2" transform="translate(1200 235)"></g>
+              </svg>
+              <svg class="clock-wheel" data-wheel="3" x="1080" y="130" width="210" height="210"
+                   viewBox="1450 75.5 310 309" preserveAspectRatio="xMidYMid meet" overflow="hidden">
+                <image class="drum-clock-mechanism" href="./assets/hardware/clock-drum-mechanism.png"
+                       x="0" y="0" width="1825" height="460" aria-hidden="true"></image>
                 <ellipse class="drum-lamp" cx="1605" cy="151" rx="128" ry="86" fill="url(#clock-lamp-current)"></ellipse>
+                <g data-drum="3" transform="translate(1605 235)"></g>
+              </svg>
+              <g class="clock-colon" aria-hidden="true">
+                <circle cx="755" cy="208" r="7"></circle><circle cx="755" cy="267" r="7"></circle>
               </g>
-              <g data-drum="0" transform="translate(245 235)"></g>
-              <g data-drum="1" transform="translate(650 235)"></g>
-              <g data-drum="2" transform="translate(1200 235)"></g>
-              <g data-drum="3" transform="translate(1605 235)"></g>
-            </svg>
-            <g data-period="current" transform="translate(1438 211)" aria-hidden="true">
-              <image class="period-window-art" href="./assets/hardware/clock-period-window.svg"
-                     width="110" height="70"></image>
-              <defs><clipPath id="period-current-clip"><rect x="14" y="12" width="82" height="46"></rect></clipPath></defs>
-              <g clip-path="url(#period-current-clip)"><g class="period-ink" transform="translate(55 35)"></g></g>
+              <svg class="period-wheel" data-period="current" x="1350" y="130" width="210" height="210"
+                   viewBox="90 75.5 310 309" preserveAspectRatio="xMidYMid meet" overflow="hidden">
+                <image class="drum-clock-mechanism" href="./assets/hardware/clock-drum-mechanism.png"
+                       x="0" y="0" width="1825" height="460" aria-hidden="true"></image>
+                <ellipse class="period-lamp" cx="245" cy="151" rx="128" ry="86" fill="url(#clock-lamp-current)"></ellipse>
+                <g class="period-ink" transform="translate(245 235)"></g>
+              </svg>
             </g>
-            <svg class="drum-clock" data-clock="eta" x="350" y="535" width="1075" height="182"
-                 viewBox="0 75.5 1825 309" preserveAspectRatio="xMidYMid meet" overflow="hidden"
-                 role="img" aria-label="Estimated arrival Eastern time">
-              <image class="drum-clock-mechanism" href="./assets/hardware/clock-drum-mechanism.png"
-                     x="0" y="0" width="1825" height="460" aria-hidden="true"></image>
-              <defs><radialGradient id="clock-lamp-eta">
-                <stop stop-color="#f4cb90" stop-opacity=".24"></stop>
-                <stop offset=".42" stop-color="#ecad62" stop-opacity=".12"></stop>
-                <stop offset="1" stop-color="#d48b3d" stop-opacity="0"></stop>
-              </radialGradient></defs>
-              <g aria-hidden="true">
+            <g class="drum-clock" data-clock="eta" role="img" aria-label="ESTIMATED ARRIVAL Eastern time">
+              <text class="clock-caption" x="220" y="498">ESTIMATED ARRIVAL</text>
+              <svg class="clock-wheel" data-wheel="0" x="220" y="525" width="210" height="210"
+                   viewBox="90 75.5 310 309" preserveAspectRatio="xMidYMid meet" overflow="hidden">
+                <image class="drum-clock-mechanism" href="./assets/hardware/clock-drum-mechanism.png"
+                       x="0" y="0" width="1825" height="460" aria-hidden="true"></image>
                 <ellipse class="drum-lamp" cx="245" cy="151" rx="128" ry="86" fill="url(#clock-lamp-eta)"></ellipse>
+                <g data-drum="0" transform="translate(245 235)"></g>
+              </svg>
+              <svg class="clock-wheel" data-wheel="1" x="480" y="525" width="210" height="210"
+                   viewBox="495 75.5 310 309" preserveAspectRatio="xMidYMid meet" overflow="hidden">
+                <image class="drum-clock-mechanism" href="./assets/hardware/clock-drum-mechanism.png"
+                       x="0" y="0" width="1825" height="460" aria-hidden="true"></image>
                 <ellipse class="drum-lamp" cx="650" cy="151" rx="128" ry="86" fill="url(#clock-lamp-eta)"></ellipse>
+                <g data-drum="1" transform="translate(650 235)"></g>
+              </svg>
+              <svg class="clock-wheel" data-wheel="2" x="820" y="525" width="210" height="210"
+                   viewBox="1045 75.5 310 309" preserveAspectRatio="xMidYMid meet" overflow="hidden">
+                <image class="drum-clock-mechanism" href="./assets/hardware/clock-drum-mechanism.png"
+                       x="0" y="0" width="1825" height="460" aria-hidden="true"></image>
                 <ellipse class="drum-lamp" cx="1200" cy="151" rx="128" ry="86" fill="url(#clock-lamp-eta)"></ellipse>
+                <g data-drum="2" transform="translate(1200 235)"></g>
+              </svg>
+              <svg class="clock-wheel" data-wheel="3" x="1080" y="525" width="210" height="210"
+                   viewBox="1450 75.5 310 309" preserveAspectRatio="xMidYMid meet" overflow="hidden">
+                <image class="drum-clock-mechanism" href="./assets/hardware/clock-drum-mechanism.png"
+                       x="0" y="0" width="1825" height="460" aria-hidden="true"></image>
                 <ellipse class="drum-lamp" cx="1605" cy="151" rx="128" ry="86" fill="url(#clock-lamp-eta)"></ellipse>
+                <g data-drum="3" transform="translate(1605 235)"></g>
+              </svg>
+              <g class="clock-colon" aria-hidden="true">
+                <circle cx="755" cy="603" r="7"></circle><circle cx="755" cy="662" r="7"></circle>
               </g>
-              <g data-drum="0" transform="translate(245 235)"></g>
-              <g data-drum="1" transform="translate(650 235)"></g>
-              <g data-drum="2" transform="translate(1200 235)"></g>
-              <g data-drum="3" transform="translate(1605 235)"></g>
-            </svg>
-            <g data-period="eta" transform="translate(1438 591)" aria-hidden="true">
-              <image class="period-window-art" href="./assets/hardware/clock-period-window.svg"
-                     width="110" height="70"></image>
-              <defs><clipPath id="period-eta-clip"><rect x="14" y="12" width="82" height="46"></rect></clipPath></defs>
-              <g clip-path="url(#period-eta-clip)"><g class="period-ink" transform="translate(55 35)"></g></g>
+              <svg class="period-wheel" data-period="eta" x="1350" y="525" width="210" height="210"
+                   viewBox="90 75.5 310 309" preserveAspectRatio="xMidYMid meet" overflow="hidden">
+                <image class="drum-clock-mechanism" href="./assets/hardware/clock-drum-mechanism.png"
+                       x="0" y="0" width="1825" height="460" aria-hidden="true"></image>
+                <ellipse class="period-lamp" cx="245" cy="151" rx="128" ry="86" fill="url(#clock-lamp-eta)"></ellipse>
+                <g class="period-ink" transform="translate(245 235)"></g>
+              </svg>
             </g>
             <text id="clock-value" class="clock-live-value" x="887" y="252" aria-label="Current time">--:--</text>
             <text id="eta-value" class="clock-live-value" x="887" y="630" aria-label="Estimated arrival">--:--</text>
@@ -1149,3 +1178,4 @@
 </body>
 
 </html>
+
