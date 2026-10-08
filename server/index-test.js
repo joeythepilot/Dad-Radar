@@ -87,8 +87,11 @@ async function runTests() {
     );
 
     const mobile = await (await fetch(`${baseUrl}/mobile`)).text();
-    assert.match(mobile, /id="arrival-time"/);
-    assert.match(mobile, /id="route-map-svg"/);
+    assert.match(mobile, /data-family-full/);
+    assert.match(mobile, /id="dashboard"/);
+    assert.match(mobile, /Mobile\/family-auth.js/);
+    assert.match(mobile, /Mobile\/layout.js/);
+    assert(!mobile.includes('id="arrival-time"'), 'Compact page is no longer served');
     const fullResponse = await fetch(`${baseUrl}/mobile/full`);
     const full = await fullResponse.text();
     assert.match(full, /data-family-full/);
@@ -97,7 +100,7 @@ async function runTests() {
     assert.match(full, /Mobile\/family-auth.js/);
     assert.match(full, /Mobile\/layout.js/);
     assert.match(fullResponse.headers.get("cache-control"), /no-store/);
-    assert(!displayHtml.includes('data-family-full'), 'Home console stays independent of family layout choice');
+    assert(!displayHtml.includes('data-family-full'), 'Home console stays independent of family viewport styling');
     const worker = await fetch(`${baseUrl}/Mobile/sw.js`);
     assert.equal(worker.headers.get("service-worker-allowed"), "/mobile");
     await drainResponse(worker);

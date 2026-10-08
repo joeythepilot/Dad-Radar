@@ -224,17 +224,12 @@ app.get("/api/weather/radar", async (request, response) => {
 });
 
 // Reuse the primary display inside the family app scope and authentication boundary.
-app.get(["/mobile/full", "/mobile/full/"], (_request, response) => {
+app.get(["/mobile", "/mobile/", "/mobile/full", "/mobile/full/"], (_request, response) => {
   const familyHtml = displayHtml
     .replace('<html lang="en">', '<html lang="en" data-family-full>')
-    .replace('<head>', `<head><base href="/">\n<script src="/Mobile/family-auth.js?v=1"></script>\n<script src="/Mobile/layout.js?v=3"></script>\n<link rel="manifest" href="/Mobile/manifest.webmanifest">\n<link rel="apple-touch-icon" href="/Mobile/icon.png">\n<meta name="apple-mobile-web-app-title" content="Dad Radar">\n<meta name="robots" content="noindex,nofollow">`)
-    .replace('</head>', '<link rel="stylesheet" href="/Mobile/layout.css?v=4-duty-columns"></head>');
+    .replace('<head>', `<head><base href="/">\n<script src="/Mobile/family-auth.js?v=1"></script>\n<script src="/Mobile/layout.js?v=5-full-only"></script>\n<link rel="manifest" href="/Mobile/manifest.webmanifest">\n<link rel="apple-touch-icon" href="/Mobile/icon.png">\n<meta name="apple-mobile-web-app-title" content="Dad Radar">\n<meta name="robots" content="noindex,nofollow">`)
+    .replace('</head>', '<link rel="stylesheet" href="/Mobile/layout.css?v=5-full-only"></head>');
   response.set("Cache-Control", "private, no-store").type("html").send(familyHtml);
-});
-
-app.get(["/mobile", "/mobile/"], (_request, response) => {
-  response.set("Cache-Control", "private, no-store");
-  response.type("html").send(stampDisplayHtml(fs.readFileSync(path.join(projectRoot, "Mobile", "index.html"), "utf8")));
 });
 
 for (const directory of

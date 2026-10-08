@@ -16,17 +16,18 @@ fs.mkdirSync(output,{recursive:true});
  try {
   const views=focus==='duty'?[
    ['kiosk',1920,1080,'/'],['desktop',1440,900,'/'],['tablet',1024,768,'/'],
-   ['family-landscape',844,390,'/mobile/full?layout=full'],['family-portrait',390,844,'/mobile/full?layout=full']
+   ['family-landscape',844,390,'/mobile'],['family-portrait',390,844,'/mobile']
   ]:focus==='posters'?[
-   ['kiosk',1920,1080,'/'],['family-portrait',390,844,'/mobile/full?layout=full']
-  ]:[['family-full',390,844,'/mobile/full?layout=full'],['family-compact',390,844,'/mobile?layout=compact']];
+   ['kiosk',1920,1080,'/'],['family-portrait',390,844,'/mobile']
+  ]:[['phone-portrait',390,844,'/mobile'],['phone-landscape',844,390,'/mobile'],
+    ['tablet',1024,768,'/mobile'],['legacy-full',390,844,'/mobile/full?layout=compact']];
   for(const [name,width,height,route] of views){
    const page=await browser.newPage({viewport:{width,height},serviceWorkers:'block'});
    const settled=observeBrowserErrors(page);
    const responses=[];page.on('response',r=>{if(r.status()>=400)responses.push(`${r.status()} ${r.url()}`);});
    await page.route('**/*',r=>r.request().url().startsWith(origin)||r.request().url().startsWith('blob:')?r.continue():r.abort());
    await page.goto(origin+route);
-   if(name!=='family-compact')await page.waitForSelector('#dashboard:not([hidden])',{timeout:30000});
+   await page.waitForSelector('#dashboard:not([hidden])',{timeout:30000});
    if(focus==='duty'){
     // Restore the three-row stamped fixture before exercising each layout.
     await page.evaluate(s=>window.dispatchEvent(new CustomEvent('dad-radar:state-change',{detail:{state:s}})),state);
@@ -40,7 +41,10 @@ fs.mkdirSync(output,{recursive:true});
    } else {
     await page.waitForFunction(()=>document.querySelector('#flight-number')?.getAttribute('aria-label')==='3761'&&document.querySelector('#flight-destination')?.getAttribute('aria-label')==='AVL');
     assert.equal(await page.locator('#flight-destination').getAttribute('aria-label'),'AVL');
-    assert(await page.locator(name==='family-compact'?'#duty-entries':'.daily-schedule-panel').isVisible(),'Family route renders duty alongside the flight');
+    assert(await page.locator('.daily-schedule-panel').isVisible(),'Family route renders duty alongside the flight');
+    assert.equal(await page.locator('.family-layout-control,.family-layout-bar').count(),0,'No layout switch or bar consumes screen space');
+    const fit=await page.locator('.display-viewer').evaluate(n=>({viewer:n.getBoundingClientRect().toJSON(),body:document.body.getBoundingClientRect().toJSON()}));
+    assert(fit.viewer.height>=fit.body.height-2,'Full dashboard viewer receives the mobile viewport height');
     assert.equal(await page.locator('script[src*="deployment-refresh.js"]').count(),1,'Independent refresh watchdog is present');
    }
    await settled(`${focus}/${name}`);

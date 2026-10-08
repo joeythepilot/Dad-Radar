@@ -35,7 +35,7 @@ Use workflow mode `scoped` (default) for selected release verification or `full`
 | Physical cutouts, gauges, wheel art, pointer/sequence placement and printed ink raster | artwork; integration housing geometry remains |
 | Clock digits, ETA states, arrival/next leg, independent lighting and aperture/crop registration | clocks on both engines; broad artwork no longer repeats complete clock scenarios |
 | Selected poster decode/foreground path | posters on both engines; compact route has no poster |
-| Family compact/Full rendering and watchdog presence | family; auth semantics are additionally owned by the real HTTP password/Access tests |
+| Full family rendering on phone portrait, phone landscape, tablet and legacy Full URL; watchdog and no layout bar | family; auth semantics are additionally owned by the real HTTP password/Access tests |
 | Audio gesture/diagnostic controls | audio; unit tests independently cover flap, map motor, short-flight chimes and station identifier |
 | Refresh/offline/wake/reload behavior | deployment |
 
