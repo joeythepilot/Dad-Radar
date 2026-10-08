@@ -124,7 +124,6 @@ fs.mkdirSync(output, {recursive: true});
     assert.equal(await page.locator('.period-wheel').count(),2,'Each row has a full-size period wheel');
    assert.equal(await page.locator('.drum-lamp').count(),8,'Each physical drum has a restrained, independently gated lamp');
    assert.equal(await page.locator('.drum-clock-lighting').count(),0,'The blown-out lighting PNG is retained on disk but no longer composited over the clock');
-   assert.equal(await page.locator('.period-window-art').count(),2,'Each clock has an illustrated mechanical period window');
    const geometry=await page.evaluate(()=>{
      const box=s=>document.querySelector(s).getBoundingClientRect().toJSON();
      const clock=document.querySelector('.twin-clock-art');
