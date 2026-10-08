@@ -25,19 +25,20 @@
     const art = clock.closest?.(".twin-clock-art");
     if (!art || art.hasAttribute("data-primary-clock")) return;
     // Keep the physical opening fixed. Its upper 1/8 inch is behind the faceplate;
-    // the exposed assembly starts at the split-flap datum and uses the rest.
-    art.setAttribute("viewBox", "220 0 1340 720");
-    art.setAttribute("preserveAspectRatio", "none");
+    // align the exposed assembly with the split-flap, preserve the approved
+    // square apertures, and reserve a central band for the engraved faceplate.
+    art.setAttribute("viewBox", "220 0 1340 670");
+    art.setAttribute("preserveAspectRatio", "xMinYMin slice");
     Array.from(art.querySelectorAll(".drum-clock")).forEach((row, index) => {
       row.querySelector(".clock-caption")?.remove();
-      const top = index * 370;
+      const top = index * 458;
       Array.from(row.querySelectorAll(".clock-wheel,.period-wheel")).forEach(wheel => {
         wheel.setAttribute("y", String(top));
-        wheel.setAttribute("height", "350");
-        wheel.setAttribute("preserveAspectRatio", "none");
+        wheel.setAttribute("height", "210");
+        wheel.setAttribute("preserveAspectRatio", "xMidYMid meet");
       });
       Array.from(row.querySelectorAll(".clock-colon circle")).forEach((dot, i) =>
-        dot.setAttribute("cy", String(top + (i === 0 ? 130 : 228.3333333333))));
+        dot.setAttribute("cy", String(top + (i === 0 ? 78 : 137))));
     });
     art.setAttribute("data-primary-clock", "true");
   }

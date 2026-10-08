@@ -29,6 +29,9 @@ async function checkPrimaryClockGeometry(page, name) {
   };
   const rows=[...document.querySelectorAll('.drum-clock')].map(n=>({
    boxes:[...n.querySelectorAll('.clock-wheel,.period-wheel')].map(aperture),
+   scales:[...n.querySelectorAll('.clock-wheel,.period-wheel')].map(w=>{
+    const m=w.getScreenCTM();return {x:Math.hypot(m.a,m.b),y:Math.hypot(m.c,m.d)};
+   }),
    clipped:[...n.querySelectorAll('.clock-wheel,.period-wheel')].every(w=>getComputedStyle(w).overflow==='hidden'),
    colons:[...n.querySelectorAll('.clock-colon circle')].map(c=>{
     const point=new DOMPoint(Number(c.getAttribute('cx')),Number(c.getAttribute('cy'))).matrixTransform(matrix);
@@ -56,6 +59,8 @@ async function checkPrimaryClockGeometry(page, name) {
   assert(row.clipped,'Approved wheel artwork stays clipped');
   assert(row.boxes.every(b=>Math.abs(b.height-boxes[0].height)<.5),'Both rows, including AM/PM, have equal drum height');
   assert(row.boxes.every(b=>Math.abs(b.width-boxes[0].width)<.5),'AM/PM and numeral drums retain equal widths');
+  assert(row.boxes.every(b=>Math.abs(b.height/b.width-1)<.002),'Approved square drum apertures retain their proportions');
+  assert(row.scales.every(s=>Math.abs(s.x/s.y-1)<.002),'Mechanism and printed ink scale uniformly, without vertical stretching');
   assert(row.boxes.every(b=>b.left>=opening.left-.5&&b.right<=opening.right+.5&&b.top>=opening.top-.5&&b.bottom<=opening.bottom+.5),
    'Every drum stays inside the unchanged opening');
   assert(row.boxes.every((b,i)=>!i||b.left>=row.boxes[i-1].right-.5),'Neighboring drums do not overlap');
@@ -64,9 +69,8 @@ async function checkPrimaryClockGeometry(page, name) {
    'Fixed screen-printed colons remain between the hour and minute drums');
  }
  const gap=rows[1].boxes[0].top-rows[0].boxes[0].bottom;
- assert(gap>0&&gap<display.height/11.3125*.06,'Rows have a small non-overlapping mechanical separation');
- const available=opening.bottom-top;
- assert(boxes[0].height>available*.48,'Drums use nearly half of the available height each');
+ const gapInches=gap/display.height*11.3125;
+ assert(gapInches>=.60&&gapInches<=.65,'Leave approximately 5/8 inch clear between rows for the physical faceplate and engraved label');
  assert(Math.abs(Math.max(...boxes.map(b=>b.bottom))-opening.bottom)<.5,'The lower row uses the opening to its bottom edge');
  await page.locator('.twin-clock-panel').screenshot({path:path.join(output,`primary-clock-${name}.png`)});
  return proof;
