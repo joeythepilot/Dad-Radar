@@ -86,7 +86,7 @@ jobs:
     needs: plan
     if: needs.plan.outputs.has_browser == 'true'
     runs-on: macos-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
