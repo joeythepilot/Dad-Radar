@@ -252,7 +252,7 @@ fs.mkdirSync(output, {recursive: true});
           'AM/PM wheel matches the numeral wheel dimensions');
         assert(row.boxes.every(b=>b.left>=row.panel.left-1 && b.right<=row.panel.right+1 &&
           b.top>=row.panel.top-1 && b.bottom<=row.panel.bottom+1),
-          'Every wheel stays within the unchanged physical opening after resize');
+          'Every wheel stays within the unchanged physical opening after resize: '+JSON.stringify(row));
         assert(row.boxes.every((b,i)=>!i || b.left>=row.boxes[i-1].right-1),
           'Adjacent wheel windows do not overlap');
       }
