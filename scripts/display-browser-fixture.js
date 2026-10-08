@@ -40,8 +40,8 @@ const server = http.createServer((req,res) => {
     res.setHeader("Content-Type","application/json");
     res.end(JSON.stringify(url.pathname.includes("/surface") ? {pending:true,retryAfterMs:3600000} : payload));return;
   }
-  if (url.pathname === "/mobile/full") {res.setHeader("Content-Type","text/html");res.end(fullHtml);return;}
-  const file = path.resolve(root,"." + (url.pathname === "/mobile" ? "/Mobile/index.html" : url.pathname === "/" ? "/index.html" : url.pathname));
+  if (["/mobile", "/mobile/full"].includes(url.pathname)) {res.setHeader("Content-Type","text/html");res.end(fullHtml);return;}
+  const file = path.resolve(root,"." + (url.pathname === "/" ? "/index.html" : url.pathname));
   if (!file.startsWith(root + path.sep) || !fs.existsSync(file) || !fs.statSync(file).isFile()) {res.writeHead(404);res.end();return;}
   res.setHeader("Content-Type",types[path.extname(file)] || "application/octet-stream");
   fs.createReadStream(file).pipe(res);

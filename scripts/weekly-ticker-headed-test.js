@@ -67,8 +67,8 @@ const server = http.createServer((request,response) => {
     response.end(JSON.stringify(url.pathname.includes("/surface") ? {pending:true,retryAfterMs:3600000} : payload));
     return;
   }
-  if (url.pathname === "/mobile/full") { response.setHeader("Content-Type","text/html"); response.end(fullHtml); return; }
-  const requested = url.pathname === "/" ? "/index.html" : url.pathname === "/mobile" ? "/Mobile/index.html" : url.pathname;
+  if (["/mobile", "/mobile/full"].includes(url.pathname)) { response.setHeader("Content-Type","text/html"); response.end(fullHtml); return; }
+  const requested = url.pathname === "/" ? "/index.html" : url.pathname;
   const file = path.resolve(root,"." + requested);
   if (!file.startsWith(root + path.sep) || !fs.existsSync(file) || !fs.statSync(file).isFile()) { response.writeHead(404); response.end(); return; }
   response.setHeader("Content-Type",types[path.extname(file)] || "application/octet-stream");
@@ -92,8 +92,7 @@ const server = http.createServer((request,response) => {
           ["desktop-fractional",2560,1440,false,1.25],
           ["full-landscape",844,390,false],
           ["full-portrait",390,844,false],
-          ["full-tablet",1024,768,false],
-          ["compact",390,844,true]
+          ["full-tablet",1024,768,false]
         ]) {
           const page = await browser.newPage({
             viewport:{width,height},
@@ -103,7 +102,7 @@ const server = http.createServer((request,response) => {
           });
           const assertBrowserSettled = observeBrowserErrors(page);
           await page.route("**/*", route => route.request().url().startsWith(origin) || route.request().url().startsWith("blob:") ? route.continue() : route.abort());
-          const url = name.startsWith("desktop") ? "/" : compact ? "/mobile?layout=compact" : "/mobile/full?layout=full";
+          const url = name.startsWith("desktop") ? "/" : "/mobile";
           await page.goto(origin + url,{waitUntil:"load"});
           // The product intentionally keeps its normal 3s startup sequence. A
           // loaded WebKit runner can take several extra seconds to paint that

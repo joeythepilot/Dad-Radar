@@ -40,8 +40,8 @@ const server = http.createServer((req,res) => {
     res.setHeader("Content-Type","application/json");
     res.end(JSON.stringify(url.pathname.includes("/surface") ? {pending:true,retryAfterMs:3600000} : payload));return;
   }
-  if (url.pathname === "/mobile/full") {res.setHeader("Content-Type","text/html");res.end(fullHtml);return;}
-  const file = path.resolve(root,"." + (url.pathname === "/mobile" ? "/Mobile/index.html" : url.pathname === "/" ? "/index.html" : url.pathname));
+  if (["/mobile", "/mobile/full"].includes(url.pathname)) {res.setHeader("Content-Type","text/html");res.end(fullHtml);return;}
+  const file = path.resolve(root,"." + (url.pathname === "/" ? "/index.html" : url.pathname));
   if (!file.startsWith(root + path.sep) || !fs.existsSync(file) || !fs.statSync(file).isFile()) {res.writeHead(404);res.end();return;}
   res.setHeader("Content-Type",types[path.extname(file)] || "application/octet-stream");
   fs.createReadStream(file).pipe(res);
@@ -58,14 +58,14 @@ function audioProbe() {
     }]))};
   }});
 }
-async function geometry(page, compact) {
-  return page.evaluate(isCompact => {
+async function geometry(page) {
+  return page.evaluate(() => {
     const rect = n => {const r=n.getBoundingClientRect();return {left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height};};
     const shell=document.querySelector('.route-map-shell');
-    const nodes = isCompact ? ['.freshness','.arrival'] : ['.clock-block','.eta-block','.sequence-mileage-badge'];
-    const hardware=nodes.map(selector=>({selector,node:document.querySelector(selector)})).filter(x=>x.node && !x.node.hidden).map(({selector,node})=>({selector,rect:rect(node),shadow:getComputedStyle(node).boxShadow,art:!!node.querySelector('.sequence-housing-art'),mount:node.querySelector('.clock-support-rod')?.currentSrc || getComputedStyle(node,'::before').content,mountAfter:getComputedStyle(node,'::after').content,text:[...node.querySelectorAll(isCompact?'span,strong':'.small-label,.clock-value,.eta-value,.eta-zone,.sequence-mileage-value')].filter(n=>!n.hidden).map(n=>({text:n.textContent.trim(),width:n.clientWidth,scroll:n.scrollWidth}))}));
+    const nodes = ['.clock-block','.eta-block','.sequence-mileage-badge'];
+    const hardware=nodes.map(selector=>({selector,node:document.querySelector(selector)})).filter(x=>x.node && !x.node.hidden).map(({selector,node})=>({selector,rect:rect(node),shadow:getComputedStyle(node).boxShadow,art:!!node.querySelector('.sequence-housing-art'),mount:node.querySelector('.clock-support-rod')?.currentSrc || getComputedStyle(node,'::before').content,mountAfter:getComputedStyle(node,'::after').content,text:[...node.querySelectorAll('.small-label,.clock-value,.eta-value,.eta-zone,.sequence-mileage-value')].filter(n=>!n.hidden).map(n=>({text:n.textContent.trim(),width:n.clientWidth,scroll:n.scrollWidth}))}));
     return {map:rect(shell),hardware,pageWidth:document.documentElement.scrollWidth,viewport:innerWidth};
-  },compact);
+  });
 }
 function checkGeometry(data) {
   assert(data.map.width >= 240 && data.map.height >= 140,"map retains usable dimensions");
@@ -184,38 +184,37 @@ async function transportProof(page, label) {
     for(const [engine,type] of [['chromium',chromium],['webkit',webkit]].filter(([name])=>!process.env.DADRADAR_BROWSER_ENGINE||process.env.DADRADAR_BROWSER_ENGINE===name)) {
       const browser=await type.launch({headless:true,...(process.env.DADRADAR_BROWSER_EXECUTABLE?{executablePath:process.env.DADRADAR_BROWSER_EXECUTABLE,args:['--no-sandbox','--disable-dev-shm-usage','--disable-gpu']}:{})});
       try {
-        for(const [name,width,height,compact] of [
-          ['desktop',1920,1080,false],['full-landscape',844,390,false],['full-tablet',1024,768,false],
-          ['full-portrait',390,844,false],['full-tablet-portrait',768,1024,false],
-          ['compact-landscape',844,390,true],['compact-portrait',390,844,true],
-          ['full-touch-landscape',880,404,false],['full-touch-small',667,375,false]
+        for(const [name,width,height] of [
+          ['desktop',1920,1080],['full-landscape',844,390],['full-tablet',1024,768],
+          ['full-portrait',390,844],['full-tablet-portrait',768,1024],
+          ['full-touch-landscape',880,404],['full-touch-small',667,375]
         ]) {
           const page=await browser.newPage({viewport:{width,height},serviceWorkers:'block',isMobile:name.includes('touch'),hasTouch:name.includes('touch'),deviceScaleFactor:name.includes('touch')?2:1});
           const assertBrowserSettled = observeBrowserErrors(page);
           await page.addInitScript(audioProbe);
           await page.route('**/*',route=>route.request().url().startsWith(origin)||route.request().url().startsWith('blob:')?route.continue():route.abort());
-          const url=name==='desktop'?'/':compact?'/mobile?layout=compact':'/mobile/full?layout=full';
+          const url=name==='desktop'?'/':'/mobile';
           await page.goto(origin+url,{waitUntil:'load'});
-          if(!compact)await page.waitForSelector('#dashboard:not([hidden])');
+          await page.waitForSelector('#dashboard:not([hidden])');
           await page.waitForSelector('.map-roll-transport',{state:'attached'});
           await page.waitForFunction(()=>{
             const map=document.querySelector('.map-roll-regional-sheet .route-map-svg');
             const box=map.viewBox.baseVal,rect=map.getBoundingClientRect();
             return rect.height>0&&Math.abs(box.width/box.height-rect.width/rect.height)<.01;
           },null,{timeout:2000});
-          if(!compact)await page.locator('#clock-value').evaluate(n=>n.textContent='12:59:59 PM');
+          await page.locator('#clock-value').evaluate(n=>n.textContent='12:59:59 PM');
           await checkInitialReplay(page);
           const proportions=await checkFullHardware(page);
-          const measured=await geometry(page,compact);checkGeometry(measured);
+          const measured=await geometry(page);checkGeometry(measured);
           const label=`${engine}-${name}`;
           await page.screenshot({path:path.join(output,`${label}.png`),fullPage:true});
-          if(name==='desktop'||name==='compact-portrait') {
+          if(name==='desktop'||name==='full-portrait') {
             await checkDiagnosticRoundTrip(page);
             await transportProof(page,label);
           }
           await assertBrowserSettled(label);
           report.push({label,passed:true,geometry:measured,proportions});
-          await page.close();console.log(`${label}: geometry and ${name==='desktop'||name==='compact-portrait'?'transport':'layout'} passed`);
+          await page.close();console.log(`${label}: geometry and ${name==='desktop'||name==='full-portrait'?'transport':'layout'} passed`);
         }
       } finally {await browser.close();}
     }
