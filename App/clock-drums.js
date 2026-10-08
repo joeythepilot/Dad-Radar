@@ -19,7 +19,30 @@
   function changedDrums(before, after) {
     return after.map((digit, index) => before[index] === digit ? -1 : index).filter(index => index !== -1);
   }
+  function fitPrimaryClock(clock) {
+    const html = clock.ownerDocument.documentElement;
+    if (!html || html.hasAttribute("data-family-full")) return;
+    const art = clock.closest?.(".twin-clock-art");
+    if (!art || art.hasAttribute("data-primary-clock")) return;
+    // Keep the physical opening fixed. Its upper 1/8 inch is behind the faceplate;
+    // the exposed assembly starts at the split-flap datum and uses the rest.
+    art.setAttribute("viewBox", "220 0 1340 720");
+    art.setAttribute("preserveAspectRatio", "none");
+    Array.from(art.querySelectorAll(".drum-clock")).forEach((row, index) => {
+      row.querySelector(".clock-caption")?.remove();
+      const top = index * 370;
+      Array.from(row.querySelectorAll(".clock-wheel,.period-wheel")).forEach(wheel => {
+        wheel.setAttribute("y", String(top));
+        wheel.setAttribute("height", "350");
+        wheel.setAttribute("preserveAspectRatio", "none");
+      });
+      Array.from(row.querySelectorAll(".clock-colon circle")).forEach((dot, i) =>
+        dot.setAttribute("cy", String(top + (i === 0 ? 130 : 228.3333333333))));
+    });
+    art.setAttribute("data-primary-clock", "true");
+  }
   function paintClock(clock, value, printedInk) {
+    fitPrimaryClock(clock);
     const caption = clock.querySelector?.(".clock-caption");
     if (caption && !caption.children.length) {
       const label = caption.getAttribute("data-label");

@@ -14,6 +14,63 @@ const {root,state,payload,server}=require('./display-browser-fixture').createDis
 const output = path.join(process.env.DADRADAR_ARTIFACT_ROOT || path.join(root,"artifacts"),"approved-artwork");
 fs.mkdirSync(output, {recursive: true});
 
+async function checkPrimaryClockGeometry(page, name) {
+ const proof=await page.evaluate(()=>{
+  const box=n=>n.getBoundingClientRect().toJSON();
+  const art=document.querySelector('.twin-clock-art'),matrix=art.getScreenCTM();
+  const aperture=w=>{
+   const x=Number(w.getAttribute('x')),y=Number(w.getAttribute('y'));
+   const width=Number(w.getAttribute('width')),height=Number(w.getAttribute('height'));
+   const points=[[x,y],[x+width,y],[x,y+height],[x+width,y+height]]
+    .map(([x,y])=>new DOMPoint(x,y).matrixTransform(matrix));
+   const left=Math.min(...points.map(p=>p.x)),right=Math.max(...points.map(p=>p.x));
+   const top=Math.min(...points.map(p=>p.y)),bottom=Math.max(...points.map(p=>p.y));
+   return {left,right,top,bottom,width:right-left,height:bottom-top};
+  };
+  const rows=[...document.querySelectorAll('.drum-clock')].map(n=>({
+   boxes:[...n.querySelectorAll('.clock-wheel,.period-wheel')].map(aperture),
+   clipped:[...n.querySelectorAll('.clock-wheel,.period-wheel')].every(w=>getComputedStyle(w).overflow==='hidden'),
+   colons:[...n.querySelectorAll('.clock-colon circle')].map(c=>{
+    const point=new DOMPoint(Number(c.getAttribute('cx')),Number(c.getAttribute('cy'))).matrixTransform(matrix);
+    return {x:point.x,y:point.y};
+   })
+  }));
+  return {display:box(document.querySelector('#dashboard')),opening:box(art.closest('.twin-clock-panel')),
+   splitFlaps:[...document.querySelectorAll('#flight-number,#flight-origin,#flight-destination,#status-value')].map(box),
+   captions:document.querySelectorAll('.clock-caption').length,rows};
+ });
+ fs.writeFileSync(path.join(output,`primary-clock-${name}.json`),JSON.stringify(proof,null,2));
+ console.log(`Primary clock geometry ${name}: ${JSON.stringify(proof)}`);
+ const {display,opening,rows,splitFlaps}=proof;
+ assert.equal(proof.captions,0,'Primary legends belong to the engraved faceplate, not the display');
+ const inches=[(opening.left-display.left)/display.width*20.0625,
+  (opening.top-display.top)/display.height*11.3125,opening.width/display.width*20.0625,opening.height/display.height*11.3125];
+ [16.2125,.375,3.35,1.8].forEach((v,i)=>assert(Math.abs(inches[i]-v)<.002,'Clock opening stays fixed: '+JSON.stringify(inches)));
+ const boxes=rows.flatMap(row=>row.boxes),top=Math.min(...boxes.map(b=>b.top)),right=Math.max(...boxes.map(b=>b.right));
+ assert(splitFlaps.every(b=>Math.abs(b.top-top)<.5),'Visible clock top aligns with every split-flap group');
+ const leftMargin=Math.min(...splitFlaps.map(b=>b.left))-display.left,rightMargin=display.right-right;
+ assert(Math.abs(leftMargin-rightMargin)<.5,'Visible clock right margin equals split-flap left margin');
+ assert(Math.abs(rightMargin/display.width*20.0625-.5)<.002,'Opposing outer margins remain half an inch');
+ for(const row of rows){
+  assert.equal(row.boxes.length,5,'Four numeral drums and one period drum remain');
+  assert(row.clipped,'Approved wheel artwork stays clipped');
+  assert(row.boxes.every(b=>Math.abs(b.height-boxes[0].height)<.5),'Both rows, including AM/PM, have equal drum height');
+  assert(row.boxes.every(b=>Math.abs(b.width-boxes[0].width)<.5),'AM/PM and numeral drums retain equal widths');
+  assert(row.boxes.every(b=>b.left>=opening.left-.5&&b.right<=opening.right+.5&&b.top>=opening.top-.5&&b.bottom<=opening.bottom+.5),
+   'Every drum stays inside the unchanged opening');
+  assert(row.boxes.every((b,i)=>!i||b.left>=row.boxes[i-1].right-.5),'Neighboring drums do not overlap');
+  const [hour,,minute]=row.boxes;
+  assert(row.colons.length===2&&row.colons.every(c=>c.x>row.boxes[1].right&&c.x<minute.left&&c.y>hour.top&&c.y<hour.bottom),
+   'Fixed screen-printed colons remain between the hour and minute drums');
+ }
+ const gap=rows[1].boxes[0].top-rows[0].boxes[0].bottom;
+ assert(gap>0&&gap<display.height/11.3125*.06,'Rows have a small non-overlapping mechanical separation');
+ const available=opening.bottom-top;
+ assert(boxes[0].height>available*.48,'Drums use nearly half of the available height each');
+ assert(Math.abs(Math.max(...boxes.map(b=>b.bottom))-opening.bottom)<.5,'The lower row uses the opening to its bottom edge');
+ await page.locator('.twin-clock-panel').screenshot({path:path.join(output,`primary-clock-${name}.png`)});
+ return proof;
+}
 
 (async()=>{
  await new Promise(r=>server.listen(0,'127.0.0.1',r));
@@ -134,6 +191,15 @@ fs.mkdirSync(output, {recursive: true});
        board:box('.flight-board'),tiles:[...document.querySelectorAll('.flap-character')].map(n=>n.getBoundingClientRect().toJSON())};
    });
    if(name.startsWith('family-')) {
+   const mobileClock=await page.locator('.twin-clock-art').evaluate(n=>({
+    viewBox:n.getAttribute('viewBox'),aspect:n.getAttribute('preserveAspectRatio'),
+    captions:[...n.querySelectorAll('.clock-caption')].map(c=>c.getAttribute('data-label')),
+    wheels:[...n.querySelectorAll('.clock-wheel,.period-wheel')].map(w=>[w.getAttribute('y'),w.getAttribute('width'),w.getAttribute('height')])
+   }));
+   assert.equal(mobileClock.viewBox,'178 2 1418 824','Mobile retains its existing clock viewBox');
+   assert.equal(mobileClock.aspect,'xMidYMid meet','Mobile retains its existing clock crop');
+   assert.deepEqual(mobileClock.captions,['CURRENT TIME','ESTIMATED ARRIVAL'],'Mobile legends are unchanged');
+   assert.deepEqual(mobileClock.wheels,Array.from({length:10},(_,i)=>[i<5?'130':'525','210','210']),'Mobile drum geometry is unchanged');
    assert(Math.abs(geometry.panel.left-geometry.rail.left)<1,'Clock aligns with rail left');
    assert(Math.abs(geometry.panel.right-geometry.rail.right)<1,'Clock aligns with rail right');
    assert(Math.abs(geometry.panel.height-geometry.strip.height)<1,'Clock bay matches split-flap height');
@@ -233,43 +299,10 @@ fs.mkdirSync(output, {recursive: true});
    assert.deepEqual(errors,[],`${name}: no missing asset errors`);
    if(name==='kiosk'&&!clockFocus)await require('./printed-ink-browser-proof').checkPrintedInk(page);
    if(name==='kiosk'&&clockFocus) {
+     await checkPrimaryClockGeometry(page,'1920x1080');
      await page.setViewportSize({width:1366,height:768});
      await assertBrowserSettled('kiosk after resize');
-      const rows=await page.locator('.drum-clock').evaluateAll(nodes=>nodes.map(n=>{
-        const panel=n.closest('.twin-clock-panel').getBoundingClientRect();
-        const art=n.closest('.twin-clock-art');
-        const matrix=art.getScreenCTM();
-        const wheels=[...n.querySelectorAll('.clock-wheel')];
-        const period=n.querySelector('.period-wheel');
-        const apertures=[...wheels,period];
-        const boxes=apertures.map(w=>{
-          const x=Number(w.getAttribute('x')),y=Number(w.getAttribute('y'));
-          const width=Number(w.getAttribute('width')),height=Number(w.getAttribute('height'));
-          const corners=[[x,y],[x+width,y],[x,y+height],[x+width,y+height]]
-            .map(([cx,cy])=>new DOMPoint(cx,cy).matrixTransform(matrix));
-          return {left:Math.min(...corners.map(p=>p.x)),right:Math.max(...corners.map(p=>p.x)),
-            top:Math.min(...corners.map(p=>p.y)),bottom:Math.max(...corners.map(p=>p.y)),
-            width:Math.max(...corners.map(p=>p.x))-Math.min(...corners.map(p=>p.x)),
-            height:Math.max(...corners.map(p=>p.y))-Math.min(...corners.map(p=>p.y))};
-        });
-        return {panel:panel.toJSON(),boxes,clipped:apertures.every(w=>getComputedStyle(w).overflow==='hidden'),
-          caption:n.querySelector('.clock-caption')?.getAttribute('data-label'),
-          captionInk:n.querySelector('.clock-caption [data-printed-ink]')?.getAttribute('data-printed-ink')};
-      }));
-      assert.deepEqual(rows.map(row=>row.caption),['CURRENT TIME','ESTIMATED ARRIVAL']);
-      assert(rows.every(row=>row.captionInk===row.caption),'Both labels use printed outline ink');
-      for(const row of rows){
-        assert.equal(row.boxes.length,5,'Four numerals and one period wheel remain visible');
-        assert(row.clipped,'The larger source artwork is clipped to each wheel aperture');
-        const [first,...rest]=row.boxes;
-        assert(rest.every(b=>Math.abs(b.width-first.width)<1 && Math.abs(b.height-first.height)<1),
-          'AM/PM wheel matches the numeral wheel dimensions');
-        assert(row.boxes.every(b=>b.left>=row.panel.left-1 && b.right<=row.panel.right+1 &&
-          b.top>=row.panel.top-1 && b.bottom<=row.panel.bottom+1),
-          'Every wheel stays within the unchanged physical opening after resize: '+JSON.stringify(row));
-        assert(row.boxes.every((b,i)=>!i || b.left>=row.boxes[i-1].right-1),
-          'Adjacent wheel windows do not overlap');
-      }
+     await checkPrimaryClockGeometry(page,'1366x768');
    }
    results.push({name,geometry,assets});await page.close();
  }
