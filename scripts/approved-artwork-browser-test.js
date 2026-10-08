@@ -240,9 +240,11 @@ fs.mkdirSync(output, {recursive: true});
         const wheels=[...n.querySelectorAll('.clock-wheel')];
         const period=n.querySelector('.period-wheel');
         const boxes=[...wheels,period].map(w=>w.getBoundingClientRect().toJSON());
-        return {panel:panel.toJSON(),boxes,caption:n.querySelector('.clock-caption')?.textContent};
+        return {panel:panel.toJSON(),boxes,caption:n.querySelector('.clock-caption')?.getAttribute('data-label'),
+          captionInk:n.querySelector('.clock-caption [data-printed-ink]')?.getAttribute('data-printed-ink')};
       }));
       assert.deepEqual(rows.map(row=>row.caption),['CURRENT TIME','ESTIMATED ARRIVAL']);
+      assert(rows.every(row=>row.captionInk===row.caption),'Both labels use printed outline ink');
       for(const row of rows){
         assert.equal(row.boxes.length,5,'Four numerals and one period wheel remain visible');
         const [first,...rest]=row.boxes;

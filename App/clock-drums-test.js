@@ -40,7 +40,10 @@ const drums = Array.from({length:4}, () => document.createElementNS("svg", "g"))
 const lamps = Array.from({length:4}, () => document.createElementNS("svg", "ellipse"));
 const period = document.createElementNS("svg", "g");
  const periodLamp = document.createElementNS("svg", "ellipse");
+ const caption = document.createElementNS("svg", "g");
+ caption.setAttribute("data-label", "ESTIMATED ARRIVAL");
 const clock = {ownerDocument: document, getAttribute() { return "eta"; },
+   querySelector(selector) { return selector === ".clock-caption" ? caption : null; },
    querySelectorAll(selector) { return selector === ".drum-lamp" ? lamps : selector === ".period-lamp" ? [periodLamp] : drums; },
   parentNode: {querySelector() { return period; }}};
 assert.deepEqual(paintClock(clock, "9:07 AM", printedInk), [1, 2, 3]);
@@ -53,10 +56,13 @@ assert(drums[1].children[0].children[0].children.some(node => node.tag === "g" &
   "The actual number is an SVG outline on the drum");
 assert.equal(period.getAttribute("data-period-value"), "AM", "The physical indicator indexes to morning");
  assert.equal(periodLamp.getAttribute("data-lit"), "true", "The full-size period drum illuminates with a valid time");
+ assert.equal(caption.children[0].getAttribute("data-printed-ink"), "ESTIMATED ARRIVAL",
+   "The row label is physical printed outline ink");
 assert.equal(period.children[0].children[0].attributes["data-printed-ink"], "AM",
   "The period is screen-printed outlined ink, not floating browser text");
 assert.deepEqual(paintClock(clock, "9:07:59 AM", printedInk), [],
   "The clock doesn't repaint and animate on second ticks");
+assert.equal(caption.children.length, 1, "The printed row label stays fixed on second ticks");
 const morningPrint = period.children[0];
 paintClock(clock, "9:08 PM", printedInk);
 assert.equal(period.getAttribute("data-period-value"), "PM", "AM to PM changes the physical roller");

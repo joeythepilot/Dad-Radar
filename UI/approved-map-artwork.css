@@ -10,7 +10,7 @@
 .clock-live-value { opacity: 0; pointer-events: none; }
 .drum-clock { overflow: hidden; }
 .clock-wheel, .period-wheel { overflow: hidden; }
-.clock-caption { fill: #d9c59f; font: 500 32px Georgia, serif; letter-spacing: 3px; }
+.clock-caption { pointer-events: none; }
 .clock-colon { fill: #e9d9b5; opacity: .9; }
 .drum-lamp, .period-lamp { opacity: 0; transition: opacity 850ms ease-in-out; pointer-events: none; }
 .drum-clock.is-lit .drum-lamp[data-lit="true"],

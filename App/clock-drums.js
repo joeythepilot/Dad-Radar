@@ -20,6 +20,15 @@
     return after.map((digit, index) => before[index] === digit ? -1 : index).filter(index => index !== -1);
   }
   function paintClock(clock, value, printedInk) {
+    const caption = clock.querySelector?.(".clock-caption");
+    if (caption && !caption.children.length) {
+      const label = caption.getAttribute("data-label");
+      caption.appendChild(printedInk.svg(clock.ownerDocument, label, {
+        height: 30, cellWidth: 23, material: "paper", ink: "#d9c59f",
+        seed: `clock-caption-${clock.getAttribute?.("data-clock")}`,
+        idPrefix: `clock-caption-${clock.getAttribute?.("data-clock")}`
+      }).element);
+    }
     const digits = readDrumTime(value);
     const drums = Array.from(clock.querySelectorAll("[data-drum]"));
     Array.from(clock.querySelectorAll(".drum-lamp")).forEach((lamp, index) =>
