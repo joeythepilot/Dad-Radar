@@ -1,6 +1,10 @@
 const assert = require('node:assert/strict');
 const {Writable} = require('node:stream');
-const {createDisplayFixture} = require('./display-browser-fixture');
+const {createDisplayFixture, extractFamilyHtmlExpression} = require('./display-browser-fixture');
+
+for (const newline of ['\n', '\r\n']) {
+  assert.equal(extractFamilyHtmlExpression(`const familyHtml = displayHtml;${newline}  response`), 'displayHtml');
+}
 
 (async () => {
   const {server} = createDisplayFixture();

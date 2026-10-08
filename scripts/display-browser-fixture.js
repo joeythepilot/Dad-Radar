@@ -22,7 +22,7 @@ const payload = {ok:true,revision:1,publishedAt:now,calendarOk:true,liveOk:true,
 const html = fs.readFileSync(path.join(root,"index.html"),"utf8");
 // Use the server's exact family HTML expression, not a second hand-copied layout.
 const serverCode = fs.readFileSync(path.join(root,"server/index.js"),"utf8");
-const expression = serverCode.match(/const familyHtml = ([\s\S]*?);\n  response/)[1];
+const expression = extractFamilyHtmlExpression(serverCode);
 const fullHtml = new Function("displayHtml", `return ${expression};`)(html);
 const types = {".html":"text/html",".js":"application/javascript",".css":"text/css",".svg":"image/svg+xml",".png":"image/png",".json":"application/json",".webmanifest":"application/manifest+json"};
 const server = http.createServer((req,res) => {
@@ -50,3 +50,9 @@ const server = http.createServer((req,res) => {
 return {root,state,payload,server};
 }
 module.exports={createDisplayFixture};
+function extractFamilyHtmlExpression(source) {
+  const match = source.match(/const familyHtml = ([\s\S]*?);\r?\n  response/);
+  if (!match) throw new Error('Family HTML expression was not found in server/index.js');
+  return match[1];
+}
+module.exports.extractFamilyHtmlExpression = extractFamilyHtmlExpression;
