@@ -237,16 +237,30 @@ fs.mkdirSync(output, {recursive: true});
      await assertBrowserSettled('kiosk after resize');
       const rows=await page.locator('.drum-clock').evaluateAll(nodes=>nodes.map(n=>{
         const panel=n.closest('.twin-clock-panel').getBoundingClientRect();
+        const art=n.closest('.twin-clock-art');
+        const matrix=art.getScreenCTM();
         const wheels=[...n.querySelectorAll('.clock-wheel')];
         const period=n.querySelector('.period-wheel');
-        const boxes=[...wheels,period].map(w=>w.getBoundingClientRect().toJSON());
-        return {panel:panel.toJSON(),boxes,caption:n.querySelector('.clock-caption')?.getAttribute('data-label'),
+        const apertures=[...wheels,period];
+        const boxes=apertures.map(w=>{
+          const x=Number(w.getAttribute('x')),y=Number(w.getAttribute('y'));
+          const width=Number(w.getAttribute('width')),height=Number(w.getAttribute('height'));
+          const corners=[[x,y],[x+width,y],[x,y+height],[x+width,y+height]]
+            .map(([cx,cy])=>new DOMPoint(cx,cy).matrixTransform(matrix));
+          return {left:Math.min(...corners.map(p=>p.x)),right:Math.max(...corners.map(p=>p.x)),
+            top:Math.min(...corners.map(p=>p.y)),bottom:Math.max(...corners.map(p=>p.y)),
+            width:Math.max(...corners.map(p=>p.x))-Math.min(...corners.map(p=>p.x)),
+            height:Math.max(...corners.map(p=>p.y))-Math.min(...corners.map(p=>p.y))};
+        });
+        return {panel:panel.toJSON(),boxes,clipped:apertures.every(w=>getComputedStyle(w).overflow==='hidden'),
+          caption:n.querySelector('.clock-caption')?.getAttribute('data-label'),
           captionInk:n.querySelector('.clock-caption [data-printed-ink]')?.getAttribute('data-printed-ink')};
       }));
       assert.deepEqual(rows.map(row=>row.caption),['CURRENT TIME','ESTIMATED ARRIVAL']);
       assert(rows.every(row=>row.captionInk===row.caption),'Both labels use printed outline ink');
       for(const row of rows){
         assert.equal(row.boxes.length,5,'Four numerals and one period wheel remain visible');
+        assert(row.clipped,'The larger source artwork is clipped to each wheel aperture');
         const [first,...rest]=row.boxes;
         assert(rest.every(b=>Math.abs(b.width-first.width)<1 && Math.abs(b.height-first.height)<1),
           'AM/PM wheel matches the numeral wheel dimensions');
