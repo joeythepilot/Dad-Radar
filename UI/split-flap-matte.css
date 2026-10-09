@@ -72,19 +72,19 @@
   background: none !important;
 }
 
-/* Experimental artwork: PRIMARY ONLY, first flight-number tile only.
+/* Approved artwork: all PRIMARY split-flap tiles.
    Native half bounds, glyphs, transforms, timing and lamp behavior are unchanged.
    Unlit hardware and independent opaque card material; v2 registration.
-   This is review-only artwork, not production or mobile approval. */
-html:not([data-family-full]) #flight-number > .flap-character:first-child {
+   Visuals approved by Joey on 2026-10-08 EDT; deployment remains separate. */
+html:not([data-family-full]) .flight-board .flap-character {
   background-image: none !important;
   background-size: 100% 100% !important;
 }
-html:not([data-family-full]) #flight-number > .flap-character:first-child .flap-half {
+html:not([data-family-full]) .flight-board .flap-character .flap-half {
   background-color: transparent !important;
   background-image: url("../assets/split-flap/experimental-v2/experimental-surface.png") !important;
 }
-html:not([data-family-full]) #flight-number > .flap-character:first-child::before {
+html:not([data-family-full]) .flight-board .flap-character::before {
   inset: 0 !important;
   height: 100% !important;
   transform: none !important;
@@ -93,6 +93,6 @@ html:not([data-family-full]) #flight-number > .flap-character:first-child::befor
 }
 
 /* V3 recessed rectangular lamp. Native blank/off opacity and fade remain unchanged. */
-html:not([data-family-full]) #flight-number > .flap-character:first-child::after {
+html:not([data-family-full]) .flight-board .flap-character::after {
   background: url("../assets/split-flap/experimental-v3/warm-lighting.svg") center / 100% 100% no-repeat !important;
 }

@@ -1,5 +1,5 @@
 'use strict';
-// Focused one-tile proof using the unchanged production fixture and flip function.
+// Primary split-flap artwork proof using the unchanged production fixture and flip function.
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const {chromium}=require('playwright');
 
@@ -30,7 +30,9 @@ try{
  assert.match(styles.fixed,/experimental-v2.*experimental-fixed/,'The first flight-number tile must have stationary experimental hardware');assert.equal(styles.transform,'none');
  assert(styles.halves.every(s=>/experimental-v2.*experimental-surface/.test(s)));
  assert.match(await cell.evaluate(n=>getComputedStyle(n,'::after').backgroundImage),/experimental-v3.*warm-lighting\.svg/,'Warm light must be independently controllable');
- const untouched=await page.locator('.flap-character').evaluateAll(ns=>ns.slice(1).map(n=>getComputedStyle(n).backgroundImage));assert(untouched.every(s=>/split-flap-tile\.png/.test(s)),'Every remaining tile uses the original artwork');
+ const allTiles=await page.locator('.flap-character').evaluateAll(ns=>ns.map(n=>({group:n.parentElement.id,value:n.dataset.value,fixed:getComputedStyle(n,'::before').backgroundImage,transform:getComputedStyle(n,'::before').transform,light:getComputedStyle(n,'::after').backgroundImage,halves:[...n.querySelectorAll('.flap-half')].map(h=>getComputedStyle(h).backgroundImage)})));
+ assert.equal(allTiles.length,18);assert.deepEqual([...new Set(allTiles.map(n=>n.group))].sort(),['flight-destination','flight-number','flight-origin','status-value']);
+ assert(allTiles.every(n=>/experimental-v2.*experimental-fixed/.test(n.fixed)&&n.transform==='none'&&/experimental-v3.*warm-lighting\.svg/.test(n.light)&&n.halves.every(s=>/experimental-v2.*experimental-surface/.test(s))),'All 18 primary tiles must use approved stationary hardware, card material and lamp');
  const motion=await cell.evaluate(n=>{window.flapExperimentPromise=flipFlapOnce(n,'4');const animations=n.getAnimations({subtree:true}).filter(a=>a.effect.target.classList.contains('flap-moving'));animations.forEach(a=>{a.pause();a.currentTime=100;});return animations.map(a=>({name:a.animationName,time:a.currentTime,duration:a.effect.getTiming().duration,delay:a.effect.getTiming().delay,transform:getComputedStyle(a.effect.target).transform,ink:a.effect.target.querySelector('[data-printed-ink]')?.getAttribute('data-printed-ink')}));});
  assert.equal(motion.length,2);assert.equal(motion[0].duration,190);assert.equal(motion[1].delay,185);assert(motion.some(m=>m.transform!=='none'));assert.deepEqual(motion.map(m=>m.ink),['3','4']);
  assert.deepEqual(await cell.evaluate(n=>[...n.querySelectorAll('.flap-moving')].map(h=>getComputedStyle(h).backgroundImage)),styles.halves);
@@ -41,8 +43,15 @@ try{
  assert.equal(await cell.getAttribute('data-value'),'4');assert.equal(await cell.locator('.flap-moving').count(),0);
  await cell.evaluate(n=>flipFlapOnce(n,'3'));assert.equal(await cell.getAttribute('data-value'),'3');
  await cell.evaluate(n=>flipFlapOnce(n,' '));await page.waitForTimeout(220);assert.equal(await cell.evaluate(n=>getComputedStyle(n,'::after').opacity),'0');await page.screenshot({path:path.join(output,'experimental-blank-lamp-off.png'),clip:await cell.boundingBox()});await cell.evaluate(n=>flipFlapOnce(n,'3'));
+ const bankMotion=await page.locator('.flap-character').evaluateAll(ns=>{window.bankProofPromise=Promise.all(ns.map(n=>flipFlapOnce(n,'9')));return ns.map(n=>{const animations=n.getAnimations({subtree:true}).filter(a=>a.effect.target.classList.contains('flap-moving'));animations.forEach(a=>{a.pause();a.currentTime=100;});return {group:n.parentElement.id,fixedTransform:getComputedStyle(n,'::before').transform,lampOpacity:getComputedStyle(n,'::after').opacity,motion:animations.map(a=>({duration:a.effect.getTiming().duration,delay:a.effect.getTiming().delay,material:getComputedStyle(a.effect.target).backgroundImage}))};});});
+ assert(bankMotion.every(n=>n.fixedTransform==='none'&&n.motion.length===2&&n.motion[0].duration===190&&n.motion[1].delay===185&&n.motion.every(a=>/experimental-surface/.test(a.material))),'Every tile retains fixed hardware and native motion');
+ await page.screenshot({path:path.join(output,'all-tiles-indexing.png'),fullPage:true});
+ await page.locator('.flap-character').evaluateAll(ns=>ns.forEach(n=>n.getAnimations({subtree:true}).forEach(a=>a.play())));await page.evaluate(()=>window.bankProofPromise);
+ assert((await page.locator('.flap-character').evaluateAll(ns=>ns.map(n=>n.dataset.value))).every(v=>v==='9'));
+ await page.locator('.flap-character').evaluateAll((ns,values)=>Promise.all(ns.map((n,i)=>flipFlapOnce(n,values[i]))),allTiles.map(n=>n.value));
+ assert.deepEqual(await page.locator('.flap-character').evaluateAll(ns=>ns.map(n=>n.dataset.value)),allTiles.map(n=>n.value));
  await errors('Experimental flap proof');
- await page.goto(origin+'/mobile/full');await page.waitForSelector('.flap-character');assert((await page.locator('#flight-number>.flap-character').first().evaluate(n=>getComputedStyle(n).backgroundImage)).includes('split-flap-tile.png'),'Mobile retains original artwork');
- fs.writeFileSync(path.join(output,'animation-results.json'),JSON.stringify({viewport:[1920,1080],dpr:1,browser:browser.version(),fixedTime:'2026-10-09T02:35:00Z',fixture:'Fictional EN ROUTE ORD-AVL 3761',styles,motion,allGeometryUnchanged:true,otherTilesOriginal:true,mobileArtworkOriginal:true,blankLampOpacity:0,settlesAndRestores:true,browserErrors:false,capture:'Indexing CSS animations paused at 100ms; native durations and flip function unchanged'},null,2));
- console.log('Experimental flap: geometry, one-tile isolation, fixed hardware, native motion/ink, settle, blank lamp and mobile exclusion passed.');
+ await page.goto(origin+'/mobile/full');await page.waitForSelector('.flap-character');assert((await page.locator('.flap-character').evaluateAll(ns=>ns.map(n=>getComputedStyle(n).backgroundImage))).every(s=>s.includes('split-flap-tile.png')),'Every mobile tile retains original artwork');
+ fs.writeFileSync(path.join(output,'animation-results.json'),JSON.stringify({viewport:[1920,1080],dpr:1,browser:browser.version(),fixedTime:'2026-10-09T02:35:00Z',fixture:'Fictional EN ROUTE ORD-AVL 3761',styles,motion,bankMotion,allGeometryUnchanged:true,allPrimaryTilesApproved:true,tileCount:allTiles.length,groups:[...new Set(allTiles.map(n=>n.group))],mobileArtworkOriginal:true,blankLampOpacity:0,settlesAndRestores:true,browserErrors:false,capture:'Indexing CSS animations paused at 100ms; native durations and flip function unchanged'},null,2));
+ console.log('Experimental flap: geometry, all 18 primary tiles, fixed hardware, native motion/ink, settle, blank lamp and mobile exclusion passed.');
 }finally{await browser.close();await new Promise(r=>server.close(r));}})().catch(e=>{console.error(e);process.exitCode=1;});
