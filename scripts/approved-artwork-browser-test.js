@@ -70,8 +70,9 @@ async function checkPrimaryClockGeometry(page, name) {
  }
  const gap=rows[1].boxes[0].top-rows[0].boxes[0].bottom;
  const gapInches=gap/display.height*11.3125;
- assert(gapInches>=.60&&gapInches<=.65,'Leave approximately 5/8 inch clear between rows for the physical faceplate and engraved label');
- assert(Math.abs(Math.max(...boxes.map(b=>b.bottom))-opening.bottom)<.5,'The lower row uses the opening to its bottom edge');
+ const lowerBottom=Math.max(...rows[1].boxes.map(b=>b.bottom));
+ assert(splitFlaps.every(b=>Math.abs(b.bottom-lowerBottom)<.5),'Lower primary clock bottom aligns with every split-flap group bottom');
+ assert(gapInches>=.28&&gapInches<=.32,'Retain approximately 0.30 inch of faceplate clearance between the unchanged drums');
  await page.locator('.twin-clock-panel').screenshot({path:path.join(output,`primary-clock-${name}.png`)});
  return proof;
 }

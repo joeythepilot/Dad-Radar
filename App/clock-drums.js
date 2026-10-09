@@ -31,7 +31,7 @@
     art.setAttribute("preserveAspectRatio", "xMinYMin slice");
     Array.from(art.querySelectorAll(".drum-clock")).forEach((row, index) => {
       row.querySelector(".clock-caption")?.remove();
-      const top = index * 458;
+      const top = index * 329;
       Array.from(row.querySelectorAll(".clock-wheel,.period-wheel")).forEach(wheel => {
         wheel.setAttribute("y", String(top));
         wheel.setAttribute("height", "210");
