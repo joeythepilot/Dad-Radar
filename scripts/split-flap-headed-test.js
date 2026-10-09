@@ -144,14 +144,14 @@ const server = http.createServer((request, response) => {
 
         assert.match(
           evidence.fixedImage,
-          /experimental-v2.*experimental-fixed\.png/,
+          /experimental-v4.*experimental-fixed\.png/,
           `${engine}: approved fixed housing should be active`
         );
         const imageSize=await page.evaluate(async()=>{
-          const image=new Image();image.src='/assets/split-flap/experimental-v2/experimental-fixed.png';await image.decode();
+          const image=new Image();image.src='/assets/split-flap/experimental-v4/experimental-fixed.png';await image.decode();
           return [image.naturalWidth,image.naturalHeight];
         });
-        assert.deepEqual(imageSize,[826,1514],`${engine}: approved fixed PNG decodes at its full resolution`);
+        assert.deepEqual(imageSize,[926,1698],`${engine}: approved fixed PNG decodes at its full resolution`);
         // Exercise the real flip; moving halves must not revert to the drawn substitute.
         await page.waitForFunction(()=>!document.querySelector('.flap-character')._animationRunning);
         assert.equal(await page.locator('.flap-character[data-value=" "]').first().evaluate(n=>getComputedStyle(n,'::after').opacity),'0',
@@ -169,10 +169,10 @@ const server = http.createServer((request, response) => {
           window.splitFlapArtworkProof=flipFlapOnce(cell,'Z');
         });
         const moving=await page.locator('.flap-flip-top,.flap-flip-bottom').evaluateAll(nodes=>nodes.map(n=>{
-          const s=getComputedStyle(n);return {image:s.backgroundImage,size:s.backgroundSize,animation:s.animationName};
+          const s=getComputedStyle(n);return {image:s.backgroundImage,size:s.backgroundSize,height:parseFloat(s.height),cellHeight:parseFloat(getComputedStyle(n.parentElement).height),animation:s.animationName};
         }));
         assert.equal(moving.length,2,`${engine}: both moving halves exist during a flip`);
-        assert(moving.every(s=>/experimental-v2.*experimental-surface\.png/.test(s.image)&&s.size==='100% 200%'&&s.animation!=='none'),
+        assert(moving.every(s=>/experimental-v2.*experimental-surface\.png/.test(s.image)&&Math.abs(parseFloat(s.size.split(' ')[1])*s.height/100-s.cellHeight)<0.1&&s.animation!=='none'),
           `${engine}: animated halves use matching halves of the approved hardware-free material`);
         const printMotion=await page.locator('.flap-character').first().evaluate(cell=>{
           const texture=selector=>[...cell.querySelectorAll(selector+' mask ellipse')].map(n=>n.outerHTML).join('');

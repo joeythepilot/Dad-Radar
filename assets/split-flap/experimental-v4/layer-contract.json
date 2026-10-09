@@ -1,0 +1,27 @@
+{
+  "status": "preview only; not approved or deployed",
+  "fixed_canvas": [
+    926,
+    1698
+  ],
+  "fixed_sha256": "28cd1f3703d8626154e3e0939a6d1d05b79f98802c7b4b580ede6ab374bdc547",
+  "joint_source_y": 948,
+  "joint_fraction": 0.558303886925795,
+  "native_tile": [
+    70.28125,
+    128.875
+  ],
+  "joint_shift_px": 7.513913427561834,
+  "upper_background_percent": 179.11392405063293,
+  "lower_background_percent": 226.39999999999998,
+  "moving_texture": "unchanged approved experimental-v2/experimental-surface.png",
+  "lighting": "unchanged approved experimental-v3/warm-lighting.svg",
+  "alpha_range": [
+    0,
+    255
+  ],
+  "opaque_bottom_y": 1682,
+  "bottom_clearance_source_px": 15,
+  "outer_geometry": "all 46 measured module/tile rectangles unchanged",
+  "mobile": "original; untouched"
+}

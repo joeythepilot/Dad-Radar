@@ -88,11 +88,22 @@ html:not([data-family-full]) .flight-board .flap-character::before {
   inset: 0 !important;
   height: 100% !important;
   transform: none !important;
-  background: url("../assets/split-flap/experimental-v2/experimental-fixed.png") center / 100% 100% no-repeat !important;
+  background: url("../assets/split-flap/experimental-v4/experimental-fixed.png") center / 100% 100% no-repeat !important;
   box-shadow: none !important;
 }
 
 /* V3 recessed rectangular lamp. Native blank/off opacity and fade remain unchanged. */
 html:not([data-family-full]) .flight-board .flap-character::after {
   background: url("../assets/split-flap/experimental-v3/warm-lighting.svg") center / 100% 100% no-repeat !important;
+}
+
+/* Balance preview: align the live joint/ink with the measured new hinge axis.
+   The outer tile box and existing 190/185 ms animations remain unchanged. */
+html:not([data-family-full]) .flight-board .flap-character .flap-top {
+  height: 55.8303886926% !important;
+  background-size: 100% 179.1139240506% !important;
+}
+html:not([data-family-full]) .flight-board .flap-character .flap-bottom {
+  height: 44.1696113074% !important;
+  background-size: 100% 226.4% !important;
 }
