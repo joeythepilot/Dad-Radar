@@ -333,7 +333,93 @@ function testMotionAdvancesOnBrowserFrames() {
   assert.equal(harness.frames.size, 0, "The completed transition stops scheduling frames.");
 }
 
+function testEditedCalendarFlightDiscardsOldMotion() {
+  const original = liveState();
+  original.flight.actualTrack = [{latitude:40,longitude:-84}];
+  original.flight.filedRoute = {routeText:'ORD AVL'};
+  const harness = createHarness(original);
+  harness.dispatchState(targetState());
+  harness.runNextFrame(0);
+  harness.runNextFrame(500);
+  const replacement = {
+    ...original, source:'calendar', liveData:false, status:'BOARDING',
+    flight:{number:'DL 2681',carrierCode:'DL',origin:'ATL',destination:'MSN',
+      groundSpeed:null,heading:null,altitude:null,latitude:null,longitude:null,progress:0}
+  };
+  harness.dispatchState(replacement);
+  const shown = harness.visualEvents.at(-1).detail.state;
+  assert.equal(shown.liveData,false,'Editing the same Calendar event to another flight must discard old live telemetry');
+  assert.equal(shown.flight.latitude,null);
+  assert.equal(shown.flight.altitude,null);
+  assert.equal(shown.flight.actualTrack,undefined,'Old breadcrumbs cannot attach to the new route');
+  assert.equal(shown.flight.filedRoute,undefined,'Old filed route cannot attach to the new route');
+  assert.equal(harness.frames.size,0,'An old indexing/motion frame cannot restore the previous aircraft');
+}
+
+function testChangedFlightCannotReuseSameSnapshotMotionKey() {
+  const harness = createHarness(liveState());
+  const first = targetState();
+  harness.dispatchState(first);
+  harness.runNextFrame(0);
+  harness.runNextFrame(500);
+  const replacement = {...first,flight:{...first.flight,number:'DL 2681',origin:'ATL',destination:'MSN'}};
+  harness.dispatchState(replacement);
+  assert.equal(harness.visualEvents.at(-1).detail.state.flight.altitude,10000,
+    'A different flight with identical snapshot timing must receive its own position immediately');
+  assert.equal(harness.frames.size,0);
+}
+
+function testSameScheduledLegPreservesMotionAcrossOperatingLabelChange() {
+  const original=liveState();original.flight.calendarLegKey='same-scheduled-leg';
+  const harness=createHarness(original);
+  harness.dispatchState({...original,liveData:false,source:'calendar',
+    flight:{...original.flight,number:'AA 4140',latitude:null,altitude:null}});
+  assert.equal(harness.visualEvents.at(-1).detail.state.flight.latitude,40,
+    'A regional operating display label change must not erase motion for the same scheduled leg');
+}
+
+function testSameRouteDifferentScheduledDepartureDoesNotInterpolate() {
+  const original=liveState();original.flight.calendarLegKey='first-departure';
+  const harness=createHarness(original);
+  const target=targetState();target.flight.calendarLegKey='replacement-departure';
+  harness.dispatchState(target);
+  assert.equal(harness.visualEvents.at(-1).detail.state.flight.altitude,10000);
+  assert.equal(harness.frames.size,0,'A reused same-number route with another departure is a different flight');
+}
+
+function testOperatingLabelDoesNotRestartActiveMotion() {
+  const original=liveState();original.flight.calendarLegKey='same-leg';
+  const harness=createHarness(original);
+  const target=targetState();target.flight.calendarLegKey='same-leg';
+  harness.dispatchState(target);harness.runNextFrame(0);harness.runNextFrame(500);
+  harness.dispatchState({...target,flight:{...target.flight,number:'ENY 4140'}});
+  harness.runNextFrame(1000);
+  assert.equal(harness.visualEvents.at(-1).detail.state.flight.altitude,10000,
+    'A regional operating callsign change must not restart the same live sample');
+  assert.equal(harness.frames.size,0);
+}
+
+function testBrandMetadataSurvivesPendingMotionFrames() {
+  const original=liveState();original.flight.calendarLegKey='same-leg';
+  const harness=createHarness(original);
+  const target=targetState();target.flight.calendarLegKey='same-leg';
+  harness.dispatchState(target);harness.runNextFrame(0);harness.runNextFrame(500);
+  harness.dispatchState({...target,liveData:false,source:'calendar',
+    flight:{...target.flight,marketingCarrierCode:'AA'}});
+  harness.runNextFrame(750);
+  assert.equal(harness.visualEvents.at(-1).detail.state.flight.marketingCarrierCode,'AA',
+    'A pending telemetry frame cannot restore outdated logo metadata');
+  assert.equal(harness.visualEvents.at(-1).detail.state.flight.altitude,15000,
+    'Metadata updates retain the original motion target and timeline');
+}
+
 function runTests() {
+  testOperatingLabelDoesNotRestartActiveMotion();
+  testBrandMetadataSurvivesPendingMotionFrames();
+  testSameScheduledLegPreservesMotionAcrossOperatingLabelChange();
+  testSameRouteDifferentScheduledDepartureDoesNotInterpolate();
+  testEditedCalendarFlightDiscardsOldMotion();
+  testChangedFlightCannotReuseSameSnapshotMotionKey();
   testLiveMotionIsInterpolated();
   testSameSnapshotDoesNotRestartMotion();
   testReducedMotionUpdatesImmediately();

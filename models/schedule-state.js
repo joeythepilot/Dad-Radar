@@ -679,6 +679,13 @@
           source: "calendar",
           eventId: event.id ?? null,
           flight: {
+            // Match acquisition identity, not the mutable operating display label.
+            calendarLegKey: JSON.stringify([
+              event.id ?? null, event.origin ?? null, event.destination ?? null,
+              event.carrierCode ?? null, event.flightNumber ?? null,
+              event.times?.startUtc ?? event.startUtc ?? null,
+              event.liveLookupCandidates ?? []
+            ]),
             number:
               getFlightLabel(event),
             carrierCode:

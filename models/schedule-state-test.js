@@ -936,7 +936,23 @@ function testDailyScheduleHasOneCurrentActivity() {
   );
 }
 
+function testCalendarLegKeyDistinguishesReplacementFlights() {
+  const event = createFlight();
+  const keyFor = value => resolveScheduleState(createSchedule([value]),{now:NOW}).state.flight.calendarLegKey;
+  const key = keyFor(event);
+  assert.equal(typeof key,'string','Flight states need immutable Calendar leg identity for visual continuity');
+  for (const changes of [{flightNumber:'2681'},{carrierCode:'DL'},{origin:'ATL'},
+    {destination:'MSN'},{liveLookupCandidates:['DL2681']},
+    {times:{...event.times,startUtc:'2026-08-04T12:50:00Z'}}]) {
+    assert.notEqual(keyFor({...event,...changes}),key,'A replacement acquisition must not retain old motion');
+  }
+  assert.equal(keyFor({...event,marketingCarrierCode:'AA'}),key,'Brand enrichment alone does not change the tracked leg');
+  assert.equal(keyFor({...event,times:{...event.times,endUtc:'2026-08-04T15:30:00Z'}}),key,
+    'An arrival-time correction does not change the departure leg');
+}
+
 function runTests() {
+  testCalendarLegKeyDistinguishesReplacementFlights();
   const dayOff={id:'day-off',kind:'duty-free',allDay:true,status:'confirmed',times:{startUtc:'2026-08-04T04:00:00Z',endUtc:'2026-08-06T04:00:00Z'}};
   const atHome=resolveScheduleState(createSchedule([dayOff]),{now:NOW});
   assert.equal(atHome.mode,'HOME','An active Duty Free Period explicitly establishes home.');

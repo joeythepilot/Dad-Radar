@@ -21,6 +21,7 @@
 
   let animationFrameId = null;
   let activeTargetKey = null;
+  let visualMode = null;
 
   function finiteNumber(value) {
     if (
@@ -125,6 +126,9 @@
 
     return [
       state.eventId ?? "",
+      flight.calendarLegKey ?? JSON.stringify([
+        flight.number ?? null, flight.origin ?? null, flight.destination ?? null
+      ]),
       flight.lastPositionAt ?? "",
       flight.latitude ?? "",
       flight.longitude ?? "",
@@ -138,22 +142,17 @@
       return false;
     }
 
-    if (
-      fromState.eventId &&
-      toState.eventId
-    ) {
-      return fromState.eventId ===
-        toState.eventId;
-    }
+    if (fromState.eventId && toState.eventId &&
+        fromState.eventId !== toState.eventId) return false;
 
-    return (
-      fromState.flight.number ===
-        toState.flight.number &&
-      fromState.flight.origin ===
-        toState.flight.origin &&
-      fromState.flight.destination ===
-        toState.flight.destination
-    );
+    const fromKey = fromState.flight.calendarLegKey;
+    const toKey = toState.flight.calendarLegKey;
+    if (fromKey || toKey) return Boolean(fromKey && fromKey === toKey);
+
+    // Older/test states lack a schedule key; an event ID alone is insufficient.
+    return fromState.flight.number === toState.flight.number &&
+      fromState.flight.origin === toState.flight.origin &&
+      fromState.flight.destination === toState.flight.destination;
   }
 
   function hasInterpolatableMotion(
@@ -215,6 +214,7 @@
     telemetryOnly = false
   ) {
     visualState = state;
+    visualMode = mode;
     global.dadRadarVisualState = state;
 
     global.dispatchEvent(
@@ -350,15 +350,16 @@
         1
       );
 
-      publishVisualState(
-        interpolateState(
-          fromState,
-          nextState,
-          progress
-        ),
-        mode,
-        true
-      );
+      const sample = interpolateState(fromState, nextState, progress);
+      // Calendar/brand metadata may change while this motion sample is in flight.
+      // Retain its numeric target/timeline while rendering the latest metadata.
+      const frameState = {
+        ...visualState,
+        visualInterpolation: sample.visualInterpolation,
+        flight: {...visualState.flight}
+      };
+      MOTION_FIELDS.forEach(field => {frameState.flight[field] = sample.flight[field];});
+      publishVisualState(frameState, visualMode ?? mode, true);
 
       if (progress < 1) {
         animationFrameId =
