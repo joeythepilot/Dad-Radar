@@ -11,7 +11,7 @@ const ROUTE_ARROW_PATTERN =
 
 const FLIGHT_SUMMARY_PATTERN =
   new RegExp(
-    `^Flight\\s+(\\d{1,4})\\s+([A-Z]{3})\\s*${ROUTE_ARROW_PATTERN}\\s*([A-Z]{3})`,
+    `^(?:Flight|FLT)\\s+(\\d{1,4})\\s+([A-Z]{3})\\s*${ROUTE_ARROW_PATTERN}\\s*([A-Z]{3})`,
     "i"
   );
 

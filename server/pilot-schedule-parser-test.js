@@ -26,6 +26,20 @@ function createEvent(overrides = {}) {
   };
 }
 
+function testManualFltAlias() {
+  const baseline = parsePilotEvent(createEvent({summary: "Flight 3553 MIA->MSY"}));
+  for (const summary of ["FLT 3553 MIA->MSY", "flt 3553 mia -> msy", "FLT 3553 MIA→MSY"]) {
+    const flight = parsePilotEvent(createEvent({summary}));
+    assert.equal(flight.kind, "flight", `${summary} must select a flight rather than a generic duty entry`);
+    for (const field of ["flightNumber", "origin", "destination", "route", "carrierCode", "marketingCarrierCode", "isCommute", "isDeadhead"])
+      assert.deepEqual(flight[field], baseline[field], `FLT alias preserves ${field}`);
+    assert.deepEqual(flight.times, baseline.times, "FLT alias retains calendar timing");
+    assert.deepEqual(flight.liveLookupCandidates, baseline.liveLookupCandidates, "FLT alias preserves operating-flight matching");
+  }
+  for (const summary of ["FLT 3553", "FLT 3553 MIA", "FLT briefing"])
+    assert.equal(parsePilotEvent(createEvent({summary})).kind, "other", "An incomplete FLT title cannot fabricate a route");
+}
+
 function testRosterFlightTimeZones() {
   const result = parsePilotEvent(
     createEvent({
@@ -421,6 +435,7 @@ function runTests() {
   const weekly = require('../App/weekly-ticker');
   const overnight = parsePilotEvent(createEvent({summary:'Layover in EVV',start:{dateTime:'2026-09-27T23:58:00-04:00'},end:{dateTime:'2026-09-28T15:53:00-04:00'}}));
   assert.equal(weekly.buildWeeklyOvernightModules({events:[overnight]}, {now:'2026-09-26T23:00:00Z'})[1].code, 'EVV', 'Imported overnight reaches Sunday wheel');
+  testManualFltAlias();
   testRosterFlightTimeZones();
   testManualCommute();
   testMisspelledCommuteMarker();
