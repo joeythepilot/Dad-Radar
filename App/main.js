@@ -283,6 +283,18 @@ function paintSplitFlapGlyph(glyph,character,slot) {
   const svg=document.createElementNS("http://www.w3.org/2000/svg","svg");
   svg.setAttribute("viewBox","0 0 100 100");
   svg.setAttribute("aria-hidden","true");
+  const brand = character.startsWith("@") ? character.slice(1) : null;
+  glyph.classList.toggle("flap-logo", Boolean(brand));
+  if (brand && ["american","united","delta","southwest","jetblue","alaska","allegiant"].includes(brand)) {
+    const image=document.createElementNS("http://www.w3.org/2000/svg","image");
+    image.setAttribute("href",`/assets/airlines/${brand}.svg`);
+    image.setAttribute("x","6"); image.setAttribute("y","6");
+    image.setAttribute("width","88"); image.setAttribute("height","88");
+    image.setAttribute("preserveAspectRatio","xMidYMid meet");
+    svg.appendChild(image);
+    glyph.replaceChildren(svg);
+    return;
+  }
   const print=window.dadRadarPrintedInk.svg(document,displayFlapCharacter(character),{
     height:76,cellWidth:90,ink:"#e8e1d3",material:"paper",
     seed:`split-flap-${slot}`,idPrefix:`split-flap-print-${++splitFlapPrintInstance}`
@@ -472,6 +484,16 @@ function createFlapCharacter(
     staticTop,
     staticBottom
   );
+  // Two uniformly scaled edge crops retain photographed hinges/corners at any
+  // tile width. Only the straight middle of the housing is cropped/repeated.
+  const hardware=document.createElement("span");
+  hardware.className="flap-fixed-hardware";
+  for (const side of ["left","right"]) {
+    const edge=document.createElement("span");
+    edge.className=`flap-hardware-${side}`;
+    hardware.appendChild(edge);
+  }
+  cell.appendChild(hardware);
 
   return cell;
 }
@@ -859,6 +881,19 @@ function renderFlapText(
       );
     });
 
+  scheduleFlightBoardBalance();
+}
+
+function renderFlightIdentification(container, number, brand) {
+  if (!container) return;
+  prepareFlapContainer(container, 5);
+  const digits=String(number ?? "").toUpperCase().slice(0,4).padEnd(4," ");
+  const values=[brand ? `@${brand}` : " ", ...digits];
+  container.setAttribute("aria-label", `${brand || "Unknown airline"} ${digits.trim() || "Blank"}`);
+  [...container.children].forEach((cell,index)=>{
+    cell.dataset.logoTile=String(index===0);
+    queueFlapAnimation(cell, values[index], index*FLAP_STAGGER_DELAY);
+  });
   scheduleFlightBoardBalance();
 }
 
@@ -1628,10 +1663,10 @@ function updateDashboard(state) {
     flightBoardFlight.hidden = false;
   }
 
-  renderFlapText(
+  renderFlightIdentification(
     flightNumber,
     splitFlapFields.flightNumber,
-    4
+    window.dadRadarSplitFlapState.airlineBrandForState(state)
   );
 
   renderFlapText(

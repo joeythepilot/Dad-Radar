@@ -39,7 +39,7 @@ fs.mkdirSync(output,{recursive:true});
     assert.equal(new URL(actual.src,origin).pathname,new URL(require('../config/posters').getPoster('AVL').source,origin).pathname,'Correct approved AVL poster is selected, independently of cache/retry parameters');
     assert.equal(actual.background,'none','Poster has one foreground rendering path');
    } else {
-    await page.waitForFunction(()=>document.querySelector('#flight-number')?.getAttribute('aria-label')==='3761'&&document.querySelector('#flight-destination')?.getAttribute('aria-label')==='AVL');
+    await page.waitForFunction(()=>document.querySelector('#flight-number')?.getAttribute('aria-label')==='Unknown airline 3761'&&document.querySelector('#flight-destination')?.getAttribute('aria-label')==='AVL');
     assert.equal(await page.locator('#flight-destination').getAttribute('aria-label'),'AVL');
     assert(await page.locator('.daily-schedule-panel').isVisible(),'Family route renders duty alongside the flight');
     assert.equal(await page.locator('.family-layout-control,.family-layout-bar').count(),0,'No layout switch or bar consumes screen space');

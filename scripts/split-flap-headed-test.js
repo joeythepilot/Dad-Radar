@@ -127,7 +127,7 @@ const server = http.createServer((request, response) => {
 
           return {
             backgroundImage: style.backgroundImage,
-            fixedImage: seam.backgroundImage,
+            fixedImage: getComputedStyle(flap.querySelector(".flap-hardware-left")).backgroundImage,
             fixedTransform: seam.transform,
             cellHeight: style.height,
             color: style.color,
@@ -229,7 +229,7 @@ const server = http.createServer((request, response) => {
           'none',
           `${engine}: no panel-wide light wash`
         );
-        assert(evidence.individualLights.length===18&&evidence.individualLights.every(light=>/experimental-v3.*warm-lighting\.svg/.test(light)),
+        assert(evidence.individualLights.length===19&&evidence.individualLights.every(light=>/experimental-v3.*warm-lighting\.svg/.test(light)),
           `${engine}: every flap, including blank flaps, has its own light source`);
         assert.ok(
           evidence.boardBorderColor === "rgba(205, 177, 121, 0.09)",

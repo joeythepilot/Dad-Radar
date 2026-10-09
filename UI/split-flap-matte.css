@@ -72,38 +72,47 @@
   background: none !important;
 }
 
-/* Approved artwork: all PRIMARY split-flap tiles.
+/* Approved artwork: primary and Full mobile split-flap tiles.
    Native half bounds, glyphs, transforms, timing and lamp behavior are unchanged.
    Unlit hardware and independent opaque card material; v2 registration.
    Visuals approved by Joey on 2026-10-08 EDT; deployment remains separate. */
-html:not([data-family-full]) .flight-board .flap-character {
+.flight-board .flap-character {
   background-image: none !important;
   background-size: 100% 100% !important;
 }
-html:not([data-family-full]) .flight-board .flap-character .flap-half {
+.flight-board .flap-character .flap-half {
   background-color: transparent !important;
   background-image: url("../assets/split-flap/experimental-v2/experimental-surface.png") !important;
 }
-html:not([data-family-full]) .flight-board .flap-character::before {
+.flight-board .flap-character::before {
   inset: 0 !important;
   height: 100% !important;
   transform: none !important;
-  background: url("../assets/split-flap/experimental-v4/experimental-fixed.png") center / 100% 100% no-repeat !important;
+  background: none !important;
   box-shadow: none !important;
 }
 
 /* V3 recessed rectangular lamp. Native blank/off opacity and fade remain unchanged. */
-html:not([data-family-full]) .flight-board .flap-character::after {
-  background: url("../assets/split-flap/experimental-v3/warm-lighting.svg") center / 100% 100% no-repeat !important;
+.flight-board .flap-character::after {
+  background: url("../assets/split-flap/experimental-v3/warm-lighting.svg") center / auto 100% no-repeat !important;
 }
 
 /* Balance preview: align the live joint/ink with the measured new hinge axis.
    The outer tile box and existing 190/185 ms animations remain unchanged. */
-html:not([data-family-full]) .flight-board .flap-character .flap-top {
+.flight-board .flap-character .flap-top {
   height: 55.8303886926% !important;
-  background-size: 100% 179.1139240506% !important;
+  background-size: auto 179.1139240506% !important;
 }
-html:not([data-family-full]) .flight-board .flap-character .flap-bottom {
+.flight-board .flap-character .flap-bottom {
   height: 44.1696113074% !important;
-  background-size: 100% 226.4% !important;
+  background-size: auto 226.4% !important;
 }
+
+/* Stationary photographic hardware: no horizontal resampling of the asset. */
+.flap-fixed-hardware { position:absolute; inset:0; z-index:30; pointer-events:none; }
+.flap-fixed-hardware > span { position:absolute; top:0; bottom:0; width:50%; overflow:hidden;
+  background-image:url("../assets/split-flap/experimental-v4/experimental-fixed.png");
+  background-size:auto 100%; background-repeat:no-repeat; }
+.flap-hardware-left { left:0; background-position:left top; }
+.flap-hardware-right { right:0; background-position:right top; }
+.flap-glyph.flap-logo { transform:none; }

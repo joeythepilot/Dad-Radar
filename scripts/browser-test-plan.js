@@ -4,6 +4,7 @@ const path=require('node:path');
 const {execFileSync}=require('node:child_process');
 const SUITES=[
   {suite:'weekly',file:'scripts/weekly-ticker-headed-test.js',engines:['chromium','webkit']},
+  {suite:'airline-logo',file:'scripts/airline-logo-browser-test.js',engines:['chromium']},
   {suite:'split-flap',file:'scripts/split-flap-headed-test.js',engines:['chromium','webkit']},
   {suite:'map',file:'scripts/map-hardware-headed-test.js',engines:['chromium','webkit']},
   {suite:'artwork',file:'scripts/approved-artwork-browser-test.js',engines:['chromium']},

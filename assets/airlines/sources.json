@@ -1,0 +1,50 @@
+{
+  "notes": "Original vector paths and colors; transparent marks only. Airline trademarks remain owned by their respective airlines. Mirror source commits are immutable. No AI logo artwork.",
+  "assets": [
+    {
+      "brand": "american",
+      "source": "https://raw.githubusercontent.com/johanohly/AirTrail/a34046640607ee72e1f9aed5538f84091b035246/data/icons/airlines/american-airlines.svg",
+      "changes": [],
+      "sha256": "643f4ad4ad87f951631f3ab4f0eb0a10e079be508a430ecb365f8ff1dcdfa1eb"
+    },
+    {
+      "brand": "united",
+      "source": "https://raw.githubusercontent.com/johanohly/AirTrail/a34046640607ee72e1f9aed5538f84091b035246/data/icons/airlines/united-airlines.svg",
+      "changes": [
+        "Removed white rectangular backdrop; blue globe paths unchanged."
+      ],
+      "sha256": "2314f6dd6bc6246dc7fd02657909b7bfddee7e7890d890fa4fe42c6adebbdc59"
+    },
+    {
+      "brand": "delta",
+      "source": "https://raw.githubusercontent.com/johanohly/AirTrail/a34046640607ee72e1f9aed5538f84091b035246/data/icons/airlines/delta-air-lines.svg",
+      "changes": [],
+      "sha256": "81d69fbeac290329b50e10c62817919f5abfb7bfe68ea59bf5fbd5c87df194cf"
+    },
+    {
+      "brand": "southwest",
+      "source": "https://raw.githubusercontent.com/johanohly/AirTrail/a34046640607ee72e1f9aed5538f84091b035246/data/icons/airlines/southwest-airlines.svg",
+      "changes": [],
+      "sha256": "99f06ddf8aa109bc80f1a13ae8c124398d8867400d1385187d9eac0b80bf2908"
+    },
+    {
+      "brand": "allegiant",
+      "source": "https://raw.githubusercontent.com/johanohly/AirTrail/a34046640607ee72e1f9aed5538f84091b035246/data/icons/airlines/allegiant-air.svg",
+      "changes": [],
+      "sha256": "6456a3ae81102e099b5781c904d16484444b3b5e0733c446084de8a5e0f4d1f7"
+    },
+    {
+      "brand": "jetblue",
+      "source": "https://cms.jetblue.com/dam/ui-assets/imagery/logos/jetblue-logo.svg",
+      "changes": [],
+      "sha256": "b4ccd2ff92eb6b118ca3b00a42248b467de6c3748bdd6281b193348e4616fcbe",
+      "variant": "Official reversed white wordmark for dark backgrounds"
+    },
+    {
+      "brand": "alaska",
+      "source": "https://resource.alaskaair.net/v3/assets/blt2cefe12c88e9dd91/blt9b19dc4964c6fdcd/alaska-logo-footer.svg",
+      "changes": [],
+      "sha256": "c0f31f2bd26d43abc856b2ed855c2bfdc0d8f8de85259302ca4bf946d6d968bc"
+    }
+  ]
+}

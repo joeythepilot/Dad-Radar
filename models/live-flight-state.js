@@ -423,6 +423,12 @@
               .flight,
             ...previousResolved.state
               .flight,
+            // A held track retains telemetry, never an outdated calendar brand.
+            marketingCarrierCode:
+              calendarResolved.state.flight.marketingCarrierCode ?? null,
+            scheduledCarrierCode:
+              calendarResolved.state.flight.scheduledCarrierCode ??
+              calendarResolved.state.flight.carrierCode ?? null,
             progress:
               previousResolved.mode ===
                 "ARRIVED"

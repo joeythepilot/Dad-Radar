@@ -20,10 +20,10 @@ html:not([data-family-full]) .dashboard .daily-schedule-panel { position:absolut
 html:not([data-family-full]) .dashboard .vintage-map-panel { position:absolute!important; inset:auto!important; left:27.53894080996885%!important; top:20.773480662983427%!important; width:50.77881619937694%!important; height:57.79005524861878%!important; margin:0!important; min-width:0!important; min-height:0!important; max-width:none!important; max-height:none!important; }
 html:not([data-family-full]) .dashboard .weekly-overnight-bank { position:absolute!important; inset:auto!important; left:27.53894080996885%!important; top:82.98342541436463%!important; width:50.77881619937694%!important; height:11.933701657458565%!important; margin:0!important; min-width:0!important; min-height:0!important; max-width:none!important; max-height:none!important; }
 html:not([data-family-full]) .dashboard .twin-clock-panel { position:absolute!important; inset:auto!important; left:80.80996884735201%!important; top:3.314917127071823%!important; width:16.697819314641745%!important; height:15.911602209944753%!important; margin:0!important; min-width:0!important; min-height:0!important; max-width:none!important; max-height:none!important; }
-html:not([data-family-full]) .dashboard #flight-number { position:absolute!important; inset:auto!important; left:2.4922118380062304%!important; top:4.41988950276243%!important; width:15.182900657667012%!important; height:11.933701657458565%!important; margin:0!important; min-width:0!important; min-height:0!important; max-width:none!important; max-height:none!important; }
-html:not([data-family-full]) .dashboard #flight-origin { position:absolute!important; inset:auto!important; left:20.167324333679478%!important; top:4.41988950276243%!important; width:11.34828660436137%!important; height:11.933701657458565%!important; margin:0!important; min-width:0!important; min-height:0!important; max-width:none!important; max-height:none!important; }
-html:not([data-family-full]) .dashboard #flight-destination { position:absolute!important; inset:auto!important; left:34.00782277604708%!important; top:4.41988950276243%!important; width:11.34828660436137%!important; height:11.933701657458565%!important; margin:0!important; min-width:0!important; min-height:0!important; max-width:none!important; max-height:none!important; }
-html:not([data-family-full]) .dashboard #status-value { position:absolute!important; inset:auto!important; left:47.848321218414675%!important; top:4.41988950276243%!important; width:30.469435790931115%!important; height:11.933701657458565%!important; margin:0!important; min-width:0!important; min-height:0!important; max-width:none!important; max-height:none!important; }
+html:not([data-family-full]) .dashboard #flight-number { position:absolute!important; inset:auto!important; left:var(--airline-flight-x)!important; top:4.41988950276243%!important; width:var(--airline-flight-width)!important; height:11.933701657458565%!important; margin:0!important; min-width:0!important; min-height:0!important; max-width:none!important; max-height:none!important; }
+html:not([data-family-full]) .dashboard #flight-origin { position:absolute!important; inset:auto!important; left:var(--airline-origin-x)!important; top:4.41988950276243%!important; width:var(--airline-airport-width)!important; height:11.933701657458565%!important; margin:0!important; min-width:0!important; min-height:0!important; max-width:none!important; max-height:none!important; }
+html:not([data-family-full]) .dashboard #flight-destination { position:absolute!important; inset:auto!important; left:var(--airline-destination-x)!important; top:4.41988950276243%!important; width:var(--airline-airport-width)!important; height:11.933701657458565%!important; margin:0!important; min-width:0!important; min-height:0!important; max-width:none!important; max-height:none!important; }
+html:not([data-family-full]) .dashboard #status-value { position:absolute!important; inset:auto!important; left:var(--airline-status-x)!important; top:4.41988950276243%!important; width:var(--airline-status-width)!important; height:11.933701657458565%!important; margin:0!important; min-width:0!important; min-height:0!important; max-width:none!important; max-height:none!important; }
 html:not([data-family-full]) .dashboard .instrument-slot:nth-child(1) { position:absolute!important; inset:auto!important; left:84.14704049844237%!important; top:26.106077348066297%!important; width:10.02367601246106%!important; height:17.776795580110498%!important; margin:0!important; min-width:0!important; min-height:0!important; max-width:none!important; max-height:none!important; }
 html:not([data-family-full]) .dashboard .instrument-slot:nth-child(2) { position:absolute!important; inset:auto!important; left:84.14704049844237%!important; top:51.82983425414365%!important; width:10.02367601246106%!important; height:17.776795580110498%!important; margin:0!important; min-width:0!important; min-height:0!important; max-width:none!important; max-height:none!important; }
 html:not([data-family-full]) .dashboard .instrument-slot:nth-child(3) { position:absolute!important; inset:auto!important; left:84.14704049844237%!important; top:77.553591160221%!important; width:10.02367601246106%!important; height:17.776795580110498%!important; margin:0!important; min-width:0!important; min-height:0!important; max-width:none!important; max-height:none!important; }
@@ -33,8 +33,8 @@ html:not([data-family-full]) .dashboard .instrument-slot { padding:0!important; 
 html:not([data-family-full]) .dashboard .destination-stage { inset:0; width:100%; height:100%; }
 html:not([data-family-full]) .dashboard .destination-poster-image { width:100%!important; height:100%!important; object-fit:contain!important; }
 html:not([data-family-full]) .dashboard .vintage-map-panel .route-map-shell { inset:0!important; width:100%!important; height:100%!important; border:0!important; border-radius:0!important; }
-html:not([data-family-full]) .dashboard .flap-cell { display:flex!important; gap:.18cqw!important; padding:0!important; align-items:stretch!important; }
-html:not([data-family-full]) .dashboard .flap-character { flex:1 1 0!important; min-width:0!important; max-width:none!important; width:auto!important; height:100%!important; font-size:2.75cqw!important; }
+html:not([data-family-full]) .dashboard .flap-cell { display:flex!important; gap:var(--airline-internal-gap)!important; padding:0!important; align-items:stretch!important; }
+html:not([data-family-full]) .dashboard .flap-character { flex:0 0 var(--airline-flap-width)!important; min-width:0!important; max-width:none!important; width:var(--airline-flap-width)!important; height:100%!important; font-size:2.75cqw!important; }
 html:not([data-family-full]) .dashboard .instrument-slot { overflow:hidden!important; border-radius:50%!important; display:block!important; }
 html:not([data-family-full]) .dashboard .instrument-slot .instrument { position:absolute!important; width:128.205128%!important; height:128.205128%!important; max-width:none!important; max-height:none!important; left:50%!important; top:50%!important; transform:translate(-50%,-50%); margin:0!important; }
 html:not([data-family-full]) .dashboard .instrument-slot .heading-instrument { width:136.986301%!important; height:136.986301%!important; }
@@ -50,3 +50,29 @@ html:not([data-family-full]) .dashboard .instrument-slot .altimeter-readout { le
 /* Compensate the wheel inserts for the parent enlargement; preserve their visible size and position. */
 html:not([data-family-full]) .dashboard .airspeed-instrument .instrument-wheel-readout { bottom:17.846154%!important; transform:scale(.974358974); transform-origin:bottom center; }
 html:not([data-family-full]) .dashboard .altimeter-instrument .instrument-wheel-readout { bottom:25.333333%!important; transform:scale(.948717949); transform-origin:bottom center; }
+
+/* Preserve the original CSS envelope/gaps at native 1/64px layout precision.
+   1920px measured ideal = (1263.90625 - 3.453125) / 19 = 66.3396381579px.
+   Chromium resolves a shared card to 66.328125px; the final card finishes
+   0.21875px inside the original envelope. No gap absorbs the residual. */
+html:not([data-family-full]) .dashboard {
+  --airline-original-flight-x: round(down, 2.4922118380062304cqw, .015625px);
+  --airline-original-origin-x: round(down, 20.167324333679478cqw, .015625px);
+  --airline-original-destination-x: round(down, 34.00782277604708cqw, .015625px);
+  --airline-original-status-x: round(down, 47.848321218414675cqw, .015625px);
+  --airline-original-flight-width: round(down, 15.182900657667012cqw, .015625px);
+  --airline-original-airport-width: round(down, 11.34828660436137cqw, .015625px);
+  --airline-original-status-width: round(down, 30.469435790931115cqw, .015625px);
+  --airline-internal-gap: round(down, .18cqw, .015625px);
+  --airline-gap-one: calc(var(--airline-original-origin-x) - var(--airline-original-flight-x) - var(--airline-original-flight-width));
+  --airline-gap-two: calc(var(--airline-original-destination-x) - var(--airline-original-origin-x) - var(--airline-original-airport-width));
+  --airline-gap-three: calc(var(--airline-original-status-x) - var(--airline-original-destination-x) - var(--airline-original-airport-width));
+  --airline-flap-width: round(down, calc((var(--airline-original-flight-width) + 2 * var(--airline-original-airport-width) + var(--airline-original-status-width) - 15 * var(--airline-internal-gap)) / 19), .015625px);
+  --airline-flight-width: calc(5 * var(--airline-flap-width) + 4 * var(--airline-internal-gap));
+  --airline-airport-width: calc(3 * var(--airline-flap-width) + 2 * var(--airline-internal-gap));
+  --airline-status-width: calc(8 * var(--airline-flap-width) + 7 * var(--airline-internal-gap));
+  --airline-flight-x: var(--airline-original-flight-x);
+  --airline-origin-x: calc(var(--airline-flight-x) + var(--airline-flight-width) + var(--airline-gap-one));
+  --airline-destination-x: calc(var(--airline-origin-x) + var(--airline-airport-width) + var(--airline-gap-two));
+  --airline-status-x: calc(var(--airline-destination-x) + var(--airline-airport-width) + var(--airline-gap-three));
+}

@@ -683,6 +683,10 @@
               getFlightLabel(event),
             carrierCode:
               event.carrierCode ?? null,
+            marketingCarrierCode:
+              event.marketingCarrierCode ?? null,
+            scheduledCarrierCode:
+              event.carrierCode ?? null,
             origin:
               event.origin ?? null,
             originCity:

@@ -21,6 +21,19 @@
   function createSplitFlapState() {
     const STATUS_FLAP_COUNT = 8;
 
+    // Only scheduled metadata. Never derive a passenger brand from liveIdent,
+    // number or ADS-B callsigns: regional operators can fly several brands.
+    function airlineBrandForState(state = {}) {
+      const flight = state.flight;
+      if (!flight) return null;
+      const scheduledCarrier = Object.prototype.hasOwnProperty.call(flight, "scheduledCarrierCode")
+        ? flight.scheduledCarrierCode : flight.carrierCode;
+      const code = String(flight.marketingCarrierCode ?? scheduledCarrier ?? '').trim().toUpperCase();
+      return ({AA:'american',AAL:'american',MQ:'american',ENY:'american',
+        UA:'united',UAL:'united',DL:'delta',DAL:'delta',WN:'southwest',SWA:'southwest',
+        B6:'jetblue',JBU:'jetblue',AS:'alaska',ASA:'alaska',G4:'allegiant',AAY:'allegiant'})[code] ?? null;
+    }
+
     function fixedWidth(
       value,
       characterCount
@@ -140,6 +153,7 @@
 
     return Object.freeze({
       STATUS_FLAP_COUNT,
+      airlineBrandForState,
       fieldsForState,
       formatAirport,
       formatFlightNumber,

@@ -17,7 +17,7 @@ const FLIGHT_SUMMARY_PATTERN =
 
 const COMMUTE_SUMMARY_PATTERN =
   new RegExp(
-    `^COM{2,}UTE\\s+([A-Z]{2,3})\\s*(\\d{1,4})\\s+([A-Z]{3})\\s*${ROUTE_ARROW_PATTERN}\\s*([A-Z]{3})`,
+    `^COM{2,}UTE\\s+((?:[A-Z]{3}|(?:[A-Z][A-Z0-9]|[0-9][A-Z])))\\s*(\\d{1,4})\\s+([A-Z]{3})\\s*${ROUTE_ARROW_PATTERN}\\s*([A-Z]{3})`,
     "i"
   );
 
@@ -25,7 +25,7 @@ const COMMUTE_MARKER_PATTERN = /\bCOM{2,}UTE\b/i;
 
 const DEADHEAD_SUMMARY_PATTERN =
   new RegExp(
-    `^DEADHEAD(?:\\s+FLIGHT)?\\s+(?:([A-Z]{2,3})\\s*)?(\\d{1,4})\\s+([A-Z]{3})\\s*${ROUTE_ARROW_PATTERN}\\s*([A-Z]{3})`,
+    `^DEADHEAD(?:\\s+FLIGHT)?\\s+(?:((?:[A-Z]{3}|(?:[A-Z][A-Z0-9]|[0-9][A-Z])))\\s*)?(\\d{1,4})\\s+([A-Z]{3})\\s*${ROUTE_ARROW_PATTERN}\\s*([A-Z]{3})`,
     "i"
   );
 
@@ -60,9 +60,20 @@ function normalizeAirport(value) {
 function normalizeCarrier(value) {
   const carrier = cleanText(value).toUpperCase();
 
-  return /^[A-Z]{2,3}$/.test(carrier)
+  return /^(?:[A-Z]{3}|(?:[A-Z][A-Z0-9]|[0-9][A-Z]))$/.test(carrier)
     ? carrier
     : null;
+}
+
+// Scheduled marketing evidence only. Never consult an ADS-B ident or callsign.
+function marketingCarrierForEvent(event, description) {
+  const explicit=event.extendedProperties?.private?.marketingCarrierCode ??
+    event.extendedProperties?.shared?.marketingCarrierCode ??
+    description.match(/(?:^|[\n;]\s*|\s)Marketing\s+(?:carrier|airline|brand)\s*:\s*([^\n;]+)/i)?.[1];
+  if (explicit == null) return null;
+  const value=cleanText(explicit).toUpperCase();
+  const names={"AMERICAN AIRLINES":"AA","AMERICAN EAGLE":"AA","UNITED AIRLINES":"UA","UNITED EXPRESS":"UA","DELTA AIR LINES":"DL","DELTA CONNECTION":"DL","SOUTHWEST AIRLINES":"WN","JETBLUE":"B6","ALASKA AIRLINES":"AS","ALLEGIANT AIR":"G4"};
+  return names[value] ?? normalizeCarrier(value) ?? "UNKNOWN";
 }
 
 function parseFlightDescription(description) {
@@ -84,7 +95,7 @@ function parseFlightDescription(description) {
   }
 
   const flightMatch = text.match(
-    /Flight:\s*(?:([A-Z]{2,3})\s*)?(\d{1,4})\s+Stations:\s*([A-Z]{3})\s*(?:→|->)\s*([A-Z]{3})/i
+    /Flight:\s*(?:((?:[A-Z]{3}|(?:[A-Z][A-Z0-9]|[0-9][A-Z])))\s*)?(\d{1,4})\s+Stations:\s*([A-Z]{3})\s*(?:→|->)\s*([A-Z]{3})/i
   );
 
   const timeMatch = text.match(
@@ -477,6 +488,7 @@ function parsePilotEvent(
       status:
         event.status ?? null,
       carrierCode,
+      marketingCarrierCode: marketingCarrierForEvent(event, description),
       flightNumber,
       origin,
       destination,

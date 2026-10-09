@@ -27,15 +27,16 @@
     var boardWidth = board.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
     var boardHeight = board.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
     if (boardWidth <= 0 || boardHeight <= 0) return;
-    var tile = Math.min(86, (boardWidth - 2) / (18 + 14 * 0.04 + 3 * 0.65), (boardHeight - 2) / 1.56);
-    if (tile <= 0) return;
-    var gap = tile * 0.04;
-    var sectionGap = tile * 0.65;
+    var originalTile = Math.min(86, (boardWidth - 2) / (18 + 14 * 0.04 + 3 * 0.65), (boardHeight - 2) / 1.56);
+    if (originalTile <= 0) return;
+    var gap = Math.floor(originalTile * 0.04 * 64) / 64;
+    var tile = Math.floor((18 * originalTile - gap) / 19 * 64) / 64;
+    var sectionGap = originalTile * 0.65;
     var airportWidth = tile * 3 + gap * 2;
     var sizes = {
-      '--flap-width': tile, '--flap-height': tile * 1.56, '--flap-gap': gap,
-      '--family-flap-font-size': tile * 0.74, '--family-flap-radius': tile * 0.08,
-      '--flight-flap-group-width': tile * 4 + gap * 3,
+      '--flap-width': tile, '--flap-height': originalTile * 1.56, '--flap-gap': gap,
+      '--family-flap-font-size': originalTile * 0.74, '--family-flap-radius': tile * 0.08,
+      '--flight-flap-group-width': tile * 5 + gap * 4,
       '--airport-flap-group-width': airportWidth,
       '--status-flap-group-width': tile * 8 + gap * 7,
       '--family-route-width': airportWidth * 2 + sectionGap,
