@@ -8,6 +8,8 @@ const {
   parsePilotSchedule
 } = require("./pilot-schedule-parser");
 
+const {enrichScheduledAirlines} = require("./scheduled-airline-service");
+
 const CALENDAR_ID =
   process.env.GOOGLE_CALENDAR_ID ||
   "family04491195316374346619@group.calendar.google.com";
@@ -248,14 +250,15 @@ async function getUpcomingEvents(options = {}) {
       location: event.location ?? "",
       start: event.start ?? null,
       end: event.end ?? null,
+      extendedProperties: event.extendedProperties ?? null,
       updated: event.updated ?? null
     }))
   };
 
-  return {
+  return enrichScheduledAirlines({
     ...parsePilotSchedule(rawCalendarData),
     queryWindow: {startUtc: startTime.toISOString(), endUtc: endTime.toISOString()}
-  };
+  });
 }
 
 module.exports = {
