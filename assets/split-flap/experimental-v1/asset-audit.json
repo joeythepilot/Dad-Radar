@@ -1,0 +1,175 @@
+{
+  "source_assets": [
+    {
+      "file": "blank-tile-49x129.png",
+      "size": [
+        49,
+        129
+      ],
+      "alpha_range": [
+        105,
+        255
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        49,
+        129
+      ],
+      "alpha_zero_pixels": 0,
+      "alpha_255_pixels": 2,
+      "sha256": "8131f55f2595faccd906c4bfbd1f313a6d86acd9680bb24854bf63fa15ab200d"
+    },
+    {
+      "file": "blank-tile-master.png",
+      "size": [
+        607,
+        884
+      ],
+      "alpha_range": [
+        0,
+        252
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        607,
+        884
+      ],
+      "alpha_zero_pixels": 268,
+      "alpha_255_pixels": 0,
+      "sha256": "de47adc1da67096d2c988742d50d2e9344f3db4ce0219c76a480ce3d46c1ec6e"
+    },
+    {
+      "file": "center-seam.png",
+      "size": [
+        607,
+        884
+      ],
+      "alpha_range": [
+        0,
+        250
+      ],
+      "alpha_bounds": [
+        59,
+        477,
+        545,
+        490
+      ],
+      "alpha_zero_pixels": 530270,
+      "alpha_255_pixels": 0,
+      "sha256": "5b78f892a930fe83c0ee719539c0bee9bd08f461c58bebe24b3602844e601cbc"
+    },
+    {
+      "file": "hinges.png",
+      "size": [
+        607,
+        884
+      ],
+      "alpha_range": [
+        0,
+        251
+      ],
+      "alpha_bounds": [
+        37,
+        445,
+        572,
+        523
+      ],
+      "alpha_zero_pixels": 527774,
+      "alpha_255_pixels": 0,
+      "sha256": "2a4fcc1d0f927f58314eff8d78300cdc0c641be7637a1945cfec4acf4ef33f6c"
+    },
+    {
+      "file": "housing.png",
+      "size": [
+        607,
+        884
+      ],
+      "alpha_range": [
+        0,
+        252
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        607,
+        884
+      ],
+      "alpha_zero_pixels": 324123,
+      "alpha_255_pixels": 0,
+      "sha256": "aef664112530a6e5b24388d8caafed29cb8df8e3e271a3f54ef6a3fd41917c7c"
+    },
+    {
+      "file": "lower-flap.png",
+      "size": [
+        607,
+        884
+      ],
+      "alpha_range": [
+        0,
+        251
+      ],
+      "alpha_bounds": [
+        59,
+        484,
+        545,
+        820
+      ],
+      "alpha_zero_pixels": 373292,
+      "alpha_255_pixels": 0,
+      "sha256": "b6923550ebb7255b98b764aba4dd6c6deca9993f2facaf7778a164f739004f24"
+    },
+    {
+      "file": "upper-flap.png",
+      "size": [
+        607,
+        884
+      ],
+      "alpha_range": [
+        0,
+        252
+      ],
+      "alpha_bounds": [
+        59,
+        156,
+        545,
+        483
+      ],
+      "alpha_zero_pixels": 377666,
+      "alpha_255_pixels": 0,
+      "sha256": "f91d19dba3ecf4629866074edf119c09aecd6ce80f95eeecfd1bc852e916127c"
+    },
+    {
+      "file": "warm-lighting.png",
+      "size": [
+        607,
+        884
+      ],
+      "alpha_range": [
+        0,
+        33
+      ],
+      "alpha_bounds": [
+        19,
+        59,
+        589,
+        401
+      ],
+      "alpha_zero_pixels": 359034,
+      "alpha_255_pixels": 0,
+      "sha256": "96b752c1775fb164d315978b90b2926c10dce223130b170cbae81c61ba279b55"
+    }
+  ],
+  "source_seam_y": 483,
+  "browser_joint_fraction": 0.5,
+  "registration": "piecewise vertical resample 0:483 to 0:442 and 483:884 to 442:884",
+  "limitations": [
+    "Flattened master alpha never reaches 255; extracted layers overlap and have partial opacity.",
+    "Upper and lower separations contain hinge fragments; unused as moving textures.",
+    "Small 49x129 preview has no fully transparent pixels and compresses the housing; not used.",
+    "Warm highlight is baked into master/housing; supplied light layer cannot remove it.",
+    "Mask is approximate: hardware rectangles omit card texture behind hinges.",
+    "Current tile aspect ratio compresses artwork horizontally by about 21% relative to source."
+  ]
+}

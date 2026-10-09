@@ -71,3 +71,23 @@
     inset 0 -10px 22px rgba(0, 0, 0, 0.55) !important;
   background: none !important;
 }
+
+/* Experimental artwork: PRIMARY ONLY, first flight-number tile only.
+   Native half bounds, glyphs, transforms, timing and lamp behavior are unchanged.
+   Flattened photograph re-registered/masked by prepare-experimental-flap.py.
+   This is review-only artwork, not production or mobile approval. */
+html:not([data-family-full]) #flight-number > .flap-character:first-child {
+  background-image: none !important;
+  background-size: 100% 100% !important;
+}
+html:not([data-family-full]) #flight-number > .flap-character:first-child .flap-half {
+  background-color: transparent !important;
+  background-image: url("../assets/split-flap/experimental-v1/experimental-surface.png") !important;
+}
+html:not([data-family-full]) #flight-number > .flap-character:first-child::before {
+  inset: 0 !important;
+  height: 100% !important;
+  transform: none !important;
+  background: url("../assets/split-flap/experimental-v1/experimental-fixed.png") center / 100% 100% no-repeat !important;
+  box-shadow: none !important;
+}

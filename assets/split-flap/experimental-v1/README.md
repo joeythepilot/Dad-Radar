@@ -1,0 +1,1 @@
+Experimental only. Not approved or deployed. See Docs/Experimental-split-flap-2026-10-08.md. Derive from the supplied blank-tile-master.png with scripts/prepare-experimental-flap.py SOURCE_DIRECTORY. Original asset hashes and alpha audit are in asset-audit.json. Do not stack the approximate extracted layers. No source PNG was generated or painted.
