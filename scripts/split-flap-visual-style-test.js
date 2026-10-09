@@ -10,4 +10,12 @@ assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),
  '90ba3a2379a88321a9801c8032443c2e1dba111fc9baad40068c8e579c0e3829',
  'Preserve the approved photoreal split-flap artwork byte for byte');
 assert.deepEqual([bytes.readUInt32BE(16),bytes.readUInt32BE(20)],[637,640]);
+for(const [file,sha] of [
+ ['experimental-v2/experimental-fixed.png','9c3307472028cf533369931e3045fe3ba5dfebb0a8deee11a685f7a32cb33ece'],
+ ['experimental-v2/experimental-surface.png','86bd88001e13a0ac4b80c2b09dc80ae701033900e6ed682faa5d191eb14b34e3'],
+ ['experimental-v3/warm-lighting.svg','51da47dadacaefeb4f28a191f7d71618a88de2aec985b14d1685a560c6bdba4f']
+]){
+ const asset=fs.readFileSync(path.join(__dirname,'../assets/split-flap',file));
+ assert.equal(crypto.createHash('sha256').update(asset).digest('hex'),sha,'Preserve Joey-approved primary artwork: '+file);
+}
 console.log('Approved split-flap artwork identity passed; rendered style is checked in browsers.');
