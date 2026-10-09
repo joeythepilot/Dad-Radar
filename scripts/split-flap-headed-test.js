@@ -127,6 +127,9 @@ const server = http.createServer((request, response) => {
 
           return {
             backgroundImage: style.backgroundImage,
+            fixedImage: seam.backgroundImage,
+            fixedTransform: seam.transform,
+            cellHeight: style.height,
             color: style.color,
             textShadow: style.textShadow,
             seamHeight: seam.height,
@@ -140,15 +143,15 @@ const server = http.createServer((request, response) => {
         });
 
         assert.match(
-          evidence.backgroundImage,
-          /split-flap-tile\.png/,
-          `${engine}: original photoreal split-flap asset should be active`
+          evidence.fixedImage,
+          /experimental-v2.*experimental-fixed\.png/,
+          `${engine}: approved fixed housing should be active`
         );
         const imageSize=await page.evaluate(async()=>{
-          const image=new Image();image.src='/assets/split-flap/split-flap-tile.png';await image.decode();
+          const image=new Image();image.src='/assets/split-flap/experimental-v2/experimental-fixed.png';await image.decode();
           return [image.naturalWidth,image.naturalHeight];
         });
-        assert.deepEqual(imageSize,[637,640],`${engine}: original PNG decodes at its full resolution`);
+        assert.deepEqual(imageSize,[826,1514],`${engine}: approved fixed PNG decodes at its full resolution`);
         // Exercise the real flip; moving halves must not revert to the drawn substitute.
         await page.waitForFunction(()=>!document.querySelector('.flap-character')._animationRunning);
         assert.equal(await page.locator('.flap-character[data-value=" "]').first().evaluate(n=>getComputedStyle(n,'::after').opacity),'0',
@@ -169,8 +172,8 @@ const server = http.createServer((request, response) => {
           const s=getComputedStyle(n);return {image:s.backgroundImage,size:s.backgroundSize,animation:s.animationName};
         }));
         assert.equal(moving.length,2,`${engine}: both moving halves exist during a flip`);
-        assert(moving.every(s=>/split-flap-tile\.png/.test(s.image)&&s.size==='100% 200%'&&s.animation!=='none'),
-          `${engine}: animated halves use matching halves of the original photograph`);
+        assert(moving.every(s=>/experimental-v2.*experimental-surface\.png/.test(s.image)&&s.size==='100% 200%'&&s.animation!=='none'),
+          `${engine}: animated halves use matching halves of the approved hardware-free material`);
         const printMotion=await page.locator('.flap-character').first().evaluate(cell=>{
           const texture=selector=>[...cell.querySelectorAll(selector+' mask ellipse')].map(n=>n.outerHTML).join('');
           return {
@@ -202,9 +205,10 @@ const server = http.createServer((request, response) => {
         await page.evaluate(()=>flipFlapOnce(document.querySelector('.flap-character'),'Z'));
         assert.equal(
           evidence.seamHeight,
-          "1px",
-          `${engine}: split joint should be a one-pixel mechanical break`
+          evidence.cellHeight,
+          `${engine}: stationary housing covers the full tile without changing its bounds`
         );
+        assert.equal(evidence.fixedTransform,"none","Housing and hinges remain stationary");
         assert.match(
           evidence.textShadow,
           /rgba?\(0, 0, 0, 0\.46\)/,
@@ -217,15 +221,15 @@ const server = http.createServer((request, response) => {
         );
         assert.match(
           evidence.sheenBackgroundImage,
-          /radial-gradient/,
-          `${engine}: each flap has its own localized incandescent light`
+          /experimental-v3.*warm-lighting\.svg/,
+          `${engine}: each flap has its own approved rectangular incandescent light`
         );
         assert.equal(
           evidence.boardBackgroundImage,
           'none',
           `${engine}: no panel-wide light wash`
         );
-        assert(evidence.individualLights.length>10&&evidence.individualLights.every(light=>/radial-gradient/.test(light)),
+        assert(evidence.individualLights.length===18&&evidence.individualLights.every(light=>/experimental-v3.*warm-lighting\.svg/.test(light)),
           `${engine}: every flap, including blank flaps, has its own light source`);
         assert.ok(
           evidence.boardBorderColor === "rgba(205, 177, 121, 0.09)",

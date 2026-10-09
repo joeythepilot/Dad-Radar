@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="826" height="1514" viewBox="0 0 826 1514">
+<defs>
+<radialGradient id="lamp" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="1" gradientTransform="translate(413 151.4) scale(280.84 242.24)"><stop stop-color="#ffd79a" stop-opacity=".55"/><stop offset=".4" stop-color="#ffc574" stop-opacity=".25"/><stop offset="1" stop-color="#ffc574" stop-opacity="0"/></radialGradient>
+<radialGradient id="pool" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="1" gradientTransform="translate(413 181.68) scale(561.68 1135.5)"><stop stop-color="#f7be6c" stop-opacity=".22"/><stop offset=".4" stop-color="#f2b560" stop-opacity=".08"/><stop offset=".92" stop-color="#f2b560" stop-opacity="0"/></radialGradient>
+</defs><rect width="826" height="1514" fill="url(#pool)"/><rect width="826" height="1514" fill="url(#lamp)"/>
+</svg>
