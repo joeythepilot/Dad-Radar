@@ -1,0 +1,42 @@
+{
+  "canvas": [
+    826,
+    1514
+  ],
+  "source_canvas": [
+    1039,
+    1514
+  ],
+  "source_seam": 862,
+  "registered_seam": 757,
+  "pivot": 0.5,
+  "fixed_opening": [
+    126,
+    299,
+    717,
+    1440
+  ],
+  "surface_alpha_range": [
+    255,
+    255
+  ],
+  "native_tile": [
+    70.28125,
+    128.875
+  ],
+  "aspect_error_fraction": 0.00042232185389301513,
+  "registration": "Nine-slice straight rails; side frames and hinges1:1; complete hinge assemblies shifted-105px; seam relocated independently",
+  "moving_source": "Opaque hardware-free continuous generated material; no frame, hinge, seam or lamp pixels",
+  "fixed_source": "Generated unlit-master, clean aperture mask; hardware stationary",
+  "lighting": "Separate warm-lighting.svg/RGBA PNG controls ::after; original blank opacity/fade retained",
+  "upper_lower": "One continuous material split at757; CSS full material100%x200% is authoritative",
+  "hashes": {
+    "card-material-source.png": "4c106eede245cd9a931768fa9f8402ec698001a1d67b8e9e05e57d2cf5793357",
+    "unlit-master.png": "c87876934ba3957bf0fc2803beeb650de3638112947675b50f1daa2d7d1879c1",
+    "experimental-surface.png": "86bd88001e13a0ac4b80c2b09dc80ae701033900e6ed682faa5d191eb14b34e3",
+    "experimental-fixed.png": "9c3307472028cf533369931e3045fe3ba5dfebb0a8deee11a685f7a32cb33ece",
+    "lower-flap.png": "35fc7912d5dcc5a6a7c3bbe30b37019faec6f2332f7b0d88aa4e9af7fae91a6b",
+    "warm-lighting.png": "646bad88ed9c7bd2d2cc077a46a6def8c6c4c1d6fe4b33aa4dcad85960ea18a9",
+    "upper-flap.png": "bc42b32cea4ed2c3a9c86da08356d975a938b63fcf0668a45d2f13ad8c336ace"
+  }
+}

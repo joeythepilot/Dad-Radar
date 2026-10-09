@@ -1,0 +1,1 @@
+Review only; not approved/deployed. Independent unlit hardware, opaque continuous card material and light. See Docs/Experimental-split-flap-v2-2026-10-08.md and layer-contract.json. Rebuild with python3 scripts/prepare-experimental-flap-v2.py; original source PNGs are included. Do not stack v1 extracted layers.
