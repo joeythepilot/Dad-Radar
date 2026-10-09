@@ -24,14 +24,14 @@ html:not([data-family-full]) .twin-clock-art[data-primary-clock] {
 .drum-lamp, .period-lamp { opacity: 0; transition: opacity 850ms ease-in-out; pointer-events: none; }
 .drum-clock.is-lit .drum-lamp[data-lit="true"],
 .drum-clock.is-lit .period-lamp[data-lit="true"] { opacity: .8; }
-.period-print { animation: drum-index 410ms cubic-bezier(.19,.72,.16,1) both; }
+.period-print { animation: drum-index 650ms cubic-bezier(.19,.72,.16,1) both; }
 .drum-print {
-  animation: drum-index 410ms cubic-bezier(.19,.72,.16,1) both;
+  animation: drum-index 650ms cubic-bezier(.19,.72,.16,1) both;
   transform-box: fill-box;
   transform-origin: center;
 }
-.drum-index-after { animation-delay: 90ms; }
-.drum-exit { animation: drum-release 215ms ease-in both; }
+.drum-index-after { animation-delay: 140ms; }
+.drum-exit { animation: drum-release 340ms ease-in both; }
 @keyframes drum-release {
   from { transform: translateY(0) scaleY(1); opacity: 1; filter: blur(0); }
   to { transform: translateY(105px) scaleY(.68); opacity: .16; filter: blur(5px); }
