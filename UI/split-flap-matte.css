@@ -92,7 +92,7 @@ html:not([data-family-full]) #flight-number > .flap-character:first-child::befor
   box-shadow: none !important;
 }
 
-/* V2 independent light. Native blank/off opacity and fade remain unchanged. */
+/* V3 recessed rectangular lamp. Native blank/off opacity and fade remain unchanged. */
 html:not([data-family-full]) #flight-number > .flap-character:first-child::after {
-  background: url("../assets/split-flap/experimental-v2/warm-lighting.svg") center / 100% 100% no-repeat !important;
+  background: url("../assets/split-flap/experimental-v3/warm-lighting.svg") center / 100% 100% no-repeat !important;
 }
