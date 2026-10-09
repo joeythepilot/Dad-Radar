@@ -60,9 +60,10 @@ Seven original vector marks and their source URLs/SHA256 checksums are recorded 
 use official reversed white artwork for the charcoal surface. American, United,
 Delta, Southwest and Allegiant use original vector paths from the immutable
 AirTrail airline collection; these are mirrored assets, not claimed direct
-downloads from airline brand portals. United’s white rectangular backdrop was
-removed; its blue vector path remains intact. All other shapes/colors are
-unchanged. No AI logo art or presentation-sheet crops are included.
+downloads from airline brand portals. United’s original white globe is extracted with an SVG mask of the unchanged
+source path; its blue square field is removed. The official United brand
+guidelines support a white mark on a contrasting background. All remaining
+shapes/colors are unchanged. No AI logo art or presentation-sheet crops are included.
 
 The logo clips across the same mechanical joint and moves with both native card
 halves; the housing/hinges/lamp stay fixed. Logos preserve aspect ratio and use

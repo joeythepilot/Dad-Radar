@@ -11,9 +11,12 @@
       "brand": "united",
       "source": "https://raw.githubusercontent.com/johanohly/AirTrail/a34046640607ee72e1f9aed5538f84091b035246/data/icons/airlines/united-airlines.svg",
       "changes": [
-        "Removed white rectangular backdrop; blue globe paths unchanged."
+        "Extracted the original white negative-space globe using an SVG mask of the unchanged source path. Removed blue field; retained original white symbol and proportions.",
+        "Tightened viewBox around original globe ink to center it optically; all path coordinates unchanged."
       ],
-      "sha256": "2314f6dd6bc6246dc7fd02657909b7bfddee7e7890d890fa4fe42c6adebbdc59"
+      "sha256": "9d5ddfb5d8603035eac3d8776ffae8e3c2ee9ea0d43ddd93715897e5074e89e7",
+      "variant": "Original white globe on transparent background",
+      "brandGuideline": "https://s3.amazonaws.com/unitedhub/Her-Art-Here_UAL-Brand-Guidelines.pdf"
     },
     {
       "brand": "delta",
