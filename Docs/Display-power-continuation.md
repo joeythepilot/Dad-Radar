@@ -1,6 +1,7 @@
 # DadRadar Unit 001 — display-power continuation checkpoint
 
-Updated: October 10, 2026, Eastern. This is a live execution ledger, not a completion claim.
+Updated: October 10, 2026, Eastern. Implementation and full gate complete;
+family visual/acoustic acceptance and deployment remain explicitly pending.
 Plan identity: `Docs/superpowers/plans/2026-10-10-display-power.md`.
 
 ## Resume prompt (copy into a new chat)
@@ -48,11 +49,11 @@ Unknown status must remain explicitly unverified. No GPIO or Pi shutdown now.
 | --- | --- | --- |
 | Baseline/setup | Passed | `npm ci` succeeded; complete baseline `npm test` exited 0 |
 | 1 — Power state controller | Complete and published | `a8b3648663030fa8e0b009e5fb25052f761f1e02`; RED then GREEN; complete `npm test` exited 0 |
-| 2 — Switch/CRT | Prototype published; supplementary Chromium proof passed | Source checkpoint `0a16fc611af43a43f4121b8ede4a8594494b638c`, tree `324eebe7d56925a80e730b719d66a4b6feb27c40`; focused Node/map tests GREEN, prior full `npm test` exited 0; portable Chromium switch/data-refresh/geometry/reversal/both-family tests exited 0; pinned Chromium/WebKit proof remains pending |
-| 3 — Mechanical modules | Implemented; preview/release proof pending | Gate/clock/weekly/local-light/needle tests RED→GREEN; off-flap browser assertion RED→GREEN; full `npm test` exit 0; stronger portable Chromium checks pass actual blank drums/flaps/bays and newest digits/route on wake; final phase captures/dual-engine proof still pending |
-| 4 — Audio | Implemented; audition/hosted audio browser proof pending | New envelope/isolation tests RED→GREEN; existing flap/map/chime/ident tests pass; full `npm test` exit 0; portable primary/family browser cycle passes; no acoustic approval |
-| 5 — Browser/gates | Recovery integration implemented; hosted gate pending | Full matrix now requires power/Chromium and power/WebKit (protocol RED→GREEN); background/latest-digit recovery RED→GREEN; reduced motion/resize/fail-open portable browser checks passed; final exact-source artifacts/hosted gate pending |
-| 6 — Handoff/continuity | In progress | This durable checkpoint established; final evidence pending |
+| 2 — Switch/CRT | Complete | CBC source; both pinned engines/full gate passed; clean native CRT phase captures and geometry passed |
+| 3 — Mechanical modules | Complete | RED→GREEN mechanisms; actual blank/latest targets, stationary19 housings, both clock rows and weekly terminal paint passed; phase captures inspected |
+| 4 — Audio | Implemented/verified, audition pending | RED→GREEN envelope/isolation tests, full audio regression and engine matrix passed; separate provisional WAV auditions; no acoustic acceptance |
+| 5 — Browser/gates | Complete | Exact CBC full hosted run38062985341, both engines and aggregate success; clean1920×1080 captures/recovery/family isolation passed |
+| 6 — Handoff/continuity | Complete; Joey review pending | Review ZIP/video/still/WAVs saved successfully; continuity guarded version40→41, AppendixAZ/edition3.29; no merge/deployment |
 
 ## Pre-flight interfaces and rulings
 
@@ -301,3 +302,37 @@ append dated continuity without erasing history. No merge/deploy until Joey's
 rendered approval. Do not treat fixture/CI proof as Pi/physical/audio acceptance.
 Update this section with exact task commits, RED/GREEN evidence, test outputs,
 blockers, artifact links and next action as work advances.
+
+### Final verification and durable handoff — October10
+
+The earlier pending statements above describe historical checkpoints, not the
+current result. Exact application CBC/source tree remains unchanged. Run
+38062985341 is completed/success at headCBC: regression114244927409,
+Chromium114244927463, WebKit114244927367 and full gate114247414174 all success.
+https://github.com/joeythepilot/Dad-Radar/actions/runs/38062985341
+Fresh final `npm test` exited0 (`/tmp/dadradar-power-final-docs-test.log`);
+whitespace check passed. Metadata-only documentation follows tested CBC; it
+does not imply the hosted gate tested a different application tree.
+
+Final native mechanics PNG inspected: textured moving flaps, stationary
+housing/hinges, black clipped CRT surround, visible clock/weekly stages. Final
+wake still inspected complete; before/after map viewBox identical. Full measured
+module/hardware geometry identical. Actual1920×1080/DPR1 browser captures use
+fictional state; no provider, physical monitor, Pi or acoustic acceptance claim.
+ZIP validation passed all18 explicit files, excluding rejected page videos.
+Real-time preview is silent57.08s including initialization/waits; nominal5/2.4s
+transitions, separate provisional production-envelope WAV auditions.
+
+All six ordered durable writes succeeded with local metadata applied: review
+ZIP, MP4, starting WAV, stopping WAV, wake PNG and same continuity identity
+replacement guarded version40→41. Returned continuity filename:
+`01-DadRadar_Project_History_and_Continuity_2026-09-29_v3.3.md` in Dad Radar.
+AppendixAZ/edition3.29 preserves earlier history. No base64 artifact transfer.
+
+Joey's next action is visual/choreography review and sound audition, not a new
+chat. Continue in this chat if tuning is requested. Preserve this branch and
+workspace; do not offer/perform merge, PR or deployment until his approval.
+Production/shared source remains94c193d. No fresh installed-server health/SHA
+check or home/mobile deployment occurred. Family acceptance remains separate
+from passing tests. Deferred minors remain the browser integration gaps already
+listed, not rejected important fixes. No second review was requested.

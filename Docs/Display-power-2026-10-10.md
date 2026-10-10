@@ -1,7 +1,7 @@
 # Unit 001 display-power experiment — October 10, 2026
 
-Status: implemented experimental candidate; review and final release evidence
-pending. Not merged, deployed, or accepted visually/acoustically.
+Status: implemented, reviewed and full exact-source gate passed; preview ready
+for Joey's visual/acoustic review. Not merged, deployed, or accepted by family.
 
 Branch: `agent/display-power-2026-10-10`. Original shared home/mobile source:
 `94c193db4f7a5275eb0d31dc022f1d9c7c66f28c`.
@@ -41,9 +41,16 @@ under runtime Playwright 1.62.1 passed server refresh while off, newest actual
 flap targets, blank mechanisms, unchanged module bounds, reversals, long-pause
 wake, reduced motion, native resize delivery, fail-open and both family routes.
 
-Final candidate Chromium/WebKit project-pinned hosted verification, clean-source
-1920×1080 captures, fresh branch review and user-facing persisted previews remain
-pending. Controlled-clock regression video is not real-time performance evidence.
+Final application source `cbc020c3e63c2da892f1e196c2d55c7b1c30b480`, tree
+`fb24b1cfc1842139bce770e75ec623c0809d3f8f`, passed full hosted run38062985341:
+regression114244927409, Chromium114244927463, WebKit114244927367 and full
+gate114247414174 all success. Project-pinned Playwright1.63.0. One fresh review
+found no Critical and three Important issues, all fixed test-first in one pass.
+Clean-source1920×1080/DPR1 native captures passed unchanged module/hardware
+bounds, latest data while off, blanking, reversal, terminal recovery, reduced
+motion, resize, fail-open and mobile isolation. Review ZIP contains geometry and
+both real-time and separately identified virtual-clock captures.
+Controlled-clock regression video is not real-time performance evidence.
 The separate preview script uses real RAF/timers; its video is silent, with actual
 production Web Audio offline-rendered WAV envelopes supplied separately.
 
@@ -51,3 +58,20 @@ No fresh MAXWELLHOUSE running-state check, Pi performance, physical monitor
 inspection or family visual/acoustic acceptance is claimed. Production remains
 untouched. Any later deployment requires Joey's approval and the established
 exact-SHA deployment procedure.
+
+Review downloads: `DadRadar-power-review-2026-10-10.zip` and
+`DadRadar-power-preview.mp4`, with separate `starting-provisional.wav` and
+`stopping-provisional.wav`. Silent H.264 video57.08s includes initialization and
+capture waits; nominal startup/shutdown are5/2.4s. Capture timestamp
+2026-10-10T15:18:12.351Z. Software-rendered browser performance is not Pi proof.
+The original photographic assets remain unchanged. Full19 housing rectangles
+and all measured module bounds match before/after; zero-sized display-contents
+wrappers are not used as proof of module geometry.
+
+Remaining acceptance: Joey's actual rendered choreography/photorealism and
+provisional sound audition. Deferred integration coverage: browser audio
+decode/autoplay/resume errors, changed instrument/brand values while off,
+late-dot reversal and active map-roll interruption. Tests are not physical proof.
+Do not merge/deploy until approval. Keep the experimental branch and workspace.
+Complete continuity history receives AppendixAZ/edition3.29; recovery ledger
+contains task history, important fixes, exact evidence and resume instructions.
