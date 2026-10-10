@@ -1,3 +1,13 @@
+# Current revision — tube hum and mechanical motion, October 10
+
+Joey's latest feedback is implemented for rendered review, not accepted or deployed. Restored low60/120 Hz tube/transformer envelope alongside recorded contacts. Power-only strokes340 ms, clock rolls1300 ms, weekly wheels1400 ms, coordinated cleanup and80 ms tile stagger. Ordinary/mobile timings unchanged. Fixed-size CRT bloom retained.
+
+Tested application ba349800c058be46718b36392b56f45eb86967c4 (local7e7c669, tree62a74d571cb8aba010e20bb4efdc82b90b0f04df). Captured source a98a5c7496bde80b7d37b0ce27c0097a8ca3fe48 (locala6e0adaca1b51c21a1692f01bd63a7b997970e57, tree82c690e130046b82e2f580d1c4151ffbaac846ca), only capture-harness/credit changes from tested application. Full local tests and stronger Chromium contract pass. New hosted run38076721066 currently pending; refresh browser/aggregate before integration. Prior bloom run38075459428 now completed success.
+
+Final review: DadRadar-power-hum-mechanical-preview.mp4 and DadRadar-power-hum-mechanical-review-2026-10-10.zip. Native1920×1080 capture, resized only at video encoding to avoid scaled-CDP backdrop reflection. Controlled-time/offline sound, not Pi or physical acoustic evidence. Geometry unchanged,304 frames/252 distinct,PCMpeak.238159/no clipping/off interval silent. Continuity Appendix BD preserves all earlier bytes. No merge/deploy/installed-running-SHA verification or family acceptance.
+
+Earlier checkpoints follow unchanged for history.
+
 # DadRadar Unit 001 — display-power continuation checkpoint
 
 Updated: October 10, 2026, Eastern. Original rendered candidate rejected;
