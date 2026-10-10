@@ -1,6 +1,7 @@
 # DadRadar Unit 001 — display-power continuation checkpoint
 
-Updated: October 10, 2026, Eastern. Implementation and full gate complete;
+Updated: October 10, 2026, Eastern. Original rendered candidate rejected;
+revised candidate captured and local checks pass. Latest hosted verification passed;
 family visual/acoustic acceptance and deployment remain explicitly pending.
 
 Current correction checkpoint: the original candidate is rejected; revised
@@ -38,8 +39,11 @@ Power sound gains damped contact/housing resonance and transformer harmonics;
 native split-flap sample remains tied to actual indexing; clock/weekly detents
 follow actual mechanism events. This remains synthesized circuitry/detents and
 existing recorded flap sound, not newly recorded hardware or acoustic approval.
-New audiovisual capture records actual browser WebAudio and HTMLAudio output,
-with a synchronization marker, rather than silent video and unrelated WAVs.
+The first revised audiovisual capture recorded actual browser WebAudio and
+HTMLAudio output with a synchronization marker, but its native video stream
+dropped intermediate frames. It is excluded from the new review package. The
+current labelled controlled-time preview uses production DOM/native keyframes
+and offline production sound at captured mechanism timestamps.
 
 Ruling: preserve the source SVG measurement/camera and compress a referenced
 optical image — avoids the earlier placard/camera corruption — cost if wrong:
@@ -392,3 +396,52 @@ Production/shared source remains94c193d. No fresh installed-server health/SHA
 check or home/mobile deployment occurred. Family acceptance remains separate
 from passing tests. Deferred minors remain the browser integration gaps already
 listed, not rejected important fixes. No second review was requested.
+
+### October10 revised rendered candidate — source and media checkpoint
+
+Clean local966ab12b4615c97d740feb5240ca109c97fce338 and published
+2346c23bff5918ef9c7d1d66f94c8bc6b7fc59e0 have identical file tree
+5d00cbaa6f7b14faf12848fef52c223da1e07c55. Commit metadata differs; do not
+claim the SHAs are identical. Capture2026-10-10T17:24:07.526Z at1920×1080/DPR1
+uses actual production HTML, fictional American3761 ORD–AVL, and normalized
+fictional weekly HOME/ORD/MSN/ORD/HOME/HOME/HOME. Provider requests blocked.
+All captured module rectangles and map camera compare equal; wake ends at3761.
+Native whole-browser proof measures both clock rows and19 fixed flap housings.
+
+Ruling: reject dropped-frame real-time software video and capture each native
+DOM/CSS frame at authored time; synchronize offline production sound to observed
+mechanism events — avoids a misleading frozen preview — cost if wrong: this
+is choreography proof only, not real-time/Pi frame-rate or physical acoustics.
+This supersedes the earlier decision to deliver recorded browser-output audio
+with the unreliable native video; that diagnostic recording is retained locally
+but not shipped as the new rendered result. No generated replacement art.
+
+The9.6s/20fps/1280×720 MP4 contains both H.264 Baseline/yuv420p video and AAC-LC
+mono44.1kHz audio, with faststart. Both streams decode without error; decoded
+first frame and distinct newly named contact sheet inspected. The image-preview
+viewer reused an older contact-sheet path; fresh decoded images established
+complete stationary paper panels and normalized weekly codes. File contents and
+encoded frames, not a reused display preview, are the review evidence. PCM
+peak0.2273, no clipped samples, measured off pause silent; native flap recording
+uses configured cue5.195s and volume0.68, with original start/stop timing.
+
+Complete local npm test exited0 after final capture-harness correction; whitespace
+check passed. Exact-source hosted run38071475620 at head2346c23 is running;
+regression and both home-contract runs38071475669/38071474933 have passed. The
+aggregate gate and both native engine results must be recorded when complete.
+No merge, production/mobile change, deployment, home health/installed-SHA query,
+physical-monitor proof or Pi performance proof. Earlier rejected artifacts are
+superseded; photorealism and acoustic/family acceptance remain Joey's review.
+
+### Revised exact-source verification complete
+
+Run38071475620 completed/success at2346c23bff5918ef9c7d1d66f94c8bc6b7fc59e0:
+regression114269650270, Chromium114269650251, WebKit114269650233 and aggregate
+full gate114272198311 all success. Home contracts38071475669/38071474933
+completed success. https://github.com/joeythepilot/Dad-Radar/actions/runs/38071475620
+Both new MP4 streams decode, moov precedes mdat, decoded AAC peak0.2247 and
+measured off pause is zero.192 frames/152 unique PNG hashes; final artwork and
+module positions inspected. Code/media verification is complete for review;
+family motion/acoustic acceptance, physical/Pi proof and deployment remain pending.
+The latest documentation checkpoint follows this tested application source;
+documentation edits do not change the application or claim a different gate SHA.
