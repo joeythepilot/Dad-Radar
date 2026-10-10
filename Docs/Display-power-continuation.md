@@ -18,6 +18,12 @@ warm-up. A short frame probe completed with unchanged module bounds/camera;
 new complete clean-source motion/audio capture and exact-source gate are next.
 No new asset delivery, family approval, merge or deployment is claimed yet.
 
+## Final cadence review files — October 10, 2026
+
+Captured and tested application: published 5c77af8b79637748b18b8ceea0cbe86500ce4426, clean local 03d363a870befe80d5b61b7e6eef80278df74eef, identical tree 8274df80080cd6bcfbdf0c5728ed329edb355f52. Full local npm test and stronger native-map Chromium browser test pass. Final capture has 304 frames, 242 distinct hashes, PCM peak .20398 and no clipping; geometry/camera unchanged. Source map is illuminated directly on startup; shutdown retains optical collapse. Nine-second startup, four-second shutdown, removed pitched detent oscillators, quieter supplemental low sound and unchanged recorded flap cue.
+
+Review files: DadRadar-power-slower-preview.mp4 and DadRadar-power-slower-review-2026-10-10.zip. Production viewport 1920×1080/DPR1; portable video 1280×720/20fps/15.2s. Controlled-time native DOM/CSS and offline production sound at measured event times, not real-time/Pi performance or physical acoustic proof. Hosted exact-source full run 38073842473 is pending; earlier 38073554644 is superseded. Family review and deployment remain pending. Continuity Appendix BB preserves earlier history and records Joey’s superseding CRT, pacing and sound feedback. Resume here; do not restart planning or deliver the superseded copied-map preview.
+
 ## Native map warm-up correction after pixel inspection
 
 Pixel inspection found that SVG-use duplicated map colors during full-size startup. Startup now lights the original live map directly; optical projection is used only for shutdown collapse. Stronger browser assertions require visible original map and zero copied-picture opacity during warm-up. This supersedes the d884 intermediate candidate; fresh exact-source capture and gates follow.
