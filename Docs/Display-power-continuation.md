@@ -46,8 +46,8 @@ Unknown status must remain explicitly unverified. No GPIO or Pi shutdown now.
 
 | Task | Status | Evidence / next action |
 | --- | --- | --- |
-| Baseline/setup | In progress | Clean clone, exact remote design/plan trees compared with local; dependencies absent; `npm ci` started |
-| 1 — Power state controller | Not started | Write failing deterministic tests first |
+| Baseline/setup | Passed | `npm ci` succeeded; complete baseline `npm test` exited 0 |
+| 1 — Power state controller | Complete locally, publication in progress | Missing coordinator assertion observed RED; focused tests GREEN; full `npm test` exited 0 with new tests registered |
 | 2 — Switch/CRT | Not started | Existing production-HTML browser fixture identified |
 | 3 — Mechanical modules | Not started | Existing main/clock/weekly/instrument mechanisms inspected |
 | 4 — Audio | Not started | Existing audio entry points identified; defaults must remain unchanged |
@@ -68,11 +68,21 @@ Unknown status must remain explicitly unverified. No GPIO or Pi shutdown now.
 - Skill helper resource `test-driven-development/writing-good-tests.md`
   could not be read via the cloud resource locator. Main TDD instructions
   were read completely; do not claim the additional resource was read.
+- Execution helper `scripts/task-start` likewise unavailable via cloud locator;
+  use this tracked ledger and direct brief/test execution rather than inventing
+  a filesystem skill path. Ruling: standalone `test:display-power` is called by
+  complete `npm test`, retaining the requested test coverage without extending
+  the already long presentation command.
+- Local Playwright 1.62.1 is available through the runtime; its Chromium and
+  WebKit executables are absent. Standard browser download returned truncated
+  archives. Trying an npm-packaged portable Chromium for supplementary local
+  proof only; the required project-pinned hosted Chromium/WebKit gate remains.
 
 ## Preservation / verification boundaries
 
 `agent/mobile-companion` and all backup/restore branches remain unchanged.
-No runtime code, replacement artwork, implementation tests, deployment,
-physical monitor verification, or family visual acceptance yet.
+Power-state runtime and its deterministic tests now exist locally, not wired
+into the display yet. No replacement artwork, deployment, physical monitor
+verification, or family visual acceptance yet.
 Update this section with exact task commits, RED/GREEN evidence, test outputs,
 blockers, artifact links and next action as work advances.
