@@ -28,6 +28,7 @@ html[data-display-power="off"] #display-power-switch { color:#615540;border-colo
    Native blank-cell lamp rules still apply; normal on/mobile styles are untouched. */
 html[data-display-power]:not([data-display-power="on"]) .flight-board .flap-character::after {
   opacity:var(--power-flap-lamp,1) !important;
+  transition:none; /* Coordinator owns filament warm-up, not a second clock. */
 }
 html[data-display-power]:not([data-display-power="on"]) .drum-lamp,
 html[data-display-power]:not([data-display-power="on"]) .period-lamp {

@@ -3,6 +3,19 @@
 Updated: October 10, 2026, Eastern. Implementation and full gate complete;
 family visual/acoustic acceptance and deployment remain explicitly pending.
 
+Current correction checkpoint: the original candidate is rejected; revised
+rendered acceptance remains pending. Native real-time software video capture
+also drops intermediate pictures and is excluded from the new review package.
+Frame-stepped production DOM/CSS capture is being verified, with production
+audio graph and recorded flap sample replayed at captured mechanism timestamps.
+It is controlled-time choreography evidence, not actual real-time/Pi performance
+or a hardware/acoustic recording. Full local npm test passes after removing the
+extra native lamp CSS transition; focused real-browser assertion now observes
+fully illuminated blank lamps before indexing. The coordinator alone owns lamp
+warm-up. A short frame probe completed with unchanged module bounds/camera;
+new complete clean-source motion/audio capture and exact-source gate are next.
+No new asset delivery, family approval, merge or deployment is claimed yet.
+
 ## October10 — Joey rejected the first rendered candidate; realism correction underway
 
 Joey explicitly rejected the first candidate: cards appeared to fade, map simply
