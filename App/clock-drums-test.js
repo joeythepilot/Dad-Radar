@@ -74,4 +74,15 @@ assert.equal(period.getAttribute("data-period-value"), "", "Arrival mechanically
  assert.equal(periodLamp.getAttribute("data-lit"), "false", "Arrival extinguishes the period drum");
 assert.equal(period.children.length, 0, "The blank period has no ink");
 console.log("Clock drum interpretation and indexing passed.");
+const {setClockPowerPresentation,clearClockPowerPresentation}=require("./clock-drums");
+assert.equal(typeof setClockPowerPresentation,"function","Clock presentation must accept local power state");
+paintClock(clock,"9:08 AM",printedInk);
+setClockPowerPresentation(clock,{state:"off",progress:0},printedInk);
+assert(drums.every(d=>d.getAttribute("data-digit")===""),"Power off blanks actual drums");
+paintClock(clock,"11:42 PM",printedInk);
+assert(drums.every(d=>d.getAttribute("data-digit")===""),"Live clock updates stay visually blank while off");
+setClockPowerPresentation(clock,{state:"on",progress:1},printedInk);
+assert.deepEqual(drums.map(d=>d.getAttribute("data-digit")),["1","1","4","2"],"Wake paints the newest time, not the pre-off time");
+assert.equal(period.getAttribute("data-period-value"),"PM");
+clearClockPowerPresentation(clock,printedInk);
 

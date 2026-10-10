@@ -15,3 +15,9 @@
 #display-power-switch:focus-visible { outline:2px solid #d8bd83;outline-offset:3px; }
 html[data-display-power="off"] #display-power-switch { color:#615540;border-color:#3e3528;background:#070706; }
 @media (prefers-reduced-motion:reduce) { .power-crt-raster,.power-crt-dot { display:none; } }
+/* Reuse the registered top-lamp artwork, independently of moving flap texture.
+   Native blank-cell lamp rules still apply; normal on/mobile styles are untouched. */
+html[data-display-power]:not([data-display-power="on"]) .flight-board .flap-character:not([data-value=" "])::after,
+html[data-display-power]:not([data-display-power="on"]) .flight-board .flap-character.is-flipping::after {
+  opacity:var(--power-flap-lamp,1) !important;
+}

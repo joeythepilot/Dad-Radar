@@ -27,6 +27,10 @@ const bounds = async page => page.evaluate(() => Object.fromEntries([
       ...(capture?{recordVideo:{dir:output,size:{width:1920,height:1080}}}:{}), serviceWorkers:"block"});
     const page=await context.newPage(), errors=observeBrowserErrors(page);
     const screenshot = name => capture ? page.screenshot({path:path.join(output,name),timeout:60000}) : Promise.resolve();
+    // Sample phases rather than skipping directly to the deadline. Mechanical
+    // queues await real timer/animation completions and must get intermediate
+    // frames/microtasks, otherwise they only begin when a one-shot jump ends.
+    const advance=async ms=>{for(let remaining=ms;remaining>0;remaining-=100)await page.clock.fastForward(Math.min(100,remaining));};
     await page.route("**/*",r=>r.request().url().startsWith(origin)||r.request().url().startsWith("blob:")?r.continue():r.abort());
     await page.goto(origin);
     await page.waitForSelector("#dashboard:not([hidden])",{timeout:30000});
@@ -41,15 +45,16 @@ const bounds = async page => page.evaluate(() => Object.fromEntries([
     assert.equal(await page.locator("#display-power-switch").count(),1,"Primary power switch exists");
     await page.locator("#display-power-switch").evaluate(button=>button.click());
     console.log("Shutdown commanded");
-    await page.clock.fastForward(2050);
+    await advance(2050);
     console.log("Shutdown dot phase advanced");
     await screenshot("shutdown-dot.png");
-    await page.clock.fastForward(600);
+    await advance(600);
     assert.equal(await page.evaluate(()=>window.dadRadarDisplayPowerController.getState()),"off");
     await screenshot("off.png");
-    if(process.env.DADRADAR_POWER_MECHANICAL==="1"){
+    {
       assert(await page.locator(".flap-character").evaluateAll(nodes=>nodes.every(n=>n.dataset.value===" ")),"Off flaps mechanically blank without removing hardware");
       assert(await page.locator("[data-drum]").evaluateAll(nodes=>nodes.every(n=>n.getAttribute("data-digit")==="")),"Off clock drums mechanically blank");
+      assert(await page.locator(".weekly-overnight-bay").evaluateAll(nodes=>nodes.length===7&&nodes.every(n=>n.dataset.powerCharacters==="    ")),"Seven weekly bays blank independently of live schedule");
     }
     const oldRevision=payload.revision;
     state.flight.number="2681";state.flight.origin="ATL";state.flight.destination="MSN";
@@ -60,18 +65,22 @@ const bounds = async page => page.evaluate(() => Object.fromEntries([
     await page.clock.pauseAt(new Date(await page.evaluate(()=>Date.now()+1000)));
     assert(payload.revision>oldRevision,"Shared state replacement occurred while off");
     await page.locator("#display-power-switch").evaluate(button=>button.click());
-    await page.clock.fastForward(300);await screenshot("startup-bloom.png");
-    await page.clock.fastForward(1000);await screenshot("startup-raster.png");
-    await page.clock.fastForward(3900);
+    await advance(300);await screenshot("startup-bloom.png");
+    await advance(1000);await screenshot("startup-raster.png");
+    await advance(3900);
     assert.equal(await page.evaluate(()=>window.dadRadarDisplayPowerController.getState()),"on");
+    assert.equal(await page.locator("#flight-number").evaluate(node=>Array.from(node.children).slice(1).map(n=>n.dataset.value).join("")),"2681","Wake paints newest flight digits");
+    assert.equal(await page.locator("#flight-destination").evaluate(node=>Array.from(node.children).map(n=>n.dataset.value).join("")),"MSN","Wake paints newest route, not hidden old characters");
+    assert(await page.locator('[data-clock="current"] [data-drum]').evaluateAll(nodes=>nodes.some(n=>n.getAttribute("data-digit")!=="")),"Current-time drums synchronize on wake");
+    assert(await page.locator("#airspeed-needle,#altitude-needle").evaluateAll(nodes=>nodes.every(n=>!n.style.rotate)),"Settled sweep relinquishes presentation override to live needles");
     await screenshot("on.png");
     const after=await bounds(page);
     assert.deepEqual(after,before,"All settled module rectangles remain unchanged");
-    await page.locator("#display-power-switch").evaluate(button=>button.click());await page.clock.fastForward(450);
-    await page.locator("#display-power-switch").evaluate(button=>button.click());await page.clock.fastForward(300);
-    await page.locator("#display-power-switch").evaluate(button=>button.click());await page.clock.fastForward(250);
+    await page.locator("#display-power-switch").evaluate(button=>button.click());await advance(450);
+    await page.locator("#display-power-switch").evaluate(button=>button.click());await advance(300);
+    await page.locator("#display-power-switch").evaluate(button=>button.click());await advance(250);
     await page.locator("#display-power-switch").evaluate(button=>button.click());
-    await page.clock.fastForward(5200);
+    await advance(5200);
     assert.equal(await page.evaluate(()=>window.dadRadarDisplayPowerController.getState()),"on");
     assert.deepEqual(await bounds(page),before,"Reversals cannot move modules");
     await page.clock.resume();

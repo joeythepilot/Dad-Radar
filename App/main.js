@@ -611,6 +611,7 @@ function flipFlapOnce(
   nextCharacter
 ) {
   return new Promise((resolve) => {
+    const presentationSerial=cell._presentationSerial||0;
     const currentCharacter =
       cell.dataset.value ?? " ";
 
@@ -690,6 +691,10 @@ function flipFlapOnce(
 
       animationFinished = true;
 
+      if(presentationSerial!==(cell._presentationSerial||0)){
+        movingTop.remove();movingBottom.remove();resolve();return;
+      }
+
       setFlapHalfCharacter(
         staticTop,
         nextCharacter
@@ -735,6 +740,16 @@ function queueFlapAnimation(
   cell._targetValue =
     nextCharacter;
 
+  if (displayPowerSnapshot?.reducedMotion && displayPowerSnapshot.state!=="on") {
+    cell._presentationSerial=(cell._presentationSerial||0)+1;
+    cell.querySelectorAll(".flap-moving").forEach(layer=>layer.remove());
+    cell.classList.remove("is-flipping");
+    setFlapHalfCharacter(cell.querySelector(".flap-static-top"),nextCharacter);
+    setFlapHalfCharacter(cell.querySelector(".flap-static-bottom"),nextCharacter);
+    cell.dataset.value=nextCharacter;
+    return;
+  }
+
   if (
     !cell._animationRunning &&
     (cell.dataset.value ?? " ") ===
@@ -765,7 +780,7 @@ function queueFlapAnimation(
       const targetCharacter =
         cell._targetValue ?? " ";
 
-      const sequence =
+      const sequence = cell._powerBlank ? [targetCharacter] :
         buildFlapSequence(
           currentCharacter,
           targetCharacter
@@ -844,6 +859,19 @@ function prepareFlapContainer(
 }
 
 
+let displayPowerSnapshot=null;
+const powerFlapTargets=new Map();
+const powerFlapsVisible=()=>!globalThis.dadRadarDisplayPowerState ||
+  globalThis.dadRadarDisplayPowerState.mechanicalVisible(displayPowerSnapshot,"flaps");
+globalThis.addEventListener?.("dad-radar:display-power-change",event=>{
+  const wasVisible=powerFlapsVisible();
+  displayPowerSnapshot=event.detail;
+  if(wasVisible===powerFlapsVisible())return;
+  powerFlapTargets.forEach((target,container)=>target.kind==="flight"
+    ? renderFlightIdentification(container,target.number,target.brand)
+    : renderFlapText(container,target.text,target.count));
+});
+
 function renderFlapText(
   container,
   text,
@@ -852,6 +880,8 @@ function renderFlapText(
   if (!container) {
     return;
   }
+  powerFlapTargets.set(container,{kind:"text",text,count:cellCount});
+  const visible=powerFlapsVisible();
 
   const normalizedText =
     String(text ?? "")
@@ -873,11 +903,13 @@ function renderFlapText(
   Array
     .from(container.children)
     .forEach((cell, index) => {
+      cell._powerBlank=!visible;
       queueFlapAnimation(
         cell,
-        normalizedText[index],
-        index *
+        visible?normalizedText[index]:" ",
+        visible?index *
           FLAP_STAGGER_DELAY
+          :0
       );
     });
 
@@ -886,13 +918,16 @@ function renderFlapText(
 
 function renderFlightIdentification(container, number, brand) {
   if (!container) return;
+  powerFlapTargets.set(container,{kind:"flight",number,brand});
+  const visible=powerFlapsVisible();
   prepareFlapContainer(container, 5);
   const digits=String(number ?? "").toUpperCase().slice(0,4).padEnd(4," ");
   const values=[brand ? `@${brand}` : " ", ...digits];
   container.setAttribute("aria-label", `${brand || "Unknown airline"} ${digits.trim() || "Blank"}`);
   [...container.children].forEach((cell,index)=>{
     cell.dataset.logoTile=String(index===0);
-    queueFlapAnimation(cell, values[index], index*FLAP_STAGGER_DELAY);
+    cell._powerBlank=!visible;
+    queueFlapAnimation(cell, visible?values[index]:" ", visible?index*FLAP_STAGGER_DELAY:0);
   });
   scheduleFlightBoardBalance();
 }

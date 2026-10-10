@@ -56,6 +56,11 @@
     const WHEEL_ANIMATION_MS = 760;
     const WHEEL_STAGGER_MS = 55;
     const ROLLOVER_BAY_STAGGER_MS = 58;
+    function powerModules(modules,snapshot,powerState) {
+      return modules.map((module,index)=>!powerState || powerState.mechanicalVisible(snapshot,"weekly",index)
+        ? {...module,characters:module.characters.slice()}
+        : {...module,day:"",characters:[" "," "," "," "]});
+    }
 
     function localDateParts(value, timeZone) {
       const date=toDate(value);
@@ -284,6 +289,9 @@
       stack.appendChild(bank);
 
       let currentModules=null;
+      let liveModules=null;
+      let powerPresentation=null;
+      let powerSignature="";
       let currentOperationalKey=null;
       let animationFrame=null;
       let destroyed=false;
@@ -482,8 +490,11 @@
       resizeObserver?.observe(bank);
       root.addEventListener("resize",requestAnimationRender);
 
-      function setModules(nextModules,{animate=true,rollover=false}={}) {
+      function setModules(nextModules,{animate=true,rollover=false,powerReplay=false}={}) {
         if(!Array.isArray(nextModules)||nextModules.length!==OVERNIGHT_MODULE_COUNT)return;
+        if(!powerReplay)liveModules=nextModules.map(m=>({...m,characters:m.characters.slice()}));
+        nextModules=powerModules(nextModules,powerPresentation,root.dadRadarDisplayPowerState);
+        if(powerPresentation?.reducedMotion)animate=false;
         const now=root.performance?.now?.()??Date.now();
         let anyMotion=false;
         let maxEnd=0;
@@ -496,7 +507,8 @@
           const dayChanged=oldDay!==module.day;
 
           bay.element.setAttribute("aria-label",
-            module.day+" overnight "+(module.code==="HOME"?"home":module.code===UNKNOWN_OVERNIGHT_CODE?"unknown":module.code));
+            (liveModules?.[index]?.day??module.day)+" overnight "+(module.code==="HOME"?"home":module.code===UNKNOWN_OVERNIGHT_CODE?"unknown":module.code));
+          bay.element.dataset.powerCharacters=module.characters.join("");
 
           if(!currentModules || !animate){
             bay.day=module.day;
@@ -592,6 +604,14 @@
       const controller=Object.freeze({
         refreshSchedule,
         setModules,
+        setPowerPresentation(snapshot){
+          powerPresentation=snapshot;
+          const signature=Array.from({length:7},(_,i)=>root.dadRadarDisplayPowerState.mechanicalVisible(snapshot,"weekly",i)).join("");
+          if(signature===powerSignature)return;
+          powerSignature=signature;
+          if(liveModules)setModules(liveModules,{powerReplay:true});
+        },
+        clearPowerPresentation(){powerPresentation=null;powerSignature="";if(liveModules)setModules(liveModules,{powerReplay:true});},
         destroy(){
           destroyed=true;
           root.removeEventListener("pointerdown",unlockAudio);
@@ -609,6 +629,7 @@
 
     return {
       install,
+      powerModules,
       OVERNIGHT_MODULE_COUNT,OPERATIONAL_DAY_ROLLOVER_HOUR,MODULE_DESIGN_WIDTH,MODULE_DESIGN_HEIGHT,
       MODULE_ASSET,operationalDateKey,normalizeOvernightCode,overnightCharacters,buildWeeklyOvernightModules,fetchUpcomingSchedule
     };

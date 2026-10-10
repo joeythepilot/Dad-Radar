@@ -43,6 +43,8 @@
     art.setAttribute("data-primary-clock", "true");
   }
   function paintClock(clock, value, printedInk) {
+    clock._powerLiveTime=value;
+    if(!powerVisible(clock._powerPresentation))value="";
     fitPrimaryClock(clock);
     const caption = clock.querySelector?.(".clock-caption");
     if (caption && !caption.children.length) {
@@ -111,7 +113,20 @@
     }
     return changed;
   }
-  const api = {readDrumTime, readDrumPeriod, changedDrums, paintClock};
+  function powerVisible(snapshot) {
+    return !snapshot || snapshot.failed || snapshot.state==="on" ||
+      (snapshot.state!=="off" && snapshot.progress>=(snapshot.reducedMotion ? .5 : .30));
+  }
+  function setClockPowerPresentation(clock,snapshot,printedInk) {
+    const wasVisible=powerVisible(clock._powerPresentation);
+    clock._powerPresentation=snapshot;
+    if(wasVisible!==powerVisible(snapshot))paintClock(clock,clock._powerLiveTime,printedInk);
+  }
+  function clearClockPowerPresentation(clock,printedInk) {
+    delete clock._powerPresentation;
+    paintClock(clock,clock._powerLiveTime,printedInk);
+  }
+  const api = {readDrumTime, readDrumPeriod, changedDrums, paintClock,setClockPowerPresentation,clearClockPowerPresentation};
   if (typeof module === "object" && module.exports) module.exports = api;
   else root.dadRadarClockDrums = api;
 })(globalThis);

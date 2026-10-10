@@ -49,7 +49,7 @@ Unknown status must remain explicitly unverified. No GPIO or Pi shutdown now.
 | Baseline/setup | Passed | `npm ci` succeeded; complete baseline `npm test` exited 0 |
 | 1 — Power state controller | Complete and published | `a8b3648663030fa8e0b009e5fb25052f761f1e02`; RED then GREEN; complete `npm test` exited 0 |
 | 2 — Switch/CRT | Prototype published; supplementary Chromium proof passed | Source checkpoint `0a16fc611af43a43f4121b8ede4a8594494b638c`, tree `324eebe7d56925a80e730b719d66a4b6feb27c40`; focused Node/map tests GREEN, prior full `npm test` exited 0; portable Chromium switch/data-refresh/geometry/reversal/both-family tests exited 0; pinned Chromium/WebKit proof remains pending |
-| 3 — Mechanical modules | Not started | Existing main/clock/weekly/instrument mechanisms inspected |
+| 3 — Mechanical modules | Implemented; preview/release proof pending | Gate/clock/weekly/local-light/needle tests RED→GREEN; off-flap browser assertion RED→GREEN; full `npm test` exit 0; stronger portable Chromium checks pass actual blank drums/flaps/bays and newest digits/route on wake; final phase captures/dual-engine proof still pending |
 | 4 — Audio | Not started | Existing audio entry points identified; defaults must remain unchanged |
 | 5 — Browser/gates | Partial capture infrastructure only | Fixture screenshots/video captured in scratch; no final passing browser evidence or hosted exact-source gate yet |
 | 6 — Handoff/continuity | In progress | This durable checkpoint established; final evidence pending |
@@ -121,6 +121,30 @@ Unknown status must remain explicitly unverified. No GPIO or Pi shutdown now.
 - Task 3 phase-gating tests are drafted behind `DADRADAR_POWER_MECHANICAL=1`;
   the missing gate function was observed RED. Remove the temporary guard once
   Task 3 exists; do not leave mechanical acceptance opt-in in final tests.
+- Task 3 gates are now implemented and the temporary Node/browser opt-in guards
+  removed. Clock adapters retain raw live time separately; weekly adapters retain
+  independent live modules; main flap rendering stores raw carrier/number/route/
+  status targets and blanks only presentation. Fixed hardware/source PNGs remain
+  unchanged. Local dark masks use actual DOM rectangles; registered top-lamp art
+  gets independent opacity. Needle sweeps use additive CSS rotation, never fake
+  flight state, and release the override on settled on/reduced motion/failure.
+- Task 3 Ruling: blanking uses one native flap turn without intermediate alphabet
+  characters or tile stagger, while ordinary/wake indexing keeps its original
+  queue — necessary to fit shutdown's 2400 ms deadline — cost if wrong: shutdown
+  cadence may need Joey's visual tuning, not tracking/layout changes.
+- Task 3 Ruling: phase captures now advance virtual time in ≤100 ms samples,
+  allowing mechanical timer/microtask queues to run before the deadline. A single
+  large virtual jump incorrectly began wake indexing only at the final frame;
+  the stronger newest-digit assertion caught this (`mechanical-targets.log`).
+  Corrected `mechanical-steps.log` exited 0. Cost if wrong: fixture phase timing
+  could differ from real-time playback; real-time review remains required.
+- Task 3 evidence: `/tmp/dadradar-power-task3.log` full npm test exit 0;
+  focused split-flap/clock/weekly/display-power tests exit 0;
+  `/tmp/dadradar-power-mechanical-red.log` missing off blanking RED;
+  `/tmp/dadradar-power-mechanical-steps.log` portable Chromium exit 0 with
+  actual off blanks and actual newest flight digits/destination after wake.
+  Paper/counter lighting is local masking, not newly extracted photographic
+  lamp layers; its visual suitability remains unapproved.
 
 ## Preservation / verification boundaries
 
@@ -128,9 +152,11 @@ Unknown status must remain explicitly unverified. No GPIO or Pi shutdown now.
 Power-state controller is published; local switch/CRT adapter is wired into
 the generated browser build. Do not edit generated bundles. No replacement
 artwork, deployment, physical monitor verification, or family visual acceptance.
-Next: run Task 3 RED browser assertions (`DADRADAR_POWER_MECHANICAL=1`, portable
-Chromium if pinned local browsers remain unavailable) for actual blank flap/
-clock presentation before implementing those hooks. Task 2 WebKit/complete DOM
-failure-recovery checks remain outstanding and must be covered before release.
+Next: finish Task 4 audio isolation/envelopes (new audio tests already drafted
+and observed RED: missing power audio API and off flap still audible). Then
+capture all mechanical phases and execute Task 5 exact-source full gates.
+Task 2 WebKit/complete DOM failure-recovery checks remain outstanding and must
+be covered before release. Do not treat deterministic/portable proof as review
+of photorealism, audio, Pi performance or deployment acceptance.
 Update this section with exact task commits, RED/GREEN evidence, test outputs,
 blockers, artifact links and next action as work advances.

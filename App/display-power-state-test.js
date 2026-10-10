@@ -66,7 +66,7 @@ function fixture(extra = {}) {
   assert.equal(f.controller.getSnapshot().failed, true);
 }
 console.log("Display power coordinator: lifecycle, reversal, stale callbacks, reduced motion, destroy and recovery passed.");
-if(process.env.DADRADAR_POWER_MECHANICAL==="1"){
+{
 assert.equal(typeof api.mechanicalVisible,"function","Mechanical power phase gating must exist");
 assert.equal(api.mechanicalVisible({state:"on",progress:1},"flaps"),true);
 assert.equal(api.mechanicalVisible({state:"off",progress:0},"clocks"),false);

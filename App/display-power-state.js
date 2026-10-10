@@ -6,6 +6,13 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
   const TIMING = Object.freeze({startup: 5000, shutdown: 2400, reduced: 180});
+  const REVEAL = Object.freeze({paper:.14,instruments:.22,clocks:.30,flaps:.34,weekly:.42,sequence:.42});
+  function mechanicalVisible(snapshot,kind,index=0) {
+    if(!snapshot || snapshot.failed || snapshot.state==="on")return true;
+    if(snapshot.state==="off")return false;
+    const threshold=snapshot.reducedMotion ? .5 : (REVEAL[kind]??.34)+(kind==="weekly"?index*.02:0);
+    return snapshot.progress>=threshold;
+  }
   function createDisplayPowerController(options) {
     const {now, requestFrame, cancelFrame, render} = options;
     let state = "on", targetOn = true, progress = 1, generation = 0;
@@ -46,5 +53,5 @@
     return Object.freeze({setDisplayPower, getState: () => state, getSnapshot,
       destroy() { destroyed = true; generation++; cancel(); }});
   }
-  return {createDisplayPowerController, TIMING};
+  return {createDisplayPowerController, TIMING, REVEAL, mechanicalVisible};
 });
