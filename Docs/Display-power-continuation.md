@@ -18,6 +18,14 @@ warm-up. A short frame probe completed with unchanged module bounds/camera;
 new complete clean-source motion/audio capture and exact-source gate are next.
 No new asset delivery, family approval, merge or deployment is claimed yet.
 
+## Native map warm-up correction after pixel inspection
+
+Pixel inspection found that SVG-use duplicated map colors during full-size startup. Startup now lights the original live map directly; optical projection is used only for shutdown collapse. Stronger browser assertions require visible original map and zero copied-picture opacity during warm-up. This supersedes the d884 intermediate candidate; fresh exact-source capture and gates follow.
+
+## Latest review checkpoint — slower cadence candidate
+
+Joey’s review corrections are implemented and captured. Source d884cd9a42583f370771f7940c4906811ff59ed6 (local a1768852d483ab697057bd5df198f4f354f5d534), exact tree d05203b45c72b455b5e6541875718521fc29b0f2. Startup 9 s, shutdown 4 s. Startup map stays full size; earlier pinpoint/expansion requirements below are superseded. Pitched detent tones removed; quieter contact/transfomer sound remains an acoustic review candidate. Full local tests and existing Chromium power browser contracts passed. Clean capture: 304 frames, 15.2 s, unchanged geometry/camera, 1920×1080 viewport, 1280×720 controlled-time preview. New files: DadRadar-power-slower-preview.mp4 and DadRadar-power-slower-review-2026-10-10.zip. Full hosted run 38073554644 is pending; do not reuse prior-source WebKit success as proof. Production/mobile baseline unchanged. Family approval and deployment remain pending.
+
 ## October 10, 13:47 Eastern — review corrections in progress
 
 Joey judged the rebuilt preview “not too bad” but requested slower period

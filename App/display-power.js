@@ -195,7 +195,7 @@
         // Do not blur the live map's nested SVG filters: that forces huge
         // offscreen surfaces on software/Pi renderers. Focus is expressed by
         // the aperture-local raster/light catch, never by resampling hardware.
-        const ordinary=snapshot.state==="on" || snapshot.reducedMotion;
+        const ordinary=snapshot.state==="on" || snapshot.reducedMotion || snapshot.state==="starting";
         screen.style.opacity=ordinary?String(v.light):"0";screen.style.filter="none";
         screen.style.visibility="visible"; // Source remains available to SVG use.
         const liveMap=shell.querySelector("#route-map-svg");

@@ -7,7 +7,7 @@ const {execFileSync}=require("node:child_process"),{chromium}=require("playwrigh
 const {createDisplayFixture}=require("./display-browser-fixture");
 const {server,state,root}=createDisplayFixture();
 state.flight.marketingCarrierCode="AA";state.flight.scheduledCarrierCode="AA";
-const output=path.join(root,"artifacts","power","frame-review-slower"),fps=20,step=1000/fps;
+const output=path.join(root,"artifacts","power","frame-review-slower-native"),fps=20,step=1000/fps;
 function wav(samples,rate){const b=Buffer.alloc(44+samples.length*2);b.write("RIFF");b.writeUInt32LE(b.length-8,4);b.write("WAVEfmt ",8);b.writeUInt32LE(16,16);b.writeUInt16LE(1,20);b.writeUInt16LE(1,22);b.writeUInt32LE(rate,24);b.writeUInt32LE(rate*2,28);b.writeUInt16LE(2,32);b.writeUInt16LE(16,34);b.write("data",36);b.writeUInt32LE(samples.length*2,40);samples.forEach((s,i)=>b.writeInt16LE(Math.round(Math.max(-1,Math.min(1,s))*32767),44+i*2));return b;}
 (async()=>{
  fs.mkdirSync(path.join(output,"frames"),{recursive:true});await new Promise(r=>server.listen(0,"127.0.0.1",r));

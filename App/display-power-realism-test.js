@@ -22,3 +22,5 @@ const shutdown=visual.crtPresentation(snapshot("stopping",.22));
 assert(shutdown.y<.05&&shutdown.x>.5,"Vertical deflection collapses into a horizontal line first");
 assert(visual.crtPresentation(snapshot("stopping",.1)).dot>0,"Phosphor dot persists after collapse");
 console.log("Realism choreography: visible mechanisms, optical compression and phosphor staging passed.");
+
+assert(source.includes('snapshot.state==="starting";'),"Startup illuminates original registered map rather than a copied optical picture");
