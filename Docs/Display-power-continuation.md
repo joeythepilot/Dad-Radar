@@ -18,6 +18,12 @@ warm-up. A short frame probe completed with unchanged module bounds/camera;
 new complete clean-source motion/audio capture and exact-source gate are next.
 No new asset delivery, family approval, merge or deployment is claimed yet.
 
+## October 10, 14:15 Eastern — bloom and recorded contact revision
+
+Joey says the slow candidate lost CRT bloom and its mechanical clicking still sounds digital. Preserve nine-second/four-second cadence and full-size map. Add a fixed full-aperture phosphor bloom, brightness overshoot and aperture-local composited focus settling; no center image growth. Replace supplemental synthetic contact/noise/thud/transformer oscillators entirely with CC0 recordings: 1970s pinball relay by bassmosphere and mechanical toggle by cookies+policy. See assets/audio/README.md for verified sources, public HQ preview provenance and edits. Existing flap recording/cue and normal/mobile audio remain. Loaded/decode-failed recordings stay silent; late loading cannot replay cancelled cues.
+
+Meaningful RED→GREEN proves bloom/focus and actual sample buffer use with zero oscillators; focused/full local tests and stronger Chromium power browser checks passed. Capture/publication are next. No rendered approval or deployment. Earlier hosted run 38073842473 finished with regression/Chromium success and power/WebKit success, but full WebKit job failed the separate weekly proof’s 1200 ms animation wait at weekly-ticker-browser-proof.js:189. Full gate was failure, not pending/pass; do not claim success. This revision requires a new exact-source gate before integration.
+
 ## Final cadence review files — October 10, 2026
 
 Captured and tested application: published 5c77af8b79637748b18b8ceea0cbe86500ce4426, clean local 03d363a870befe80d5b61b7e6eef80278df74eef, identical tree 8274df80080cd6bcfbdf0c5728ed329edb355f52. Full local npm test and stronger native-map Chromium browser test pass. Final capture has 304 frames, 242 distinct hashes, PCM peak .20398 and no clipping; geometry/camera unchanged. Source map is illuminated directly on startup; shutdown retains optical collapse. Nine-second startup, four-second shutdown, removed pitched detent oscillators, quieter supplemental low sound and unchanged recorded flap cue.

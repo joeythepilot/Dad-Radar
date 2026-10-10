@@ -6,7 +6,7 @@ assert(fs.readFileSync(file,"utf8").includes('["#flight-number,#flight-origin,#f
 const api = fs.existsSync(file) ? require(file) : {};
 assert.equal(typeof api.crtPresentation, "function", "CRT presentation adapter must exist");
 const s = (state, progress, elapsed = 0) => ({state, progress, elapsed, duration: state === "starting" ? 5000 : 2400, reducedMotion:false});
-assert.deepEqual(api.crtPresentation(s("on", 1)), {x:1,y:1,light:1,dot:0,blur:0,raster:0});
+assert.deepEqual(api.crtPresentation(s("on", 1)), {x:1,y:1,light:1,dot:0,blur:0,raster:0,bloom:0});
 assert.equal(api.crtPresentation(s("off", 0)).light, 0);
 const dot = api.crtPresentation(s("stopping", .1, 2160));
 assert.equal(dot.light, 0); assert(dot.dot > 0, "Shutdown dot lingers after picture collapse");

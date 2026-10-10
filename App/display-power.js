@@ -44,23 +44,25 @@
   }
   function crtPresentation(snapshot) {
     const p = snapshot.progress;
-    if (snapshot.state === "on") return {x:1,y:1,light:1,dot:0,blur:0,raster:0};
-    if (snapshot.state === "off") return {x:0,y:0,light:0,dot:0,blur:0,raster:0};
-    if (snapshot.reducedMotion) return {x:1,y:1,light:p,dot:0,blur:0,raster:0};
+    if (snapshot.state === "on") return {x:1,y:1,light:1,dot:0,blur:0,raster:0,bloom:0};
+    if (snapshot.state === "off") return {x:0,y:0,light:0,dot:0,blur:0,raster:0,bloom:0};
+    if (snapshot.reducedMotion) return {x:1,y:1,light:p,dot:0,blur:0,raster:0,bloom:0};
     if(snapshot.state==="starting"){
       // Heater warm-up changes phosphor output, never picture dimensions.
       // Deflection is already established when the full-size picture appears.
       const warm=smooth((p-.12)/.34);
       const settling=1-smooth((p-.38)/.24);
       const ripple=warm*settling*.035*Math.sin(snapshot.elapsed/110);
-      return {x:1,y:1,light:clamp(warm+ripple),dot:0,
-        blur:0,raster:p>.16&&p<.62?.10*settling:0};
+      const bloom=.72*smooth((p-.16)/.07)*(1-smooth((p-.29)/.15));
+      return {x:1,y:1,light:clamp(warm+ripple),dot:0,bloom,
+        blur:3.2*smooth((p-.14)/.05)*(1-smooth((p-.28)/.18)),
+        raster:p>.16&&p<.62?.10*settling:0};
     }
     const x = smooth((p-.12)/.08), y = smooth((p-.21)/.16);
     const light = smooth((p-.16)/.04);
     const dot = p > 0 && p < .18 ? Math.min(1,p/.02)*Math.min(1,(.18-p)/.02)*.8 : 0;
     return {x:Math.max(.002,x),y:Math.max(.003,y),light,dot,
-      blur:(1-y)*1.8,raster:snapshot.state==="starting" && p>.18 && p<.62 ? .20*(1-smooth((p-.38)/.24)) : 0};
+      bloom:0,blur:(1-y)*1.8,raster:snapshot.state==="starting" && p>.18 && p<.62 ? .20*(1-smooth((p-.38)/.24)) : 0};
   }
   function mount(options) {
     const doc = options.document;
@@ -83,6 +85,7 @@
     const black=doc.createElement("div");black.className="power-crt-black";shell.appendChild(black);
     const dot=doc.createElement("div");dot.className="power-crt-dot";shell.appendChild(dot);
     const raster=doc.createElement("div");raster.className="power-crt-raster";shell.appendChild(raster);
+    const bloom=doc.createElement("div");bloom.className="power-crt-bloom";bloom.setAttribute("aria-hidden","true");shell.appendChild(bloom);
     const glass=doc.createElement("div");glass.className="power-crt-glass";shell.appendChild(glass);
     [screen,black,dot,raster].forEach(n=>n.setAttribute("aria-hidden","true"));
     screen.removeAttribute("aria-hidden"); // Contains the actual live accessible map.
@@ -141,7 +144,15 @@
     const button=doc.createElement("button");button.id="display-power-switch";button.type="button";
     button.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v9M6.4 5.8a8 8 0 1 0 11.2 0"/></svg>';
     doc.body.appendChild(button);
+    // Preload bytes while the display is on; decode after the user's gesture.
+    // A failed recording load stays silent and never blocks visual power.
+    const sampleBytes=Promise.all(["relay","toggle"].map(async name=>{
+      const response=await root.fetch(`/assets/audio/power-${name}.wav`);
+      if(!response.ok)throw Error("Power recording unavailable");
+      return [name,await response.arrayBuffer()];
+    })).catch(()=>[]);
     const powerAudio=root.dadRadarDisplayPowerAudio?.createPowerAudio({
+      loadSamples:async context=>Object.fromEntries(await Promise.all((await sampleBytes).map(async([name,bytes])=>[name,await context.decodeAudioData(bytes.slice(0))]))),
       audioContextFactory:()=>new (root.AudioContext||root.webkitAudioContext)(),
       volume:root.dadRadarSettings?.audio?.splitFlap?.volume??.25,
       isEnabled:()=>root.dadRadarSettings?.audio?.splitFlap?.enabled!==false
@@ -165,7 +176,7 @@
       powerAudio?.stop();
       screen.style.transform="none";screen.style.clipPath="none";screen.style.filter="none";screen.style.opacity="1";
       screen.style.visibility="visible";
-      [black,dot,raster,glass,projection,curtain].forEach(n=>n.style.opacity="0");
+      [black,dot,raster,glass,bloom,projection,curtain].forEach(n=>n.style.opacity="0");
       curtain.style.pointerEvents="none";dashboard.inert=false;dashboard.removeAttribute("aria-hidden");
       doc.documentElement.removeAttribute("data-display-power");
       doc.documentElement.style.removeProperty("--power-flap-lamp");
@@ -196,7 +207,8 @@
         // offscreen surfaces on software/Pi renderers. Focus is expressed by
         // the aperture-local raster/light catch, never by resampling hardware.
         const ordinary=snapshot.state==="on" || snapshot.reducedMotion || snapshot.state==="starting";
-        screen.style.opacity=ordinary?String(v.light):"0";screen.style.filter="none";
+        screen.style.opacity=ordinary?String(v.light):"0";
+        screen.style.filter=v.bloom>0?`brightness(${1+v.bloom*.9})`:"none";
         screen.style.visibility="visible"; // Source remains available to SVG use.
         const liveMap=shell.querySelector("#route-map-svg");
         const surface=shell.querySelector(".airport-surface-svg");
@@ -213,7 +225,11 @@
         projection.style.opacity=ordinary?"0":String(v.light);
         projection.style.filter=`brightness(${1+(1-v.y)*2.2}) saturate(${.8+v.y*.2})`;
         black.style.opacity="0";dot.style.opacity=String(v.dot);
-        glass.style.opacity=ordinary?"0":String(v.light*.38);
+        bloom.style.opacity=String(v.bloom);
+        // Focus acts on the already composited, aperture-sized image, avoiding
+        // a huge blur/filter surface on the map's geographic SVG layers.
+        glass.style.backdropFilter=v.blur>0&&snapshot.state==="starting"?`blur(${v.blur}px)`:"none";
+        glass.style.opacity=snapshot.state==="starting"&&v.blur>0?"1":ordinary?"0":String(v.light*.38);
         raster.style.opacity=String(v.raster);raster.style.top=`${(snapshot.progress*2.7%1)*100}%`;
         raster.style.transform=`scaleY(${.8+v.y*1.2})`;
         if(snapshot.state==="off")path.setAttribute("d",`M0 0H${root.innerWidth}V${root.innerHeight}H0Z`);

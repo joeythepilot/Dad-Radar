@@ -24,3 +24,8 @@ assert(visual.crtPresentation(snapshot("stopping",.1)).dot>0,"Phosphor dot persi
 console.log("Realism choreography: visible mechanisms, optical compression and phosphor staging passed.");
 
 assert(source.includes('snapshot.state==="starting";'),"Startup illuminates original registered map rather than a copied optical picture");
+
+const bloom=visual.crtPresentation(snapshot("starting",.25));
+assert(bloom.bloom>.5,"CRT warm-up has a visible phosphor light bloom");
+assert(bloom.blur>1,"Bloom has focus settling while picture stays full-size");
+assert.equal(visual.crtPresentation(snapshot("starting",.8)).bloom,0,"Bloom clears after warm-up");

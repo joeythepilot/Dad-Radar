@@ -7,7 +7,7 @@ const {execFileSync}=require("node:child_process"),{chromium}=require("playwrigh
 const {createDisplayFixture}=require("./display-browser-fixture");
 const {server,state,root}=createDisplayFixture();
 state.flight.marketingCarrierCode="AA";state.flight.scheduledCarrierCode="AA";
-const output=path.join(root,"artifacts","power","frame-review-slower-native"),fps=20,step=1000/fps;
+const output=path.join(root,"artifacts","power","frame-review-bloom-recorded"),fps=20,step=1000/fps;
 function wav(samples,rate){const b=Buffer.alloc(44+samples.length*2);b.write("RIFF");b.writeUInt32LE(b.length-8,4);b.write("WAVEfmt ",8);b.writeUInt32LE(16,16);b.writeUInt16LE(1,20);b.writeUInt16LE(1,22);b.writeUInt32LE(rate,24);b.writeUInt32LE(rate*2,28);b.writeUInt16LE(2,32);b.writeUInt16LE(16,34);b.write("data",36);b.writeUInt32LE(samples.length*2,40);samples.forEach((s,i)=>b.writeInt16LE(Math.round(Math.max(-1,Math.min(1,s))*32767),44+i*2));return b;}
 (async()=>{
  fs.mkdirSync(path.join(output,"frames"),{recursive:true});await new Promise(r=>server.listen(0,"127.0.0.1",r));
@@ -76,7 +76,8 @@ function wav(samples,rate){const b=Buffer.alloc(44+samples.length*2);b.write("RI
   function source(node){const start=node.start.bind(node),stop=node.stop.bind(node);node.start=(at,...args)=>start(at??cursor,...args);node.stop=at=>stop(at??cursor);node.disconnect=()=>{};return node;}
   const adapter={state:"running",get currentTime(){return cursor;},sampleRate:rate,destination:offline.destination,
    createOscillator:()=>source(offline.createOscillator()),createBufferSource:()=>source(offline.createBufferSource()),createGain:()=>offline.createGain(),createBuffer:(...args)=>offline.createBuffer(...args),resume:async()=>{}};
-  const controller=window.dadRadarDisplayPowerAudio.createPowerAudio({audioContextFactory:()=>adapter,volume:window.dadRadarSettings?.audio?.splitFlap?.volume??.25});await controller.unlock();
+  const samples=Object.fromEntries(await Promise.all(["relay","toggle"].map(async name=>[name,await offline.decodeAudioData(await (await fetch(`/assets/audio/power-${name}.wav`)).arrayBuffer())])));
+  const controller=window.dadRadarDisplayPowerAudio.createPowerAudio({samples,audioContextFactory:()=>adapter,volume:window.dadRadarSettings?.audio?.splitFlap?.volume??.25});await controller.unlock();
   for(const e of timeline.events){cursor=e.at/1000;if(e.type==="state")controller.apply(e);else controller.mechanicalCue(e.kind);}
   for(const s of timeline.segments){const at=s.at/1000,end=Math.min(seconds,(s.end??seconds*1000)/1000);if(end<=at||!s.volumes.some(v=>v.value>0))continue;
    const buffer=await offline.decodeAudioData(await (await fetch(s.src)).arrayBuffer()),node=offline.createBufferSource(),gain=offline.createGain();node.buffer=buffer;node.connect(gain);gain.connect(offline.destination);

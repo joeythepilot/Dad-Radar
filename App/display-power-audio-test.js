@@ -16,14 +16,17 @@ function audioFixture(){
 }
 async function run(){
   const f=audioFixture();let enabled=true;
-  const controller=api.createPowerAudio({audioContextFactory:()=>f.context,volume:.3,isEnabled:()=>enabled});
+  const relay={duration:.15,recording:"relay"},toggle={duration:.23,recording:"toggle"};
+  const controller=api.createPowerAudio({audioContextFactory:()=>f.context,volume:.3,isEnabled:()=>enabled,samples:{relay,toggle}});
   controller.apply(snapshot("on",0));assert.equal(f.nodes.length,0,"Ordinary load is silent");
   assert.equal(await controller.unlock(),true);
   assert.equal(typeof controller.mechanicalCue,"function","Physical indexing must have synchronized detent audio");
   controller.apply(snapshot("stopping"));assert(f.nodes.some(n=>n.started),"Intentional transition starts audition envelope");
   const beforeDetent=f.nodes.length;controller.mechanicalCue("clock");
   assert(f.nodes.length>beforeDetent,"Clock motion produces a physical detent, not only a power blip");
-  assert(f.frequencies.every(hz=>hz<=120),"No pitched electronic detents or high-frequency power tones");
+  assert.equal(f.frequencies.length,0,"Power sounds have no synthesized oscillator tones");
+  assert.equal(f.nodes[0].buffer,toggle,"Intentional switch uses the actual recorded toggle sample");
+  assert.equal(f.nodes[1].buffer,relay,"Mechanical indexing uses the actual recorded relay sample");
   const count=f.nodes.length;controller.apply(snapshot("stopping",1,100));assert.equal(f.nodes.length,count,"Frames do not restart sounds");
   controller.apply(snapshot("starting",2));assert(f.nodes.slice(0,count).every(n=>n.stopped),"Reversal cancels old envelope");
   const reversedCount=f.nodes.length;
@@ -45,6 +48,14 @@ async function run(){
   assert.equal(resumed.nodes.length,0,"A previously unlocked suspended context cannot schedule a new cue");
   again.apply(snapshot("on",5,60000));resumed.context.state="running";resolveResume();await secondUnlock;
   again.apply(snapshot("on",5,60000));assert.equal(resumed.nodes.length,0,"Late resume after completion remains silent");
+  const missing=audioFixture();
+  const silent=api.createPowerAudio({audioContextFactory:()=>missing.context,loadSamples:async()=>{throw Error("Recording unavailable");}});
+  assert.equal(await silent.unlock(),false,"Recording decode failure remains silent");
+  silent.apply(snapshot("starting"));silent.mechanicalCue("clock");assert.equal(missing.nodes.length,0,"Missing samples never substitute synthetic clicking");
+  const late=audioFixture();let finishSamples;
+  const loading=api.createPowerAudio({audioContextFactory:()=>late.context,loadSamples:()=>new Promise(resolve=>{finishSamples=resolve;})});
+  const ready=loading.unlock();loading.apply(snapshot("starting"));loading.apply(snapshot("on",1,9000));
+  finishSamples({relay,toggle});await ready;loading.apply(snapshot("on",1,9000));assert.equal(late.nodes.length,0,"Late sample loading does not replay a cancelled transition");
   console.log("Power audio envelopes: cancellation, disabled/failing audio and stale unlock passed.");
 }
 run().catch(error=>{console.error(error);process.exitCode=1;});
