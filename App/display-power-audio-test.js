@@ -9,7 +9,7 @@ function audioFixture(){
   const param=()=>({setValueAtTime(){},linearRampToValueAtTime(){},exponentialRampToValueAtTime(){},cancelScheduledValues(){}});
   const context={state:"running",currentTime:0,destination:{},resume(){resumes++;return Promise.resolve();},close(){return Promise.resolve();},
     createGain(){return {gain:param(),connect(){},disconnect(){}};},
-    createOscillator(){const node={frequency:param(),connect(){},disconnect(){},start(){this.started=true;},stop(){this.stopped=true;}};nodes.push(node);return node;}};
+    createOscillator(){const node={frequency:param(),connect(){},disconnect(){this.disconnected=true;},start(){this.started=true;},stop(time){this.stopped=true;(this.stops??=[]).push(time);}};nodes.push(node);return node;}};
   return {context,nodes,get resumes(){return resumes;}};
 }
 async function run(){
@@ -21,7 +21,8 @@ async function run(){
   const count=f.nodes.length;controller.apply(snapshot("stopping",1,100));assert.equal(f.nodes.length,count,"Frames do not restart sounds");
   controller.apply(snapshot("starting",2));assert(f.nodes.slice(0,count).every(n=>n.stopped),"Reversal cancels old envelope");
   const reversedCount=f.nodes.length;
-  controller.apply(snapshot("off",3));assert(f.nodes.every(n=>n.stopped),"Off cancels all ongoing power sounds");
+  f.context.state="suspended";
+  controller.apply(snapshot("off",2,60000));assert(f.nodes.every(n=>n.stops.includes(undefined)&&n.disconnected),"Same-generation terminal state cancels suspended audio immediately");
   enabled=false;controller.apply(snapshot("starting",4));assert.equal(f.nodes.length,reversedCount,"Disabled sound has no new source");
   controller.destroy();assert.equal(await controller.unlock(),false);
   const failing=api.createPowerAudio({audioContextFactory(){throw Error("Audio unavailable");}});
@@ -31,6 +32,13 @@ async function run(){
   const stale=api.createPowerAudio({audioContextFactory:()=>slow.context});
   const unlocking=stale.unlock();stale.apply(snapshot("stopping"));stale.apply(snapshot("off",2));
   resolveResume();await unlocking;assert.equal(slow.nodes.length,0,"Late unlock never replays cancelled power cue");
+  const resumed=audioFixture();const again=api.createPowerAudio({audioContextFactory:()=>resumed.context});
+  await again.unlock();resumed.context.state="suspended";
+  resumed.context.resume=()=>new Promise(resolve=>{resolveResume=resolve;});
+  const secondUnlock=again.unlock();again.apply(snapshot("starting",5));
+  assert.equal(resumed.nodes.length,0,"A previously unlocked suspended context cannot schedule a new cue");
+  again.apply(snapshot("on",5,60000));resumed.context.state="running";resolveResume();await secondUnlock;
+  again.apply(snapshot("on",5,60000));assert.equal(resumed.nodes.length,0,"Late resume after completion remains silent");
   console.log("Power audio envelopes: cancellation, disabled/failing audio and stale unlock passed.");
 }
 run().catch(error=>{console.error(error);process.exitCode=1;});

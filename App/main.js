@@ -773,11 +773,13 @@ function queueFlapAnimation(
   beginSplitFlapAudio(cell);
 
   async function runAnimationQueue() {
+    const serial=cell._presentationSerial||0;
     if (delay > 0) {
       await wait(delay);
     }
 
     while (
+      serial===(cell._presentationSerial||0) &&
       (cell.dataset.value ?? " ") !==
       cell._targetValue
     ) {
@@ -797,6 +799,7 @@ function queueFlapAnimation(
         const character of sequence
       ) {
         if (
+          serial!==(cell._presentationSerial||0) ||
           targetCharacter !==
           cell._targetValue
         ) {

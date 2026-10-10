@@ -16,9 +16,9 @@
       try{
         context=context||options.audioContextFactory?.();
         if(!context)return false;
-        if(context.state==="suspended")await context.resume();
+        if(context.state==="suspended"){unlocked=false;await context.resume();}
         if(destroyed)return false;
-        unlocked=true;return true;
+        unlocked=context.state==="running";return unlocked;
       }catch(_){return false;}
     }
     function tone(type,hz,gain,duration){
@@ -31,6 +31,10 @@
       osc.start(now);osc.stop(now+duration+.03);
     }
     function apply(snapshot){
+      if(destroyed||snapshot.failed||!["starting","stopping"].includes(snapshot.state)){
+        generation=snapshot.generation;pending=false;stop();return;
+      }
+      if(context?.state!=="running")unlocked=false;
       if(snapshot.generation===generation && (!pending||!unlocked))return;
       if(snapshot.generation!==generation){generation=snapshot.generation;stop();}
       pending=!unlocked&&["starting","stopping"].includes(snapshot.state);

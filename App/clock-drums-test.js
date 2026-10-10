@@ -84,5 +84,7 @@ assert(drums.every(d=>d.getAttribute("data-digit")===""),"Live clock updates sta
 setClockPowerPresentation(clock,{state:"on",progress:1},printedInk);
 assert.deepEqual(drums.map(d=>d.getAttribute("data-digit")),["1","1","4","2"],"Wake paints the newest time, not the pre-off time");
 assert.equal(period.getAttribute("data-period-value"),"PM");
+assert(drums.flatMap(d=>d.children).every(n=>n.style?.animation==="none"),"Terminal wake clock prints must be settled immediately");
+assert(period.children.every(n=>n.style?.animation==="none"),"Terminal wake period print must not begin delayed indexing");
 clearClockPowerPresentation(clock,printedInk);
 

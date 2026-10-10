@@ -20,7 +20,7 @@ function fixture(options = {}) {
   const root={location:{protocol:options.protocol || "file:"},document:{hidden:false,getElementById:id=>id==='route-map-shell'?shell:null,querySelector:()=>true,createElement:()=>new Element()},
     addEventListener(type,fn){(events[type] || (events[type]=[])).push(fn);},requestAnimationFrame:fn=>frames.push(fn),setTimeout:(fn,delay)=>{const id=++next;timers.set(id,{fn,delay});return id;},clearTimeout:id=>timers.delete(id),
     matchMedia:()=>({matches:false}),MutationObserver:class{observe(){}disconnect(){}},ResizeObserver:class{observe(){}},
-    dadRadarMapRollAudio:{createController:()=>Object.fromEntries(['playMotor','stopMotor','playRegisterClack','playDetentClack'].map(name=>[name,()=>sounds.push(name)]))}};
+    dadRadarMapRollAudio:{createController:()=>Object.fromEntries(['playMotor','stopMotor','stop','playRegisterClack','playDetentClack'].map(name=>[name,()=>sounds.push(name)]))}};
   vm.runInNewContext(fs.readFileSync(path.join(__dirname,'map-roll-transition.js'),'utf8'),{window:root});
   const transport=shell.querySelector('.map-roll-transport');
   return {root,shell,surface,sounds,api:shell.dadRadarMapRoll,
@@ -96,6 +96,7 @@ console.log('Startup diagnostic baseline and proportional Full-family hardware t
 const power=fixture();power.api.requestSurface(power.surface,true);
 assert.equal(typeof power.api.settleForDisplayPower,'function','Power transition needs a presentation-only transport settlement');
 power.api.settleForDisplayPower();
+assert(power.sounds.includes('stop'),'Display power cancels already-playing registration clacks as well as motor');
 assert(power.shell.classList.contains('is-surface-registered'),'Power settlement preserves requested map surface');
 assert(!power.shell.classList.contains('map-roll-to-surface'),'Transport stops without moving its housing');
 power.finish();power.paint();power.paint();power.tick(135);power.tick(220);

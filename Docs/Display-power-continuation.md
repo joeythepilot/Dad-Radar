@@ -185,6 +185,33 @@ Unknown status must remain explicitly unverified. No GPIO or Pi shutdown now.
 
 ## Preservation / verification boundaries
 
+### October 10 final-review fix pass
+
+Fresh whole-branch review of candidate `eacf11c3c17ba7a1f843f0f5d8a1173e02ce8504`
+(tree `7febd289e63cbce9e729564313059f051b2c2d89`) found no Critical and three
+Important issues. Accepted all three after source inspection and failing
+regressions: the old multi-character flap queue continued after forced
+settlement; skipped wake frames began new weekly/clock motion at the deadline;
+same-generation terminal power audio left suspended envelopes alive.
+One fix pass invalidates the complete flap queue, settles weekly canvas and
+clock ink at terminal wake/failure, and stops audio before terminal early return,
+including re-suspension after an earlier unlock. Targeted tests observed RED→GREEN.
+The browser independently observed weekly `data-animating=true` at a skipped
+deadline before the fix. Added an actual terminal-paint assertion, not just target
+metadata. Also source-verified and RED→GREEN tested an already-playing map clack:
+power settlement now calls the existing all-source audio stop, not motor-only.
+Intermediate hardware geometry and a mechanics-phase PNG are now checked.
+
+Ruling: terminal wake must display latest targets immediately; preserve ordinary
+live indexing when no power transition is occurring. Cost if wrong: background
+resumption can replay stale motion/sound. No new provider or mobile behavior.
+Deferred Minor coverage: browser-level decode/autoplay failures and changed
+instrument/brand values during off replacement are not independently established;
+focused audio/state tests are not a substitute. Late-dot reversal and active
+map-roll browser integration remain additional coverage, not verified physical
+behavior. Full hosted gate and clean fixed-source captures are still pending.
+Do not claim all review/evidence tasks complete until those checks are recorded.
+
 `agent/mobile-companion` and all backup/restore branches remain unchanged.
 Power-state controller is published; local switch/CRT adapter is wired into
 the generated browser build. Do not edit generated bundles. No replacement

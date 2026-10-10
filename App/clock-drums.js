@@ -118,13 +118,25 @@
       (snapshot.state!=="off" && snapshot.progress>=(snapshot.reducedMotion ? .5 : .30));
   }
   function setClockPowerPresentation(clock,snapshot,printedInk) {
+    const previous=clock._powerPresentation;
     const wasVisible=powerVisible(clock._powerPresentation);
     clock._powerPresentation=snapshot;
     if(wasVisible!==powerVisible(snapshot))paintClock(clock,clock._powerLiveTime,printedInk);
+    if(snapshot.failed || snapshot.reducedMotion || (snapshot.state==="on" && previous?.state!=="on"))settleClock(clock);
+  }
+  function settleClock(clock){
+    const containers=Array.from(clock.querySelectorAll("[data-drum]"));
+    const period=clock.parentNode?.querySelector?.(`[data-period="${clock.getAttribute?.("data-clock")}"] .period-ink`);
+    if(period)containers.push(period);
+    containers.forEach(container=>Array.from(container.children).forEach(print=>{
+      if(print.getAttribute("data-outgoing")==="true")print.remove();
+      else {if(!print.style)print.style={};print.style.animation="none";}
+    }));
   }
   function clearClockPowerPresentation(clock,printedInk) {
     delete clock._powerPresentation;
     paintClock(clock,clock._powerLiveTime,printedInk);
+    settleClock(clock);
   }
   const api = {readDrumTime, readDrumPeriod, changedDrums, paintClock,setClockPowerPresentation,clearClockPowerPresentation};
   if (typeof module === "object" && module.exports) module.exports = api;

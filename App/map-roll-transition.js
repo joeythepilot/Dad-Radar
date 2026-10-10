@@ -204,7 +204,7 @@
     timer = null;restartTimer = null;moving = false;registering = false;
     current = requested && Boolean(surface || demoSheet);target = current;
     shell.classList.toggle("is-surface-registered", current);
-    clearMotion();writeHidden(!current);audio?.stopMotor?.();
+    clearMotion();writeHidden(!current);audio?.stop?.();
     if (!current && demoSheet) {demoSheet.remove();demoSheet = null;}
   }
   shell.dadRadarMapRoll = Object.freeze({setSurfaceVisible: request, requestSurface, resize: sizeHardware, settleForDisplayPower});

@@ -612,14 +612,16 @@
         refreshSchedule,
         setModules,
         setPowerPresentation(snapshot){
+          const terminal=snapshot.failed || (snapshot.state==="on" && powerPresentation?.state!=="on");
           powerPresentation=snapshot;
           if(snapshot.state!=="on")stopLocalSound();
           const signature=Array.from({length:7},(_,i)=>root.dadRadarDisplayPowerState.mechanicalVisible(snapshot,"weekly",i)).join("");
-          if(signature===powerSignature)return;
+          if(signature===powerSignature && !terminal)return;
           powerSignature=signature;
-          if(liveModules)setModules(liveModules,{powerReplay:true});
+          if(terminal)stopLocalSound();
+          if(liveModules)setModules(liveModules,{powerReplay:true,animate:!terminal});
         },
-        clearPowerPresentation(){powerPresentation=null;powerSignature="";if(liveModules)setModules(liveModules,{powerReplay:true});},
+        clearPowerPresentation(){powerPresentation=null;powerSignature="";stopLocalSound();if(liveModules)setModules(liveModules,{powerReplay:true,animate:false});},
         destroy(){
           destroyed=true;
           stopLocalSound();
