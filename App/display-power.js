@@ -66,7 +66,11 @@
         }
         doc.documentElement.setAttribute("data-display-power",snapshot.state);
         screen.style.transform=snapshot.state==="on"?"none":`scale(${v.x},${v.y})`;
-        screen.style.opacity=String(v.light);screen.style.filter=v.blur?`blur(${v.blur}px)`:"none";
+        // Do not blur the live map's nested SVG filters: that forces huge
+        // offscreen surfaces on software/Pi renderers. Focus is expressed by
+        // the aperture-local raster/light catch, never by resampling hardware.
+        screen.style.opacity=String(v.light);screen.style.filter="none";
+        screen.style.visibility=v.light===0?"hidden":"visible";
         black.style.opacity=String(1-v.light);dot.style.opacity=String(v.dot);
         raster.style.opacity=String(v.raster);raster.style.top=`${20+snapshot.progress*65}%`;
         if(snapshot.state==="off")path.setAttribute("d",`M0 0H${root.innerWidth}V${root.innerHeight}H0Z`);

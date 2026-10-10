@@ -48,10 +48,10 @@ Unknown status must remain explicitly unverified. No GPIO or Pi shutdown now.
 | --- | --- | --- |
 | Baseline/setup | Passed | `npm ci` succeeded; complete baseline `npm test` exited 0 |
 | 1 — Power state controller | Complete and published | `a8b3648663030fa8e0b009e5fb25052f761f1e02`; RED then GREEN; complete `npm test` exited 0 |
-| 2 — Switch/CRT | Implemented locally; browser proof in progress | Adapter math/family gate GREEN; map settlement RED then GREEN; full `npm test` exited 0; actual switch/map renders; Chromium run not fully passing yet |
+| 2 — Switch/CRT | Prototype published; browser proof in progress | First prototype checkpoint `e9a4911eef5ef88066a5918543e48b4b69b2e518`; adapter math/family gate GREEN; map settlement RED then GREEN; full `npm test` exited 0; actual switch/map renders; Chromium run not fully passing yet |
 | 3 — Mechanical modules | Not started | Existing main/clock/weekly/instrument mechanisms inspected |
 | 4 — Audio | Not started | Existing audio entry points identified; defaults must remain unchanged |
-| 5 — Browser/gates | Not started | No screenshots/video or runtime verification yet |
+| 5 — Browser/gates | Partial capture infrastructure only | Fixture screenshots/video captured in scratch; no final passing browser evidence or hosted exact-source gate yet |
 | 6 — Handoff/continuity | In progress | This durable checkpoint established; final evidence pending |
 
 ## Pre-flight interfaces and rulings
@@ -88,6 +88,17 @@ Unknown status must remain explicitly unverified. No GPIO or Pi shutdown now.
   while shooting moving filtered SVG. Exact phase capture now uses Playwright
   virtual clock. Its screenshots/video are controlled-time fixture evidence,
   not a real-time performance benchmark. No overall browser pass yet.
+- Follow-up capture diagnosis: Playwright actionability checks and settled-frame
+  error proof require RAF advancement; when virtual time is paused, invoke the
+  button through its actual DOM click handler, fast-forward phase timestamps,
+  and resume the clock for HTTP-refresh and settled-frame assertions. A run using
+  `runFor` remained expensive on this software renderer. Current diagnostic run:
+  `/tmp/dadradar-power-browser-clock4.log`; do not assume it passed.
+- Removed full-map CSS blur: the live map has nested SVG filters, so additional
+  whole-map blur produced costly offscreen rendering in portable Chromium.
+  Raster/light catch remains aperture-local; no Pi performance claim. After this
+  correction, `npm run test:display-power`, map lifecycle test, browser build and
+  whitespace checks passed. The complete browser test still requires proof.
 - Ruling: final project-pinned Chromium/WebKit proof stays at the full release
   gate; do not substitute portable Chromium or claim WebKit ran locally.
 - Task 3 phase-gating tests are drafted behind `DADRADAR_POWER_MECHANICAL=1`;
@@ -100,7 +111,7 @@ Unknown status must remain explicitly unverified. No GPIO or Pi shutdown now.
 Power-state controller is published; local switch/CRT adapter is wired into
 the generated browser build. Do not edit generated bundles. No replacement
 artwork, deployment, physical monitor verification, or family visual acceptance.
-Next: finish Task 2 browser proof, publish checkpoint; then run Task 3 RED
+Next: finish Task 2 browser proof, update checkpoint; then run Task 3 RED
 browser assertions for actual blank flap/clock presentation before hooks.
 Update this section with exact task commits, RED/GREEN evidence, test outputs,
 blockers, artifact links and next action as work advances.
