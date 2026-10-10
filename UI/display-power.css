@@ -40,13 +40,13 @@ html[data-display-power="starting"] .flap-flip-top::after,
 html[data-display-power="stopping"] .flap-flip-top::after {
   content:"";position:absolute;inset:0;pointer-events:none;z-index:5;
   background:linear-gradient(to bottom,#0000,#000a);
-  animation:power-flap-top-shadow 190ms ease-in both;
+  animation:power-flap-top-shadow 340ms ease-in both;
 }
 html[data-display-power="starting"] .flap-flip-bottom::after,
 html[data-display-power="stopping"] .flap-flip-bottom::after {
   content:"";position:absolute;inset:0;pointer-events:none;z-index:5;
   background:linear-gradient(to bottom,#000b,#0000);
-  animation:power-flap-bottom-shadow 190ms 185ms ease-out both;
+  animation:power-flap-bottom-shadow 340ms 330ms ease-out both;
 }
 @keyframes power-flap-top-shadow { from{opacity:0}to{opacity:.9} }
 @keyframes power-flap-bottom-shadow { from{opacity:.9}to{opacity:0} }
@@ -56,3 +56,18 @@ html[data-display-power="stopping"] .flap-flip-bottom::after {
   background:radial-gradient(ellipse at 50% 47%,#f4ffece8 0%,#edf8e0cf 42%,#cfddbd78 100%);
   box-shadow:inset 0 0 32px 10px #d6e8c6aa; }
 @media (prefers-reduced-motion:reduce) { .power-crt-bloom { display:none; } }
+
+/* Power indexing only: slower textured strokes and inertial drum settling.
+   This stylesheet is never loaded by mobile; ordinary on-state timing stays native. */
+html[data-display-power="starting"] .flap-character.is-flipping .flap-flip-top,
+html[data-display-power="stopping"] .flap-character.is-flipping .flap-flip-top { animation-duration:340ms; }
+html[data-display-power="starting"] .flap-character.is-flipping .flap-flip-bottom,
+html[data-display-power="stopping"] .flap-character.is-flipping .flap-flip-bottom { animation-duration:340ms;animation-delay:330ms; }
+html[data-display-power="starting"] .drum-print,
+html[data-display-power="stopping"] .drum-print,
+html[data-display-power="starting"] .period-print,
+html[data-display-power="stopping"] .period-print { animation-duration:1300ms; }
+html[data-display-power="starting"] .drum-index-after,
+html[data-display-power="stopping"] .drum-index-after { animation-delay:280ms; }
+html[data-display-power="starting"] .drum-exit,
+html[data-display-power="stopping"] .drum-exit { animation-duration:680ms; }

@@ -73,7 +73,7 @@
           old.setAttribute("class", "drum-print drum-exit");
           old.setAttribute("data-outgoing", "true");
           old.addEventListener("animationend", () => old.remove(), {once: true});
-          root.setTimeout(() => { if (old.parentNode) old.remove(); }, 500);
+          root.setTimeout(() => { if (old.parentNode) old.remove(); }, clock._powerPresentation && !clock._powerPresentation.reducedMotion && ["starting","stopping"].includes(clock._powerPresentation.state) ? 850 : 500);
         } else old.remove();
       }
       drum.setAttribute("data-digit", next);

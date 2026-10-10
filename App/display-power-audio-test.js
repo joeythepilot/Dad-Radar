@@ -24,9 +24,9 @@ async function run(){
   controller.apply(snapshot("stopping"));assert(f.nodes.some(n=>n.started),"Intentional transition starts audition envelope");
   const beforeDetent=f.nodes.length;controller.mechanicalCue("clock");
   assert(f.nodes.length>beforeDetent,"Clock motion produces a physical detent, not only a power blip");
-  assert.equal(f.frequencies.length,0,"Power sounds have no synthesized oscillator tones");
+  assert.deepEqual(f.frequencies,[60,120],"Power envelope restores only low mains/transformer hum, never pitched digital clicks");
   assert.equal(f.nodes[0].buffer,toggle,"Intentional switch uses the actual recorded toggle sample");
-  assert.equal(f.nodes[1].buffer,relay,"Mechanical indexing uses the actual recorded relay sample");
+  assert.equal(f.nodes.find(n=>n.buffer===relay).buffer,relay,"Mechanical indexing uses the actual recorded relay sample");
   const count=f.nodes.length;controller.apply(snapshot("stopping",1,100));assert.equal(f.nodes.length,count,"Frames do not restart sounds");
   controller.apply(snapshot("starting",2));assert(f.nodes.slice(0,count).every(n=>n.stopped),"Reversal cancels old envelope");
   const reversedCount=f.nodes.length;

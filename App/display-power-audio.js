@@ -46,6 +46,25 @@
       lastDetent=now;
       try{impact(kind);}catch(_){/* Audio failure cannot block a mechanism. */}
     }
+    function tubeHum(snapshot){
+      if(snapshot.reducedMotion || !context.createOscillator)return;
+      const now=context.currentTime,seconds=Math.max(.2,Number(snapshot.duration||9000)/1000);
+      // Low heater/transformer envelope, separate from the recorded contacts.
+      // No high-frequency whine and no oscillator is used to fabricate clicks.
+      for(const [hz,level] of [[60,.14],[120,.055]]){
+        const node=context.createOscillator(),amp=context.createGain();
+        node.type="sine";node.frequency.setValueAtTime(hz,now);
+        amp.gain.setValueAtTime(snapshot.state==="starting"?.0001:volume*level,now);
+        if(snapshot.state==="starting"){
+          amp.gain.linearRampToValueAtTime(volume*level,now+seconds*.28);
+          amp.gain.setValueAtTime(volume*level,now+seconds*.82);
+        }else amp.gain.setValueAtTime(volume*level,now+seconds*.35);
+        amp.gain.linearRampToValueAtTime(.0001,now+seconds);
+        node.connect(amp);amp.connect(context.destination);sources.push(node);
+        node.onended=()=>{try{node.disconnect();amp.disconnect();}catch(_){}};
+        node.start();node.stop(now+seconds);
+      }
+    }
     function apply(snapshot){
       state=snapshot.state;
       if(destroyed||snapshot.failed||!["starting","stopping"].includes(snapshot.state)){
@@ -59,6 +78,7 @@
       pending=false;
       try{
         impact("toggle");
+        tubeHum(snapshot);
       }catch(_){stop();}
     }
     return Object.freeze({unlock,apply,mechanicalCue,stop,destroy(){destroyed=true;stop();try{const closed=context?.close?.();closed?.catch?.(()=>{});}catch(_){}}});

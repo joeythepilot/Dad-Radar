@@ -512,6 +512,9 @@
         nextModules=powerModules(nextModules,powerPresentation,root.dadRadarDisplayPowerState);
         if(powerPresentation?.reducedMotion)animate=false;
         const now=root.performance?.now?.()??Date.now();
+        const powerMotion=Boolean(powerPresentation && !powerPresentation.reducedMotion && ["starting","stopping"].includes(powerPresentation.state));
+        const dayDuration=powerMotion ? 720 : DAY_ANIMATION_MS;
+        const wheelDuration=powerMotion ? 1400 : WHEEL_ANIMATION_MS;
         let anyMotion=false;
         let maxEnd=0;
 
@@ -537,10 +540,10 @@
 
           if(dayChanged){
             const delay=rollover?index*ROLLOVER_BAY_STAGGER_MS:0;
-            bay.dayAnimation={from:oldDay,to:module.day,start:now+delay,duration:DAY_ANIMATION_MS};
+            bay.dayAnimation={from:oldDay,to:module.day,start:now+delay,duration:dayDuration};
             anyMotion=true;
-            maxEnd=Math.max(maxEnd,delay+DAY_ANIMATION_MS);
-            if(rollover)playDetent(delay+DAY_ANIMATION_MS,175+index*5);
+            maxEnd=Math.max(maxEnd,delay+dayDuration);
+            if(rollover)playDetent(delay+dayDuration,175+index*5);
           } else {
             bay.day=module.day;
             bay.dayAnimation=null;
@@ -557,11 +560,11 @@
             const delay=(rollover?430+index*28:0)+wheelIndex*WHEEL_STAGGER_MS;
             bay.wheelAnimations[wheelIndex]={
               from,to,sequence:forwardWheelSequence(from,to),
-              start:now+delay,duration:WHEEL_ANIMATION_MS
+              start:now+delay,duration:wheelDuration
             };
             anyMotion=true;
-            maxEnd=Math.max(maxEnd,delay+WHEEL_ANIMATION_MS);
-            playDetent(delay+WHEEL_ANIMATION_MS,225+wheelIndex*12);
+            maxEnd=Math.max(maxEnd,delay+wheelDuration);
+            playDetent(delay+wheelDuration,225+wheelIndex*12);
           }
         });
 

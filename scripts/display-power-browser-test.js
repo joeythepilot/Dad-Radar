@@ -92,6 +92,8 @@ return result;});
     assert.equal(await page.locator(".power-crt-screen").evaluate(n=>n.style.transform),"none","Only the optical image moves");
     assert(await page.locator("#flight-number .flap-character").evaluateAll(nodes=>nodes.every(n=>getComputedStyle(n,"::after").opacity==="1")),"Warm flap lamps precede indexing, including blank cells");
     await advance(1000);await screenshot("startup-mechanics.png");
+    assert.equal(await page.locator("#flight-number .flap-flip-top").first().evaluate(n=>getComputedStyle(n).animationDuration),"0.34s","Power flap stroke is slower than ordinary 190ms indexing");
+    assert.equal(await page.locator(".drum-print:not(.drum-exit)").first().evaluate(n=>getComputedStyle(n).animationDuration),"1.3s","Power clock roll has twice the ordinary duration");
     assert.deepEqual(await bounds(page),before,"Intermediate indexing leaves module and fixed hardware geometry unchanged");
     await advance(5600);
     assert.equal(await page.evaluate(()=>window.dadRadarDisplayPowerController.getState()),"on");

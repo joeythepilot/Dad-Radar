@@ -733,7 +733,7 @@ function flipFlapOnce(
 
     window.setTimeout(
       finishAnimation,
-      FLAP_ANIMATION_TIMEOUT
+      cell._powerSlow ? 900 : FLAP_ANIMATION_TIMEOUT
     );
   });
 }
@@ -920,11 +920,12 @@ function renderFlapText(
     .from(container.children)
     .forEach((cell, index) => {
       cell._powerBlank=!visible;
+    cell._powerSlow=Boolean(displayPowerSnapshot && !displayPowerSnapshot.reducedMotion && ["starting","stopping"].includes(displayPowerSnapshot.state));
       queueFlapAnimation(
         cell,
         visible?normalizedText[index]:" ",
         visible?index *
-          FLAP_STAGGER_DELAY
+          (cell._powerSlow ? 80 : FLAP_STAGGER_DELAY)
           :0
       );
     });
@@ -943,7 +944,8 @@ function renderFlightIdentification(container, number, brand) {
   [...container.children].forEach((cell,index)=>{
     cell.dataset.logoTile=String(index===0);
     cell._powerBlank=!visible;
-    queueFlapAnimation(cell, visible?values[index]:" ", visible?index*FLAP_STAGGER_DELAY:0);
+    cell._powerSlow=Boolean(displayPowerSnapshot && !displayPowerSnapshot.reducedMotion && ["starting","stopping"].includes(displayPowerSnapshot.state));
+    queueFlapAnimation(cell, visible?values[index]:" ", visible?index*(cell._powerSlow ? 80 : FLAP_STAGGER_DELAY):0);
   });
   scheduleFlightBoardBalance();
 }
