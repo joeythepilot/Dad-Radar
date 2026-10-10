@@ -9,6 +9,23 @@
   const clamp = value => Math.max(0, Math.min(1, value));
   const smooth = value => {const t=clamp(value);return t*t*(3-2*t);};
   const REVEAL={paper:.14,instruments:.22,clocks:.30,flaps:.34,weekly:.42,sequence:.42};
+  function apertureContains(rectangles,point){return rectangles.some(r=>point.x>=r.left&&point.x<r.right&&point.y>=r.top&&point.y<r.bottom);}
+  function aperturePath(rectangles){
+    // Disjoint row spans describe the union. Simply appending overlapping
+    // rectangles under even-odd fill would black out their intersection.
+    const xs=[...new Set(rectangles.flatMap(r=>[r.left,r.right]))].sort((a,b)=>a-b);
+    const ys=[...new Set(rectangles.flatMap(r=>[r.top,r.bottom]))].sort((a,b)=>a-b);
+    let d="";
+    for(let j=0;j<ys.length-1;j++){
+      let left=null;
+      for(let i=0;i<xs.length;i++){
+        const inside=i<xs.length-1&&apertureContains(rectangles,{x:(xs[i]+xs[i+1])/2,y:(ys[j]+ys[j+1])/2});
+        if(inside&&left===null)left=xs[i];
+        if(!inside&&left!==null){d+=` M${left} ${ys[j]}H${xs[i]}V${ys[j+1]}H${left}Z`;left=null;}
+      }
+    }
+    return d;
+  }
   function moduleLight(snapshot,kind,index=0) {
     if(snapshot.failed || snapshot.state==="on")return 1;
     if(snapshot.state==="off")return 0;
@@ -85,21 +102,26 @@
     const button=doc.createElement("button");button.id="display-power-switch";button.type="button";
     button.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v9M6.4 5.8a8 8 0 1 0 11.2 0"/></svg>';
     doc.body.appendChild(button);
-    let controller, lastGeneration=-1;
+    const powerAudio=root.dadRadarDisplayPowerAudio?.createPowerAudio({
+      audioContextFactory:()=>new (root.AudioContext||root.webkitAudioContext)(),
+      volume:root.dadRadarSettings?.audio?.splitFlap?.volume??.25,
+      isEnabled:()=>root.dadRadarSettings?.audio?.splitFlap?.enabled!==false
+    });
+    let controller, lastGeneration=-1,lastState="on";
     function updateCurtain() {
       const w=root.innerWidth,h=root.innerHeight,r=shell.getBoundingClientRect();
       curtain.setAttribute("viewBox",`0 0 ${w} ${h}`);
-      let d=`M0 0H${w}V${h}H0Z M${r.left} ${r.top}H${r.right}V${r.bottom}H${r.left}Z`;
-      const badge=doc.querySelector(".sequence-mileage-badge")?.getBoundingClientRect();
-      if(badge)d+=` M${badge.left} ${badge.top}H${badge.right}V${badge.bottom}H${badge.left}Z`;
+      const apertures=[r];
       local.forEach(entry=>{
         const b=entry.node.getBoundingClientRect();
-        if(entry.kind!=="sequence")d+=` M${b.left} ${b.top}H${b.right}V${b.bottom}H${b.left}Z`;
+        apertures.push(b);
         Object.entries({x:b.left,y:b.top,width:b.width,height:b.height}).forEach(([key,value])=>entry.mask.setAttribute(key,String(value)));
       });
-      path.setAttribute("d",controller?.getState()==="off"?`M0 0H${w}V${h}H0Z`:d);
+      const outer=`M0 0H${w}V${h}H0Z`;
+      path.setAttribute("d",controller?.getState()==="off"?outer:outer+aperturePath(apertures));
     }
     function failOpen() {
+      powerAudio?.stop();
       screen.style.transform="none";screen.style.filter="none";screen.style.opacity="1";
       screen.style.visibility="visible";
       [black,dot,raster,curtain].forEach(n=>n.style.opacity="0");
@@ -117,9 +139,12 @@
         const v=crtPresentation(snapshot);
         if(snapshot.generation!==lastGeneration){
           lastGeneration=snapshot.generation;
+          if(snapshot.state!=="on")root.dadRadarStopLocalOperationalAudio?.();
           if(snapshot.state!=="on")shell.dadRadarMapRoll?.settleForDisplayPower?.();
           updateCurtain();
         }
+        if(snapshot.state==="off" && lastState!=="off")root.dadRadarStopLocalOperationalAudio?.();
+        lastState=snapshot.state;powerAudio?.apply(snapshot);
         doc.documentElement.setAttribute("data-display-power",snapshot.state);
         screen.style.transform=snapshot.state==="on"?"none":`scale(${v.x},${v.y})`;
         // Do not blur the live map's nested SVG filters: that forces huge
@@ -146,10 +171,13 @@
       cancelFrame:id=>root.cancelAnimationFrame(id),reducedMotion:()=>root.matchMedia("(prefers-reduced-motion: reduce)").matches,render
     });
     root.dadRadarDisplayPowerController=controller;
-    button.addEventListener("click",()=>controller.setDisplayPower(!controller.getSnapshot().targetOn));
+    button.addEventListener("click",()=>{
+      void powerAudio?.unlock();
+      controller.setDisplayPower(!controller.getSnapshot().targetOn);
+    });
     root.addEventListener("resize",updateCurtain);
     if(root.ResizeObserver)new root.ResizeObserver(updateCurtain).observe(shell);
     updateCurtain();return controller;
   }
-  return {crtPresentation,moduleLight,needlePresentation,mount};
+  return {crtPresentation,moduleLight,needlePresentation,apertureContains,aperturePath,mount};
 });

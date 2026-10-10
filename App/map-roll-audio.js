@@ -25,6 +25,7 @@
     const urls = [];
     let motorTimer = null;
     let token = 0;
+    const canPlay=options.canPlay??(()=>true);
 
     function decodeBase64(text) {
       if (!atobImpl || !BlobCtor || !urlApi?.createObjectURL) return null;
@@ -80,16 +81,17 @@
     }
 
     async function playMotor() {
+      if(!canPlay())return false;
       stopMotor();
       reset(cache.register?.audio);
       reset(cache.detent?.audio);
       const current = token;
       const instance = await ensure("motor");
-      if (!instance || current !== token) return false;
+      if (!instance || current !== token || !canPlay()) return false;
       try {
         const result = instance.play();
         if (result && typeof result.then === "function") await result;
-        if (current !== token) {
+        if (current !== token || !canPlay()) {
           reset(instance);
           return false;
         }
@@ -102,14 +104,16 @@
     }
 
     async function playOne(name, gain = 1) {
+      if(!canPlay())return false;
       const current = token;
       const instance = await ensure(name);
-      if (!instance || current !== token) return false;
+      if (!instance || current !== token || !canPlay()) return false;
       reset(instance);
       instance.volume = Math.max(0, Math.min(1, volume * gain));
       try {
         const result = instance.play();
         if (result && typeof result.then === "function") await result;
+        if(current!==token||!canPlay()){reset(instance);return false;}
         return true;
       } catch (_) {
         reset(instance);
@@ -147,7 +151,8 @@
     void ensure("motor");
     void ensure("register");
     void ensure("detent");
-    return Object.freeze({playMotor, unlock, stopMotor, playRegisterClack, playDetentClack, destroy});
+    return Object.freeze({playMotor, unlock, stopMotor, playRegisterClack, playDetentClack, destroy,
+      stop(){stopMotor();for(const entry of Object.values(cache))reset(entry?.audio);}});
   }
 
   return Object.freeze({MOTOR_SOURCE, REGISTER_SOURCE, DETENT_SOURCE, DEFAULT_VOLUME, MOTOR_CUTOFF_MS, createController});

@@ -5,6 +5,7 @@ const path=require('node:path');
 const os=require('node:os');
 const {execFileSync}=require('node:child_process');
 const {selectPlan,fullMatrix}=require('./browser-test-plan');
+for(const engine of ['chromium','webkit'])assert(fullMatrix().some(j=>j.suite==='power'&&j.engine===engine),`Full release must verify display power in ${engine}`);
 const suites=files=>[...new Set(selectPlan(files).matrix.map(j=>j.suite))];
 assert.deepEqual(suites(['App/clock-drums.js']),['clocks'],'A clock edit selects clocks, not map transport');
 assert.deepEqual(suites(['assets/hardware/clock-drum-lighting.png']),['clocks']);

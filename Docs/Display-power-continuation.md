@@ -50,8 +50,8 @@ Unknown status must remain explicitly unverified. No GPIO or Pi shutdown now.
 | 1 — Power state controller | Complete and published | `a8b3648663030fa8e0b009e5fb25052f761f1e02`; RED then GREEN; complete `npm test` exited 0 |
 | 2 — Switch/CRT | Prototype published; supplementary Chromium proof passed | Source checkpoint `0a16fc611af43a43f4121b8ede4a8594494b638c`, tree `324eebe7d56925a80e730b719d66a4b6feb27c40`; focused Node/map tests GREEN, prior full `npm test` exited 0; portable Chromium switch/data-refresh/geometry/reversal/both-family tests exited 0; pinned Chromium/WebKit proof remains pending |
 | 3 — Mechanical modules | Implemented; preview/release proof pending | Gate/clock/weekly/local-light/needle tests RED→GREEN; off-flap browser assertion RED→GREEN; full `npm test` exit 0; stronger portable Chromium checks pass actual blank drums/flaps/bays and newest digits/route on wake; final phase captures/dual-engine proof still pending |
-| 4 — Audio | Not started | Existing audio entry points identified; defaults must remain unchanged |
-| 5 — Browser/gates | Partial capture infrastructure only | Fixture screenshots/video captured in scratch; no final passing browser evidence or hosted exact-source gate yet |
+| 4 — Audio | Implemented; audition/hosted audio browser proof pending | New envelope/isolation tests RED→GREEN; existing flap/map/chime/ident tests pass; full `npm test` exit 0; portable primary/family browser cycle passes; no acoustic approval |
+| 5 — Browser/gates | Recovery integration implemented; hosted gate pending | Full matrix now requires power/Chromium and power/WebKit (protocol RED→GREEN); background/latest-digit recovery RED→GREEN; reduced motion/resize/fail-open portable browser checks passed; final exact-source artifacts/hosted gate pending |
 | 6 — Handoff/continuity | In progress | This durable checkpoint established; final evidence pending |
 
 ## Pre-flight interfaces and rulings
@@ -145,6 +145,43 @@ Unknown status must remain explicitly unverified. No GPIO or Pi shutdown now.
   actual off blanks and actual newest flight digits/destination after wake.
   Paper/counter lighting is local masking, not newly extracted photographic
   lamp layers; its visual suitability remains unapproved.
+- Mechanical source published `c7d36b59a010b1b1eb8ac323b656e32a1859ff23`,
+  tree `20e81f6af058d5a16ea31f79d6f1c324bbbb27a4`. Default capture run
+  `/tmp/dadradar-power-mechanical-capture.log` exit 0, 1920×1080/DPR1.
+- Task 4: `display-power-audio` produces provisional synthesized relay/tube
+  envelopes, with generation cancellation and failure isolation. Primary local
+  guards default true when no power controller exists, so family behavior stays
+  unchanged. Off-state altitude/ADS-B acquisition events are accounted for
+  silently with no wake replay, without changing configured volume/preferences.
+  Flap silence and chime/ident stop cancel ongoing sounds; map entry points have
+  async canPlay/token guards; weekly scheduled oscillator sources are stopped
+  while not on. New audio tests observed RED, then GREEN; original four audio
+  suites passed; `/tmp/dadradar-power-task4.log` full npm test exit 0;
+  `/tmp/dadradar-power-audio-browser.log` portable browser exit 0.
+- Task 5: background wake directly to elapsed deadline initially exposed blank
+  digits (`background-red.log`, RED). Main's final on event now settles latest
+  flap targets immediately, invalidating stale flip completions, only at the
+  transition boundary; ordinary on-state indexing remains unchanged. Recovery
+  test reached/passed that assertion, then revealed a harness resize timing
+  issue with paused virtual time. Native resize delivery is now tested while
+  the clock is running, then phase capture resumes. `task5-browser.log` exited
+  0 including background wake, reduced motion, resize and injected DOM failure.
+- Task 5 Ruling: shared/unknown changes keep full coverage, and power is added
+  to both engine workers, rather than a narrowed release — critical shared
+  main/audio adapters justify broad consumers — cost if wrong: additional CI
+  runtime, not missing regression coverage.
+- Task 5 Ruling: map and counter apertures use the measured rectangle union,
+  represented by disjoint row spans. Overlapping even-odd rectangles previously
+  blacked the counter/map intersection; union helper tests observed RED→GREEN.
+  Cost if wrong: aperture seams visible during transition; verify actual PNGs
+  and the browser's point-in-fill assertion before acceptance.
+- Final review template resource could not be read through the cloud package;
+  main requesting-code-review instructions were read completely. Use one fresh
+  reviewer with full spec/plan/range and Review Focus, not a claimed template read.
+- Task 5/6 Ruling: perform fresh whole-branch review on the implemented candidate
+  before final exact-source hosted gate/handoff — review fixes would otherwise
+  invalidate an expensive source gate — cost if wrong: reviewer may identify
+  outstanding evidence, which must remain explicit and be completed afterward.
 
 ## Preservation / verification boundaries
 
@@ -152,11 +189,12 @@ Unknown status must remain explicitly unverified. No GPIO or Pi shutdown now.
 Power-state controller is published; local switch/CRT adapter is wired into
 the generated browser build. Do not edit generated bundles. No replacement
 artwork, deployment, physical monitor verification, or family visual acceptance.
-Next: finish Task 4 audio isolation/envelopes (new audio tests already drafted
-and observed RED: missing power audio API and off flap still audible). Then
-capture all mechanical phases and execute Task 5 exact-source full gates.
-Task 2 WebKit/complete DOM failure-recovery checks remain outstanding and must
-be covered before release. Do not treat deterministic/portable proof as review
-of photorealism, audio, Pi performance or deployment acceptance.
+Next: publish this candidate checkpoint, fresh whole-branch review and one
+test-first important-fix pass; then exact-source full hosted gates and clean-source
+captures. `scripts/display-power-preview.js` captures a real-time cycle and actual
+production synthesized envelopes as offline WAV audition; run only after the
+candidate source is clean and record its provenance. Persist final previews and
+append dated continuity without erasing history. No merge/deploy until Joey's
+rendered approval. Do not treat fixture/CI proof as Pi/physical/audio acceptance.
 Update this section with exact task commits, RED/GREEN evidence, test outputs,
 blockers, artifact links and next action as work advances.

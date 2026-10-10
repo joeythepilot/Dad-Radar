@@ -28,6 +28,7 @@ const browserSources = [
   "App/station-ident.js",
   "App/split-flap-state.js",
   "App/display-power-state.js",
+  "App/display-power-audio.js",
   "App/daily-schedule-layout.js",
   "App/poster-image-loader.js",
   "data/map-labels.js",

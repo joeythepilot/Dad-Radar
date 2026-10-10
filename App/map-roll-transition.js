@@ -55,7 +55,7 @@
     element(`map-roll-edge-shadow is-${edge}`, shell).setAttribute("aria-hidden", "true");
   });
 
-  const audio = root.dadRadarMapRollAudio?.createController?.({volume: 0.72});
+  const audio = root.dadRadarMapRollAudio?.createController?.({volume: 0.72,canPlay:()=>root.dadRadarPowerAudioAllowed?.()!==false});
   root.addEventListener("pointerdown", () => { void audio?.unlock?.(); }, {once: true});
   const prefersReducedMotion = () => root.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
   const frame = callback => root.requestAnimationFrame(callback);

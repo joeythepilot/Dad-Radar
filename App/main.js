@@ -194,6 +194,10 @@ let flightBoardBalanceFrame = null;
 const splitFlapAudioSettings =
   dadRadarSettings.audio
     ?.splitFlap ?? {};
+const displayOperationalAudioAllowed=()=>!globalThis.dadRadarDisplayPowerController ||
+  globalThis.dadRadarDisplayPowerController.getState()==="on";
+globalThis.dadRadarPowerAudioAllowed=displayOperationalAudioAllowed;
+const displayMechanicalAudioAllowed=()=>globalThis.dadRadarDisplayPowerController?.getState()!=="off";
 
 const splitFlapAudioController =
   splitFlapAudioSettings.enabled !==
@@ -213,7 +217,8 @@ const splitFlapAudioController =
               .fadeOutMs,
           volume:
             splitFlapAudioSettings
-              .volume
+              .volume,
+          canPlay:displayMechanicalAudioAllowed
         })
     : null;
 
@@ -234,7 +239,8 @@ const altitudeChimeController =
           hysteresisFeet:
             altitudeChimeSettings.hysteresisFeet,
           volume:
-            altitudeChimeSettings.volume
+            altitudeChimeSettings.volume,
+          canPlay:displayOperationalAudioAllowed
         })
     : null;
 
@@ -244,7 +250,8 @@ const stationIdentController =
     ? globalThis.dadRadarStationIdent.createStationIdentController({
         identifier: stationIdentSettings.identifier,
         volume: stationIdentSettings.volume,
-        canPlay: () => activeSplitFlapCells.size === 0
+        canPlay: () => activeSplitFlapCells.size === 0,
+        isSuppressed:()=>!displayOperationalAudioAllowed()
       })
     : null;
 
@@ -740,7 +747,7 @@ function queueFlapAnimation(
   cell._targetValue =
     nextCharacter;
 
-  if (displayPowerSnapshot?.reducedMotion && displayPowerSnapshot.state!=="on") {
+  if (forcePowerFlapSettle || (displayPowerSnapshot?.reducedMotion && displayPowerSnapshot.state!=="on")) {
     cell._presentationSerial=(cell._presentationSerial||0)+1;
     cell.querySelectorAll(".flap-moving").forEach(layer=>layer.remove());
     cell.classList.remove("is-flipping");
@@ -860,16 +867,22 @@ function prepareFlapContainer(
 
 
 let displayPowerSnapshot=null;
+let forcePowerFlapSettle=false;
 const powerFlapTargets=new Map();
 const powerFlapsVisible=()=>!globalThis.dadRadarDisplayPowerState ||
   globalThis.dadRadarDisplayPowerState.mechanicalVisible(displayPowerSnapshot,"flaps");
 globalThis.addEventListener?.("dad-radar:display-power-change",event=>{
   const wasVisible=powerFlapsVisible();
+  const previousState=displayPowerSnapshot?.state;
   displayPowerSnapshot=event.detail;
-  if(wasVisible===powerFlapsVisible())return;
-  powerFlapTargets.forEach((target,container)=>target.kind==="flight"
-    ? renderFlightIdentification(container,target.number,target.brand)
-    : renderFlapText(container,target.text,target.count));
+  const settling=displayPowerSnapshot.state==="on" && previousState && previousState!=="on";
+  if(wasVisible===powerFlapsVisible()&&!settling&&!displayPowerSnapshot.failed)return;
+  forcePowerFlapSettle=Boolean(settling||displayPowerSnapshot.failed);
+  try{
+    powerFlapTargets.forEach((target,container)=>target.kind==="flight"
+      ? renderFlightIdentification(container,target.number,target.brand)
+      : renderFlapText(container,target.text,target.count));
+  }finally{forcePowerFlapSettle=false;}
 });
 
 function renderFlapText(
@@ -2241,6 +2254,9 @@ const audioControllers = [
   altitudeChimeController,
   stationIdentController
 ].filter(Boolean);
+globalThis.dadRadarStopLocalOperationalAudio=()=>{
+  splitFlapAudioController?.silence();altitudeChimeController?.stop();stationIdentController?.stop();
+};
 
 let audioUnlockPending = false;
 

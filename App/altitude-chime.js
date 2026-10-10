@@ -90,6 +90,8 @@
       const attempts = new Map();
       const now = providedOptions.now ?? Date.now;
       let flightGeneration = 0;
+      let audioGeneration=0;
+      const canPlay=providedOptions.canPlay??(()=>true);
 
       function ensureAudio() {
         if (!audio && audioFactory) {
@@ -121,6 +123,8 @@
       }
 
       async function play() {
+        if(!canPlay())return false;
+        const token=audioGeneration;
         const instance = ensureAudio();
 
         if (!instance) {
@@ -141,6 +145,7 @@
             await result;
           }
 
+          if(token!==audioGeneration||!canPlay()){instance.pause();return false;}
           return true;
         } catch {
           return false;
@@ -227,6 +232,7 @@
         ) {
           return null;
         }
+        if(!canPlay()){chimeDirections.add(direction);return direction;}
 
         const time = now();
         const attempt = attempts.get(direction) ?? {count: 0, firstAt: time, nextAt: time};
@@ -239,9 +245,10 @@
         attempt.nextAt = time + 5000;
         attempts.set(direction, attempt);
         const generation = flightGeneration;
+        const audioToken=audioGeneration;
         chimeDirections.add(direction);
         void play().then((played) => {
-          if (!played && generation === flightGeneration) {
+          if (!played && generation === flightGeneration && audioToken===audioGeneration && canPlay()) {
             chimeDirections.delete(direction);
           }
         });
@@ -251,7 +258,8 @@
       return Object.freeze({
         observe,
         unlock,
-        play
+        play,
+        stop(){audioGeneration++;audio?.pause();}
       });
     }
 

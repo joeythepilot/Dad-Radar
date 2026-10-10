@@ -3,6 +3,7 @@ const fs=require('node:fs');
 const path=require('node:path');
 const {execFileSync}=require('node:child_process');
 const SUITES=[
+  {suite:'power',file:'scripts/display-power-browser-test.js',engines:['chromium','webkit']},
   {suite:'weekly',file:'scripts/weekly-ticker-headed-test.js',engines:['chromium','webkit']},
   {suite:'airline-logo',file:'scripts/airline-logo-browser-test.js',engines:['chromium']},
   {suite:'split-flap',file:'scripts/split-flap-headed-test.js',engines:['chromium','webkit']},

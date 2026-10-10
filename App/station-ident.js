@@ -67,6 +67,8 @@
     const storage = options.storage ?? root?.localStorage;
     const now = options.now ?? Date.now;
     const canPlay = options.canPlay ?? (() => true);
+    const isSuppressed=options.isSuppressed??(()=>false);
+    let generation=0;
     const volume = Math.max(0, Math.min(1, Number(options.volume ?? .48)));
     const audioFactory = options.audioFactory ?? (source => new root.Audio(source));
     let audio = null;
@@ -113,15 +115,23 @@
     }
 
     function observe(state) {
-      if (!freshAdsbPosition(state) || !canPlay()) return false;
+      if (!freshAdsbPosition(state)) return false;
       const key = String(state.eventId);
+      if(isSuppressed()){
+        played.add(key);
+        try{storage?.setItem(STORAGE_KEY,JSON.stringify([...played].slice(-100)));}catch(_){}
+        return false;
+      }
+      if(!canPlay())return false;
       if (played.has(key) || pending !== null) return false;
       const instance = ensureAudio();
       if (!instance) return false;
       pending = key;
+      const token=generation;
       try { instance.currentTime = 0; } catch (_) {}
       try {
         Promise.resolve(instance.play()).then(() => {
+          if(token!==generation||isSuppressed())instance.pause();
           played.add(key);
           try { storage?.setItem(STORAGE_KEY, JSON.stringify([...played].slice(-100))); } catch (_) {}
         }).catch(() => {}).finally(() => {pending = null;});
@@ -133,6 +143,7 @@
     }
 
     async function playTest() {
+      if(isSuppressed())return false;
       const instance = ensureAudio();
       if (!instance) return false;
       try {
@@ -156,13 +167,14 @@
     }
 
     function destroy() {
+      generation++;
       audio?.pause();
       audio = null;
       if (objectUrl) root.URL.revokeObjectURL(objectUrl);
       objectUrl = null;
     }
 
-    return Object.freeze({observe, playTest, unlock, destroy});
+    return Object.freeze({observe, playTest, unlock, destroy,stop(){generation++;audio?.pause();}});
   }
 
   return Object.freeze({createStationIdentWav, createStationIdentController});

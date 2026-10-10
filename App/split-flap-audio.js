@@ -103,6 +103,7 @@
       let audio = null;
       let fadeFrameId = null;
       let playbackToken = 0;
+      const canPlay=providedOptions.canPlay??(()=>true);
 
       function ensureAudio() {
         if (!audio && audioFactory) {
@@ -144,6 +145,7 @@
       }
 
       async function start() {
+        if(!canPlay())return false;
         const instance = ensureAudio();
 
         if (!instance) {
@@ -168,7 +170,7 @@
             await playResult;
           }
 
-          if (token !== playbackToken) {
+          if (token !== playbackToken || !canPlay()) {
             resetToCue(instance);
             return false;
           }
@@ -278,6 +280,7 @@
         start,
         unlock,
         stop,
+        silence(){playbackToken++;cancelFade();resetToCue(audio);},
         destroy
       });
     }

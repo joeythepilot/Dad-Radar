@@ -27,3 +27,8 @@ assert.equal(api.needlePresentation(s("on",1),83),83);
 assert.equal(api.needlePresentation(s("off",0),83),0);
 assert.equal(api.needlePresentation(s("starting",.8),117),117,"Newest instrument reading settles without cached flight data");
 assert.equal(api.needlePresentation({...s("starting",.3),reducedMotion:true},83),83,"Reduced motion has no sweep");
+assert.equal(typeof api.apertureContains,"function","Overlapping map/counter apertures must reveal their union, not XOR");
+const apertures=[{left:534,top:229,right:1500,bottom:844},{left:520,top:742,right:782,bottom:839}];
+assert.equal(api.apertureContains(apertures,{x:650,y:790}),true,"Counter inside map remains a genuine opening");
+assert.equal(api.apertureContains(apertures,{x:525,y:790}),true,"Counter overhang stays open");
+assert.equal(api.apertureContains(apertures,{x:500,y:790}),false);

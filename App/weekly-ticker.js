@@ -300,6 +300,9 @@
       let rolloverPoll=null;
       let refreshInterval=null;
       let audioContext=null;
+      const soundSources=new Set();
+      const canSound=()=>root.dadRadarPowerAudioAllowed?.()!==false;
+      function stopLocalSound(){soundSources.forEach(node=>{try{node.stop();}catch(_){}});soundSources.clear();}
 
       function ensureAudio() {
         const AudioContext=root.AudioContext;
@@ -313,10 +316,12 @@
       }
 
       function playMotor(durationMs) {
+        if(!canSound())return;
         const context=audioContext;
         if(!context || context.state!=="running")return;
         const now=context.currentTime;
         const oscillator=context.createOscillator();
+        soundSources.add(oscillator);oscillator.onended=()=>soundSources.delete(oscillator);
         const gain=context.createGain();
         const filter=context.createBiquadFilter();
         oscillator.type="sawtooth";
@@ -332,10 +337,12 @@
       }
 
       function playDetent(delayMs=0,pitch=210) {
+        if(!canSound())return;
         const context=audioContext;
         if(!context || context.state!=="running")return;
         const start=context.currentTime+Math.max(0,delayMs)/1000;
         const oscillator=context.createOscillator();
+        soundSources.add(oscillator);oscillator.onended=()=>soundSources.delete(oscillator);
         const gain=context.createGain();
         oscillator.type="square";
         oscillator.frequency.setValueAtTime(pitch,start);
@@ -606,6 +613,7 @@
         setModules,
         setPowerPresentation(snapshot){
           powerPresentation=snapshot;
+          if(snapshot.state!=="on")stopLocalSound();
           const signature=Array.from({length:7},(_,i)=>root.dadRadarDisplayPowerState.mechanicalVisible(snapshot,"weekly",i)).join("");
           if(signature===powerSignature)return;
           powerSignature=signature;
@@ -614,6 +622,7 @@
         clearPowerPresentation(){powerPresentation=null;powerSignature="";if(liveModules)setModules(liveModules,{powerReplay:true});},
         destroy(){
           destroyed=true;
+          stopLocalSound();
           root.removeEventListener("pointerdown",unlockAudio);
           root.removeEventListener("resize",requestAnimationRender);
           resizeObserver?.disconnect();
