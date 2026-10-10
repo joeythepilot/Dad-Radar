@@ -4,8 +4,9 @@ Updated: October 10, 2026, Eastern. Original rendered candidate rejected;
 revised candidate captured and local checks pass. Latest hosted verification passed;
 family visual/acoustic acceptance and deployment remain explicitly pending.
 
-Current correction checkpoint: the original candidate is rejected; revised
-rendered acceptance remains pending. Native real-time software video capture
+Current correction checkpoint: original candidate rejected; revised source
+passes full exact-source verification and review files are delivered. Family
+rendered/acoustic acceptance remains pending. Native real-time software video capture
 also drops intermediate pictures and is excluded from the new review package.
 Frame-stepped production DOM/CSS capture is being verified, with production
 audio graph and recorded flap sample replayed at captured mechanism timestamps.
@@ -445,3 +446,16 @@ module positions inspected. Code/media verification is complete for review;
 family motion/acoustic acceptance, physical/Pi proof and deployment remain pending.
 The latest documentation checkpoint follows this tested application source;
 documentation edits do not change the application or claim a different gate SHA.
+
+### Durable revised review handoff
+
+All four ordered file saves succeeded with local identity applied: rebuilt
+MP4,16-file review ZIP, full-resolution dashboard PNG and the same continuity
+source guarded41→42, AppendixBA/edition3.30. Authoritative returned continuity
+filename is `01-01-DadRadar_Project_History_and_Continuity_2026-09-29_v3.3.md`
+in Dad Radar; same identity, earlier history preserved. The review files retain their normal
+filenames; no embedded-image-data delivery. Repository source/documents stay in
+Git. No chat change is needed to continue. Next action is Joey's rendered motion
+and sound review in this thread; do not deploy before his approval. Preserve
+this branch/workspace and all earlier rejection/history. Do not repeat approved
+planning or recapture media unless feedback or a new implementation warrants it.
