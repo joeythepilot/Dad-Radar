@@ -18,6 +18,10 @@ warm-up. A short frame probe completed with unchanged module bounds/camera;
 new complete clean-source motion/audio capture and exact-source gate are next.
 No new asset delivery, family approval, merge or deployment is claimed yet.
 
+## Recorded-contact bloom candidate captured — October 10
+
+Application b4a00739ef13e8a55dabf285bf0999ac1a38b537, clean local ca8abdd4d6ca7d79c6e56523c6608d47899806c3, identical tree e86ac58a376857621d515f7636f27ab7cb49f1da. Local full tests and stronger Chromium contract pass. Fixed full-size map has a diffuse phosphor bloom, brightness overshoot and composited focus settling. All supplemental synthesized power sounds removed in favor of CC0 recorded toggle/relay contacts; native flap sample unchanged. Capture 1920×1080/DPR1, portable15.2s/20fps/1280×720/304 frames; 240 distinct hashes, PCM peak .196777,no clipping, unchanged geometry/camera. Review: DadRadar-power-bloom-recorded-preview.mp4 and DadRadar-power-bloom-recorded-review-2026-10-10.zip. Continuity Appendix BC preserves earlier history and feedback. Hosted exact-source full run38075459428 remains pending; prior38073842473 full gate failed its independent WebKit weekly timeout despite power/WebKit passing. No family acceptance, merge, deployment, installed/running-SHA or target-device performance claim. Resume here, not the superseded slower candidate.
+
 ## October 10, 14:15 Eastern — bloom and recorded contact revision
 
 Joey says the slow candidate lost CRT bloom and its mechanical clicking still sounds digital. Preserve nine-second/four-second cadence and full-size map. Add a fixed full-aperture phosphor bloom, brightness overshoot and aperture-local composited focus settling; no center image growth. Replace supplemental synthetic contact/noise/thud/transformer oscillators entirely with CC0 recordings: 1970s pinball relay by bassmosphere and mechanical toggle by cookies+policy. See assets/audio/README.md for verified sources, public HQ preview provenance and edits. Existing flap recording/cue and normal/mobile audio remain. Loaded/decode-failed recordings stay silent; late loading cannot replay cancelled cues.
