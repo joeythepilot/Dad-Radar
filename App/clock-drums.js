@@ -111,6 +111,7 @@
         period.appendChild(carrier);
       }
     }
+    if(clock._powerSettling)settleClock(clock);
     return changed;
   }
   function powerVisible(snapshot) {
@@ -122,7 +123,12 @@
     const wasVisible=powerVisible(clock._powerPresentation);
     clock._powerPresentation=snapshot;
     if(wasVisible!==powerVisible(snapshot))paintClock(clock,clock._powerLiveTime,printedInk);
-    if(snapshot.failed || snapshot.reducedMotion || (snapshot.state==="on" && previous?.state!=="on"))settleClock(clock);
+    if(snapshot.failed || snapshot.reducedMotion || (snapshot.state==="on" && previous?.state!=="on")){
+      clock._powerSettling=true;
+      const release=()=>{delete clock._powerSettling;};
+      if(root.requestAnimationFrame)root.requestAnimationFrame(release);else root.setTimeout(release,0);
+      settleClock(clock);
+    }
   }
   function settleClock(clock){
     const containers=Array.from(clock.querySelectorAll("[data-drum]"));

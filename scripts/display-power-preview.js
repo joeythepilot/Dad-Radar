@@ -23,11 +23,13 @@ function wav(samples,rate){
     const page=await context.newPage();
     await page.route("**/*",r=>r.request().url().startsWith(origin)||r.request().url().startsWith("blob:")?r.continue():r.abort());
     await page.goto(origin);await page.waitForSelector("#dashboard:not([hidden])");await page.evaluate(()=>document.fonts.ready);
-    await page.waitForTimeout(2000);await page.screenshot({path:path.join(output,"dashboard-on.png")});
+    await page.waitForTimeout(4000);await page.screenshot({path:path.join(output,"dashboard-on.png")});
+    const camera=await page.locator("#route-map-svg").getAttribute("viewBox");
     await page.locator("#display-power-switch").click();await page.waitForFunction(()=>window.dadRadarDisplayPowerController.getState()==="off");
     await page.screenshot({path:path.join(output,"dashboard-off.png")});await page.waitForTimeout(500);
     await page.locator("#display-power-switch").click();await page.waitForFunction(()=>window.dadRadarDisplayPowerController.getState()==="on");
     await page.waitForTimeout(1000);await page.screenshot({path:path.join(output,"dashboard-wake.png")});
+    assert.equal(await page.locator("#route-map-svg").getAttribute("viewBox"),camera,"Same-flight power cycle preserves live camera");
     const geometry=await page.evaluate(()=>Object.fromEntries([".flight-board",".twin-clock-panel","#route-map-shell",".destination-poster-image",".daily-schedule-panel",".weekly-overnight-bank",".instrument-rail"].map(s=>[s,document.querySelector(s).getBoundingClientRect().toJSON()])));
     // Video is silent. Audition the actual production envelopes separately.
     for(const state of ["starting","stopping"]){

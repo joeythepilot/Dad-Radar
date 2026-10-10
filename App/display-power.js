@@ -122,7 +122,7 @@
     }
     function failOpen() {
       powerAudio?.stop();
-      screen.style.transform="none";screen.style.filter="none";screen.style.opacity="1";
+      screen.style.transform="none";screen.style.clipPath="none";screen.style.filter="none";screen.style.opacity="1";
       screen.style.visibility="visible";
       [black,dot,raster,curtain].forEach(n=>n.style.opacity="0");
       curtain.style.pointerEvents="none";dashboard.inert=false;dashboard.removeAttribute("aria-hidden");
@@ -146,7 +146,10 @@
         if(snapshot.state==="off" && lastState!=="off")root.dadRadarStopLocalOperationalAudio?.();
         lastState=snapshot.state;powerAudio?.apply(snapshot);
         doc.documentElement.setAttribute("data-display-power",snapshot.state);
-        screen.style.transform=snapshot.state==="on"?"none":`scale(${v.x},${v.y})`;
+        // Clip the CRT aperture, never scale the live SVG. Its camera and
+        // placard sizing read rendered bounds even while the display is dark.
+        screen.style.transform="none";
+        screen.style.clipPath=snapshot.state==="on"?"none":`inset(${(1-v.y)*50}% ${(1-v.x)*50}%)`;
         // Do not blur the live map's nested SVG filters: that forces huge
         // offscreen surfaces on software/Pi renderers. Focus is expressed by
         // the aperture-local raster/light catch, never by resampling hardware.

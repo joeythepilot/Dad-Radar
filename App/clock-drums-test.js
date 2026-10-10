@@ -86,5 +86,7 @@ assert.deepEqual(drums.map(d=>d.getAttribute("data-digit")),["1","1","4","2"],"W
 assert.equal(period.getAttribute("data-period-value"),"PM");
 assert(drums.flatMap(d=>d.children).every(n=>n.style?.animation==="none"),"Terminal wake clock prints must be settled immediately");
 assert(period.children.every(n=>n.style?.animation==="none"),"Terminal wake period print must not begin delayed indexing");
+paintClock(clock,"11:43 PM",printedInk);
+assert(drums.flatMap(d=>d.children).every(n=>n.style?.animation==="none"),"Same-frame live clock observer must join terminal settlement");
 clearClockPowerPresentation(clock,printedInk);
 

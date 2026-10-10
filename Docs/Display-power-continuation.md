@@ -210,6 +210,18 @@ instrument/brand values during off replacement are not independently established
 focused audio/state tests are not a substitute. Late-dot reversal and active
 map-roll browser integration remain additional coverage, not verified physical
 behavior. Full hosted gate and clean fixed-source captures are still pending.
+The first stronger browser run passed weekly settlement but exposed same-frame
+live clock observer painting after terminal settlement. RED→GREEN added a
+one-frame settlement window; normal later minute rolls are not suppressed.
+Real-time PNG inspection also exposed giant map placards on wake: scaling the
+live SVG during CRT collapse corrupted camera/label rendered-bound measurements.
+Ruling: use aperture clipping rather than scaling the live SVG, preserving actual
+map measurement dimensions throughout. Added collapse-bounds browser assertion
+and same-flight before/after viewBox assertion in real-time capture. The earlier
+preview is rejected evidence, not an accepted visual. These remain in the single
+review/capture fix pass; no second review requested. Latest remote checkpoint
+`02ccfd93c818537ba40e3a755c024bb189d39647` includes initial review fixes, not
+these later terminal-observer/aperture corrections; publish those after testing.
 Do not claim all review/evidence tasks complete until those checks are recorded.
 
 `agent/mobile-companion` and all backup/restore branches remain unchanged.
