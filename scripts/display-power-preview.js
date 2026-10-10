@@ -31,6 +31,7 @@ function wav(samples,rate){
     await page.waitForTimeout(1000);await page.screenshot({path:path.join(output,"dashboard-wake.png")});
     assert.equal(await page.locator("#route-map-svg").getAttribute("viewBox"),camera,"Same-flight power cycle preserves live camera");
     const geometry=await page.evaluate(()=>Object.fromEntries([".flight-board",".twin-clock-panel","#route-map-shell",".destination-poster-image",".daily-schedule-panel",".weekly-overnight-bank",".instrument-rail"].map(s=>[s,document.querySelector(s).getBoundingClientRect().toJSON()])));
+    console.log("Review presentation",JSON.stringify(await page.evaluate(()=>({power:document.documentElement.getAttribute("data-display-power"),curtain:getComputedStyle(document.querySelector(".display-power-curtain")).opacity,modules:[".destination-poster-image",".daily-schedule-panel",".weekly-overnight-bank"].map(s=>{const n=document.querySelector(s),c=getComputedStyle(n);return {selector:s,hidden:n.hidden,display:c.display,visibility:c.visibility,opacity:c.opacity,rect:n.getBoundingClientRect().toJSON()};})}))));
     // Video is silent. Audition the actual production envelopes separately.
     for(const state of ["starting","stopping"]){
       const samples=await page.evaluate(async state=>{

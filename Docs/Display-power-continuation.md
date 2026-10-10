@@ -222,6 +222,19 @@ preview is rejected evidence, not an accepted visual. These remain in the single
 review/capture fix pass; no second review requested. Latest remote checkpoint
 `02ccfd93c818537ba40e3a755c024bb189d39647` includes initial review fixes, not
 these later terminal-observer/aperture corrections; publish those after testing.
+Checkpoint `65d1281052096d31bde0e30965d521068f4b0ca0`, tree
+`ef053ca4fc46cf4edc01f0669e76c209cad3362b`, publishes those corrections.
+Exact-source hosted full run 38062016573 was started via verification-only branch
+`verify/release/display-power-65d128105209`; regression passed, browsers pending.
+The portable clock diagnostic reported all prints with computed animation-name
+none and no active animations: its style-string assertion was wrong because
+Chromium serializes CSS `animation:none` into a full shorthand. Ruling: assert
+computed animation-name and the native animation list, not shorthand spelling.
+This is a harness correction, not removal of terminal-paint acceptance.
+Clip preview preserves identical same-flight viewBox and actual live map artwork;
+some modules appear absent in portable raster output despite measured DOM bounds.
+Inspect presentation state/native capture before accepting the preview. No final
+clean-source artifact or photorealism approval is claimed yet.
 Do not claim all review/evidence tasks complete until those checks are recorded.
 
 `agent/mobile-companion` and all backup/restore branches remain unchanged.
