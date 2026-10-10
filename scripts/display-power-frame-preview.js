@@ -23,14 +23,14 @@ function wav(samples,rate){const b=Buffer.alloc(44+samples.length*2);b.write("RI
   HTMLMediaElement.prototype.play=function(...args){const f=window.__film;if(!f.active)return play.apply(this,args);
    if(!f.media.has(this)){const info={paused:true};f.media.set(this,info);Object.defineProperty(this,"paused",{get:()=>info.paused});}
    const info=f.media.get(this);info.paused=false;info.segment={at:performance.now()-f.zero,src:this.src,offset:this.currentTime,volumes:[]};f.segments.push(info.segment);return Promise.resolve();};
-  HTMLMediaElement.prototype.pause=function(...args){const f=window.__film,info=f.media.get(this);if(!f.active||!info)return pause.apply(this,args);info.paused=true;if(info.segment)info.segment.end=performance.now()-f.zero;};
+  HTMLMediaElement.prototype.pause=function(...args){const f=window.__film,info=f.media.get(this);if(!f.active||!info)return pause.apply(this,args);if(!info.paused&&info.segment)info.segment.end=performance.now()-f.zero;info.paused=true;};
   window.addEventListener("dad-radar:display-power-change",e=>{const f=window.__film;if(f.active&&f.events.at(-1)?.state!==e.detail.state)f.events.push({type:"state",...e.detail,at:performance.now()-f.zero});});
   window.addEventListener("dad-radar:power-detent",e=>{const f=window.__film;if(f.active)f.events.push({type:"detent",kind:e.detail.kind,at:performance.now()-f.zero});});
  });
  await page.route("**/*",r=>{
   if(r.request().url()===origin+"/api/calendar/upcoming"){
    const date=new Date();date.setUTCHours(14,0,0,0);
-   const events=["AVL","ORD","MSN","ORD","AVL","AVL","AVL"].map((destination,index)=>{const start=new Date(date.getTime()+index*86400000),end=new Date(start.getTime()+7200000);return {kind:"flight",origin:"ORD",destination,start:start.toISOString(),end:end.toISOString()};});
+   const events=["AVL","ORD","MSN","ORD","AVL","AVL","AVL"].map((destination,index)=>{const start=new Date(date.getTime()+index*86400000),end=new Date(start.getTime()+7200000);return {kind:"flight",origin:"ORD",destination,startUtc:start.toISOString(),endUtc:end.toISOString()};});
    return r.fulfill({contentType:"application/json",body:JSON.stringify({ok:true,events})});
   }
   return r.request().url().startsWith(origin)||r.request().url().startsWith("blob:")?r.continue():r.abort();
