@@ -11,7 +11,7 @@ assert.equal(api.crtPresentation(s("off", 0)).light, 0);
 const dot = api.crtPresentation(s("stopping", .1, 2160));
 assert.equal(dot.light, 0); assert(dot.dot > 0, "Shutdown dot lingers after picture collapse");
 const bloom = api.crtPresentation(s("starting", .05, 250));
-assert(bloom.x < 1 && bloom.y < 1 && bloom.dot > 0, "Startup begins at a pinpoint");
+assert.equal(bloom.x,1); assert.equal(bloom.y,1); assert.equal(bloom.dot,0,"Startup warms a full-size raster without center growth");
 const reduced = api.crtPresentation({...s("starting", .5, 90),reducedMotion:true});
 assert.equal(reduced.x, 1); assert.equal(reduced.y, 1); assert.equal(reduced.raster, 0);
 let touched = false;

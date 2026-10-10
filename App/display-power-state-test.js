@@ -4,6 +4,8 @@ const fs = require("node:fs");
 const file = require("node:path").join(__dirname, "display-power-state.js");
 const api = fs.existsSync(file) ? require(file) : {};
 assert.equal(typeof api.createDisplayPowerController, "function", "Display power coordinator must exist");
+assert.equal(api.TIMING.startup,9000,"Deliberate nine-second warm-up");
+assert.equal(api.TIMING.shutdown,4000,"Four-second mechanical shutdown");
 function fixture(extra = {}) {
   let time = 0, serial = 0;
   const frames = new Map(), seen = [];
@@ -23,9 +25,9 @@ function fixture(extra = {}) {
   assert.equal(f.controller.getSnapshot().progress, 1);
   f.controller.setDisplayPower(false);
   assert.equal(f.controller.getState(), "stopping");
-  f.tick(1200); assert.equal(f.controller.getSnapshot().progress, .5);
-  f.tick(1200); assert.equal(f.controller.getState(), "off");
-  f.controller.setDisplayPower(true); f.tick(5000);
+  f.tick(2000); assert.equal(f.controller.getSnapshot().progress, .5);
+  f.tick(2000); assert.equal(f.controller.getState(), "off");
+  f.controller.setDisplayPower(true); f.tick(9000);
   assert.equal(f.controller.getState(), "on");
   assert.equal(f.frames.size, 0);
 }
@@ -40,7 +42,7 @@ function fixture(extra = {}) {
   assert.equal(f.controller.getSnapshot().generation, generation, "Duplicate target is inert");
   stale(100000);
   assert.equal(f.controller.getState(), "starting", "Cancelled callback cannot win");
-  f.tick(5000); assert.equal(f.controller.getState(), "on");
+  f.tick(9000); assert.equal(f.controller.getState(), "on");
 }
 {
   const f = fixture({reducedMotion: () => true}); f.controller.setDisplayPower(false);

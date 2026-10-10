@@ -7,7 +7,7 @@ const {execFileSync}=require("node:child_process"),{chromium}=require("playwrigh
 const {createDisplayFixture}=require("./display-browser-fixture");
 const {server,state,root}=createDisplayFixture();
 state.flight.marketingCarrierCode="AA";state.flight.scheduledCarrierCode="AA";
-const output=path.join(root,"artifacts","power","frame-review"),fps=20,step=1000/fps;
+const output=path.join(root,"artifacts","power","frame-review-slower"),fps=20,step=1000/fps;
 function wav(samples,rate){const b=Buffer.alloc(44+samples.length*2);b.write("RIFF");b.writeUInt32LE(b.length-8,4);b.write("WAVEfmt ",8);b.writeUInt32LE(16,16);b.writeUInt16LE(1,20);b.writeUInt16LE(1,22);b.writeUInt32LE(rate,24);b.writeUInt32LE(rate*2,28);b.writeUInt16LE(2,32);b.writeUInt16LE(16,34);b.write("data",36);b.writeUInt32LE(samples.length*2,40);samples.forEach((s,i)=>b.writeInt16LE(Math.round(Math.max(-1,Math.min(1,s))*32767),44+i*2));return b;}
 (async()=>{
  fs.mkdirSync(path.join(output,"frames"),{recursive:true});await new Promise(r=>server.listen(0,"127.0.0.1",r));
@@ -51,10 +51,10 @@ function wav(samples,rate){const b=Buffer.alloc(44+samples.length*2);b.write("RI
   for(const [element,info] of f.media)if(!info.paused&&info.segment)info.segment.volumes.push({at:now,value:element.volume});
  });}
  const cdp=await page.context().newCDPSession(page);
- const limit=process.env.DADRADAR_FILM_LIMIT?Number(process.env.DADRADAR_FILM_LIMIT):9600;
+ const limit=process.env.DADRADAR_FILM_LIMIT?Number(process.env.DADRADAR_FILM_LIMIT):15200;
  for(let t=0,index=0;t<limit;t+=step,index++){
   if(index)await page.clock.fastForward(step);
-  if(t===500||t===3600)await page.locator("#display-power-switch").evaluate(n=>n.click());
+  if(t===500||t===5200)await page.locator("#display-power-switch").evaluate(n=>n.click());
   await pin();
   const frame=await cdp.send("Page.captureScreenshot",{format:"png",captureBeyondViewport:false,clip:{x:0,y:0,width:1920,height:1080,scale:2/3}});
   // CDP transports screenshot bytes internally; artifacts are saved/transferred
@@ -63,8 +63,8 @@ function wav(samples,rate){const b=Buffer.alloc(44+samples.length*2);b.write("RI
   if(index%20===0)console.log(`Captured ${t/1000}s / ${limit/1000}s`);
  }
  const after=await bounds();assert.deepEqual(after,before);assert.equal(await page.locator("#route-map-svg").getAttribute("viewBox"),camera);
- assert.equal(await page.evaluate(()=>window.dadRadarDisplayPowerController.getState()),limit>=8600?"on":"starting");
- if(limit>=8600)assert.equal(await page.locator("#flight-number").evaluate(n=>Array.from(n.children).slice(1).map(cell=>cell.dataset.value).join("")),"3761","Wake ends with actual current flight digits");
+ assert.equal(await page.evaluate(()=>window.dadRadarDisplayPowerController.getState()),limit>=14200?"on":"starting");
+ if(limit>=14200)assert.equal(await page.locator("#flight-number").evaluate(n=>Array.from(n.children).slice(1).map(cell=>cell.dataset.value).join("")),"3761","Wake ends with actual current flight digits");
  await page.screenshot({path:path.join(output,"wake.png")});
  const timeline=await page.evaluate(()=>({events:window.__film.events,segments:window.__film.segments}));
  for(const segment of timeline.segments.filter(s=>s.src.endsWith("/split-flap.mp3")&&s.volumes.some(v=>v.value>0)))assert.equal(segment.offset,5.195,"Use the configured production recording cue, not an unseeked media placeholder");

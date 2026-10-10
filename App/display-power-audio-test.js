@@ -5,12 +5,14 @@ const api=fs.existsSync(file)?require(file):{};
 assert.equal(typeof api.createPowerAudio,"function","Cancellable primary power audio must exist");
 const snapshot=(state,generation=1,elapsed=0)=>({state,generation,elapsed,duration:state==="starting"?5000:2400,progress:state==="off"?0:1});
 function audioFixture(){
-  const nodes=[];let resumes=0;
+  const nodes=[],frequencies=[];let resumes=0;
   const param=()=>({setValueAtTime(){},linearRampToValueAtTime(){},exponentialRampToValueAtTime(){},cancelScheduledValues(){}});
   const context={state:"running",currentTime:0,destination:{},resume(){resumes++;return Promise.resolve();},close(){return Promise.resolve();},
+    sampleRate:44100,createBuffer(channels,length){return {getChannelData:()=>new Float32Array(length)};},
+    createBufferSource(){const node={connect(){},disconnect(){this.disconnected=true;},start(){this.started=true;},stop(time){this.stopped=true;(this.stops??=[]).push(time);}};nodes.push(node);return node;},
     createGain(){return {gain:param(),connect(){},disconnect(){}};},
-    createOscillator(){const node={frequency:param(),connect(){},disconnect(){this.disconnected=true;},start(){this.started=true;},stop(time){this.stopped=true;(this.stops??=[]).push(time);}};nodes.push(node);return node;}};
-  return {context,nodes,get resumes(){return resumes;}};
+    createOscillator(){const node={frequency:{...param(),setValueAtTime(hz){frequencies.push(hz);}},connect(){},disconnect(){this.disconnected=true;},start(){this.started=true;},stop(time){this.stopped=true;(this.stops??=[]).push(time);}};nodes.push(node);return node;}};
+  return {context,nodes,frequencies,get resumes(){return resumes;}};
 }
 async function run(){
   const f=audioFixture();let enabled=true;
@@ -21,6 +23,7 @@ async function run(){
   controller.apply(snapshot("stopping"));assert(f.nodes.some(n=>n.started),"Intentional transition starts audition envelope");
   const beforeDetent=f.nodes.length;controller.mechanicalCue("clock");
   assert(f.nodes.length>beforeDetent,"Clock motion produces a physical detent, not only a power blip");
+  assert(f.frequencies.every(hz=>hz<=120),"No pitched electronic detents or high-frequency power tones");
   const count=f.nodes.length;controller.apply(snapshot("stopping",1,100));assert.equal(f.nodes.length,count,"Frames do not restart sounds");
   controller.apply(snapshot("starting",2));assert(f.nodes.slice(0,count).every(n=>n.stopped),"Reversal cancels old envelope");
   const reversedCount=f.nodes.length;

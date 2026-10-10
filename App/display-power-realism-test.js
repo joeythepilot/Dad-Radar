@@ -13,7 +13,11 @@ assert(source.includes('createElementNS(ns,"use")'),"CRT picture is a live optic
 assert(source.includes('projection.style.transform'),"Only the optical projection compresses, never the measured live map");
 assert(source.includes('`0 0 ${shell.clientWidth} ${shell.clientHeight}`'),"Optical viewport must not apply the geographic camera twice");
 const startup=visual.crtPresentation(snapshot("starting",.25));
-assert(startup.y>.1&&startup.y<.8&&startup.light>=.8,"Bright compressed picture during raster expansion");
+assert.equal(startup.x,1,"Startup picture stays full width");
+assert.equal(startup.y,1,"Startup picture stays full height");
+assert.equal(startup.dot,0,"Startup does not grow a picture from a pinpoint");
+assert(startup.light>0 && startup.light<1,"Full-size phosphor brightness warms gradually");
+for(let p=.01;p<1;p+=.01){const v=visual.crtPresentation(snapshot("starting",p));assert.equal(v.x,1);assert.equal(v.y,1);assert.equal(v.dot,0);}
 const shutdown=visual.crtPresentation(snapshot("stopping",.22));
 assert(shutdown.y<.05&&shutdown.x>.5,"Vertical deflection collapses into a horizontal line first");
 assert(visual.crtPresentation(snapshot("stopping",.1)).dot>0,"Phosphor dot persists after collapse");

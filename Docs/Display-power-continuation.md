@@ -18,6 +18,22 @@ warm-up. A short frame probe completed with unchanged module bounds/camera;
 new complete clean-source motion/audio capture and exact-source gate are next.
 No new asset delivery, family approval, merge or deployment is claimed yet.
 
+## October 10, 13:47 Eastern — review corrections in progress
+
+Joey judged the rebuilt preview “not too bad” but requested slower period
+mechanical staging, removal of the digital high-frequency sound, and no map
+image growing from the center. This feedback supersedes the earlier startup
+pinpoint/expansion decision. Shutdown collapse remains for now.
+
+Current revision: startup 9000 ms, shutdown 4000 ms; full-size startup picture
+warms through brightness and weak raster catch, without dimensional growth or
+startup dot. Pitched detent oscillators are removed; contact sounds are filtered
+noise plus a low thud, with quieter 60/120 Hz hum. The recorded flap sound and
+ordinary mechanical animation speeds remain unchanged. Primary geometry,
+tracking, calendar and mobile are untouched. Focused RED→GREEN tests and full
+local npm test pass; rendered checks/capture remain in progress. No family
+acceptance, production update or deployment is claimed.
+
 ## October10 — Joey rejected the first rendered candidate; realism correction underway
 
 Joey explicitly rejected the first candidate: cards appeared to fade, map simply

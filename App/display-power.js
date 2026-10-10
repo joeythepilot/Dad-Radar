@@ -47,6 +47,15 @@
     if (snapshot.state === "on") return {x:1,y:1,light:1,dot:0,blur:0,raster:0};
     if (snapshot.state === "off") return {x:0,y:0,light:0,dot:0,blur:0,raster:0};
     if (snapshot.reducedMotion) return {x:1,y:1,light:p,dot:0,blur:0,raster:0};
+    if(snapshot.state==="starting"){
+      // Heater warm-up changes phosphor output, never picture dimensions.
+      // Deflection is already established when the full-size picture appears.
+      const warm=smooth((p-.12)/.34);
+      const settling=1-smooth((p-.38)/.24);
+      const ripple=warm*settling*.035*Math.sin(snapshot.elapsed/110);
+      return {x:1,y:1,light:clamp(warm+ripple),dot:0,
+        blur:0,raster:p>.16&&p<.62?.10*settling:0};
+    }
     const x = smooth((p-.12)/.08), y = smooth((p-.21)/.16);
     const light = smooth((p-.16)/.04);
     const dot = p > 0 && p < .18 ? Math.min(1,p/.02)*Math.min(1,(.18-p)/.02)*.8 : 0;

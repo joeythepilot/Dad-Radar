@@ -5,7 +5,7 @@
   if (root) root.dadRadarDisplayPowerState = Object.freeze(api);
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
-  const TIMING = Object.freeze({startup: 5000, shutdown: 2400, reduced: 180});
+  const TIMING = Object.freeze({startup: 9000, shutdown: 4000, reduced: 180});
   const REVEAL = Object.freeze({paper:.14,instruments:.22,clocks:.30,flaps:.34,weekly:.42,sequence:.42});
   function mechanicalVisible(snapshot,kind,index=0) {
     if(!snapshot || snapshot.failed || snapshot.state==="on")return true;
