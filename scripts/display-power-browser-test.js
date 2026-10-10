@@ -13,6 +13,7 @@ const result=Object.fromEntries([
   ".flight-board", ".twin-clock-panel", ".destination-poster-image", ".daily-schedule-panel",
   "#route-map-shell", ".sequence-mileage-badge", ".weekly-overnight-bank", ".instrument-rail",
   ".airspeed-instrument", ".heading-instrument", ".altimeter-instrument"
+  ,"#flight-number","#flight-origin","#flight-destination","#status-value"
 ].map(s=>[s,document.querySelector(s)?.getBoundingClientRect().toJSON()]));
 result.clockRows=Object.fromEntries(["current","eta"].map(row=>[row,Array.from(document.querySelectorAll(`[data-clock="${row}"] .clock-wheel,[data-period="${row}"].period-wheel`),n=>n.getBoundingClientRect().toJSON())]));
 result.flapHardware=Array.from(document.querySelectorAll(".flap-fixed-hardware"),n=>n.getBoundingClientRect().toJSON());
@@ -57,6 +58,8 @@ return result;});
     await page.locator("#display-power-switch").evaluate(button=>button.click());
     console.log("Shutdown commanded");
     await advance(2050);
+    assert.equal(await page.locator("#route-map-shell").evaluate(n=>getComputedStyle(n).backgroundColor),"rgb(0, 0, 0)","Outside the clipped CRT picture is black phosphor");
+    assert(await page.locator("#flight-number").evaluate(n=>{const r=n.getBoundingClientRect(),path=document.querySelector(".display-power-curtain path");return !path.isPointInFill(new DOMPoint(r.x+r.width/2,r.y+r.height/2));}),"Real flap group is an aperture, not hidden by its display:contents parent");
     assert.deepEqual(await page.locator(".route-map-svg").boundingBox(),mapBounds,"CRT collapse cannot corrupt live map camera measurement bounds");
     console.log("Shutdown dot phase advanced");
     await screenshot("shutdown-dot.png");

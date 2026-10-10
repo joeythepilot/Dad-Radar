@@ -2,6 +2,7 @@
 const assert = require("node:assert/strict"), fs = require("node:fs"), path = require("node:path");
 const file = path.join(__dirname, "display-power.js");
 assert(!fs.readFileSync(file,"utf8").includes('`scale(${v.x},${v.y})`'),"CRT aperture must not scale the live map's camera measurement bounds");
+assert(fs.readFileSync(file,"utf8").includes('["#flight-number,#flight-origin,#flight-destination,#status-value","flaps"]'),"Flap apertures must measure real groups, not their zero-box display:contents parent");
 const api = fs.existsSync(file) ? require(file) : {};
 assert.equal(typeof api.crtPresentation, "function", "CRT presentation adapter must exist");
 const s = (state, progress, elapsed = 0) => ({state, progress, elapsed, duration: state === "starting" ? 5000 : 2400, reducedMotion:false});

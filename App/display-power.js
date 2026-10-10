@@ -70,7 +70,7 @@
     curtain.classList.add("display-power-curtain");curtain.setAttribute("aria-hidden","true");
     path.setAttribute("fill-rule","evenodd");curtain.appendChild(path);doc.body.appendChild(curtain);
     const local=[];
-    [[".flight-board","flaps"],[".twin-clock-panel","clocks"],
+    [["#flight-number,#flight-origin,#flight-destination,#status-value","flaps"],[".twin-clock-panel","clocks"],
       [".destination-poster-image","paper"],[".daily-schedule-panel","paper"],
       [".instrument","instruments"],[".weekly-overnight-bay","weekly"],
       [".sequence-mileage-badge","sequence"]].forEach(([selector,kind])=>{

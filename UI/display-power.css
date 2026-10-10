@@ -1,5 +1,8 @@
 /* Primary-only presentation, dynamically loaded by the power adapter. */
 .power-crt-screen { position:absolute;inset:0;z-index:1;transform-origin:50% 50%; }
+/* The clipped picture must reveal black phosphor, not the normal parchment
+   shell background. Original on-state bezel/background styles remain intact. */
+html[data-display-power]:not([data-display-power="on"]) #route-map-shell { background:#000; }
 .power-crt-black { position:absolute;inset:0;z-index:41;background:#000;pointer-events:none;opacity:0; }
 .power-crt-dot { position:absolute;left:50%;top:50%;width:5px;height:5px;margin:-2.5px;
   z-index:43;opacity:0;pointer-events:none;border-radius:50%;background:#fff4d5;

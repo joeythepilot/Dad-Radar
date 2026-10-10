@@ -235,6 +235,16 @@ Clip preview preserves identical same-flight viewBox and actual live map artwork
 some modules appear absent in portable raster output despite measured DOM bounds.
 Inspect presentation state/native capture before accepting the preview. No final
 clean-source artifact or photorealism approval is claimed yet.
+Clean-source `88da9e8414591fbed501634258ebc9e77f9f418e` captures and portable
+browser checks passed, but mechanics-phase image review exposed two additional
+presentation defects: `.flight-board` is display:contents (zero rectangle), so
+the global curtain hid indexing until settled on; map parchment shell background
+showed outside the clipped picture. Ruling: measure all four real flap group
+rectangles as separate apertures; use black shell background only during local
+power transition/off. No group/tile/module position or artwork change. Node
+aperture-selection assertion observed RED→GREEN; add native SVG point-in-fill
+and computed map-black assertions. Repeat final exact-source gates/captures after
+these corrections. Earlier successful stills do not prove transition suitability.
 Do not claim all review/evidence tasks complete until those checks are recorded.
 
 `agent/mobile-companion` and all backup/restore branches remain unchanged.
