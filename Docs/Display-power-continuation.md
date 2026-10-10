@@ -1,3 +1,11 @@
+# Home installed — October 10, 2026, 14:55 Eastern
+
+Joey approved home installation at14:50:58 Eastern. Installed/running/upstream production application ba349800c058be46718b36392b56f45eb86967c4, independent status217/run38077674333: CLEAN/HEALTHY, new instance1791658500184-25392-dt8te5. Preflight215/run38077491511 was94c193db4f7a5275eb0d31dc022f1d9c7c66f28c/instance1791552800685-28924-jbh0id. Restore backup/pre-display-power-2026-10-10 preserves94c. Deploy216/run38077542003 succeeded with full Windows verification/restart; public exact-source full gate38076721066 and Windows contract38076720477 passed. Local complete suite passed again before integration.
+
+Temporary44px lower-right icon,12px inset: click off then on. Primary-only display presentation; tracking/calendar/server/mobile keep running. Reviewed slow mechanisms, restored hum and fixed-size bloom installed. Reload on; no GPIO/hardware switch/system shutdown. Home physical visual/acoustic/smoothness confirmation remains pending; never infer it from healthy software. Continuity Appendix BE records approval and actual evidence, superseding earlier pending/undeployed state.
+
+Production remains exact deployedba349800. This experimental branch preserves the later capture/credit documentation and updated verified baseline for future integration; do not move production solely to copy this recovery note. Earlier history follows unchanged.
+
 # Current revision — tube hum and mechanical motion, October 10
 
 Joey's latest feedback is implemented for rendered review, not accepted or deployed. Restored low60/120 Hz tube/transformer envelope alongside recorded contacts. Power-only strokes340 ms, clock rolls1300 ms, weekly wheels1400 ms, coordinated cleanup and80 ms tile stagger. Ordinary/mobile timings unchanged. Fixed-size CRT bloom retained.
