@@ -185,6 +185,42 @@ Unknown status must remain explicitly unverified. No GPIO or Pi shutdown now.
 
 ## Preservation / verification boundaries
 
+### Current recovery checkpoint — October 10, 11:20 Eastern
+
+Implemented source: `cbc020c3e63c2da892f1e196c2d55c7b1c30b480`, tree
+`fb24b1cfc1842139bce770e75ec623c0809d3f8f`. Local checkout synchronized cleanly.
+Complete exact-source `npm test` exited 0 (`/tmp/dadradar-power-cbc-full-tests.log`).
+Clean exact-source portable Chromium 153 / Playwright 1.62.1 1920×1080 DPR1
+default-capture browser test exited 0 (`/tmp/dadradar-power-cbc-clean-browser.log`),
+including actual flap apertures, black CRT surround, camera bounds, intermediate
+hardware geometry, blanking/latest targets, terminal clocks/weekly, reversal,
+background wake, reduced motion, resize, injected failure and both mobile routes.
+Real-time native preview and production-envelope WAVs captured from this clean
+source at `2026-10-10T15:18:12.351Z`; `artifacts/power/review/provenance.json`.
+H.264 MP4 converted and probed at 1920×1080 (57.08s including initialization and
+capture waits; do not call that the nominal transition duration). Still/movie
+appearance is not family acceptance or Pi performance. Final mechanics PNG
+inspection, packaging and persistent artifact saving remain to be completed.
+
+Exact-source full hosted run `38062985341` is IN PROGRESS: regression success,
+Chromium and WebKit running as last checked at 11:20 Eastern. Home-control
+contract runs `38062985350` and `38062985378` passed. Do not claim the full gate
+passed until both engines and aggregate conclusion are read. Earlier source
+gates are superseded; `65d1281` failed the erroneous animation-shorthand assertion.
+Current source branch `agent/mobile-companion` independently remains
+`94c193db4f7a5275eb0d31dc022f1d9c7c66f28c`. No merge/deployment or new running
+home health/physical monitor/Pi check performed.
+
+Resume next: inspect final mechanics PNG; finish exact-source hosted gate;
+package MP4/PNGs/WAVs/native geometry and distinct real/virtual provenance;
+append dated continuity edition3.29/AppendixAZ preserving supplied version40;
+save via the Library prepared batch helper with guarded replacement version40.
+Library metadata-only check still matched supplied file/version40 at this
+checkpoint; attachment contents were read from supplied scratch, not Library.
+Final handoff should show the preview and request visual review, not deployment.
+The original plan/spec remain approved; do not restart them. Keep branch/workspace
+as-is under Joey's explicit hold instead of offering or performing an integration.
+
 ### October 10 final-review fix pass
 
 Fresh whole-branch review of candidate `eacf11c3c17ba7a1f843f0f5d8a1173e02ce8504`
