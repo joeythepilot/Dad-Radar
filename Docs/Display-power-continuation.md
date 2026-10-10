@@ -245,6 +245,11 @@ power transition/off. No group/tile/module position or artwork change. Node
 aperture-selection assertion observed RED→GREEN; add native SVG point-in-fill
 and computed map-black assertions. Repeat final exact-source gates/captures after
 these corrections. Earlier successful stills do not prove transition suitability.
+Checkpoint `3e74db5ce3366d6502ea3fc994d6dda993d56c8d` publishes this correction,
+but native browser assertion then caught `map-paper-chart.css`'s existing
+important parchment declaration winning the cascade. Add equally important,
+more-specific transition-only black; do not alter normal-on chart styling.
+The black-background native assertion is genuinely RED; re-run after correction.
 Do not claim all review/evidence tasks complete until those checks are recorded.
 
 `agent/mobile-companion` and all backup/restore branches remain unchanged.
