@@ -1,14 +1,20 @@
 /* Primary-only presentation, dynamically loaded by the power adapter. */
 .power-crt-screen { position:absolute;inset:0;z-index:1;transform-origin:50% 50%; }
+.power-crt-projection { position:absolute;inset:0;width:100%;height:100%;z-index:40;
+  transform-origin:center;pointer-events:none;opacity:0;overflow:visible; }
+.power-crt-glass { position:absolute;inset:0;z-index:42;pointer-events:none;opacity:0;
+  background:radial-gradient(ellipse at 50% 43%,transparent 48%,#080d0bb0 100%),
+    repeating-linear-gradient(0deg,#00100b30 0px,#00100b30 1px,transparent 1px,transparent 3px);
+  box-shadow:inset 0 0 36px 5px #040b08a0; }
 /* The clipped picture must reveal black phosphor, not the normal parchment
    shell background. Original on-state bezel/background styles remain intact. */
 html[data-display-power]:not([data-display-power="on"]) #route-map-shell { background:#000!important; }
 .power-crt-black { position:absolute;inset:0;z-index:41;background:#000;pointer-events:none;opacity:0; }
 .power-crt-dot { position:absolute;left:50%;top:50%;width:5px;height:5px;margin:-2.5px;
-  z-index:43;opacity:0;pointer-events:none;border-radius:50%;background:#fff4d5;
-  box-shadow:0 0 5px 2px #fce6b8b0,0 0 15px 5px #dcc99b40; }
+  z-index:43;opacity:0;pointer-events:none;border-radius:50%;background:#fff9df;
+  box-shadow:0 0 4px 2px #ffefccb0,0 0 13px 5px #cde1b580,0 0 28px 9px #accda828; }
 .power-crt-raster { position:absolute;left:0;right:0;height:2px;z-index:42;opacity:0;
-  pointer-events:none;background:#f4e9bd;box-shadow:0 0 8px 3px #efddb455; }
+  pointer-events:none;background:#f3f6cf;box-shadow:0 0 12px 6px #ddebd670; }
 .display-power-curtain { position:fixed;inset:0;width:100%;height:100%;z-index:9000;
   fill:#000;opacity:0;pointer-events:none; }
 #display-power-switch { position:fixed;right:12px;bottom:12px;z-index:9010;width:44px;height:44px;
@@ -17,10 +23,29 @@ html[data-display-power]:not([data-display-power="on"]) #route-map-shell { backg
 #display-power-switch svg { width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round; }
 #display-power-switch:focus-visible { outline:2px solid #d8bd83;outline-offset:3px; }
 html[data-display-power="off"] #display-power-switch { color:#615540;border-color:#3e3528;background:#070706; }
-@media (prefers-reduced-motion:reduce) { .power-crt-raster,.power-crt-dot { display:none; } }
+@media (prefers-reduced-motion:reduce) { .power-crt-raster,.power-crt-dot,.power-crt-projection,.power-crt-glass { display:none; } }
 /* Reuse the registered top-lamp artwork, independently of moving flap texture.
    Native blank-cell lamp rules still apply; normal on/mobile styles are untouched. */
-html[data-display-power]:not([data-display-power="on"]) .flight-board .flap-character:not([data-value=" "])::after,
-html[data-display-power]:not([data-display-power="on"]) .flight-board .flap-character.is-flipping::after {
+html[data-display-power]:not([data-display-power="on"]) .flight-board .flap-character::after {
   opacity:var(--power-flap-lamp,1) !important;
 }
+html[data-display-power]:not([data-display-power="on"]) .drum-lamp,
+html[data-display-power]:not([data-display-power="on"]) .period-lamp {
+  opacity:calc(var(--power-clock-lamp,1) * .8) !important;transition:none;
+}
+/* Moving photographic card faces catch less overhead light as they turn.
+   The hardware, seam and baked texture are left intact. */
+html[data-display-power="starting"] .flap-flip-top::after,
+html[data-display-power="stopping"] .flap-flip-top::after {
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:5;
+  background:linear-gradient(to bottom,#0000,#000a);
+  animation:power-flap-top-shadow 190ms ease-in both;
+}
+html[data-display-power="starting"] .flap-flip-bottom::after,
+html[data-display-power="stopping"] .flap-flip-bottom::after {
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:5;
+  background:linear-gradient(to bottom,#000b,#0000);
+  animation:power-flap-bottom-shadow 190ms 185ms ease-out both;
+}
+@keyframes power-flap-top-shadow { from{opacity:0}to{opacity:.9} }
+@keyframes power-flap-bottom-shadow { from{opacity:.9}to{opacity:0} }

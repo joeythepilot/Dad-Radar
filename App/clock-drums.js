@@ -112,6 +112,10 @@
       }
     }
     if(clock._powerSettling)settleClock(clock);
+    if(changed.length && !clock._powerSettling && clock._powerPresentation &&
+       !clock._powerPresentation.reducedMotion && root.CustomEvent && root.dispatchEvent){
+      root.dispatchEvent(new root.CustomEvent("dad-radar:power-detent",{detail:{kind:"clock"}}));
+    }
     return changed;
   }
   function powerVisible(snapshot) {

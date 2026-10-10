@@ -1,7 +1,7 @@
 "use strict";
 const assert = require("node:assert/strict"), fs = require("node:fs"), path = require("node:path");
 const file = path.join(__dirname, "display-power.js");
-assert(!fs.readFileSync(file,"utf8").includes('`scale(${v.x},${v.y})`'),"CRT aperture must not scale the live map's camera measurement bounds");
+assert(!fs.readFileSync(file,"utf8").includes('screen.style.transform=`scale('),"CRT optics must not scale the live map's camera measurement bounds");
 assert(fs.readFileSync(file,"utf8").includes('["#flight-number,#flight-origin,#flight-destination,#status-value","flaps"]'),"Flap apertures must measure real groups, not their zero-box display:contents parent");
 const api = fs.existsSync(file) ? require(file) : {};
 assert.equal(typeof api.crtPresentation, "function", "CRT presentation adapter must exist");
@@ -22,8 +22,8 @@ assert.equal(typeof api.moduleLight,"function","Registered local lamp staging mu
 assert.equal(api.moduleLight(s("off",0),"paper"),0);
 assert.equal(api.moduleLight(s("on",1),"weekly",6),1);
 assert(api.moduleLight(s("starting",.2),"paper")>0);
-assert.equal(api.moduleLight(s("starting",.2),"clocks"),0);
-assert(api.moduleLight(s("starting",.45),"weekly",0)>api.moduleLight(s("starting",.45),"weekly",6));
+assert(api.moduleLight(s("starting",.2),"clocks")>.8,"Clock illumination precedes mechanical movement");
+assert(api.moduleLight(s("starting",.36),"weekly",0)>api.moduleLight(s("starting",.36),"weekly",6));
 assert.equal(typeof api.needlePresentation,"function","Needle sweep must be presentation-only");
 assert.equal(api.needlePresentation(s("on",1),83),83);
 assert.equal(api.needlePresentation(s("off",0),83),0);

@@ -337,7 +337,16 @@
       }
 
       function playDetent(delayMs=0,pitch=210) {
-        if(!canSound())return;
+        if(!canSound()){
+          const power=root.dadRadarDisplayPowerController,snapshot=power?.getSnapshot();
+          if(snapshot && !snapshot.reducedMotion && ["starting","stopping"].includes(snapshot.state)){
+            root.setTimeout(()=>{
+              if(power.getSnapshot().generation===snapshot.generation && root.CustomEvent)
+                root.dispatchEvent(new root.CustomEvent("dad-radar:power-detent",{detail:{kind:"weekly"}}));
+            },Math.max(0,delayMs));
+          }
+          return;
+        }
         const context=audioContext;
         if(!context || context.state!=="running")return;
         const start=context.currentTime+Math.max(0,delayMs)/1000;

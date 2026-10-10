@@ -2,6 +2,49 @@
 
 Updated: October 10, 2026, Eastern. Implementation and full gate complete;
 family visual/acoustic acceptance and deployment remain explicitly pending.
+
+## October10 — Joey rejected the first rendered candidate; realism correction underway
+
+Joey explicitly rejected the first candidate: cards appeared to fade, map simply
+revealed, audio was a blip, preview playback unreliable. Passing tests did not
+establish photorealistic success. CBC remains rejected and undeployed; the earlier
+"ready" statements are historical, not acceptance. His instruction is to fix it
+to the realism of the existing Unit001 mechanisms, without asking him to repeat
+the design. Approved spec/plan still bind; no new layout or production/mobile change.
+
+Root cause: masks/lamp timing concealed native indexing and blanking. Correction
+establishes independent lamps before visible movement and extinguishes afterward;
+native photographic texture and fixed brass hardware remain. CRT uses an optical
+SVG-use projection of the actual map, compressing the full picture instead of
+cropping it. Its viewport is pixel-local so the geographic camera is not applied
+twice; source geometry stays fixed. Empty opacity masks are removed from paint
+via display:none to avoid observed software-compositor occlusion of paper panels.
+Paper lamp spill uses a registered aperture-local incandescent gradient.
+
+Power sound gains damped contact/housing resonance and transformer harmonics;
+native split-flap sample remains tied to actual indexing; clock/weekly detents
+follow actual mechanism events. This remains synthesized circuitry/detents and
+existing recorded flap sound, not newly recorded hardware or acoustic approval.
+New audiovisual capture records actual browser WebAudio and HTMLAudio output,
+with a synchronization marker, rather than silent video and unrelated WAVs.
+
+Ruling: preserve the source SVG measurement/camera and compress a referenced
+optical image — avoids the earlier placard/camera corruption — cost if wrong:
+reference rendering must pass both engines and actual pixel inspection.
+Ruling: lamps precede motion and outlast blanking — preserves visible mechanics —
+cost if wrong: cadence may need tuning, but another concealed fade is unacceptable.
+Ruling: record synchronized browser audio in the preview — audible cues must
+correspond to rendered motion — cost if wrong: capture alignment requires explicit
+validation; no family or hardware performance claim follows from it.
+
+Meaningful RED→GREEN: early lamp visibility, optical projection/camera viewport,
+bright compressed raster staging and mechanical detent API. Complete local suite
+and stronger browser proof will be recorded after this correction; older CBC
+gates do not verify the revised source. Scratch probes are diagnosis, not final
+artifacts. Do not label this correction realistic/approved solely because tests
+pass. Next: capture/inspect actual audiovisual cycle, publish exact-source gate,
+persist only satisfactory candidate evidence and append rejection/correction to
+continuity. Do not deploy.
 Plan identity: `Docs/superpowers/plans/2026-10-10-display-power.md`.
 
 ## Resume prompt (copy into a new chat)

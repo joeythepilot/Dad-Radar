@@ -30,7 +30,9 @@
     if(snapshot.failed || snapshot.state==="on")return 1;
     if(snapshot.state==="off")return 0;
     if(snapshot.reducedMotion)return smooth(snapshot.progress);
-    const start=(REVEAL[kind]??.34)+(kind==="weekly"?index*.02:0);
+    // Incandescent pools are established before any printing mechanism moves.
+    // On shutdown the same separation leaves blanking visible before blackout.
+    const start=({paper:.12,instruments:.08,clocks:.12,flaps:.08,weekly:.26,sequence:.12}[kind]??.08)+(kind==="weekly"?index*.02:0);
     return smooth((snapshot.progress-start)/.10);
   }
   function needlePresentation(snapshot,liveAngle) {
@@ -45,11 +47,11 @@
     if (snapshot.state === "on") return {x:1,y:1,light:1,dot:0,blur:0,raster:0};
     if (snapshot.state === "off") return {x:0,y:0,light:0,dot:0,blur:0,raster:0};
     if (snapshot.reducedMotion) return {x:1,y:1,light:p,dot:0,blur:0,raster:0};
-    const x = smooth((p-.08)/.12), y = smooth((p-.18)/.62);
-    const light = smooth((p-.16)/.2);
+    const x = smooth((p-.12)/.08), y = smooth((p-.21)/.16);
+    const light = smooth((p-.16)/.04);
     const dot = p > 0 && p < .18 ? Math.min(1,p/.02)*Math.min(1,(.18-p)/.02)*.8 : 0;
     return {x:Math.max(.002,x),y:Math.max(.003,y),light,dot,
-      blur:(1-y)*1.8,raster:snapshot.state==="starting" && p>.18 && p<.65 ? .09 : 0};
+      blur:(1-y)*1.8,raster:snapshot.state==="starting" && p>.18 && p<.62 ? .20*(1-smooth((p-.38)/.24)) : 0};
   }
   function mount(options) {
     const doc = options.document;
@@ -61,14 +63,30 @@
     const link=doc.createElement("link");link.rel="stylesheet";link.href="/UI/display-power.css?v=1";doc.head.appendChild(link);
     const screen=doc.createElement("div");screen.className="power-crt-screen";
     transport.parentNode.insertBefore(screen,transport);screen.appendChild(transport);
+    // SVG use renders the current picture without cloning IDs or resampling
+    // the source camera. Deflection belongs to this optical projection alone.
+    const ns="http://www.w3.org/2000/svg";
+    const projection=doc.createElementNS(ns,"svg");projection.classList.add("power-crt-projection");
+    projection.setAttribute("aria-hidden","true");
+    const picture=doc.createElementNS(ns,"use");picture.setAttribute("href","#route-map-svg");
+    picture.setAttribute("width","100%");picture.setAttribute("height","100%");
+    projection.appendChild(picture);shell.appendChild(projection);
     const black=doc.createElement("div");black.className="power-crt-black";shell.appendChild(black);
     const dot=doc.createElement("div");dot.className="power-crt-dot";shell.appendChild(dot);
     const raster=doc.createElement("div");raster.className="power-crt-raster";shell.appendChild(raster);
+    const glass=doc.createElement("div");glass.className="power-crt-glass";shell.appendChild(glass);
     [screen,black,dot,raster].forEach(n=>n.setAttribute("aria-hidden","true"));
     screen.removeAttribute("aria-hidden"); // Contains the actual live accessible map.
-    const ns="http://www.w3.org/2000/svg",curtain=doc.createElementNS(ns,"svg"),path=doc.createElementNS(ns,"path");
+    const curtain=doc.createElementNS(ns,"svg"),path=doc.createElementNS(ns,"path");
     curtain.classList.add("display-power-curtain");curtain.setAttribute("aria-hidden","true");
     path.setAttribute("fill-rule","evenodd");curtain.appendChild(path);doc.body.appendChild(curtain);
+    const defs=doc.createElementNS(ns,"defs"),paperSpill=doc.createElementNS(ns,"radialGradient");
+    paperSpill.id="power-incandescent-spill";
+    Object.entries({cx:"50%",cy:"5%",r:"95%"}).forEach(([k,v])=>paperSpill.setAttribute(k,v));
+    [["0%","#ffcf83",".42"],["48%","#e7a54a",".12"],["100%","#dca25d","0"]].forEach(([offset,color,opacity])=>{
+      const stop=doc.createElementNS(ns,"stop");stop.setAttribute("offset",offset);stop.setAttribute("stop-color",color);stop.setAttribute("stop-opacity",opacity);paperSpill.appendChild(stop);
+    });
+    defs.appendChild(paperSpill);curtain.appendChild(defs);
     const local=[];
     [["#flight-number,#flight-origin,#flight-destination,#status-value","flaps"],[".twin-clock-panel","clocks"],
       [".destination-poster-image","paper"],[".daily-schedule-panel","paper"],
@@ -76,7 +94,13 @@
       [".sequence-mileage-badge","sequence"]].forEach(([selector,kind])=>{
       doc.querySelectorAll(selector).forEach((node,index)=>{
         const mask=doc.createElementNS(ns,"rect");mask.classList.add("power-local-dark");
-        curtain.appendChild(mask);local.push({node,kind,index,mask});
+        curtain.appendChild(mask);
+        let spill=null;
+        if(kind==="paper"){
+          spill=doc.createElementNS(ns,"rect");spill.setAttribute("fill","url(#power-incandescent-spill)");
+          spill.setAttribute("opacity","0");curtain.appendChild(spill);
+        }
+        local.push({node,kind,index,mask,spill});
       });
     });
     const needles=new Map(Array.from(doc.querySelectorAll("#airspeed-needle,#altitude-needle,#altitude-thousands-needle,#altitude-ten-thousands-needle,#home-bearing-needle"),node=>[node,{generation:-1,angle:null,from:0}]));
@@ -84,8 +108,14 @@
     function renderMechanical(snapshot){
       clocks.forEach(clock=>root.dadRadarClockDrums.setClockPowerPresentation(clock,snapshot,root.dadRadarPrintedInk));
       doc.querySelector(".weekly-overnight-bank")?.dadRadarWeeklyOvernight?.setPowerPresentation(snapshot);
-      local.forEach(entry=>entry.mask.style.opacity=String(1-moduleLight(snapshot,entry.kind,entry.index)));
+      local.forEach(entry=>{
+        const darkness=1-moduleLight(snapshot,entry.kind,entry.index);
+        entry.mask.setAttribute("opacity",String(darkness));
+        entry.mask.style.display=darkness===0?"none":"block";
+        if(entry.spill)entry.spill.setAttribute("opacity",String(4*darkness*(1-darkness)));
+      });
       doc.documentElement.style.setProperty("--power-flap-lamp",String(moduleLight(snapshot,"flaps")));
+      doc.documentElement.style.setProperty("--power-clock-lamp",String(moduleLight(snapshot,"clocks")));
       needles.forEach((presentation,node)=>{
         const liveAngle=Number(/rotate\((-?[\d.]+)deg\)/.exec(node.style.transform)?.[1]||0);
         if(snapshot.state==="on" || snapshot.failed || snapshot.reducedMotion){node.style.removeProperty("rotate");presentation.angle=null;return;}
@@ -115,7 +145,9 @@
       local.forEach(entry=>{
         const b=entry.node.getBoundingClientRect();
         apertures.push(b);
-        Object.entries({x:b.left,y:b.top,width:b.width,height:b.height}).forEach(([key,value])=>entry.mask.setAttribute(key,String(value)));
+        Object.entries({x:b.left,y:b.top,width:b.width,height:b.height}).forEach(([key,value])=>{
+          entry.mask.setAttribute(key,String(value));entry.spill?.setAttribute(key,String(value));
+        });
       });
       const outer=`M0 0H${w}V${h}H0Z`;
       path.setAttribute("d",controller?.getState()==="off"?outer:outer+aperturePath(apertures));
@@ -124,10 +156,11 @@
       powerAudio?.stop();
       screen.style.transform="none";screen.style.clipPath="none";screen.style.filter="none";screen.style.opacity="1";
       screen.style.visibility="visible";
-      [black,dot,raster,curtain].forEach(n=>n.style.opacity="0");
+      [black,dot,raster,glass,projection,curtain].forEach(n=>n.style.opacity="0");
       curtain.style.pointerEvents="none";dashboard.inert=false;dashboard.removeAttribute("aria-hidden");
       doc.documentElement.removeAttribute("data-display-power");
       doc.documentElement.style.removeProperty("--power-flap-lamp");
+      doc.documentElement.style.removeProperty("--power-clock-lamp");
       clocks.forEach(clock=>root.dadRadarClockDrums.clearClockPowerPresentation(clock,root.dadRadarPrintedInk));
       doc.querySelector(".weekly-overnight-bank")?.dadRadarWeeklyOvernight?.clearPowerPresentation();
       needles.forEach((_,node)=>node.style.removeProperty("rotate"));
@@ -149,14 +182,31 @@
         // Clip the CRT aperture, never scale the live SVG. Its camera and
         // placard sizing read rendered bounds even while the display is dark.
         screen.style.transform="none";
-        screen.style.clipPath=snapshot.state==="on"?"none":`inset(${(1-v.y)*50}% ${(1-v.x)*50}%)`;
+        screen.style.clipPath="none";
         // Do not blur the live map's nested SVG filters: that forces huge
         // offscreen surfaces on software/Pi renderers. Focus is expressed by
         // the aperture-local raster/light catch, never by resampling hardware.
-        screen.style.opacity=String(v.light);screen.style.filter="none";
-        screen.style.visibility=v.light===0?"hidden":"visible";
-        black.style.opacity=String(1-v.light);dot.style.opacity=String(v.dot);
-        raster.style.opacity=String(v.raster);raster.style.top=`${20+snapshot.progress*65}%`;
+        const ordinary=snapshot.state==="on" || snapshot.reducedMotion;
+        screen.style.opacity=ordinary?String(v.light):"0";screen.style.filter="none";
+        screen.style.visibility="visible"; // Source remains available to SVG use.
+        const liveMap=shell.querySelector("#route-map-svg");
+        const surface=shell.querySelector(".airport-surface-svg");
+        if(surface && shell.classList.contains("is-surface-registered")){
+          if(!surface.id)surface.id="power-surface-picture";
+          picture.setAttribute("href",`#${surface.id}`);
+        }else picture.setAttribute("href","#route-map-svg");
+        // The referenced SVG already maps its geographic viewBox into a
+        // viewport. The outer optical viewport is pixel-local, not another
+        // geographic camera (which would crop the use instance to empty).
+        projection.setAttribute("viewBox",`0 0 ${shell.clientWidth} ${shell.clientHeight}`);
+        projection.setAttribute("preserveAspectRatio",liveMap?.getAttribute("preserveAspectRatio")||"xMidYMid slice");
+        projection.style.transform=`scale(${v.x},${v.y})`;
+        projection.style.opacity=ordinary?"0":String(v.light);
+        projection.style.filter=`brightness(${1+(1-v.y)*2.2}) saturate(${.8+v.y*.2})`;
+        black.style.opacity="0";dot.style.opacity=String(v.dot);
+        glass.style.opacity=ordinary?"0":String(v.light*.38);
+        raster.style.opacity=String(v.raster);raster.style.top=`${(snapshot.progress*2.7%1)*100}%`;
+        raster.style.transform=`scaleY(${.8+v.y*1.2})`;
         if(snapshot.state==="off")path.setAttribute("d",`M0 0H${root.innerWidth}V${root.innerHeight}H0Z`);
         curtain.style.opacity=snapshot.state==="on"?"0":"1";
         curtain.style.pointerEvents=snapshot.state==="on"?"none":"auto";
@@ -178,6 +228,7 @@
       void powerAudio?.unlock();
       controller.setDisplayPower(!controller.getSnapshot().targetOn);
     });
+    root.addEventListener("dad-radar:power-detent",event=>powerAudio?.mechanicalCue?.(event.detail?.kind));
     root.addEventListener("resize",updateCurtain);
     if(root.ResizeObserver)new root.ResizeObserver(updateCurtain).observe(shell);
     updateCurtain();return controller;

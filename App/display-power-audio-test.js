@@ -17,7 +17,10 @@ async function run(){
   const controller=api.createPowerAudio({audioContextFactory:()=>f.context,volume:.3,isEnabled:()=>enabled});
   controller.apply(snapshot("on",0));assert.equal(f.nodes.length,0,"Ordinary load is silent");
   assert.equal(await controller.unlock(),true);
+  assert.equal(typeof controller.mechanicalCue,"function","Physical indexing must have synchronized detent audio");
   controller.apply(snapshot("stopping"));assert(f.nodes.some(n=>n.started),"Intentional transition starts audition envelope");
+  const beforeDetent=f.nodes.length;controller.mechanicalCue("clock");
+  assert(f.nodes.length>beforeDetent,"Clock motion produces a physical detent, not only a power blip");
   const count=f.nodes.length;controller.apply(snapshot("stopping",1,100));assert.equal(f.nodes.length,count,"Frames do not restart sounds");
   controller.apply(snapshot("starting",2));assert(f.nodes.slice(0,count).every(n=>n.stopped),"Reversal cancels old envelope");
   const reversedCount=f.nodes.length;
