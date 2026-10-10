@@ -1,0 +1,18 @@
+"use strict";
+const assert = require("node:assert/strict"), fs = require("node:fs"), path = require("node:path");
+const file = path.join(__dirname, "display-power.js");
+const api = fs.existsSync(file) ? require(file) : {};
+assert.equal(typeof api.crtPresentation, "function", "CRT presentation adapter must exist");
+const s = (state, progress, elapsed = 0) => ({state, progress, elapsed, duration: state === "starting" ? 5000 : 2400, reducedMotion:false});
+assert.deepEqual(api.crtPresentation(s("on", 1)), {x:1,y:1,light:1,dot:0,blur:0,raster:0});
+assert.equal(api.crtPresentation(s("off", 0)).light, 0);
+const dot = api.crtPresentation(s("stopping", .1, 2160));
+assert.equal(dot.light, 0); assert(dot.dot > 0, "Shutdown dot lingers after picture collapse");
+const bloom = api.crtPresentation(s("starting", .05, 250));
+assert(bloom.x < 1 && bloom.y < 1 && bloom.dot > 0, "Startup begins at a pinpoint");
+const reduced = api.crtPresentation({...s("starting", .5, 90),reducedMotion:true});
+assert.equal(reduced.x, 1); assert.equal(reduced.y, 1); assert.equal(reduced.raster, 0);
+let touched = false;
+const doc = {documentElement:{hasAttribute:()=>true}, createElement(){touched=true;}};
+assert.equal(api.mount({document:doc}), null); assert.equal(touched, false, "Family mount must be inert");
+console.log("CRT presentation and primary-only gating tests passed.");

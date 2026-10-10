@@ -47,8 +47,8 @@ Unknown status must remain explicitly unverified. No GPIO or Pi shutdown now.
 | Task | Status | Evidence / next action |
 | --- | --- | --- |
 | Baseline/setup | Passed | `npm ci` succeeded; complete baseline `npm test` exited 0 |
-| 1 — Power state controller | Complete locally, publication in progress | Missing coordinator assertion observed RED; focused tests GREEN; full `npm test` exited 0 with new tests registered |
-| 2 — Switch/CRT | Not started | Existing production-HTML browser fixture identified |
+| 1 — Power state controller | Complete and published | `a8b3648663030fa8e0b009e5fb25052f761f1e02`; RED then GREEN; complete `npm test` exited 0 |
+| 2 — Switch/CRT | Implemented locally; browser proof in progress | Adapter math/family gate GREEN; map settlement RED then GREEN; full `npm test` exited 0; actual switch/map renders; Chromium run not fully passing yet |
 | 3 — Mechanical modules | Not started | Existing main/clock/weekly/instrument mechanisms inspected |
 | 4 — Audio | Not started | Existing audio entry points identified; defaults must remain unchanged |
 | 5 — Browser/gates | Not started | No screenshots/video or runtime verification yet |
@@ -77,12 +77,30 @@ Unknown status must remain explicitly unverified. No GPIO or Pi shutdown now.
   WebKit executables are absent. Standard browser download returned truncated
   archives. Trying an npm-packaged portable Chromium for supplementary local
   proof only; the required project-pinned hosted Chromium/WebKit gate remains.
+- Portable Chromium 153 extracted successfully through the npm package.
+  Package extraction had an incidental fonts `chown EINVAL`, but the extracted
+  executable runs and the small official Playwright ffmpeg download succeeded.
+  The package is test-only, not recorded in package.json/lockfile.
+- Browser RED: missing primary switch assertion observed. First GREEN attempt
+  passed primary newest-data/geometry/reversal checks, then portable single-
+  process Chrome closed when the context was closed before family tests.
+  Removing single-process prevented that failure; later captures timed out
+  while shooting moving filtered SVG. Exact phase capture now uses Playwright
+  virtual clock. Its screenshots/video are controlled-time fixture evidence,
+  not a real-time performance benchmark. No overall browser pass yet.
+- Ruling: final project-pinned Chromium/WebKit proof stays at the full release
+  gate; do not substitute portable Chromium or claim WebKit ran locally.
+- Task 3 phase-gating tests are drafted behind `DADRADAR_POWER_MECHANICAL=1`;
+  the missing gate function was observed RED. Remove the temporary guard once
+  Task 3 exists; do not leave mechanical acceptance opt-in in final tests.
 
 ## Preservation / verification boundaries
 
 `agent/mobile-companion` and all backup/restore branches remain unchanged.
-Power-state runtime and its deterministic tests now exist locally, not wired
-into the display yet. No replacement artwork, deployment, physical monitor
-verification, or family visual acceptance yet.
+Power-state controller is published; local switch/CRT adapter is wired into
+the generated browser build. Do not edit generated bundles. No replacement
+artwork, deployment, physical monitor verification, or family visual acceptance.
+Next: finish Task 2 browser proof, publish checkpoint; then run Task 3 RED
+browser assertions for actual blank flap/clock presentation before hooks.
 Update this section with exact task commits, RED/GREEN evidence, test outputs,
 blockers, artifact links and next action as work advances.

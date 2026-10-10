@@ -92,3 +92,12 @@ for(const [w,h] of [[314,244],[358,422],[537,430],[736,422],[242,186]]) {
   assert(v.scale<=1 && v.scale>0);
 }
 console.log('Startup diagnostic baseline and proportional Full-family hardware tests passed.');
+
+const power=fixture();power.api.requestSurface(power.surface,true);
+assert.equal(typeof power.api.settleForDisplayPower,'function','Power transition needs a presentation-only transport settlement');
+power.api.settleForDisplayPower();
+assert(power.shell.classList.contains('is-surface-registered'),'Power settlement preserves requested map surface');
+assert(!power.shell.classList.contains('map-roll-to-surface'),'Transport stops without moving its housing');
+power.finish();power.paint();power.paint();power.tick(135);power.tick(220);
+assert(!power.sounds.some(s=>s.includes('Clack')),'No stale registration audio after power settlement');
+assert.equal(power.sounds.filter(s=>s==='playMotor').length,1,'Power settlement never replays transport');

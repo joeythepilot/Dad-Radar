@@ -197,7 +197,17 @@
     // painted. Repeated ground reports must replace a queued airborne request.
     request(visible);
   }
-  shell.dadRadarMapRoll = Object.freeze({setSurfaceVisible: request, requestSurface, resize: sizeHardware});
+  function settleForDisplayPower() {
+    generation += 1;
+    if (timer !== null) root.clearTimeout(timer);
+    if (restartTimer !== null) root.clearTimeout(restartTimer);
+    timer = null;restartTimer = null;moving = false;registering = false;
+    current = requested && Boolean(surface || demoSheet);target = current;
+    shell.classList.toggle("is-surface-registered", current);
+    clearMotion();writeHidden(!current);audio?.stopMotor?.();
+    if (!current && demoSheet) {demoSheet.remove();demoSheet = null;}
+  }
+  shell.dadRadarMapRoll = Object.freeze({setSurfaceVisible: request, requestSurface, resize: sizeHardware, settleForDisplayPower});
   discover();
   new root.MutationObserver(discover).observe(shell, {childList: true, subtree: true});
   root.addEventListener("dad-radar:visual-state-change", event => {

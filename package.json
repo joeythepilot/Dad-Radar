@@ -24,7 +24,7 @@
     "calendar:reauthorize": "node server/calendar-test.mjs --force",
     "pretest": "npm run build:browser",
     "test": "node ops/home-control/home-control-contract-test.js && npm run test:display-contracts && npm run test:installation && npm run test:state && npm run test:providers && npm run test:presentation && npm run test:display-power && npm run test:family",
-    "test:display-power": "node App/display-power-state-test.js",
+    "test:display-power": "node App/display-power-state-test.js && node App/display-power-test.js",
     "test:home-control": "node ops/home-control/home-control-contract-test.js",
     "update:airports": "node scripts/generate-airport-catalog.js",
     "posters:validate": "node scripts/validate-poster-batch.js",

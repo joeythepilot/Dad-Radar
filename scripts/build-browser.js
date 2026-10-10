@@ -27,6 +27,7 @@ const browserSources = [
   "App/altitude-chime.js",
   "App/station-ident.js",
   "App/split-flap-state.js",
+  "App/display-power-state.js",
   "App/daily-schedule-layout.js",
   "App/poster-image-loader.js",
   "data/map-labels.js",
@@ -59,7 +60,8 @@ const combinedSource = [
   `\n/* Source: App/route-map.js (module scope preserved) */\n(function initializeDadRadarRouteMap() {\n${readSource("App/route-map.js")}\n})();`,
   `\n/* Source: App/map-roll-transition.js */\n${readSource("App/map-roll-transition.js")}`,
   `\n/* Source: App/descent-camera.js */\n${readSource("App/descent-camera.js")}`,
-  `\n/* Source: App/sequence-history-map.js */\n${readSource("App/sequence-history-map.js")}`
+  `\n/* Source: App/sequence-history-map.js */\n${readSource("App/sequence-history-map.js")}`,
+  `\n/* Source: App/display-power.js */\n${readSource("App/display-power.js")}`
 ].join("\n");
 
 const result = babel.transformSync(

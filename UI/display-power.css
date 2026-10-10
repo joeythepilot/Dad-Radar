@@ -1,0 +1,17 @@
+/* Primary-only presentation, dynamically loaded by the power adapter. */
+.power-crt-screen { position:absolute;inset:0;z-index:1;transform-origin:50% 50%; }
+.power-crt-black { position:absolute;inset:0;z-index:41;background:#000;pointer-events:none;opacity:0; }
+.power-crt-dot { position:absolute;left:50%;top:50%;width:5px;height:5px;margin:-2.5px;
+  z-index:43;opacity:0;pointer-events:none;border-radius:50%;background:#fff4d5;
+  box-shadow:0 0 5px 2px #fce6b8b0,0 0 15px 5px #dcc99b40; }
+.power-crt-raster { position:absolute;left:0;right:0;height:2px;z-index:42;opacity:0;
+  pointer-events:none;background:#f4e9bd;box-shadow:0 0 8px 3px #efddb455; }
+.display-power-curtain { position:fixed;inset:0;width:100%;height:100%;z-index:9000;
+  fill:#000;opacity:0;pointer-events:none; }
+#display-power-switch { position:fixed;right:12px;bottom:12px;z-index:9010;width:44px;height:44px;
+  display:grid;place-items:center;padding:10px;border:1px solid #806a4260;border-radius:50%;
+  background:#100f0dea;color:#a38b5e;cursor:pointer;box-shadow:inset 0 1px 2px #e8d3a51a; }
+#display-power-switch svg { width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round; }
+#display-power-switch:focus-visible { outline:2px solid #d8bd83;outline-offset:3px; }
+html[data-display-power="off"] #display-power-switch { color:#615540;border-color:#3e3528;background:#070706; }
+@media (prefers-reduced-motion:reduce) { .power-crt-raster,.power-crt-dot { display:none; } }
