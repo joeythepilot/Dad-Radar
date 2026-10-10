@@ -7,7 +7,7 @@ const {execFileSync}=require("node:child_process"),{chromium}=require("playwrigh
 const {createDisplayFixture}=require("./display-browser-fixture");
 const {server,state,root}=createDisplayFixture();
 state.flight.marketingCarrierCode="AA";state.flight.scheduledCarrierCode="AA";
-const output=path.join(root,"artifacts","power","frame-review-hum-mechanical"),fps=20,step=1000/fps;
+const output=path.join(root,"artifacts","power","frame-review-hum-mechanical-full"),fps=20,step=1000/fps;
 function wav(samples,rate){const b=Buffer.alloc(44+samples.length*2);b.write("RIFF");b.writeUInt32LE(b.length-8,4);b.write("WAVEfmt ",8);b.writeUInt32LE(16,16);b.writeUInt16LE(1,20);b.writeUInt16LE(1,22);b.writeUInt32LE(rate,24);b.writeUInt32LE(rate*2,28);b.writeUInt16LE(2,32);b.writeUInt16LE(16,34);b.write("data",36);b.writeUInt32LE(samples.length*2,40);samples.forEach((s,i)=>b.writeInt16LE(Math.round(Math.max(-1,Math.min(1,s))*32767),44+i*2));return b;}
 (async()=>{
  fs.mkdirSync(path.join(output,"frames"),{recursive:true});await new Promise(r=>server.listen(0,"127.0.0.1",r));
@@ -56,7 +56,7 @@ function wav(samples,rate){const b=Buffer.alloc(44+samples.length*2);b.write("RI
   if(index)await page.clock.fastForward(step);
   if(t===500||t===5200)await page.locator("#display-power-switch").evaluate(n=>n.click());
   await pin();
-  const frame=await cdp.send("Page.captureScreenshot",{format:"png",captureBeyondViewport:false,clip:{x:0,y:0,width:1920,height:1080,scale:2/3}});
+  const frame=await cdp.send("Page.captureScreenshot",{format:"png",captureBeyondViewport:false,clip:{x:0,y:0,width:1920,height:1080,scale:1}});
   // CDP transports screenshot bytes internally; artifacts are saved/transferred
   // as ordinary binary files, never embedded image data for the user.
   fs.writeFileSync(path.join(output,"frames",`${String(index).padStart(4,"0")}.png`),Buffer.from(frame.data,"base64"));
@@ -87,7 +87,7 @@ function wav(samples,rate){const b=Buffer.alloc(44+samples.length*2);b.write("RI
  },{timeline,seconds:limit/1000});
  fs.writeFileSync(path.join(output,"sound.wav"),wav(audio,44100));
  const git=(...args)=>execFileSync("git",args,{cwd:root,encoding:"utf8"}).trim();
- fs.writeFileSync(path.join(output,"provenance.json"),JSON.stringify({sourceSha:git("rev-parse","HEAD"),sourceTree:git("rev-parse","HEAD^{tree}"),dirty:!!git("status","--porcelain"),viewport:{width:1920,height:1080,dpr:1},previewFrame:{width:1280,height:720},fps,browser:browser.version(),capturedAt:new Date().toISOString(),fixture:"Production HTML/build; fictional shared flight; provider requests blocked",timing:"Frame-stepped production RAF/timers and native CSS keyframes; NOT real-time/Pi evidence",audio:"Production power audio graph + existing native split-flap sample rendered offline at captured event timestamps",physicalMonitorVerified:false,piPerformanceVerified:false,before,after,timeline},null,2));
+ fs.writeFileSync(path.join(output,"provenance.json"),JSON.stringify({sourceSha:git("rev-parse","HEAD"),sourceTree:git("rev-parse","HEAD^{tree}"),dirty:!!git("status","--porcelain"),viewport:{width:1920,height:1080,dpr:1},previewFrame:{width:1920,height:1080},fps,browser:browser.version(),capturedAt:new Date().toISOString(),fixture:"Production HTML/build; fictional shared flight; provider requests blocked",timing:"Frame-stepped production RAF/timers and native CSS keyframes; NOT real-time/Pi evidence",audio:"Production power audio graph + existing native split-flap sample rendered offline at captured event timestamps",physicalMonitorVerified:false,piPerformanceVerified:false,before,after,timeline},null,2));
  console.log("Controlled-time production animation captured; all measured module bounds and map camera unchanged.");
  }finally{await browser.close();await new Promise(r=>server.close(r));}
 })().catch(e=>{console.error(e);process.exitCode=1;server.close();});
