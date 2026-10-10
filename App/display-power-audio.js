@@ -7,10 +7,12 @@
   "use strict";
   function createPowerAudio(options={}){
     let context=null,destroyed=false,unlocked=false,generation=-1,pending=false;
-    let sources=[],state="on",lastDetent=-1,samples=options.samples||{},loading=null;
+    let sources=[],hum=[],state="on",lastDetent=-1,samples=options.samples||{},loading=null;
     const enabled=()=>options.isEnabled?.()!==false;
     const volume=Math.max(0,Math.min(1,Number(options.volume??.25)));
-    function stop(){sources.forEach(node=>{try{node.stop();node.disconnect();}catch(_){}});sources=[];}
+    function stopContacts(){sources.forEach(node=>{try{node.stop();node.disconnect();}catch(_){}});sources=[];}
+    function stopHum(){hum.forEach(({node,amp})=>{try{node.stop();node.disconnect();amp.disconnect();}catch(_){}});hum=[];}
+    function stop(){stopContacts();stopHum();}
     async function unlock(){
       if(destroyed||!enabled())return false;
       try{
@@ -48,31 +50,38 @@
     }
     function tubeHum(snapshot){
       if(snapshot.reducedMotion || !context.createOscillator)return;
-      const now=context.currentTime,seconds=Math.max(.2,Number(snapshot.duration||9000)/1000);
+      const now=context.currentTime,seconds=Math.max(.2,Number(snapshot.duration||24000)/1000);
+      if(snapshot.state==="stopping"){
+        hum.forEach(({node,amp,level})=>{
+          amp.gain.cancelScheduledValues(now);
+          amp.gain.setValueAtTime(volume*level,now);
+          amp.gain.linearRampToValueAtTime(.0001,now+seconds*.7);
+          node.stop(now+seconds);
+        });
+        return;
+      }
+      stopHum();
       // Low heater/transformer envelope, separate from the recorded contacts.
       // No high-frequency whine and no oscillator is used to fabricate clicks.
-      for(const [hz,level] of [[60,.14],[120,.055]]){
+      for(const [hz,level] of [[60,.065],[120,.025]]){
         const node=context.createOscillator(),amp=context.createGain();
         node.type="sine";node.frequency.setValueAtTime(hz,now);
-        amp.gain.setValueAtTime(snapshot.state==="starting"?.0001:volume*level,now);
-        if(snapshot.state==="starting"){
-          amp.gain.linearRampToValueAtTime(volume*level,now+seconds*.28);
-          amp.gain.setValueAtTime(volume*level,now+seconds*.82);
-        }else amp.gain.setValueAtTime(volume*level,now+seconds*.35);
-        amp.gain.linearRampToValueAtTime(.0001,now+seconds);
-        node.connect(amp);amp.connect(context.destination);sources.push(node);
+        amp.gain.setValueAtTime(.0001,now);
+        amp.gain.linearRampToValueAtTime(volume*level,now+seconds*.38);
+        node.connect(amp);amp.connect(context.destination);hum.push({node,amp,level});
         node.onended=()=>{try{node.disconnect();amp.disconnect();}catch(_){}};
-        node.start();node.stop(now+seconds);
+        node.start();
       }
     }
     function apply(snapshot){
       state=snapshot.state;
-      if(destroyed||snapshot.failed||!["starting","stopping"].includes(snapshot.state)){
+      if(destroyed||snapshot.failed||!enabled()||context?.state==="suspended"||snapshot.state==="off"){
         generation=snapshot.generation;pending=false;stop();return;
       }
+      if(snapshot.state==="on"){generation=snapshot.generation;pending=false;stopContacts();return;}
       if(context?.state!=="running")unlocked=false;
       if(snapshot.generation===generation && (!pending||!unlocked))return;
-      if(snapshot.generation!==generation){generation=snapshot.generation;stop();}
+      if(snapshot.generation!==generation){generation=snapshot.generation;stopContacts();}
       pending=!unlocked&&["starting","stopping"].includes(snapshot.state);
       if(destroyed||!unlocked||!enabled()||snapshot.failed||!["starting","stopping"].includes(snapshot.state)||snapshot.elapsed>200)return;
       pending=false;

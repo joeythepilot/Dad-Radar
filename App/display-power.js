@@ -30,17 +30,26 @@
     if(snapshot.failed || snapshot.state==="on")return 1;
     if(snapshot.state==="off")return 0;
     if(snapshot.reducedMotion)return smooth(snapshot.progress);
+    if(snapshot.state==="stopping"){
+      const initial=snapshot.fromState==="starting"?moduleLight({...snapshot,state:"starting",progress:snapshot.fromProgress,elapsed:snapshot.fromElapsed},kind,index):1;
+      const delay=({paper:0,instruments:.05,clocks:.22,flaps:.08,weekly:.35,sequence:.12}[kind]??0)+(kind==="weekly"?index*.09:0);
+      const decay=({paper:.8,instruments:.85,clocks:.65,flaps:.5,weekly:.7,sequence:.6}[kind]??.7);
+      return initial*Math.exp(-Math.max(0,snapshot.elapsed/1000-delay)/decay);
+    }
     // Incandescent pools are established before any printing mechanism moves.
-    // On shutdown the same separation leaves blanking visible before blackout.
+    // Power loss uses separate filament decay, not this warm-up schedule.
     const start=({paper:.12,instruments:.08,clocks:.12,flaps:.08,weekly:.26,sequence:.12}[kind]??.08)+(kind==="weekly"?index*.02:0);
     return smooth((snapshot.progress-start)/.10);
   }
-  function needlePresentation(snapshot,liveAngle) {
+  function needlePresentation(snapshot,liveAngle,index=0) {
     if(snapshot.failed || snapshot.state==="on" || snapshot.reducedMotion)return liveAngle;
     if(snapshot.state==="off")return 0;
-    const t=clamp((snapshot.progress-.22)/.32);
-    if(snapshot.state==="stopping")return liveAngle*smooth(t);
-    return t<.5?180*smooth(t*2):180+(liveAngle-180)*smooth((t-.5)*2);
+    const t=clamp((snapshot.progress-.12-index*.025)/(.20+index*.02));
+    if(snapshot.state==="stopping"){
+      const initial=snapshot.fromState==="starting"?needlePresentation({...snapshot,state:"starting",progress:snapshot.fromProgress,elapsed:snapshot.fromElapsed},liveAngle,index):liveAngle;
+      return initial*Math.exp(-snapshot.elapsed/(1800+index*220));
+    }
+    return liveAngle*smooth(t);
   }
   function crtPresentation(snapshot) {
     const p = snapshot.progress;
@@ -58,9 +67,11 @@
         blur:3.2*smooth((p-.14)/.05)*(1-smooth((p-.28)/.18)),
         raster:p>.16&&p<.62?.10*settling:0};
     }
-    const x = smooth((p-.12)/.08), y = smooth((p-.21)/.16);
-    const light = smooth((p-.16)/.04);
-    const dot = p > 0 && p < .18 ? Math.min(1,p/.02)*Math.min(1,(.18-p)/.02)*.8 : 0;
+    const seconds=snapshot.elapsed/1000;
+    const x=1-smooth((seconds-2.1)/.7),y=1-smooth((seconds-1.1)/.8);
+    const initial=snapshot.fromState==="starting"?crtPresentation({...snapshot,state:"starting",progress:snapshot.fromProgress,elapsed:snapshot.fromElapsed}).light:1;
+    const light=initial*(1-smooth((seconds-2.6)/.2));
+    const dot=initial*.8*smooth((seconds-2.6)/.3)*(1-smooth((seconds-3.2)/1.4));
     return {x:Math.max(.002,x),y:Math.max(.003,y),light,dot,
       bloom:0,blur:(1-y)*1.8,raster:snapshot.state==="starting" && p>.18 && p<.62 ? .20*(1-smooth((p-.38)/.24)) : 0};
   }
@@ -132,7 +143,7 @@
         const liveAngle=Number(/rotate\((-?[\d.]+)deg\)/.exec(node.style.transform)?.[1]||0);
         if(snapshot.state==="on" || snapshot.failed || snapshot.reducedMotion){node.style.removeProperty("rotate");presentation.angle=null;return;}
         if(presentation.generation!==snapshot.generation){presentation.generation=snapshot.generation;presentation.from=presentation.angle??liveAngle;}
-        const target=needlePresentation(snapshot,liveAngle);
+        const target=needlePresentation(snapshot,liveAngle,[...needles.keys()].indexOf(node));
         const catchup=smooth(snapshot.elapsed/180);
         presentation.angle=presentation.from+(target-presentation.from)*catchup;
         // CSS rotate is independent of the live transform. Tracking continues

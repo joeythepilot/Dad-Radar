@@ -56,10 +56,11 @@
     const WHEEL_ANIMATION_MS = 760;
     const WHEEL_STAGGER_MS = 55;
     const ROLLOVER_BAY_STAGGER_MS = 58;
-    function powerModules(modules,snapshot,powerState) {
-      return modules.map((module,index)=>!powerState || powerState.mechanicalVisible(snapshot,"weekly",index)
-        ? {...module,characters:module.characters.slice()}
-        : {...module,day:"",characters:[" "," "," "," "]});
+    function powerModules(modules,snapshot,powerState,retained=modules) {
+      return modules.map((module,index)=>{
+        const physical=!powerState || (snapshot?.state!=="stopping" && powerState.mechanicalVisible(snapshot,"weekly",index)) ? module : retained?.[index]??module;
+        return {...physical,characters:physical.characters.slice()};
+      });
     }
 
     function localDateParts(value, timeZone) {
@@ -509,12 +510,12 @@
       function setModules(nextModules,{animate=true,rollover=false,powerReplay=false}={}) {
         if(!Array.isArray(nextModules)||nextModules.length!==OVERNIGHT_MODULE_COUNT)return;
         if(!powerReplay)liveModules=nextModules.map(m=>({...m,characters:m.characters.slice()}));
-        nextModules=powerModules(nextModules,powerPresentation,root.dadRadarDisplayPowerState);
+        nextModules=powerModules(nextModules,powerPresentation,root.dadRadarDisplayPowerState,currentModules);
         if(powerPresentation?.reducedMotion)animate=false;
         const now=root.performance?.now?.()??Date.now();
         const powerMotion=Boolean(powerPresentation && !powerPresentation.reducedMotion && ["starting","stopping"].includes(powerPresentation.state));
-        const dayDuration=powerMotion ? 720 : DAY_ANIMATION_MS;
-        const wheelDuration=powerMotion ? 1400 : WHEEL_ANIMATION_MS;
+        const dayDuration=powerMotion ? 1800 : DAY_ANIMATION_MS;
+        const wheelDuration=powerMotion ? 3200 : WHEEL_ANIMATION_MS;
         let anyMotion=false;
         let maxEnd=0;
 
@@ -524,6 +525,8 @@
           const oldDay=oldModule?.day??module.day;
           const oldCharacters=oldModule?.characters??module.characters;
           const dayChanged=oldDay!==module.day;
+          const forceIndex=powerPresentation?.state==="starting" && !powerPresentation.reducedMotion && root.dadRadarDisplayPowerState.mechanicalVisible(powerPresentation,"weekly",index) && bay.powerIndexGeneration!==powerPresentation.generation;
+          if(forceIndex){bay.powerIndexGeneration=powerPresentation.generation;bay.element.dataset.powerIndexGeneration=String(powerPresentation.generation);}
 
           bay.element.setAttribute("aria-label",
             (liveModules?.[index]?.day??module.day)+" overnight "+(module.code==="HOME"?"home":module.code===UNKNOWN_OVERNIGHT_CODE?"unknown":module.code));
@@ -538,28 +541,31 @@
             return;
           }
 
-          if(dayChanged){
+          if(dayChanged || forceIndex){
             const delay=rollover?index*ROLLOVER_BAY_STAGGER_MS:0;
             bay.dayAnimation={from:oldDay,to:module.day,start:now+delay,duration:dayDuration};
             anyMotion=true;
             maxEnd=Math.max(maxEnd,delay+dayDuration);
             if(rollover)playDetent(delay+dayDuration,175+index*5);
           } else {
-            bay.day=module.day;
-            bay.dayAnimation=null;
+            if(powerReplay && powerMotion && bay.dayAnimation?.to===module.day && now<bay.dayAnimation.start+bay.dayAnimation.duration){
+              anyMotion=true;maxEnd=Math.max(maxEnd,bay.dayAnimation.start+bay.dayAnimation.duration-now);
+            }else{bay.day=module.day;bay.dayAnimation=null;}
           }
 
           for(let wheelIndex=0;wheelIndex<4;wheelIndex+=1){
             const from=oldCharacters[wheelIndex]??" ";
             const to=module.characters[wheelIndex]??" ";
-            if(from===to){
-              bay.characters[wheelIndex]=to;
-              bay.wheelAnimations[wheelIndex]=null;
+            if(from===to && !forceIndex){
+              const active=bay.wheelAnimations[wheelIndex];
+              if(powerReplay && powerMotion && active?.to===to && now<active.start+active.duration){
+                anyMotion=true;maxEnd=Math.max(maxEnd,active.start+active.duration-now);
+              }else{bay.characters[wheelIndex]=to;bay.wheelAnimations[wheelIndex]=null;}
               continue;
             }
-            const delay=(rollover?430+index*28:0)+wheelIndex*WHEEL_STAGGER_MS;
+            const delay=(rollover?430+index*28:0)+wheelIndex*(powerMotion?180:WHEEL_STAGGER_MS);
             bay.wheelAnimations[wheelIndex]={
-              from,to,sequence:forwardWheelSequence(from,to),
+              from,to,sequence:forceIndex?[from,WHEEL_ALPHABET[(Math.max(0,WHEEL_ALPHABET.indexOf(from))+1)%WHEEL_ALPHABET.length],to]:forwardWheelSequence(from,to),
               start:now+delay,duration:wheelDuration
             };
             anyMotion=true;
@@ -624,14 +630,15 @@
         refreshSchedule,
         setModules,
         setPowerPresentation(snapshot){
+          const powerCut=snapshot.state==="stopping" && powerPresentation?.state!=="stopping";
           const terminal=snapshot.failed || (snapshot.state==="on" && powerPresentation?.state!=="on");
           powerPresentation=snapshot;
           if(snapshot.state!=="on")stopLocalSound();
-          const signature=Array.from({length:7},(_,i)=>root.dadRadarDisplayPowerState.mechanicalVisible(snapshot,"weekly",i)).join("");
-          if(signature===powerSignature && !terminal)return;
+          const signature=String(snapshot.generation)+":"+Array.from({length:7},(_,i)=>root.dadRadarDisplayPowerState.mechanicalVisible(snapshot,"weekly",i)).join("");
+          if(signature===powerSignature && !terminal && !powerCut)return;
           powerSignature=signature;
           if(terminal)stopLocalSound();
-          if(liveModules)setModules(liveModules,{powerReplay:true,animate:!terminal});
+          if(liveModules)setModules(liveModules,{powerReplay:true,animate:!terminal && !powerCut});
         },
         clearPowerPresentation(){powerPresentation=null;powerSignature="";stopLocalSound();if(liveModules)setModules(liveModules,{powerReplay:true,animate:false});},
         destroy(){

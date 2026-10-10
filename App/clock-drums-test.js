@@ -78,9 +78,9 @@ const {setClockPowerPresentation,clearClockPowerPresentation}=require("./clock-d
 assert.equal(typeof setClockPowerPresentation,"function","Clock presentation must accept local power state");
 paintClock(clock,"9:08 AM",printedInk);
 setClockPowerPresentation(clock,{state:"off",progress:0},printedInk);
-assert(drums.every(d=>d.getAttribute("data-digit")===""),"Power off blanks actual drums");
+assert.deepEqual(drums.map(d=>d.getAttribute("data-digit")),["","9","0","8"],"Power off retains physical drum readings");
 paintClock(clock,"11:42 PM",printedInk);
-assert(drums.every(d=>d.getAttribute("data-digit")===""),"Live clock updates stay visually blank while off");
+assert.deepEqual(drums.map(d=>d.getAttribute("data-digit")),["","9","0","8"],"Live updates do not move unpowered drums");
 setClockPowerPresentation(clock,{state:"on",progress:1},printedInk);
 assert.deepEqual(drums.map(d=>d.getAttribute("data-digit")),["1","1","4","2"],"Wake paints the newest time, not the pre-off time");
 assert.equal(period.getAttribute("data-period-value"),"PM");
@@ -89,4 +89,11 @@ assert(period.children.every(n=>n.style?.animation==="none"),"Terminal wake peri
 paintClock(clock,"11:43 PM",printedInk);
 assert(drums.flatMap(d=>d.children).every(n=>n.style?.animation==="none"),"Same-frame live clock observer must join terminal settlement");
 clearClockPowerPresentation(clock,printedInk);
+const retainedPrint=drums[1].children[0];
+setClockPowerPresentation(clock,{state:"off",progress:0,generation:10},printedInk);
+setClockPowerPresentation(clock,{state:"starting",progress:.25,generation:11},printedInk);
+assert.notEqual(drums[1].children[0],retainedPrint,"An unchanged clock indexes during a new startup");
+const indexedPrint=drums[1].children[0];
+setClockPowerPresentation(clock,{state:"starting",progress:.26,generation:11},printedInk);
+assert.equal(drums[1].children[0],indexedPrint,"A startup generation indexes only once");
 

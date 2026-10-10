@@ -6,11 +6,12 @@ const ticker = require("./weekly-ticker");
 assert.equal(typeof ticker.powerModules,"function","Weekly presentation must retain live modules while blank");
 const livePowerModules=Array.from({length:7},(_,i)=>({day:"MON",code:"ORD",characters:["O","R","D"," "]}));
 const powerState=require("./display-power-state");
-assert(ticker.powerModules(livePowerModules,{state:"off",progress:0},powerState).every(m=>m.day===""&&m.characters.join("")==="    "));
+const retainedModules=livePowerModules.map(m=>({...m,day:"SUN",characters:["H","O","M","E"]}));
+assert.deepEqual(ticker.powerModules(livePowerModules,{state:"off",progress:0},powerState,retainedModules),retainedModules,"Unpowered weekly drums retain physical print");
 assert.deepEqual(livePowerModules[0].characters,["O","R","D"," "],"Blanking never mutates the authoritative weekly target");
 assert.deepEqual(ticker.powerModules(livePowerModules,{state:"on",progress:1},powerState),livePowerModules);
-const staged=ticker.powerModules(livePowerModules,{state:"starting",progress:.45},powerState);
-assert.equal(staged[0].characters.join(""),"ORD ");assert.equal(staged[6].characters.join(""),"    ");
+const staged=ticker.powerModules(livePowerModules,{state:"starting",progress:.55},powerState,retainedModules);
+assert.equal(staged[0].characters.join(""),"ORD ");assert.equal(staged[6].characters.join(""),"HOME");
 function layover(id,airport,startUtc,endUtc){return{id,kind:"layover",status:"confirmed",airport,times:{startUtc,endUtc}};}
 function flight(id,destination,startUtc,endUtc){return{id,kind:"flight",status:"confirmed",origin:"ORD",destination,times:{startUtc,endUtc}};}
 

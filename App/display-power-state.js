@@ -5,12 +5,12 @@
   if (root) root.dadRadarDisplayPowerState = Object.freeze(api);
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
-  const TIMING = Object.freeze({startup: 9000, shutdown: 4000, reduced: 180});
-  const REVEAL = Object.freeze({paper:.14,instruments:.22,clocks:.30,flaps:.34,weekly:.42,sequence:.42});
+  const TIMING = Object.freeze({startup: 24000, shutdown: 6000, reduced: 180});
+  const REVEAL = Object.freeze({paper:.14,instruments:.12,clocks:.20,flaps:.34,weekly:.52,sequence:.42});
   function mechanicalVisible(snapshot,kind,index=0) {
     if(!snapshot || snapshot.failed || snapshot.state==="on")return true;
     if(snapshot.state==="off")return false;
-    const threshold=snapshot.reducedMotion ? .5 : (REVEAL[kind]??.34)+(kind==="weekly"?index*.02:0);
+    const threshold=snapshot.reducedMotion ? .5 : (REVEAL[kind]??.34)+(kind==="weekly"?index*.035:0);
     return snapshot.progress>=threshold;
   }
   function createDisplayPowerController(options) {
@@ -18,9 +18,10 @@
     let state = "on", targetOn = true, progress = 1, generation = 0;
     let frame = null, destroyed = false, failed = false;
     let from = 1, startedAt = now(), duration = TIMING.startup;
+    let fromState="on",fromElapsed=0;
     const reduced = () => Boolean(options.reducedMotion?.());
     const getSnapshot = () => Object.freeze({state, targetOn, progress, generation, failed,
-      reducedMotion: reduced(), elapsed: Math.max(0, now() - startedAt), duration});
+      reducedMotion: reduced(), elapsed: Math.max(0, now() - startedAt), duration,fromState,fromProgress:from,fromElapsed});
     function cancel() {
       if (frame !== null) cancelFrame(frame);
       frame = null;
@@ -44,6 +45,7 @@
     function setDisplayPower(on) {
       if (destroyed || Boolean(on) === targetOn) return;
       cancel(); generation++; failed = false;
+      fromState=state;fromElapsed=Math.max(0,now()-startedAt);
       from = progress; targetOn = Boolean(on); state = targetOn ? "starting" : "stopping";
       startedAt = now(); duration = reduced() ? TIMING.reduced : targetOn ? TIMING.startup : TIMING.shutdown;
       const token = generation;

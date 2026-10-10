@@ -613,6 +613,12 @@ function buildFlapSequence(
 }
 
 
+function buildPowerIndexSequence(current,target,isLogo=false){
+  if(isLogo || String(target).startsWith("@"))return [" ",target];
+  const index=Math.max(0,FLAP_CHARACTER_SET.indexOf(current));
+  return [FLAP_CHARACTER_SET[(index+1)%FLAP_CHARACTER_SET.length],FLAP_CHARACTER_SET[(index+2)%FLAP_CHARACTER_SET.length],target];
+}
+
 function flipFlapOnce(
   cell,
   nextCharacter
@@ -733,7 +739,7 @@ function flipFlapOnce(
 
     window.setTimeout(
       finishAnimation,
-      cell._powerSlow ? 900 : FLAP_ANIMATION_TIMEOUT
+      cell._powerSlow ? 1600 : FLAP_ANIMATION_TIMEOUT
     );
   });
 }
@@ -748,6 +754,7 @@ function queueFlapAnimation(
     nextCharacter;
 
   if (forcePowerFlapSettle || (displayPowerSnapshot?.reducedMotion && displayPowerSnapshot.state!=="on")) {
+    cell._powerIndexPending=false;
     cell._presentationSerial=(cell._presentationSerial||0)+1;
     cell.querySelectorAll(".flap-moving").forEach(layer=>layer.remove());
     cell.classList.remove("is-flipping");
@@ -759,7 +766,7 @@ function queueFlapAnimation(
 
   if (
     !cell._animationRunning &&
-    (cell.dataset.value ?? " ") ===
+    !cell._powerIndexPending && (cell.dataset.value ?? " ") ===
       nextCharacter
   ) {
     return;
@@ -780,8 +787,7 @@ function queueFlapAnimation(
 
     while (
       serial===(cell._presentationSerial||0) &&
-      (cell.dataset.value ?? " ") !==
-      cell._targetValue
+      (cell._powerIndexPending || (cell.dataset.value ?? " ") !== cell._targetValue)
     ) {
       const currentCharacter =
         cell.dataset.value ?? " ";
@@ -789,11 +795,12 @@ function queueFlapAnimation(
       const targetCharacter =
         cell._targetValue ?? " ";
 
-      const sequence = cell._powerBlank ? [targetCharacter] :
+      const sequence = cell._powerIndexPending ? buildPowerIndexSequence(currentCharacter,targetCharacter,cell.dataset.logoTile==="true") : cell._powerBlank ? [targetCharacter] :
         buildFlapSequence(
           currentCharacter,
           targetCharacter
         );
+      cell._powerIndexPending=false;
 
       for (
         const character of sequence
@@ -816,7 +823,7 @@ function queueFlapAnimation(
     cell._animationRunning = false;
 
     if (
-      (cell.dataset.value ?? " ") !==
+      cell._powerIndexPending || (cell.dataset.value ?? " ") !==
       cell._targetValue
     ) {
       queueFlapAnimation(
@@ -877,9 +884,15 @@ const powerFlapsVisible=()=>!globalThis.dadRadarDisplayPowerState ||
 globalThis.addEventListener?.("dad-radar:display-power-change",event=>{
   const wasVisible=powerFlapsVisible();
   const previousState=displayPowerSnapshot?.state;
+  const previousGeneration=displayPowerSnapshot?.generation;
   displayPowerSnapshot=event.detail;
+  if(displayPowerSnapshot.state==="stopping" && previousGeneration!==displayPowerSnapshot.generation){
+    forcePowerFlapSettle=true;
+    try{powerFlapTargets.forEach((_,container)=>Array.from(container.children).forEach(cell=>queueFlapAnimation(cell,cell.dataset.value??" ")));}
+    finally{forcePowerFlapSettle=false;}
+  }
   const settling=displayPowerSnapshot.state==="on" && previousState && previousState!=="on";
-  if(wasVisible===powerFlapsVisible()&&!settling&&!displayPowerSnapshot.failed)return;
+  if(wasVisible===powerFlapsVisible()&&!settling&&!displayPowerSnapshot.failed&&previousGeneration===displayPowerSnapshot.generation)return;
   forcePowerFlapSettle=Boolean(settling||displayPowerSnapshot.failed);
   try{
     powerFlapTargets.forEach((target,container)=>target.kind==="flight"
@@ -921,11 +934,13 @@ function renderFlapText(
     .forEach((cell, index) => {
       cell._powerBlank=!visible;
     cell._powerSlow=Boolean(displayPowerSnapshot && !displayPowerSnapshot.reducedMotion && ["starting","stopping"].includes(displayPowerSnapshot.state));
+      if(displayPowerSnapshot && !displayPowerSnapshot.failed && (displayPowerSnapshot.state==="off" || displayPowerSnapshot.state==="stopping" || !visible))return;
+      if(displayPowerSnapshot?.state==="starting" && !displayPowerSnapshot.reducedMotion && cell._powerIndexGeneration!==displayPowerSnapshot.generation){cell._powerIndexGeneration=displayPowerSnapshot.generation;cell._powerIndexPending=true;}
       queueFlapAnimation(
         cell,
         visible?normalizedText[index]:" ",
         visible?index *
-          (cell._powerSlow ? 80 : FLAP_STAGGER_DELAY)
+          (cell._powerSlow ? 180 : FLAP_STAGGER_DELAY)+(cell._powerSlow?({"flight-origin":350,"flight-destination":700,"status-value":1050}[container.id]??0):0)
           :0
       );
     });
@@ -945,7 +960,9 @@ function renderFlightIdentification(container, number, brand) {
     cell.dataset.logoTile=String(index===0);
     cell._powerBlank=!visible;
     cell._powerSlow=Boolean(displayPowerSnapshot && !displayPowerSnapshot.reducedMotion && ["starting","stopping"].includes(displayPowerSnapshot.state));
-    queueFlapAnimation(cell, visible?values[index]:" ", visible?index*(cell._powerSlow ? 80 : FLAP_STAGGER_DELAY):0);
+    if(displayPowerSnapshot && !displayPowerSnapshot.failed && (displayPowerSnapshot.state==="off" || displayPowerSnapshot.state==="stopping" || !visible))return;
+    if(displayPowerSnapshot?.state==="starting" && !displayPowerSnapshot.reducedMotion && cell._powerIndexGeneration!==displayPowerSnapshot.generation){cell._powerIndexGeneration=displayPowerSnapshot.generation;cell._powerIndexPending=true;}
+    queueFlapAnimation(cell, visible?values[index]:" ", visible?index*(cell._powerSlow ? 180 : FLAP_STAGGER_DELAY):0);
   });
   scheduleFlightBoardBalance();
 }

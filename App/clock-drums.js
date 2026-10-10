@@ -44,7 +44,9 @@
   }
   function paintClock(clock, value, printedInk) {
     clock._powerLiveTime=value;
-    if(!powerVisible(clock._powerPresentation))value="";
+    if(clock._powerPresentation?.state==="stopping" || !powerVisible(clock._powerPresentation))return [];
+    const forceIndex=clock._powerPresentation?.state==="starting" && !clock._powerPresentation.reducedMotion && clock._powerIndexGeneration!==clock._powerPresentation.generation;
+    if(forceIndex)clock._powerIndexGeneration=clock._powerPresentation.generation;
     fitPrimaryClock(clock);
     const caption = clock.querySelector?.(".clock-caption");
     if (caption && !caption.children.length) {
@@ -62,7 +64,7 @@
     const changed = [];
     drums.forEach((drum, index) => {
       const next = digits[index];
-      if (drum.getAttribute("data-digit") === next) return;
+      if (drum.getAttribute("data-digit") === next && !forceIndex) return;
       if (drum.getAttribute("data-digit") === null && !next) {
         drum.setAttribute("data-digit", "");
         return;
@@ -73,7 +75,7 @@
           old.setAttribute("class", "drum-print drum-exit");
           old.setAttribute("data-outgoing", "true");
           old.addEventListener("animationend", () => old.remove(), {once: true});
-          root.setTimeout(() => { if (old.parentNode) old.remove(); }, clock._powerPresentation && !clock._powerPresentation.reducedMotion && ["starting","stopping"].includes(clock._powerPresentation.state) ? 850 : 500);
+          root.setTimeout(() => { if (old.parentNode) old.remove(); }, clock._powerPresentation && !clock._powerPresentation.reducedMotion && ["starting","stopping"].includes(clock._powerPresentation.state) ? 2800 : 500);
         } else old.remove();
       }
       drum.setAttribute("data-digit", next);
@@ -85,6 +87,7 @@
         });
         const carrier = clock.ownerDocument.createElementNS("http://www.w3.org/2000/svg", "g");
         carrier.setAttribute("class", outgoing.length ? "drum-print drum-index-after" : "drum-print");
+        if(forceIndex){if(!carrier.style)carrier.style={};carrier.style.animationDelay=`${index*230+(clock.getAttribute?.("data-clock")==="eta"?650:0)}ms`;}
         print.element.setAttribute("transform", `translate(${-print.width / 2} ${-print.height / 2})`);
         carrier.appendChild(print.element);
         drum.appendChild(carrier);
@@ -95,7 +98,7 @@
     const nextPeriod = readDrumPeriod(value);
     Array.from(clock.querySelectorAll(".period-lamp")).forEach(lamp =>
       lamp.setAttribute("data-lit", String(Boolean(nextPeriod))));
-    if (period && period.getAttribute("data-period-value") !== nextPeriod) {
+    if (period && (period.getAttribute("data-period-value") !== nextPeriod || forceIndex)) {
       period.setAttribute("data-period-value", nextPeriod);
       period.replaceChildren();
       if (nextPeriod) {
@@ -120,13 +123,14 @@
   }
   function powerVisible(snapshot) {
     return !snapshot || snapshot.failed || snapshot.state==="on" ||
-      (snapshot.state!=="off" && snapshot.progress>=(snapshot.reducedMotion ? .5 : .30));
+      (snapshot.state!=="off" && snapshot.progress>=(snapshot.reducedMotion ? .5 : .20));
   }
   function setClockPowerPresentation(clock,snapshot,printedInk) {
     const previous=clock._powerPresentation;
     const wasVisible=powerVisible(clock._powerPresentation);
     clock._powerPresentation=snapshot;
-    if(wasVisible!==powerVisible(snapshot))paintClock(clock,clock._powerLiveTime,printedInk);
+    if(snapshot.state==="stopping" && previous?.state!=="stopping")settleClock(clock);
+    if(wasVisible!==powerVisible(snapshot) || (snapshot.state==="on" && previous?.state!=="on") || (snapshot.state==="starting" && powerVisible(snapshot) && clock._powerIndexGeneration!==snapshot.generation))paintClock(clock,clock._powerLiveTime,printedInk);
     if(snapshot.failed || snapshot.reducedMotion || (snapshot.state==="on" && previous?.state!=="on")){
       clock._powerSettling=true;
       const release=()=>{delete clock._powerSettling;};

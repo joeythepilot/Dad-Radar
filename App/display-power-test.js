@@ -8,7 +8,7 @@ assert.equal(typeof api.crtPresentation, "function", "CRT presentation adapter m
 const s = (state, progress, elapsed = 0) => ({state, progress, elapsed, duration: state === "starting" ? 5000 : 2400, reducedMotion:false});
 assert.deepEqual(api.crtPresentation(s("on", 1)), {x:1,y:1,light:1,dot:0,blur:0,raster:0,bloom:0});
 assert.equal(api.crtPresentation(s("off", 0)).light, 0);
-const dot = api.crtPresentation(s("stopping", .1, 2160));
+const dot = api.crtPresentation(s("stopping", .1, 3500));
 assert.equal(dot.light, 0); assert(dot.dot > 0, "Shutdown dot lingers after picture collapse");
 const bloom = api.crtPresentation(s("starting", .05, 250));
 assert.equal(bloom.x,1); assert.equal(bloom.y,1); assert.equal(bloom.dot,0,"Startup warms a full-size raster without center growth");
@@ -28,6 +28,13 @@ assert.equal(typeof api.needlePresentation,"function","Needle sweep must be pres
 assert.equal(api.needlePresentation(s("on",1),83),83);
 assert.equal(api.needlePresentation(s("off",0),83),0);
 assert.equal(api.needlePresentation(s("starting",.8),117),117,"Newest instrument reading settles without cached flight data");
+assert(api.needlePresentation(s("starting",.35),40)<=40,"Startup never performs a ceremonial sweep beyond the live indication");
+assert(api.needlePresentation(s("starting",.3),40,0)>api.needlePresentation(s("starting",.3),40,2),"Instruments do not settle in lockstep");
+assert(api.moduleLight(s("stopping",.9,2000),"weekly",0)<.15,"Power-cut filament decay is independent of reverse startup order");
+const interrupted={...s("stopping",.08,0),fromState:"starting",fromProgress:.08,fromElapsed:2000};
+assert.equal(api.crtPresentation(interrupted).light,0,"Interrupted cold startup cannot flash a powered CRT");
+assert.equal(api.moduleLight(interrupted,"weekly"),0,"Interrupted cold startup cannot flash unlit weekly lamps");
+assert.equal(api.needlePresentation(interrupted,83),0,"Interrupted cold startup cannot sweep toward a powered gauge reading");
 assert.equal(api.needlePresentation({...s("starting",.3),reducedMotion:true},83),83,"Reduced motion has no sweep");
 assert.equal(typeof api.apertureContains,"function","Overlapping map/counter apertures must reveal their union, not XOR");
 const apertures=[{left:534,top:229,right:1500,bottom:844},{left:520,top:742,right:782,bottom:839}];

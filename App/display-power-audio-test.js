@@ -24,11 +24,15 @@ async function run(){
   controller.apply(snapshot("stopping"));assert(f.nodes.some(n=>n.started),"Intentional transition starts audition envelope");
   const beforeDetent=f.nodes.length;controller.mechanicalCue("clock");
   assert(f.nodes.length>beforeDetent,"Clock motion produces a physical detent, not only a power blip");
-  assert.deepEqual(f.frequencies,[60,120],"Power envelope restores only low mains/transformer hum, never pitched digital clicks");
+  assert.deepEqual(f.frequencies,[],"Initial shutdown must not invent a previously inaudible hum");
   assert.equal(f.nodes[0].buffer,toggle,"Intentional switch uses the actual recorded toggle sample");
   assert.equal(f.nodes.find(n=>n.buffer===relay).buffer,relay,"Mechanical indexing uses the actual recorded relay sample");
   const count=f.nodes.length;controller.apply(snapshot("stopping",1,100));assert.equal(f.nodes.length,count,"Frames do not restart sounds");
   controller.apply(snapshot("starting",2));assert(f.nodes.slice(0,count).every(n=>n.stopped),"Reversal cancels old envelope");
+  assert.deepEqual(f.frequencies,[60,120],"Startup restores only low mains/transformer hum");
+  const humNodes=f.nodes.filter(n=>n.frequency);
+  controller.apply(snapshot("on",2,24000));
+  assert(humNodes.every(n=>!n.stopped),"Tube hum persists after startup finishes");
   const reversedCount=f.nodes.length;
   f.context.state="suspended";
   controller.apply(snapshot("off",2,60000));assert(f.nodes.every(n=>n.stops.includes(undefined)&&n.disconnected),"Same-generation terminal state cancels suspended audio immediately");

@@ -4,8 +4,8 @@ const fs = require("node:fs");
 const file = require("node:path").join(__dirname, "display-power-state.js");
 const api = fs.existsSync(file) ? require(file) : {};
 assert.equal(typeof api.createDisplayPowerController, "function", "Display power coordinator must exist");
-assert.equal(api.TIMING.startup,9000,"Deliberate nine-second warm-up");
-assert.equal(api.TIMING.shutdown,4000,"Four-second mechanical shutdown");
+assert.equal(api.TIMING.startup,24000,"Deliberate staggered twenty-four-second warm-up");
+assert.equal(api.TIMING.shutdown,6000,"Independent six-second power loss");
 function fixture(extra = {}) {
   let time = 0, serial = 0;
   const frames = new Map(), seen = [];
@@ -25,9 +25,9 @@ function fixture(extra = {}) {
   assert.equal(f.controller.getSnapshot().progress, 1);
   f.controller.setDisplayPower(false);
   assert.equal(f.controller.getState(), "stopping");
-  f.tick(2000); assert.equal(f.controller.getSnapshot().progress, .5);
-  f.tick(2000); assert.equal(f.controller.getState(), "off");
-  f.controller.setDisplayPower(true); f.tick(9000);
+  f.tick(3000); assert.equal(f.controller.getSnapshot().progress, .5);
+  f.tick(3000); assert.equal(f.controller.getState(), "off");
+  f.controller.setDisplayPower(true); f.tick(24000);
   assert.equal(f.controller.getState(), "on");
   assert.equal(f.frames.size, 0);
 }
@@ -42,7 +42,7 @@ function fixture(extra = {}) {
   assert.equal(f.controller.getSnapshot().generation, generation, "Duplicate target is inert");
   stale(100000);
   assert.equal(f.controller.getState(), "starting", "Cancelled callback cannot win");
-  f.tick(9000); assert.equal(f.controller.getState(), "on");
+  f.tick(24000); assert.equal(f.controller.getState(), "on");
 }
 {
   const f = fixture({reducedMotion: () => true}); f.controller.setDisplayPower(false);
@@ -74,6 +74,6 @@ assert.equal(api.mechanicalVisible({state:"on",progress:1},"flaps"),true);
 assert.equal(api.mechanicalVisible({state:"off",progress:0},"clocks"),false);
 assert.equal(api.mechanicalVisible({state:"starting",progress:.2},"flaps"),false);
 assert.equal(api.mechanicalVisible({state:"starting",progress:.4},"flaps"),true);
-assert.equal(api.mechanicalVisible({state:"starting",progress:.45},"weekly",0),true);
-assert.equal(api.mechanicalVisible({state:"starting",progress:.45},"weekly",6),false);
+assert.equal(api.mechanicalVisible({state:"starting",progress:.55},"weekly",0),true);
+assert.equal(api.mechanicalVisible({state:"starting",progress:.55},"weekly",6),false);
 }
