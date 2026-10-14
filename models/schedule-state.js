@@ -909,9 +909,6 @@
       events,
       now
     ) {
-      const inferredReserve = inferredReserveState(events, now, options);
-      if (inferredReserve) return inferredReserve;
-
       const completedFlights =
         events.filter(
           (event) =>
@@ -1127,8 +1124,8 @@
     }
 
     // A daily RAP is evidence of a reserve sequence, not evidence of the
-    // next day's RAP or physical overnight location. Only bridge blank days
-    // when an explicit upcoming day off bounds the sequence.
+    // next day's RAP hours or confirmed physical location. An upcoming day
+    // off bounds continuation; without one, allow at most two blank days.
     function inferredReserveState(events, now, options) {
       const zone = options.displayTimeZone;
       const today = displayDateKey(now, zone);
@@ -1254,6 +1251,9 @@
           return activeState;
         }
       }
+
+      const inferredReserve = inferredReserveState(events, now, options);
+      if (inferredReserve) return inferredReserve;
 
       const completedFlights =
         events.filter(

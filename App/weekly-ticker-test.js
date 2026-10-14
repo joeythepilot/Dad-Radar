@@ -80,8 +80,8 @@ const scheduleEvidence=ticker.buildWeeklyOvernightModules({events:[
     times:{startUtc:'2026-10-01T16:00:00Z',endUtc:'2026-10-02T03:59:00Z'}}
 ]},{now:'2026-09-30T16:00:00Z'});
 assert.deepEqual(scheduleEvidence.map(module=>module.code).slice(0,5),
-  ['ORD','ORD','UNKN','UNKN','UNKN'],
-  'A flight arrival and timed RAP establish their own operational dates, but no later blank date.');
+  ['ORD','ORD','ORD','ORD','UNKN'],
+  'A timed RAP predicts at most two later blank reserve overnights; the following date stays unknown.');
 
 const assignment=ticker.buildWeeklyOvernightModules({events:[
   reserve,
