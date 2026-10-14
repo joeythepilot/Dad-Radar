@@ -132,3 +132,104 @@ html[data-family-full] .family-duty-narrow:not(.is-physical-duty-card) .daily-sc
 html[data-family-full] .family-duty-narrow:not(.is-physical-duty-card) .daily-schedule-label {
   grid-area:route; overflow:visible; white-space:normal; overflow-wrap:break-word; line-height:1.25;
 }
+
+
+/* --------------------------------------------------------------------------
+   Mobile Full only: visual interpretation of Unit 001's wrinkle-black
+   aluminum surrounds. No geometry, desktop, Compact, or physical apertures
+   are modified. The aluminum is decorative CSS, not an interactive layer.
+   -------------------------------------------------------------------------- */
+html[data-family-full] .dashboard {
+  --hb-black-ink: #17191a;
+  --hb-black-highlight: #3a3b39;
+  --hb-metal-edge: #65615a;
+  --hb-brass-fastener: #c7a46c;
+  --hb-frame-width: clamp(2px, .32vw, 5px);
+}
+
+/* Three independent upper surrounds: flight number, route, and status.
+   Preserve the existing flex/tile dimensions and motion unchanged. */
+html[data-family-full] .flight-board #flight-number,
+html[data-family-full] .flight-board .flap-route-section,
+html[data-family-full] .flight-board #status-value {
+  position: relative;
+  isolation: isolate;
+  border-radius: 4px;
+  box-shadow:
+    0 0 0 1px #6a6357,
+    0 0 0 var(--hb-frame-width) #1b1d1e,
+    0 0 0 calc(var(--hb-frame-width) + 1px) #45413b,
+    1px 3px 6px #0008;
+}
+
+/* Subtle pebbled enamel rather than a coarse repeating checkerboard.
+   Fasteners are purely ornamental and do not consume tile space. */
+html[data-family-full] .flight-board #flight-number::after,
+html[data-family-full] .flight-board .flap-route-section::after,
+html[data-family-full] .flight-board #status-value::after {
+  content: "";
+  position: absolute;
+  inset: calc(-1 * var(--hb-frame-width));
+  pointer-events: none;
+  z-index: 3;
+  border-radius: 5px;
+  border: 1px solid #706b61;
+  background:
+    radial-gradient(circle at 7px 7px, var(--hb-brass-fastener) 0 2px, #49351f 2.2px 2.8px, transparent 3px),
+    radial-gradient(circle at calc(100% - 7px) 7px, var(--hb-brass-fastener) 0 2px, #49351f 2.2px 2.8px, transparent 3px),
+    radial-gradient(circle at 7px calc(100% - 7px), var(--hb-brass-fastener) 0 2px, #49351f 2.2px 2.8px, transparent 3px),
+    radial-gradient(circle at calc(100% - 7px) calc(100% - 7px), var(--hb-brass-fastener) 0 2px, #49351f 2.2px 2.8px, transparent 3px),
+    repeating-radial-gradient(circle at 37% 61%, #ffffff0a 0 1px, transparent 1px 3px);
+}
+
+/* Twin mechanical clock housing and seven-day wheel surround. */
+html[data-family-full] .dashboard .twin-clock-panel,
+html[data-family-full] .dashboard .weekly-overnight-bank {
+  position: relative;
+  border-radius: 5px;
+  outline: 1px solid var(--hb-metal-edge);
+  box-shadow:
+    0 0 0 var(--hb-frame-width) var(--hb-black-ink),
+    0 0 0 calc(var(--hb-frame-width) + 1px) #6c675d,
+    2px 4px 7px #0008,
+    inset 0 0 0 2px #3d3b38;
+}
+
+/* Keep texture inside the perimeter, away from the printed clock numerals
+   and moving wheel windows. */
+html[data-family-full] .dashboard .twin-clock-panel::after,
+html[data-family-full] .dashboard .weekly-overnight-bank::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 2;
+  box-shadow: inset 0 0 0 2px #656056, inset 0 0 12px #0009;
+  background:
+    radial-gradient(circle at 7px 7px, #c5a36b 0 2px, #443321 2.2px 3px, transparent 3.1px),
+    radial-gradient(circle at calc(100% - 7px) 7px, #c5a36b 0 2px, #443321 2.2px 3px, transparent 3.1px),
+    radial-gradient(circle at 7px calc(100% - 7px), #c5a36b 0 2px, #443321 2.2px 3px, transparent 3.1px),
+    radial-gradient(circle at calc(100% - 7px) calc(100% - 7px), #c5a36b 0 2px, #443321 2.2px 3px, transparent 3.1px);
+}
+
+/* Physical brass bezels remain visible; the black outer ring is the
+   simulated aluminum plate behind each gauge. */
+html[data-family-full] .dashboard .instrument-slot {
+  border-radius: 50%;
+  outline: 1px solid #777063;
+  box-shadow:
+    0 0 0 var(--hb-frame-width) #1a1c1d,
+    0 0 0 calc(var(--hb-frame-width) + 1px) #5b5750,
+    2px 3px 8px #0009;
+}
+
+/* Prevent decorative hardware from covering tiny controls in portrait mode. */
+@media (max-width: 550px) {
+  html[data-family-full] .dashboard { --hb-frame-width: 2px; }
+  html[data-family-full] .flight-board #flight-number::after,
+  html[data-family-full] .flight-board .flap-route-section::after,
+  html[data-family-full] .flight-board #status-value::after {
+    background: repeating-radial-gradient(circle at 37% 61%, #ffffff0a 0 1px, transparent 1px 3px);
+  }
+}
