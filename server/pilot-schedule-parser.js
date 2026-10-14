@@ -39,6 +39,7 @@ const LAYOVER_SUMMARY_PATTERN =
 
 const DUTY_FREE_PATTERN =
   /^Duty free period$/i;
+const VACATION_PATTERN = /^(?:Vacation|VAC)$/i;
 
 const RESERVE_BLOCK_PATTERN = /^Reserve\s+([A-Z]{3})$/i;
 const RAP_PATTERN = /^RAP$/i;
@@ -546,10 +547,11 @@ function parsePilotEvent(
     };
   }
 
-  if (DUTY_FREE_PATTERN.test(summary)) {
+  if (DUTY_FREE_PATTERN.test(summary) || VACATION_PATTERN.test(summary)) {
     return {
       id: event.id ?? null,
       kind: "duty-free",
+      ...(VACATION_PATTERN.test(summary) ? {leaveType: "vacation"} : {}),
       allDay: Boolean(event.start?.date && event.end?.date),
       summary,
       description,
