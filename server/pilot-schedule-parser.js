@@ -43,7 +43,7 @@ const VACATION_PATTERN = /^(?:Vacation|VAC)$/i;
 
 const RESERVE_BLOCK_PATTERN = /^Reserve\s+([A-Z]{3})$/i;
 const RAP_PATTERN = /^RAP$/i;
-const STANDBY_PATTERN = /^(?:Standby|SBY|STBY)(?:\s+([A-Z]{3}))?$/i;
+const STANDBY_PATTERN = /^(?:Airport[\s-]*)?(?:Stand[\s-]*by|SBY|STBY)(?:\s*(?:shift\s*|#\s*)?\d{1,2})?(?:\s+([A-Z]{3}))?(?:\s*(?:shift\s*|#\s*)?\d{1,2})?$/i;
 
 function cleanText(value) {
   return typeof value === "string"

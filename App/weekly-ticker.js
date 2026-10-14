@@ -132,6 +132,7 @@
       });
       const byKey=new Map(modules.map(module=>[module.key,module]));
       const locationEvidenceAt=new Map();
+      const reserveDates=new Set();
       function applyLocation(module,airport,at) {
         if(!module || (locationEvidenceAt.has(module.key) && locationEvidenceAt.get(module.key)>at))return;
         module.code=airport;
@@ -168,6 +169,7 @@
             if(module.key>=first && module.key<=last){
               module.code=airport;
               module.characters=overnightCharacters(airport);
+              reserveDates.add(module.key);
             }
           }
         });
@@ -183,6 +185,7 @@
             if(module.key>=first && module.key<=last){
               module.code=airport;
               module.characters=overnightCharacters(airport);
+              reserveDates.add(module.key);
             }
           }
         });
@@ -222,6 +225,26 @@
         module.code=airport;
         module.characters=overnightCharacters(airport);
         module.inferred=true;
+        reserveDates.add(module.key);
+      }
+
+      // The last reserve night before a full day off predicts return home.
+      // This is an overnight expectation only; daytime reserve duty remains.
+      // Assigned flying and layovers below retain stronger location evidence.
+      const offStarts=new Set(allEvents.filter(event=>event.kind==="duty-free")
+        .map(event=>{
+          const first=calendarLeaveStartKey(event,options.timeZone);
+          const end=localDateParts(endOf(event),options.timeZone);
+          const fullDay=event.allDay || (end &&
+            (end.key>first || (end.key===first && end.hour===23 && end.minute===59)));
+          return first && fullDay ? first : null;
+        }).filter(Boolean));
+      for(const module of modules){
+        if(reserveDates.has(module.key) && offStarts.has(shiftKey(module.key,1))){
+          module.code="HOME";
+          module.characters=overnightCharacters("HOME");
+          module.inferred=true;
+        }
       }
 
       sorted(schedule?.events)

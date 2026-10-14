@@ -146,7 +146,7 @@ console.log("Weekly overnight tests passed: approved module artwork, seven bays,
 const octReserve={id:'oct-rap',kind:'reserve',reserveType:'RAP',airport:'ORD',allDay:false,status:'confirmed',times:{startUtc:'2026-10-14T12:00:00Z',endUtc:'2026-10-14T23:59:00Z'}};
 const octOff={id:'oct-off',kind:'duty-free',allDay:true,status:'confirmed',times:{startUtc:'2026-10-17T04:00:00Z',endUtc:'2026-10-18T04:00:00Z'}};
 const inferred=ticker.buildWeeklyOvernightModules({events:[octReserve,octOff]},{now:'2026-10-14T16:00:00Z'});
-assert.deepEqual(inferred.slice(0,4).map(module=>module.code),['ORD','ORD','ORD','HOME']);
+assert.deepEqual(inferred.slice(0,4).map(module=>module.code),['ORD','ORD','HOME','HOME']);
 assert.equal(inferred[1].inferred,true);
 assert.equal(inferred[2].inferred,true);
 const standby={...octReserve,id:'standby',reserveType:'STANDBY'};
@@ -159,3 +159,16 @@ const dfwFlight=flight('dfw-assignment','DFW','2026-10-15T15:00:00Z','2026-10-15
 const assigned=ticker.buildWeeklyOvernightModules({events:[octReserve,octOff,dfwFlight]},{now:'2026-10-14T16:00:00Z'});
 assert.equal(assigned[1].code,'DFW','Assigned flight destination overrides inferred ORD');
 assert.equal(assigned[2].code,'UNKN','Do not infer base overnight beyond intervening flying');
+
+const fridayReserve={...octReserve,id:'friday-standby',reserveType:'STANDBY',times:{startUtc:'2026-10-16T13:00:00Z',endUtc:'2026-10-16T23:00:00Z'}};
+const fridayBank=events=>ticker.buildWeeklyOvernightModules({events},{now:'2026-10-14T16:00:00Z'});
+assert.equal(fridayBank([fridayReserve,octOff])[2].code,'HOME','Explicit final standby day predicts a home overnight');
+assert.equal(fridayBank([fridayReserve])[2].code,'ORD','No day off means no assumed commute home');
+assert.equal(fridayBank([octOff])[2].code,'UNKN','Leave alone cannot invent a preceding reserve sequence');
+assert.equal(fridayBank([fridayReserve,{...octOff,status:'cancelled'}])[2].code,'ORD');
+const partialOff={...octOff,allDay:false,times:{startUtc:'2026-10-17T04:00:00Z',endUtc:'2026-10-17T12:00:00Z'}};
+assert.equal(fridayBank([fridayReserve,partialOff])[2].code,'ORD','A partial day off does not predict a commute home');
+const timedFullOff={...octOff,allDay:false,times:{startUtc:'2026-10-17T04:00:00Z',endUtc:'2026-10-18T03:59:59Z'}};
+assert.equal(fridayBank([fridayReserve,timedFullOff])[2].code,'HOME','The actual imported full-day shape bounds return home');
+assert.equal(fridayBank([fridayReserve,octOff,flight('friday-flight','DFW','2026-10-16T14:00:00Z','2026-10-16T23:00:00Z')])[2].code,'DFW');
+assert.equal(fridayBank([fridayReserve,octOff,layover('friday-hotel','EVV','2026-10-16T22:00:00Z','2026-10-17T12:00:00Z')])[2].code,'EVV');

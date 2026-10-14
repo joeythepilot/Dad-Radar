@@ -403,13 +403,13 @@ function testImportedReserveAndLeaveDates() {
       `The imported daily reserve continues on October ${day}`);
   }
   assert.equal(resolveScheduleState(schedule,{now:'2026-10-17T18:00:00Z'}).mode,'HOME');
-  assert.deepEqual(wheels([reserve,off]).slice(0,5),['ORD','ORD','ORD','HOME','UNKN'],
-    'Saturday midnight-start leave must not turn Friday HOME');
-  assert.deepEqual(wheels([reserve,off,vacation]),['ORD','ORD','ORD','HOME','HOME','HOME','HOME']);
+  assert.deepEqual(wheels([reserve,off]).slice(0,5),['ORD','ORD','HOME','HOME','UNKN'],
+    'The final reserve night before an explicit day off predicts HOME');
+  assert.deepEqual(wheels([reserve,off,vacation]),['ORD','ORD','HOME','HOME','HOME','HOME','HOME']);
   assert.deepEqual(wheels([vacation],'2026-10-22T18:00:00Z').slice(0,3),['HOME','HOME','UNKN'],
     'The final vacation date is included without extending leave');
   const laterOff=parsed('Duty free period','2026-10-20T00:00:00-04:00','2026-10-20T23:59:59-04:00');
-  assert.deepEqual(wheels([reserve,laterOff]),['ORD','ORD','ORD','ORD','ORD','ORD','HOME'],
+  assert.deepEqual(wheels([reserve,laterOff]),['ORD','ORD','ORD','ORD','ORD','HOME','HOME'],
     'An imported midnight-start day off bounds up to five continuation dates');
   const longBlock=parsed('Reserve ORD','2026-10-14T13:00:00-04:00','2026-10-16T00:55:00-04:00');
   assert.notEqual(resolveScheduleState({events:[longBlock,off]},{now:'2026-10-16T18:00:00Z'}).mode,'RESERVE',
@@ -459,6 +459,12 @@ function testOverlappingRapAndStandby() {
   }
   for(const summary of ['STBY','stby','StBy']) {
     assert.equal(parsePilotEvent({...stby,summary}).reserveType,'STANDBY');
+  }
+  for(const summary of ['Stand by','Stand-by','Airport Standby','STBY 1','Standby shift 2','SBY ORD 2',
+    'STBY1','AirportStandby','Standby shift 4','Stand  by','Standby 2 ORD','STBY #2']) {
+    const event=parsePilotEvent({...stby,summary});
+    assert.equal(event.reserveType,'STANDBY',`${summary} is reserve duty`);
+    assert.equal(resolveScheduleState({events:[event]},{now:'2026-10-15T12:00:00Z'}).mode,'RESERVE');
   }
   assert.equal(parsePilotEvent({...stby,summary:'STBY training'}).kind,'other');
 
