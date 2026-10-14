@@ -1003,8 +1003,9 @@ function runTests() {
   const conflictingLayover={id:"ord-layover",kind:"layover",airport:"ORD",status:"confirmed",times:{startUtc:"2026-10-14T04:00:00Z",endUtc:"2026-10-15T04:00:00Z"}};
   assert.equal(resolveScheduleState(createSchedule([octRap,conflictingLayover,octOff]),{now:"2026-10-14T14:00:00Z"}).mode,"RESERVE",
     "An explicit reserve assignment beats stale overlapping ORD layover");
-  assert.notEqual(resolveScheduleState(createSchedule([octRap,conflictingLayover,octOff]),{now:"2026-10-15T14:00:00Z"}).state.source,"calendar-inference",
-    "Intervening duty evidence blocks inferred continuation");
+  const nextDayLayover={...conflictingLayover,id:"next-day-layover",times:{startUtc:"2026-10-15T04:00:00Z",endUtc:"2026-10-16T04:00:00Z"}};
+  assert.equal(resolveScheduleState(createSchedule([octRap,nextDayLayover,octOff]),{now:"2026-10-15T14:00:00Z"}).mode,"LAYOVER",
+    "Explicit next-day duty evidence overrides inferred reserve");
   testActiveFlight();
   testGsoDestinationCity();
   testBilDestinationCity();
