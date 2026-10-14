@@ -462,6 +462,15 @@ function testOverlappingRapAndStandby() {
   }
   assert.equal(parsePilotEvent({...stby,summary:'STBY training'}).kind,'other');
 
+  const calendarStandby=createEvent({id:'calendar-standby',summary:'STBY ORD',
+    start:{dateTime:'2026-10-15T10:00:00-04:00'},end:{dateTime:'2026-10-15T18:00:00-04:00'}});
+  const importedStandby=parsePilotEvent(calendarStandby);
+  assert.equal(importedStandby.reserveType,'STANDBY','Recognize the observed connected-calendar title');
+  assert.equal(importedStandby.airport,'ORD');
+  assert.equal(importedStandby.times.startUtc,'2026-10-15T14:00:00.000Z');
+  assert.equal(importedStandby.times.endUtc,'2026-10-15T22:00:00.000Z');
+  assert.equal(parsePilotEvent({...stby,summary:'STBY DFW'}).airport,'DFW');
+
   const laterRap={...rap,start:{dateTime:'2026-10-15T10:00:00Z'}};
   const overlapping=parsePilotSchedule({events:[laterRap,stby]});
   assert.equal(resolveScheduleState(overlapping,{now:'2026-10-15T12:00:00Z'}).event.id,stby.id,
