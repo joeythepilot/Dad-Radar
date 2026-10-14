@@ -91,7 +91,23 @@ return result;});
     assert(await page.locator(".power-crt-glass").evaluate(n=>n.style.backdropFilter.startsWith("blur(")),"Focus settles on the composited picture");
     assert.equal(await page.locator(".power-crt-screen").evaluate(n=>n.style.transform),"none","Only the optical image moves");
     assert(await page.locator("#flight-number .flap-character").evaluateAll(nodes=>nodes.every(n=>getComputedStyle(n,"::after").opacity==="1")),"Warm flap lamps precede indexing, including blank cells");
-    await advance(1000);await screenshot("startup-mechanics.png");
+    const powerProbe = async label => console.log("POWER_PROBE", JSON.stringify(await page.evaluate(label => ({
+      label, virtualNow:Date.now(), performanceNow:performance.now(),
+      power:window.dadRadarDisplayPowerController.getSnapshot(),
+      flaps:Array.from(document.querySelectorAll("#flight-number .flap-character"),cell => ({
+        value:cell.dataset.value, slow:cell._powerSlow, className:cell.className,
+        moving:Array.from(cell.querySelectorAll(".flap-moving"),node=>({
+          connected:node.isConnected, className:node.className,
+          duration:getComputedStyle(node).animationDuration,
+          animations:node.getAnimations().map(a=>({state:a.playState,time:a.currentTime}))
+        }))
+      }))
+    }), label)));
+    await powerProbe("before-mechanics-advance");
+    await advance(1000);
+    await powerProbe("before-mechanics-screenshot");
+    await screenshot("startup-mechanics.png");
+    await powerProbe("after-mechanics-screenshot");
     assert.equal(await page.locator("#flight-number .flap-flip-top").first().evaluate(n=>getComputedStyle(n).animationDuration),"0.34s","Power flap stroke is slower than ordinary 190ms indexing");
     assert.equal(await page.locator(".drum-print:not(.drum-exit)").first().evaluate(n=>getComputedStyle(n).animationDuration),"1.3s","Power clock roll has twice the ordinary duration");
     assert.deepEqual(await bounds(page),before,"Intermediate indexing leaves module and fixed hardware geometry unchanged");

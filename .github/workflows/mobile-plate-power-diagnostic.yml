@@ -1,0 +1,33 @@
+name: Temporary mobile plate power diagnosis
+on:
+  push:
+    branches: [diagnostic/mobile-plate-power-2026-10-14]
+permissions:
+  contents: read
+jobs:
+  power-diagnostic:
+    runs-on: macos-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm install --no-save --package-lock=false playwright@1.63.0
+      - run: npx playwright install webkit
+      - run: npm run build:browser
+      - name: Observe unchanged power assertions around capture
+        env:
+          DADRADAR_BROWSER_ENGINE: webkit
+          DADRADAR_ARTIFACT_ROOT: artifacts/power-diagnostic
+        run: node scripts/display-power-browser-test.js
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: power-diagnostic-${{ github.sha }}
+          path: artifacts/
+          retention-days: 7
