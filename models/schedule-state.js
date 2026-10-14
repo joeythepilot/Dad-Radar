@@ -1130,17 +1130,21 @@
       const zone = options.displayTimeZone;
       const today = displayDateKey(now, zone);
       if (!today) return null;
-      if (events.some(event =>
-        displayDateKey(eventStart(event), zone) <= today &&
-        displayDateKey(new Date(eventEnd(event).getTime() - 1), zone) >= today
-      )) return null;
-
       const preceding = events.filter(event =>
         eventStart(event) <= now &&
         event.kind === "reserve" &&
-        ["RAP", "STANDBY"].includes(event.reserveType)
+        (["RAP", "STANDBY"].includes(event.reserveType) ||
+          (event.reserveType === "BLOCK" && !event.allDay &&
+            eventEnd(event) > eventStart(event) &&
+            eventEnd(event) - eventStart(event) <= 86400000))
       ).sort((a, b) => eventStart(b) - eventStart(a))[0];
       if (!preceding) return null;
+      // A prior daily shift's post-midnight tail is not a new assignment.
+      if (events.some(event =>
+        (event !== preceding || eventEnd(event) > now) &&
+        displayDateKey(eventStart(event), zone) <= today &&
+        displayDateKey(new Date(eventEnd(event).getTime() - 1), zone) >= today
+      )) return null;
       const reserveDay = displayDateKey(eventStart(preceding), zone);
       const dayDistance = (Date.parse(today + "T12:00:00Z") -
         Date.parse(reserveDay + "T12:00:00Z")) / 86400000;

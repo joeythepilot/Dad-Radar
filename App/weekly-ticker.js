@@ -67,12 +67,13 @@
       if(!date)return null;
       const parts=new Intl.DateTimeFormat("en-US",{
         timeZone,year:"numeric",month:"2-digit",day:"2-digit",
-        hour:"2-digit",hour12:false
+        hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false
       }).formatToParts(date);
       const get=type=>parts.find(part=>part.type===type)?.value??"";
       return {
         key:[get("year"),get("month"),get("day")].join("-"),
-        hour:Number(get("hour"))%24
+        hour:Number(get("hour"))%24,
+        minute:Number(get("minute")),second:Number(get("second"))
       };
     }
 
@@ -80,6 +81,15 @@
       const local=localDateParts(value,timeZone);
       if(!local)return null;
       return local.hour<rolloverHour ? shiftKey(local.key,-1) : local.key;
+    }
+
+    function calendarLeaveStartKey(event,timeZone) {
+      const start=startOf(event),local=localDateParts(start,timeZone);
+      if(!local)return null;
+      if(event.allDay)return local.key;
+      const last=operationalDateKey(new Date(endOf(event).getTime()-1),timeZone);
+      return local.hour===0 && local.minute===0 && local.second===0 &&
+        start.getMilliseconds()===0 && last>=local.key ? local.key : null;
     }
 
     function normalizeOvernightCode(value, homeAirport="AVL") {
@@ -133,9 +143,8 @@
         .filter(event=>event.kind==="duty-free")
         .forEach(dayOff=>{
           const lastInstant=new Date(endOf(dayOff).getTime()-1);
-          const first=dayOff.allDay
-            ? localDateParts(startOf(dayOff),options.timeZone)?.key
-            : operationalDateKey(startOf(dayOff),options.timeZone);
+          const first=calendarLeaveStartKey(dayOff,options.timeZone) ??
+            operationalDateKey(startOf(dayOff),options.timeZone);
           const last=dayOff.allDay
             ? localDateParts(lastInstant,options.timeZone)?.key
             : operationalDateKey(lastInstant,options.timeZone);
@@ -183,7 +192,10 @@
       // duty modifier or overwrite explicit calendar evidence.
       const allEvents=sorted(schedule?.events);
       const reserveSeeds=allEvents.filter(event=>event.kind==="reserve" &&
-        !event.allDay && event.airport && ["RAP","STANDBY"].includes(event.reserveType));
+        !event.allDay && event.airport &&
+        (["RAP","STANDBY"].includes(event.reserveType) ||
+          (event.reserveType==="BLOCK" && endOf(event)>startOf(event) &&
+            endOf(event)-startOf(event)<=86400000)));
       for(const module of modules){
         if(module.code!==UNKNOWN_OVERNIGHT_CODE)continue;
         const seed=reserveSeeds.filter(event=>
@@ -194,8 +206,8 @@
         const days=(Date.parse(module.key+"T12:00:00Z")-Date.parse(seedKey+"T12:00:00Z"))/86400000;
         if(days<1 || days>5)continue;
         const hasOffBoundary=allEvents.some(event=>{
-          if(event.kind!=="duty-free" || !event.allDay)return false;
-          const offKey=localDateParts(startOf(event),options.timeZone)?.key;
+          if(event.kind!=="duty-free")return false;
+          const offKey=calendarLeaveStartKey(event,options.timeZone);
           const distance=offKey?(Date.parse(offKey+"T12:00:00Z")-Date.parse(seedKey+"T12:00:00Z"))/86400000:Infinity;
           return offKey>module.key && distance<=6;
         });

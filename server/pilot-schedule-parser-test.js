@@ -386,7 +386,46 @@ function testFullSchedule() {
   );
 }
 
+function testImportedReserveAndLeaveDates() {
+  const {resolveScheduleState}=require('../models/schedule-state');
+  const {buildWeeklyOvernightModules}=require('../App/weekly-ticker');
+  const parsed=(summary,start,end)=>parsePilotEvent(createEvent({id:`${summary}-${start}`,summary,
+    start:{dateTime:start},end:{dateTime:end}}));
+  // Actual connected-calendar shapes, with private event identifiers omitted.
+  const reserve=parsed('RESERVE ORD','2026-10-14T13:00:00-04:00','2026-10-15T00:55:00-04:00');
+  const off=parsed('Duty free period','2026-10-17T00:00:00-04:00','2026-10-17T23:59:59-04:00');
+  const vacation=parsed('Vacation','2026-10-17T00:00:00-04:00','2026-10-23T23:58:59-04:00');
+  const schedule={events:[reserve,off]};
+  const wheels=(events,now='2026-10-14T21:00:00Z')=>buildWeeklyOvernightModules({events},{now}).map(module=>module.code);
+  assert.equal(reserve.reserveType,'BLOCK','A daily Reserve ORD does not invent a RAP assignment');
+  for(const day of [14,15,16]) {
+    assert.equal(resolveScheduleState(schedule,{now:`2026-10-${day}T18:00:00Z`}).mode,'RESERVE',
+      `The imported daily reserve continues on October ${day}`);
+  }
+  assert.equal(resolveScheduleState(schedule,{now:'2026-10-17T18:00:00Z'}).mode,'HOME');
+  assert.deepEqual(wheels([reserve,off]).slice(0,5),['ORD','ORD','ORD','HOME','UNKN'],
+    'Saturday midnight-start leave must not turn Friday HOME');
+  assert.deepEqual(wheels([reserve,off,vacation]),['ORD','ORD','ORD','HOME','HOME','HOME','HOME']);
+  assert.deepEqual(wheels([vacation],'2026-10-22T18:00:00Z').slice(0,3),['HOME','HOME','UNKN'],
+    'The final vacation date is included without extending leave');
+  const laterOff=parsed('Duty free period','2026-10-20T00:00:00-04:00','2026-10-20T23:59:59-04:00');
+  assert.deepEqual(wheels([reserve,laterOff]),['ORD','ORD','ORD','ORD','ORD','ORD','HOME'],
+    'An imported midnight-start day off bounds up to five continuation dates');
+  const longBlock=parsed('Reserve ORD','2026-10-14T13:00:00-04:00','2026-10-16T00:55:00-04:00');
+  assert.notEqual(resolveScheduleState({events:[longBlock,off]},{now:'2026-10-16T18:00:00Z'}).mode,'RESERVE',
+    'A timed multi-day block does not imply reserve beyond its explicit coverage');
+  assert.equal(wheels([longBlock,off])[2],'UNKN');
+  const allDayBlock=parsePilotEvent(createEvent({summary:'Reserve ORD',start:{date:'2026-10-14'},end:{date:'2026-10-15'}}));
+  assert.equal(wheels([allDayBlock,off])[1],'UNKN','An all-day block retains its explicit end');
+  assert.notEqual(resolveScheduleState({events:[allDayBlock,off]},{now:'2026-10-15T18:00:00Z'}).mode,'RESERVE');
+  const assigned=parsed('FLIGHT 1234 ORD->DFW','2026-10-15T11:00:00-04:00','2026-10-15T15:00:00-04:00');
+  assert.equal(resolveScheduleState({events:[reserve,assigned,off]},{now:'2026-10-15T18:00:00Z'}).event.id,assigned.id,
+    'Assigned flying supersedes inferred reserve');
+  assert.deepEqual(wheels([reserve,assigned,off]).slice(0,4),['ORD','DFW','UNKN','HOME']);
+}
+
 function runTests() {
+  testImportedReserveAndLeaveDates();
   const rap = parsePilotEvent(createEvent({summary:'RAP',start:{dateTime:'2026-10-01T09:00:00-05:00'},end:{dateTime:'2026-10-01T17:00:00-05:00'}}));
   assert.equal(rap.kind,'reserve');
   assert.equal(rap.airport,'ORD');
