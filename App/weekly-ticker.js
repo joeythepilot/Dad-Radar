@@ -192,7 +192,14 @@
         if(!seed)continue;
         const seedKey=operationalDateKey(startOf(seed),options.timeZone);
         const days=(Date.parse(module.key+"T12:00:00Z")-Date.parse(seedKey+"T12:00:00Z"))/86400000;
-        if(days<1 || days>2)continue;
+        if(days<1 || days>5)continue;
+        const hasOffBoundary=allEvents.some(event=>{
+          if(event.kind!=="duty-free" || !event.allDay)return false;
+          const offKey=localDateParts(startOf(event),options.timeZone)?.key;
+          const distance=offKey?(Date.parse(offKey+"T12:00:00Z")-Date.parse(seedKey+"T12:00:00Z"))/86400000:Infinity;
+          return offKey>module.key && distance<=6;
+        });
+        if(!hasOffBoundary && days>2)continue;
         const intervening=allEvents.some(event=>
           startOf(event)>endOf(seed) &&
           operationalDateKey(startOf(event),options.timeZone)<module.key &&
