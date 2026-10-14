@@ -132,3 +132,48 @@ html[data-family-full] .family-duty-narrow:not(.is-physical-duty-card) .daily-sc
 html[data-family-full] .family-duty-narrow:not(.is-physical-duty-card) .daily-schedule-label {
   grid-area:route; overflow:visible; white-space:normal; overflow-wrap:break-word; line-height:1.25;
 }
+
+
+/* Mobile Full only: pre-rendered wrinkle-black aluminum hardware.
+   The PNGs own ALL texture, bevel, rivet and metal appearance.
+   CSS only registers the artwork over existing module geometry.
+   No compact-view or physical-display changes. */
+html[data-family-full] .dashboard .flight-board #flight-number,
+html[data-family-full] .dashboard .flight-board .flap-route-section,
+html[data-family-full] .dashboard .flight-board #status-value,
+html[data-family-full] .dashboard .twin-clock-panel,
+html[data-family-full] .dashboard .weekly-overnight-bank,
+html[data-family-full] .dashboard .instrument-slot {
+  position: relative;
+  isolation: isolate;
+}
+html[data-family-full] .dashboard .flight-board #flight-number::after,
+html[data-family-full] .dashboard .flight-board .flap-route-section::after,
+html[data-family-full] .dashboard .flight-board #status-value::after,
+html[data-family-full] .dashboard .twin-clock-panel::after,
+html[data-family-full] .dashboard .weekly-overnight-bank::after,
+html[data-family-full] .dashboard .instrument-slot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  display: block;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  z-index: 5;
+}
+html[data-family-full] .dashboard .flight-board #flight-number::after,
+html[data-family-full] .dashboard .flight-board .flap-route-section::after,
+html[data-family-full] .dashboard .flight-board #status-value::after {
+  background-image: url("/assets/hardware/mobile-aluminum/flap-frame.png?v=raster-1");
+}
+html[data-family-full] .dashboard .twin-clock-panel::after {
+  background-image: url("/assets/hardware/mobile-aluminum/clock-frame.png?v=raster-1");
+}
+html[data-family-full] .dashboard .weekly-overnight-bank::after {
+  background-image: url("/assets/hardware/mobile-aluminum/weekly-frame.png?v=raster-1");
+}
+html[data-family-full] .dashboard .instrument-slot::after {
+  background-image: url("/assets/hardware/mobile-aluminum/gauge-ring.png?v=raster-1");
+}
