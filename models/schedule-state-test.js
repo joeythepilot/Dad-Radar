@@ -995,8 +995,10 @@ function runTests() {
     assert.match(inferred.state.message,/SCHEDULED FOR RESERVE/);
   }
   assert.equal(resolveScheduleState(octSchedule,{now:"2026-10-17T14:00:00Z"}).mode,"HOME");
-  assert.notEqual(resolveScheduleState(createSchedule([octRap]),{now:"2026-10-15T14:00:00Z"}).mode,"RESERVE",
-    "No confirmed block boundary means no speculative reserve continuation");
+  assert.equal(resolveScheduleState(createSchedule([octRap]),{now:"2026-10-15T14:00:00Z"}).mode,"RESERVE",
+    "Two blank days may inherit a known RAP without a future day-off export");
+  assert.notEqual(resolveScheduleState(createSchedule([octRap]),{now:"2026-10-17T14:00:00Z"}).mode,"RESERVE",
+    "Inference expires after two blank days");
   const newRap={...octRap,id:"new-rap",times:{startUtc:"2026-10-15T12:00:00Z",endUtc:"2026-10-15T20:00:00Z"}};
   assert.equal(resolveScheduleState(createSchedule([octRap,newRap,octOff]),{now:"2026-10-15T14:00:00Z"}).event.id,"new-rap",
     "An awarded RAP replaces inferred reserve");
