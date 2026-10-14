@@ -3,6 +3,20 @@ html[data-family-full] body { margin: 0; height: 100vh; height: 100dvh; width: 1
 html[data-family-full] .display-viewer { flex: 1; min-height: 0; min-width: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 html[data-family-full] .dashboard { flex: none; max-width: 100%; max-height: 100%; }
 html[data-family-full] .diagnostic-chime-button { display: none !important; }
+/* Original approved RGBA plate, behind the untouched instrument assembly.
+   Position the photographic opening rather than the padded image canvas. */
+html[data-family-full] .family-instrument-plate {
+  position: absolute;
+  width: 120%;
+  height: 120%;
+  max-width: none;
+  max-height: none;
+  left: 50%;
+  top: 50%;
+  transform: translate(-49.64114833%, -49.04306220%);
+  z-index: -1;
+  pointer-events: none;
+}
 html[data-family-full] .flight-board { min-width: 0; min-height: 0; padding: 3px var(--family-board-padding, 6px) !important; }
 html[data-family-full] .flight-board-row { display: flex !important; align-items: center !important; justify-content: space-between; gap: 0 !important; transform: none !important; }
 html[data-family-full] #flight-number { width: var(--flight-flap-group-width) !important; min-width: 0 !important; max-width: none !important; flex: 0 0 var(--flight-flap-group-width) !important; }

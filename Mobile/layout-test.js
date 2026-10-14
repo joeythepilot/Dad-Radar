@@ -25,6 +25,7 @@ function load(pathname, width, height) {
     body: {firstChild: null, insertBefore() {}, appendChild() {}},
     addEventListener(name, fn) { listeners[name] = fn; },
     querySelector(selector) { return selector === '.display-viewer' ? viewer : selector === '.flight-board' ? board : null; },
+    querySelectorAll() { return []; },
     getElementById(id) { return id === 'dashboard' ? dashboard : null; },
     createElement(tag) {
       created.push(tag);
