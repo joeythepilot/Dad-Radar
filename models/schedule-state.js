@@ -1147,7 +1147,7 @@
       const reserveDay = displayDateKey(eventStart(preceding), zone);
       const dayDistance = (Date.parse(today + "T12:00:00Z") -
         Date.parse(reserveDay + "T12:00:00Z")) / 86400000;
-      if (dayDistance < 1 || dayDistance > 5) return null;
+      if (dayDistance < 1 || dayDistance > 2) return null;
 
       // An intervening duty modifier invalidates this simple continuation.
       if (events.some(event =>
@@ -1155,14 +1155,6 @@
         displayDateKey(eventStart(event), zone) < today
       )) return null;
 
-      const boundary = events.find(event => {
-        if (event.kind !== "duty-free" || eventStart(event) <= now) return false;
-        const offDay = displayDateKey(eventStart(event), zone);
-        const distance = (Date.parse(offDay + "T12:00:00Z") -
-          Date.parse(reserveDay + "T12:00:00Z")) / 86400000;
-        return distance > dayDistance && distance <= 6;
-      });
-      if (!boundary) return null;
 
       const airport = preceding.airport ?? options.baseAirport;
       const location = String(airportLocation(airport, airport)).toUpperCase();
