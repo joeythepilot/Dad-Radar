@@ -42,9 +42,9 @@
 
     const ACTIVE_EVENT_PRIORITY = Object.freeze({
       flight: 5,
-      layover: 4,
+      "duty-free": 4,
       reserve: 3,
-      "duty-free": 2,
+      layover: 2,
       other: 1
     });
 
@@ -909,6 +909,9 @@
       events,
       now
     ) {
+      const inferredReserve = inferredReserveState(events, now, options);
+      if (inferredReserve) return inferredReserve;
+
       const completedFlights =
         events.filter(
           (event) =>
@@ -1121,6 +1124,57 @@
       }
 
       return null;
+    }
+
+    // A daily RAP is evidence of a reserve sequence, not evidence of the
+    // next day's RAP or physical overnight location. Only bridge blank days
+    // when an explicit upcoming day off bounds the sequence.
+    function inferredReserveState(events, now, options) {
+      const zone = options.displayTimeZone;
+      const today = displayDateKey(now, zone);
+      if (!today) return null;
+      if (events.some(event =>
+        displayDateKey(eventStart(event), zone) <= today &&
+        displayDateKey(new Date(eventEnd(event).getTime() - 1), zone) >= today
+      )) return null;
+
+      const preceding = events.filter(event =>
+        eventStart(event) <= now &&
+        event.kind === "reserve" &&
+        ["RAP", "STANDBY"].includes(event.reserveType)
+      ).sort((a, b) => eventStart(b) - eventStart(a))[0];
+      if (!preceding) return null;
+      const reserveDay = displayDateKey(eventStart(preceding), zone);
+      const dayDistance = (Date.parse(today + "T12:00:00Z") -
+        Date.parse(reserveDay + "T12:00:00Z")) / 86400000;
+      if (dayDistance < 1 || dayDistance > 5) return null;
+      const hasOffBoundary = events.some(event => {
+        if (event.kind !== "duty-free" || eventStart(event) <= now) return false;
+        const offDay = displayDateKey(eventStart(event), zone);
+        const distance = (Date.parse(offDay + "T12:00:00Z") -
+          Date.parse(reserveDay + "T12:00:00Z")) / 86400000;
+        return offDay > today && distance <= 6;
+      });
+      if (!hasOffBoundary && dayDistance > 2) return null;
+
+      // An intervening duty modifier invalidates this simple continuation.
+      if (events.some(event =>
+        eventStart(event) > eventEnd(preceding) &&
+        displayDateKey(eventStart(event), zone) < today
+      )) return null;
+
+
+      const airport = preceding.airport ?? options.baseAirport;
+      const location = String(airportLocation(airport, airport)).toUpperCase();
+      const result = createMessageState(
+        "RESERVE",
+        `DADDY IS SCHEDULED FOR RESERVE IN ${location}`,
+        null,
+        airport
+      );
+      result.state.source = "calendar-inference";
+      result.state.inferred = true;
+      return result;
     }
 
     function resolveScheduleState(

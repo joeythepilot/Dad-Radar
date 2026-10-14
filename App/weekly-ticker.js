@@ -178,6 +178,40 @@
           }
         });
 
+      // Envoy may publish only today's RAP/SBY. For future blank reserve
+      // dates, a known reserve shift predicts at most two blank overnights. Never infer past a different
+      // duty modifier or overwrite explicit calendar evidence.
+      const allEvents=sorted(schedule?.events);
+      const reserveSeeds=allEvents.filter(event=>event.kind==="reserve" &&
+        !event.allDay && event.airport && ["RAP","STANDBY"].includes(event.reserveType));
+      for(const module of modules){
+        if(module.code!==UNKNOWN_OVERNIGHT_CODE)continue;
+        const seed=reserveSeeds.filter(event=>
+          operationalDateKey(startOf(event),options.timeZone)<module.key
+        ).at(-1);
+        if(!seed)continue;
+        const seedKey=operationalDateKey(startOf(seed),options.timeZone);
+        const days=(Date.parse(module.key+"T12:00:00Z")-Date.parse(seedKey+"T12:00:00Z"))/86400000;
+        if(days<1 || days>5)continue;
+        const hasOffBoundary=allEvents.some(event=>{
+          if(event.kind!=="duty-free" || !event.allDay)return false;
+          const offKey=localDateParts(startOf(event),options.timeZone)?.key;
+          const distance=offKey?(Date.parse(offKey+"T12:00:00Z")-Date.parse(seedKey+"T12:00:00Z"))/86400000:Infinity;
+          return offKey>module.key && distance<=6;
+        });
+        if(!hasOffBoundary && days>2)continue;
+        const intervening=allEvents.some(event=>
+          startOf(event)>endOf(seed) &&
+          operationalDateKey(startOf(event),options.timeZone)<module.key &&
+          true
+        );
+        if(intervening)continue;
+        const airport=normalizeOvernightCode(seed.airport,options.homeAirport);
+        module.code=airport;
+        module.characters=overnightCharacters(airport);
+        module.inferred=true;
+      }
+
       sorted(schedule?.events)
         .filter(event=>event.kind==="flight" && event.destination)
         .sort((a,b)=>endOf(a)-endOf(b))

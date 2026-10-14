@@ -393,6 +393,14 @@ function runTests() {
   assert.equal(rap.reserveType,'RAP');
   assert.equal(rap.allDay,false);
   assert.equal(rap.times.startUtc,'2026-10-01T14:00:00.000Z');
+  for (const label of ['Standby','SBY','standby','sby']) {
+    const standby=parsePilotEvent(createEvent({summary:label,start:{dateTime:'2026-10-13T09:00:00-05:00'},end:{dateTime:'2026-10-13T17:00:00-05:00'}}));
+    assert.equal(standby.kind,'reserve',label+' is reserve duty');
+    assert.equal(standby.reserveType,'STANDBY');
+    assert.equal(standby.airport,'ORD');
+    assert.equal(standby.allDay,false);
+  }
+  assert.equal(parsePilotEvent(createEvent({summary:'Standby training'})).kind,'other');
   const block = parsePilotEvent(createEvent({summary:'Reserve ORD',start:{date:'2026-10-01'},end:{date:'2026-10-04'}}));
   assert.equal(block.kind,'reserve');
   assert.equal(block.airport,'ORD');

@@ -982,6 +982,32 @@ function runTests() {
   const flight=createFlight({id:'assigned-flight',times:{startUtc:'2026-08-04T13:00:00Z',endUtc:'2026-08-04T15:00:00Z'}});
   const assigned=resolveScheduleState(createSchedule([reserveBlock,rap,flight]),{now:NOW});
   assert.equal(assigned.event.id,'assigned-flight','An assignment takes precedence over RAP and the all-day block');
+  // Envoy awards future RAP/standby assignments the preceding evening.
+  // Blank intervening days can be reserve only when bounded by a day off.
+  const octRap={...rap,id:"oct-rap",times:{startUtc:"2026-10-14T12:00:00Z",endUtc:"2026-10-14T20:00:00Z"}};
+  const octOff={...dayOff,id:"oct-off",times:{startUtc:"2026-10-17T04:00:00Z",endUtc:"2026-10-18T04:00:00Z"}};
+  const octSchedule=createSchedule([octRap,octOff]);
+  for(const date of ["2026-10-15T14:00:00Z","2026-10-16T14:00:00Z"]){
+    const inferred=resolveScheduleState(octSchedule,{now:date});
+    assert.equal(inferred.mode,"RESERVE");
+    assert.equal(inferred.state.source,"calendar-inference");
+    assert.equal(inferred.state.inferred,true);
+    assert.match(inferred.state.message,/SCHEDULED FOR RESERVE/);
+  }
+  assert.equal(resolveScheduleState(octSchedule,{now:"2026-10-17T14:00:00Z"}).mode,"HOME");
+  assert.equal(resolveScheduleState(createSchedule([octRap]),{now:"2026-10-15T14:00:00Z"}).mode,"RESERVE",
+    "Two blank days may inherit a known RAP without a future day-off export");
+  assert.notEqual(resolveScheduleState(createSchedule([octRap]),{now:"2026-10-17T14:00:00Z"}).mode,"RESERVE",
+    "Inference expires after two blank days");
+  const newRap={...octRap,id:"new-rap",times:{startUtc:"2026-10-15T12:00:00Z",endUtc:"2026-10-15T20:00:00Z"}};
+  assert.equal(resolveScheduleState(createSchedule([octRap,newRap,octOff]),{now:"2026-10-15T14:00:00Z"}).event.id,"new-rap",
+    "An awarded RAP replaces inferred reserve");
+  const conflictingLayover={id:"ord-layover",kind:"layover",airport:"ORD",status:"confirmed",times:{startUtc:"2026-10-14T04:00:00Z",endUtc:"2026-10-15T04:00:00Z"}};
+  assert.equal(resolveScheduleState(createSchedule([octRap,conflictingLayover,octOff]),{now:"2026-10-14T14:00:00Z"}).mode,"RESERVE",
+    "An explicit reserve assignment beats stale overlapping ORD layover");
+  const nextDayLayover={...conflictingLayover,id:"next-day-layover",times:{startUtc:"2026-10-15T04:00:00Z",endUtc:"2026-10-16T04:00:00Z"}};
+  assert.equal(resolveScheduleState(createSchedule([octRap,nextDayLayover,octOff]),{now:"2026-10-15T14:00:00Z"}).mode,"LAYOVER",
+    "Explicit next-day duty evidence overrides inferred reserve");
   testActiveFlight();
   testGsoDestinationCity();
   testBilDestinationCity();
