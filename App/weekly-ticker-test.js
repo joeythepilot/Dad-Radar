@@ -134,6 +134,11 @@ assert.equal(ticker.operationalDateKey('2026-11-01T10:59:00Z','America/New_York'
 assert.equal(ticker.operationalDateKey('2026-11-01T11:00:00Z','America/New_York'),'2026-11-01',
   'The fall daylight-saving change still rolls at 6 AM Eastern.');
 
+const vacation={id:'vacation',kind:'duty-free',leaveType:'vacation',allDay:true,status:'confirmed',times:{startUtc:'2026-10-20T04:00:00Z',endUtc:'2026-10-22T04:00:00Z'}};
+const vacationWheels=ticker.buildWeeklyOvernightModules({events:[vacation]},{now:'2026-10-19T16:00:00Z'});
+assert.deepEqual(vacationWheels.slice(0,4).map(x=>x.code),['UNKN','HOME','HOME','UNKN'],
+  'Explicit vacation predicts HOME on covered dates without extending beyond leave');
+
 console.log("Weekly overnight tests passed: approved module artwork, seven bays, airport codes and 6am rollover.");
 
 // Envoy publishes each RAP/standby the prior evening; future blank dates
