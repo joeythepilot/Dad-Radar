@@ -135,3 +135,20 @@ assert.equal(ticker.operationalDateKey('2026-11-01T11:00:00Z','America/New_York'
   'The fall daylight-saving change still rolls at 6 AM Eastern.');
 
 console.log("Weekly overnight tests passed: approved module artwork, seven bays, airport codes and 6am rollover.");
+
+// Envoy publishes each RAP/standby the prior evening; future blank dates
+// bounded by a known day off predict the reserve-base overnight.
+const octReserve={id:'oct-rap',kind:'reserve',reserveType:'RAP',airport:'ORD',allDay:false,status:'confirmed',times:{startUtc:'2026-10-14T12:00:00Z',endUtc:'2026-10-14T23:59:00Z'}};
+const octOff={id:'oct-off',kind:'duty-free',allDay:true,status:'confirmed',times:{startUtc:'2026-10-17T04:00:00Z',endUtc:'2026-10-18T04:00:00Z'}};
+const inferred=ticker.buildWeeklyOvernightModules({events:[octReserve,octOff]},{now:'2026-10-14T16:00:00Z'});
+assert.deepEqual(inferred.slice(0,4).map(module=>module.code),['ORD','ORD','ORD','HOME']);
+assert.equal(inferred[1].inferred,true);
+assert.equal(inferred[2].inferred,true);
+const standby={...octReserve,id:'standby',reserveType:'STANDBY'};
+assert.equal(ticker.buildWeeklyOvernightModules({events:[standby,octOff]},{now:'2026-10-14T16:00:00Z'})[1].code,'ORD');
+assert.equal(ticker.buildWeeklyOvernightModules({events:[octReserve]},{now:'2026-10-14T16:00:00Z'})[1].code,'UNKN',
+  'No confirmed boundary means no inferred future overnight');
+const dfwFlight=flight('dfw-assignment','DFW','2026-10-15T15:00:00Z','2026-10-15T23:00:00Z');
+const assigned=ticker.buildWeeklyOvernightModules({events:[octReserve,octOff,dfwFlight]},{now:'2026-10-14T16:00:00Z'});
+assert.equal(assigned[1].code,'DFW','Assigned flight destination overrides inferred ORD');
+assert.equal(assigned[2].code,'UNKN','Do not infer base overnight beyond intervening flying');
