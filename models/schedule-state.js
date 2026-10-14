@@ -1141,7 +1141,7 @@
       const preceding = events.filter(event =>
         eventStart(event) <= now &&
         event.kind === "reserve" &&
-        event.reserveType === "RAP"
+        ["RAP", "STANDBY"].includes(event.reserveType)
       ).sort((a, b) => eventStart(b) - eventStart(a))[0];
       if (!preceding) return null;
       const reserveDay = displayDateKey(eventStart(preceding), zone);
