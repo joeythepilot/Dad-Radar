@@ -17,6 +17,26 @@ const SUITES=[
   {suite:'family',file:'scripts/component-browser-test.js',engines:['chromium','webkit'],focus:'family'}
 ];
 const fullMatrix=()=>SUITES.flatMap(s=>s.engines.map(engine=>({suite:s.suite,engine})));
+// Rounded observed seconds guide scheduling only; they never select coverage.
+const runtimeHints={
+  chromium:{power:35,weekly:40,'airline-logo':30,'split-flap':10,map:95,artwork:45,deployment:15,audio:20,clocks:20,duty:30,posters:15,family:25},
+  webkit:{power:280,weekly:80,'split-flap':25,map:150,clocks:70,duty:120,posters:35,family:80}
+};
+function browserWorkers(matrix){
+  return ['chromium','webkit'].flatMap(engine=>{
+    const cases=matrix.filter(j=>j.engine===engine);
+    if(!cases.length)return [];
+    const seconds=j=>runtimeHints[engine][j.suite]||120;
+    const count=Math.min(engine==='webkit'?3:2,cases.length,Math.ceil(cases.reduce((sum,j)=>sum+seconds(j),0)/240));
+    const buckets=Array.from({length:count},(_,i)=>({id:`${engine}-${i+1}`,engine,cases:[],estimatedSeconds:0}));
+    for(const job of [...cases].sort((a,b)=>seconds(b)-seconds(a))){
+      const bucket=buckets.reduce((a,b)=>a.estimatedSeconds<=b.estimatedSeconds?a:b);
+      bucket.cases.push(job);bucket.estimatedSeconds+=seconds(job);
+    }
+    return buckets.map(({cases:assigned,...worker})=>({...worker,
+      suites:cases.filter(j=>assigned.includes(j)).map(j=>j.suite).join(',')}));
+  });
+}
 const known=new Map();
 function own(files,suites,windowsFull=false){for(const file of files)known.set(file,{suites,windowsFull});}
 function pairs(directory,names){return names.flatMap(n=>[`${directory}/${n}.js`,`${directory}/${n}-test.js`]);}
@@ -73,7 +93,7 @@ function selectPlan(files,{full=false,uncertain=false}={}) {
     else {full=true;windowsFull=true;}
   }
   const matrix=full?fullMatrix():fullMatrix().filter(j=>selected.has(j.suite));
-  const workers=['chromium','webkit'].map(engine=>({engine,suites:matrix.filter(j=>j.engine===engine).map(j=>j.suite).join(',')})).filter(j=>j.suites);
+  const workers=browserWorkers(matrix);
   return {regression:full||paths.length>0,full,windowsFull:windowsFull||full,matrix,workers,files};
 }
 function needsWindowsContract(files,{uncertain=false}={}) {

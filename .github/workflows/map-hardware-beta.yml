@@ -48,7 +48,7 @@ jobs:
         run: node scripts/browser-test-plan.js
       - uses: actions/upload-artifact@v4
         with:
-          name: coverage-plan-${{ github.sha }}-${{ github.run_id }}
+          name: coverage-plan-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: coverage-plan.json
           retention-days: 7
   regression:
@@ -79,7 +79,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: map-regression-${{ github.sha }}-${{ github.run_id }}
+          name: map-regression-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: artifacts/map-regression/
           retention-days: 7
   browser:
@@ -90,7 +90,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
-    name: browser (${{ matrix.engine }})
+    name: browser (${{ matrix.id }})
     steps:
       - uses: actions/checkout@v4
         with:
@@ -123,7 +123,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: browser-${{ matrix.engine }}-${{ github.sha }}-${{ github.run_id }}
+          name: browser-${{ matrix.id }}-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: artifacts/browser/
           retention-days: 7
   release-gate:
@@ -165,7 +165,7 @@ jobs:
           git rev-parse HEAD > artifacts/source/commit.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: beta-source-${{ github.sha }}-${{ github.run_id }}
+          name: beta-source-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: artifacts/source/
           retention-days: 3
           compression-level: 0

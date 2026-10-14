@@ -9,7 +9,9 @@ Run one inexpensive complete deterministic pass for code changes. Select browser
 - `npm run test:browser -- --suite weekly,duty --engine webkit`: selected cases sharing one installed browser. Omitting suite/engine runs all supported cases.
 - `npm run test:deploy -- --base <running-40-character-SHA>`: explicit Windows selection; never silently changes what `npm test` means.
 
-Browser verification uses Playwright 1.63.0 and installed engine binaries. Suites are weekly, split-flap, map, artwork, deployment, audio, clocks, duty, posters and family. The runner collects independent failures, keeps suite/engine artifacts separate and records individual child times. Hosted CI installs each engine once per worker; it does not reinstall for each component.
+Browser verification uses Playwright 1.63.0 and installed engine binaries. Suites are power, weekly, airline-logo, split-flap, map, artwork, deployment, audio, clocks, duty, posters and family. The runner collects independent failures, keeps suite/engine artifacts separate and records individual child times. Hosted CI installs each engine once per worker; it does not reinstall for each component.
+
+Large selected runs use balanced workers, capped at two Chromium and three WebKit workers. Rounded measured suite runtimes guide assignment only; coverage selection, full fallback and the required-result gate are unchanged. Every selected suite/engine runs exactly once. Small scopes retain one worker per engine. Each worker has a unique job/artifact identity, so a failed-job retry repeats its assigned group rather than the entire engine. Added setup/compute is the tradeoff for shorter wall time; queue time and actual measured results must be reported separately from estimates.
 
 The complete deterministic pass measured about 14 seconds on hosted Linux before this cleanup. Routine browser/Windows work is where selection saves most time. Queue, dependency/build, child-test and restart times must be reported separately; estimates in the approved inventory are targets, not guaranteed measured results.
 

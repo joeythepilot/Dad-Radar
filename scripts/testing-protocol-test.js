@@ -5,6 +5,19 @@ const path=require('node:path');
 const os=require('node:os');
 const {execFileSync}=require('node:child_process');
 const {selectPlan,fullMatrix}=require('./browser-test-plan');
+const workerCases=plan=>plan.workers.flatMap(w=>w.suites.split(',').map(s=>`${w.engine}/${s}`)).sort();
+for(const files of [['Mobile/layout.css'],['models/schedule-state.js'],['App/clock-drums.js'],['README.md']]){
+  const plan=selectPlan(files);
+  assert.deepEqual(workerCases(plan),plan.matrix.map(j=>`${j.engine}/${j.suite}`).sort(),
+    'Worker distribution runs every selected suite/engine exactly once');
+  assert.equal(new Set(plan.workers.map(w=>w.id)).size,plan.workers.length,'Workers have unique artifact/retry identities');
+  assert(plan.workers.length<=5,'Browser parallelism remains bounded');
+}
+const broad=selectPlan(['Mobile/layout.css']);
+assert.equal(broad.workers.filter(w=>w.engine==='webkit').length,3,'Broad WebKit coverage is balanced across three independently retryable workers');
+assert.equal(broad.workers.filter(w=>w.engine==='chromium').length,2);
+assert(broad.workers.every(w=>w.estimatedSeconds<=340),'No broad worker retains the former full serial runtime');
+assert.equal(selectPlan(['App/clock-drums.js']).workers.length,2,'Small clock scope still reuses one installed engine per worker');
 for(const engine of ['chromium','webkit'])assert(fullMatrix().some(j=>j.suite==='power'&&j.engine===engine),`Full release must verify display power in ${engine}`);
 const suites=files=>[...new Set(selectPlan(files).matrix.map(j=>j.suite))];
 assert.deepEqual(suites(['App/clock-drums.js']),['clocks'],'A clock edit selects clocks, not map transport');

@@ -6,6 +6,16 @@ const {createDisplayFixture} = require("./display-browser-fixture");
 const {observeBrowserErrors} = require("./browser-error-proof");
 const engine = process.env.DADRADAR_BROWSER_ENGINE || "chromium";
 const capture = process.env.DADRADAR_POWER_CAPTURE !== "0";
+const timings=[];
+async function timed(operation,action){
+  const started=process.hrtime.bigint();
+  try{return await action();}
+  finally{
+    const elapsedMs=Math.round(Number(process.hrtime.bigint()-started)/1e6);
+    timings.push({operation,elapsedMs});
+    console.log("POWER_TIMING "+JSON.stringify({operation,elapsedMs}));
+  }
+}
 const {server,state,payload,root} = createDisplayFixture();
 const output = path.join(process.env.DADRADAR_ARTIFACT_ROOT || path.join(root,"artifacts"),"power",engine);
 const bounds = async page => page.evaluate(() => {
@@ -28,7 +38,7 @@ return result;});
     const portable = portableModule.default || portableModule;
     launch = {...launch,executablePath:await portable.executablePath(),args:["--no-sandbox","--disable-dev-shm-usage","--use-gl=angle","--use-angle=swiftshader","--enable-unsafe-swiftshader"]};
   }
-  const browser = await ({chromium,webkit})[engine].launch(launch);
+  const browser = await timed("browser launch",()=>({chromium,webkit})[engine].launch(launch));
   const sourceSha=execFileSync("git",["rev-parse","HEAD"],{cwd:root,encoding:"utf8"}).trim();
   const sourceTree=execFileSync("git",["rev-parse","HEAD^{tree}"],{cwd:root,encoding:"utf8"}).trim();
   const dirty=Boolean(execFileSync("git",["status","--porcelain"],{cwd:root,encoding:"utf8"}).trim());
@@ -37,21 +47,21 @@ return result;});
     const context = await browser.newContext({viewport:{width:1920,height:1080},deviceScaleFactor:1,
       ...(capture?{recordVideo:{dir:output,size:{width:1920,height:1080}}}:{}), serviceWorkers:"block"});
     const page=await context.newPage(), errors=observeBrowserErrors(page);
-    const screenshot = name => capture ? page.screenshot({path:path.join(output,name),timeout:60000}) : Promise.resolve();
+    const screenshot = name => timed("screenshot "+name,()=>capture ? page.screenshot({path:path.join(output,name),timeout:60000}) : Promise.resolve());
     // Sample phases rather than skipping directly to the deadline. Mechanical
     // queues await real timer/animation completions and must get intermediate
     // frames/microtasks, otherwise they only begin when a one-shot jump ends.
-    const advance=async ms=>{for(let remaining=ms;remaining>0;remaining-=100)await page.clock.fastForward(Math.min(100,remaining));};
+    const advance=async ms=>timed("virtual step "+ms,async()=>{for(let remaining=ms;remaining>0;remaining-=100)await page.clock.fastForward(Math.min(100,remaining));});
     await page.route("**/*",r=>r.request().url().startsWith(origin)||r.request().url().startsWith("blob:")?r.continue():r.abort());
-    await page.goto(origin);
+    await timed("primary page load",()=>page.goto(origin));
     await page.waitForSelector("#dashboard:not([hidden])",{timeout:30000});
     await page.evaluate(()=>document.fonts.ready);
-    await page.waitForTimeout(1600);
+    await timed("startup settle",()=>page.waitForTimeout(1600));
     // Freeze virtual time for exact phase captures; live HTTP fetches still run.
     // This also avoids chasing a moving SVG during software-renderer screenshots.
     await page.clock.install();
     await page.clock.pauseAt(new Date(await page.evaluate(()=>Date.now()+1000)));
-    const before=await bounds(page);
+    const before=await timed("initial geometry",()=>bounds(page));
     const mapBounds=await page.locator(".route-map-svg").boundingBox();
     await screenshot("before.png");console.log("Baseline measured");
     assert.equal(await page.locator("#display-power-switch").count(),1,"Primary power switch exists");
@@ -91,9 +101,23 @@ return result;});
     assert(await page.locator(".power-crt-glass").evaluate(n=>n.style.backdropFilter.startsWith("blur(")),"Focus settles on the composited picture");
     assert.equal(await page.locator(".power-crt-screen").evaluate(n=>n.style.transform),"none","Only the optical image moves");
     assert(await page.locator("#flight-number .flap-character").evaluateAll(nodes=>nodes.every(n=>getComputedStyle(n,"::after").opacity==="1")),"Warm flap lamps precede indexing, including blank cells");
-    await advance(1000);await screenshot("startup-mechanics.png");
-    assert.equal(await page.locator("#flight-number .flap-flip-top").first().evaluate(n=>getComputedStyle(n).animationDuration),"0.34s","Power flap stroke is slower than ordinary 190ms indexing");
-    assert.equal(await page.locator(".drum-print:not(.drum-exit)").first().evaluate(n=>getComputedStyle(n).animationDuration),"1.3s","Power clock roll has twice the ordinary duration");
+    await advance(1000);
+    // WebKit CSS animations can complete during a screenshot even while the
+    // virtual JS clock is paused. Read the connected transient layers in one
+    // task at the intended phase, before capture can remove a resolved node.
+    const mechanics=await page.evaluate(()=>{
+      const flap=document.querySelector("#flight-number .flap-flip-top");
+      const clock=document.querySelector(".drum-print:not(.drum-exit)");
+      return {
+        flap:flap&&flap.isConnected?getComputedStyle(flap).animationDuration:null,
+        clock:clock&&clock.isConnected?getComputedStyle(clock).animationDuration:null
+      };
+    });
+    assert.notEqual(mechanics.flap,null,"A connected flap is indexing at the mechanics phase");
+    assert.notEqual(mechanics.clock,null,"A connected clock print is present at the mechanics phase");
+    assert.equal(mechanics.flap,"0.34s","Power flap stroke is slower than ordinary 190ms indexing");
+    assert.equal(mechanics.clock,"1.3s","Power clock roll has twice the ordinary duration");
+    await screenshot("startup-mechanics.png");
     assert.deepEqual(await bounds(page),before,"Intermediate indexing leaves module and fixed hardware geometry unchanged");
     await advance(5600);
     assert.equal(await page.evaluate(()=>window.dadRadarDisplayPowerController.getState()),"on");
@@ -154,15 +178,17 @@ return result;});
     assert.equal(await page.locator("#dashboard").evaluate(n=>n.inert),false);
     await page.clock.resume();
     await errors("display-power primary");
-    const video=page.video();await context.close();
-    if(video)await video.saveAs(path.join(output,"power-cycle.webm"));
+    const video=page.video();await timed("context close and video finalization",()=>context.close());
+    if(video)await timed("video save",()=>video.saveAs(path.join(output,"power-cycle.webm")));
+    await timed("family isolation routes",async()=>{
     for(const route of ["/mobile","/mobile/full"]){
       const family=await browser.newPage({viewport:{width:844,height:390}});
       await family.goto(origin+route);await family.waitForSelector("#dashboard:not([hidden])",{timeout:30000});
       assert.equal(await family.locator("#display-power-switch,.display-power-curtain,.power-crt-screen").count(),0,"Family layout has no power adapters");
       await family.close();
     }
+    });
     fs.writeFileSync(path.join(output,"geometry.json"),JSON.stringify({sourceSha,sourceTree,dirty,capturedAt,browser:browser.version(),playwright:require("playwright/package.json").version,timing:"Controlled virtual clock; not real-time/Pi performance",viewport:{width:1920,height:1080,dpr:1},engine,capture,fixture:"Fictional shared server state; no provider calls",before,after},null,2));
     console.log(`Display power/${engine}: switch, newest data while off, geometry, reversals and family isolation passed.`);
-  } finally {await browser.close();await new Promise(resolve=>server.close(resolve));}
+  } finally {await timed("browser close",()=>browser.close());await new Promise(resolve=>server.close(resolve));console.log("POWER_TIMING_SUMMARY "+JSON.stringify(timings));}
 })().catch(error=>{console.error(error);process.exitCode=1;server.close();});
