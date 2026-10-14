@@ -45,6 +45,17 @@
     Object.keys(sizes).forEach(function (name) { module.style.setProperty(name, sizes[name] + 'px'); });
   }
   function mount() {
+    // The approved photographic plate is a separate mobile-only rear layer.
+    // Keep every existing instrument child and its mechanism unchanged.
+    document.querySelectorAll('.instrument-slot .instrument').forEach(function (instrument) {
+      var plate = document.createElement('img');
+      plate.className = 'family-instrument-plate';
+      plate.src = '/assets/hardware/HomingBeacon_Approved_Instrument_Plate_Transparent_v1.png';
+      plate.alt = '';
+      plate.setAttribute('aria-hidden', 'true');
+      plate.draggable = false;
+      instrument.insertBefore(plate, instrument.firstChild);
+    });
     fit();
     if ('ResizeObserver' in window) {
       var observer = new ResizeObserver(fit);
