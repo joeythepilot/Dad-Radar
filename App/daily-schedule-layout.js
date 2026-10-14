@@ -209,9 +209,19 @@
               entry?.kind !== "duty-free" &&
               entry?.kind !== "reserve"
           )
-        : sourceEntries.some(entry=>entry?.kind==="reserve" && entry?.tag==="RAP")
-          ? sourceEntries.filter(entry=>entry?.kind!=="reserve" || entry?.tag==="RAP")
+        : sourceEntries.some(entry=>entry?.kind==="reserve" && ["RAP", "STBY"].includes(entry?.tag))
+          ? sourceEntries.filter(entry=>entry?.kind!=="reserve" || ["RAP", "STBY"].includes(entry?.tag))
           : sourceEntries;
+
+      // A specific active standby shift leads the broader reserve window,
+      // including when it starts later. Keep every retained row and its times.
+      const standbyIndex = allEntries.findIndex(entry =>
+        entry?.kind === "reserve" && entry?.tag === "STBY" && entry?.status === "current");
+      const rapIndex = allEntries.findIndex(entry =>
+        entry?.kind === "reserve" && entry?.tag === "RAP");
+      if (rapIndex >= 0 && standbyIndex > rapIndex) {
+        allEntries.splice(rapIndex, 0, allEntries.splice(standbyIndex, 1)[0]);
+      }
 
       const visibleEntries =
         selectVisibleEntries(

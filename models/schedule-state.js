@@ -112,6 +112,12 @@
       );
     }
 
+    function reservePriority(event) {
+      return event?.kind === "reserve"
+        ? ({ STANDBY: 3, RAP: 2, BLOCK: 1 }[event.reserveType] ?? 0)
+        : 0;
+    }
+
     function sortEvents(events) {
       return (Array.isArray(events)
         ? events
@@ -121,7 +127,10 @@
         .sort(
           (left, right) =>
             eventStart(left) -
-            eventStart(right)
+            eventStart(right) ||
+            ((ACTIVE_EVENT_PRIORITY[right.kind] ?? 0) -
+              (ACTIVE_EVENT_PRIORITY[left.kind] ?? 0)) ||
+            reservePriority(right) - reservePriority(left)
         );
     }
 
@@ -326,7 +335,8 @@
       }
 
       if (event.kind === "reserve") {
-        return event.reserveType === "RAP" ? "RAP" : "RESERVE";
+        return event.reserveType === "STANDBY" ? "STBY"
+          : event.reserveType === "RAP" ? "RAP" : "RESERVE";
       }
 
       return "";
@@ -1026,6 +1036,11 @@
 
           if (priorityDifference) {
             return priorityDifference;
+          }
+
+          if (left.kind === "reserve" && right.kind === "reserve") {
+            const reserveDifference = reservePriority(right) - reservePriority(left);
+            if (reserveDifference) return reserveDifference;
           }
 
           if (

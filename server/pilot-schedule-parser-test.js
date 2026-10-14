@@ -424,7 +424,76 @@ function testImportedReserveAndLeaveDates() {
   assert.deepEqual(wheels([reserve,assigned,off]).slice(0,4),['ORD','DFW','UNKN','HOME']);
 }
 
+function testOverlappingRapAndStandby() {
+  const {resolveScheduleState,buildDailySchedule}=require('../models/schedule-state');
+  const {buildDutyCardView}=require('../App/daily-schedule-layout');
+  const {buildWeeklyOvernightModules}=require('../App/weekly-ticker');
+  // Explicit UTC is synthetic normalized test data, not an interpretation of
+  // MobileCCI's floating ICS times. Preserve the two separate source events.
+  const rap=createEvent({id:'overlap-rap',summary:'RAP',
+    start:{dateTime:'2026-10-15T09:00:00Z'},end:{dateTime:'2026-10-15T23:00:00Z'}});
+  const stby=createEvent({id:'overlap-stby',summary:'STBY',
+    start:{dateTime:'2026-10-15T09:00:00Z'},end:{dateTime:'2026-10-15T16:59:59Z'}});
+  for(const records of [[rap,stby],[stby,rap]]) {
+    const schedule=parsePilotSchedule({events:records});
+    assert.equal(schedule.events.length,2,'Keep both overlapping calendar records');
+    assert.equal(schedule.events.find(event=>event.id===stby.id).reserveType,'STANDBY');
+    const options={now:'2026-10-15T12:00:00Z',displayTimeZone:'UTC'};
+    const resolved=resolveScheduleState(schedule,options);
+    assert.equal(resolved.mode,'RESERVE');
+    assert.equal(resolved.event.id,stby.id,'Assigned standby takes precedence during the overlap');
+    const daily=buildDailySchedule(schedule,resolved,options);
+    assert.equal(daily.entries.length,2,'Duty data retains both RAP and standby');
+    assert.deepEqual(daily.entries.map(entry=>[entry.id,entry.tag,entry.status]),
+      [[stby.id,'STBY','current'],[rap.id,'RAP','upcoming']]);
+    const card=buildDutyCardView(daily,1920,{rowCapacity:5,ruledSlots:5});
+    assert.deepEqual(card.rows.map(row=>row.flight),['STBY','RAP'],
+      'The physical duty card keeps both shifts, with standby first');
+    assert.equal(card.rows[0].arrivalTime,'4:59 PM');
+    assert.equal(card.rows[1].arrivalTime,'11:00 PM');
+    assert.equal(resolveScheduleState(schedule,{...options,now:'2026-10-15T17:00:00Z'}).event.id,rap.id,
+      'After standby ends, the still-active RAP remains reserve duty');
+    assert.equal(buildWeeklyOvernightModules(schedule,{now:options.now})[0].code,'ORD');
+    assert.deepEqual(schedule.events.map(event=>event.id),records.map(event=>event.id),
+      'Presentation priority must not mutate or deduplicate the source schedule');
+  }
+  for(const summary of ['STBY','stby','StBy']) {
+    assert.equal(parsePilotEvent({...stby,summary}).reserveType,'STANDBY');
+  }
+  assert.equal(parsePilotEvent({...stby,summary:'STBY training'}).kind,'other');
+
+  const laterRap={...rap,start:{dateTime:'2026-10-15T10:00:00Z'}};
+  const overlapping=parsePilotSchedule({events:[laterRap,stby]});
+  assert.equal(resolveScheduleState(overlapping,{now:'2026-10-15T12:00:00Z'}).event.id,stby.id,
+    'A later RAP start cannot displace an active assigned standby shift');
+
+  const laterStandby={...stby,start:{dateTime:'2026-10-15T10:00:00Z'}};
+  const other=createEvent({id:'other',summary:'Briefing',start:rap.start,end:rap.end});
+  for (const records of [[rap,laterStandby],[rap,other,stby],[stby,other,rap]]) {
+    const schedule=parsePilotSchedule({events:records});
+    const options={now:'2026-10-15T12:00:00Z',displayTimeZone:'UTC'};
+    const daily=buildDailySchedule(schedule,resolveScheduleState(schedule,options),options);
+    const before=JSON.stringify(daily.entries);
+    const card=buildDutyCardView(daily,1920,{rowCapacity:5,ruledSlots:5});
+    assert.equal(card.rows.find(row=>['RAP','STBY'].includes(row.flight)).flight,'STBY',
+      'Active standby leads RAP even with different starts or interleaved records');
+    assert.equal(JSON.stringify(daily.entries),before,'Card ordering must not mutate duty data');
+  }
+
+  const flight=createEvent({id:'assigned-flight',summary:'Flight 4140 ORD->AVP',
+    start:{dateTime:'2026-10-15T12:00:00Z'},end:{dateTime:'2026-10-15T14:00:00Z'}});
+  const assigned=parsePilotSchedule({events:[rap,stby,flight]});
+  const flightOptions={now:'2026-10-15T13:00:00Z',displayTimeZone:'UTC'};
+  const flying=resolveScheduleState(assigned,flightOptions);
+  assert.equal(flying.event.id,flight.id,'Assigned flying supersedes both reserve records');
+  assert.equal(buildWeeklyOvernightModules(assigned,{now:flightOptions.now})[0].code,'AVP',
+    'Assigned flying supersedes the predicted ORD overnight');
+  assert.equal(buildDailySchedule(assigned,flying,flightOptions).entries.length,3,
+    'Flight presentation does not remove either source reserve record');
+}
+
 function runTests() {
+  testOverlappingRapAndStandby();
   testImportedReserveAndLeaveDates();
   const rap = parsePilotEvent(createEvent({summary:'RAP',start:{dateTime:'2026-10-01T09:00:00-05:00'},end:{dateTime:'2026-10-01T17:00:00-05:00'}}));
   assert.equal(rap.kind,'reserve');
