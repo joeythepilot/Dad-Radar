@@ -179,11 +179,9 @@
         });
 
       // Envoy may publish only today's RAP/SBY. For future blank reserve
-      // dates, the most recent assignment plus an upcoming explicit day off
-      // bounds the expected overnight at base. Never infer past a different
+      // dates, a known reserve shift predicts at most two blank overnights. Never infer past a different
       // duty modifier or overwrite explicit calendar evidence.
       const allEvents=sorted(schedule?.events);
-      const offBoundaries=allEvents.filter(event=>event.kind==="duty-free" && event.allDay);
       const reserveSeeds=allEvents.filter(event=>event.kind==="reserve" &&
         !event.allDay && event.airport && ["RAP","STANDBY"].includes(event.reserveType));
       for(const module of modules){
@@ -194,17 +192,11 @@
         if(!seed)continue;
         const seedKey=operationalDateKey(startOf(seed),options.timeZone);
         const days=(Date.parse(module.key+"T12:00:00Z")-Date.parse(seedKey+"T12:00:00Z"))/86400000;
-        if(days<1 || days>5)continue;
-        const boundary=offBoundaries.find(event=>{
-          const key=localDateParts(startOf(event),options.timeZone)?.key;
-          const delta=key?(Date.parse(key+"T12:00:00Z")-Date.parse(seedKey+"T12:00:00Z"))/86400000:Infinity;
-          return key>module.key && delta<=6;
-        });
-        if(!boundary)continue;
+        if(days<1 || days>2)continue;
         const intervening=allEvents.some(event=>
           startOf(event)>endOf(seed) &&
           operationalDateKey(startOf(event),options.timeZone)<module.key &&
-          event!==boundary
+          true
         );
         if(intervening)continue;
         const airport=normalizeOvernightCode(seed.airport,options.homeAirport);
