@@ -406,6 +406,13 @@ function runTests() {
   assert.equal(block.airport,'ORD');
   assert.equal(block.allDay,true);
   assert.equal(block.times.endUtc,'2026-10-04T04:00:00.000Z');
+  for (const label of ['Vacation','VAC','vacation','vac']) {
+    const leave=parsePilotEvent(createEvent({summary:label,start:{date:'2026-10-20'},end:{date:'2026-10-23'}}));
+    assert.equal(leave.kind,'duty-free',label+' should follow day-off HOME semantics');
+    assert.equal(leave.leaveType,'vacation');
+    assert.equal(leave.allDay,true);
+  }
+  assert.equal(parsePilotEvent(createEvent({summary:'Vacation review'})).kind,'other');
   const dutyFree = parsePilotEvent(createEvent({summary:'Duty free period',start:{date:'2026-10-02'},end:{date:'2026-10-04'}}));
   assert.equal(dutyFree.kind,'duty-free');
   assert.equal(dutyFree.allDay,true,'An imported multi-day Duty Free Period retains its calendar-date scope.');
