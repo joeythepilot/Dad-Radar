@@ -146,8 +146,10 @@ assert.equal(inferred[1].inferred,true);
 assert.equal(inferred[2].inferred,true);
 const standby={...octReserve,id:'standby',reserveType:'STANDBY'};
 assert.equal(ticker.buildWeeklyOvernightModules({events:[standby,octOff]},{now:'2026-10-14T16:00:00Z'})[1].code,'ORD');
-assert.equal(ticker.buildWeeklyOvernightModules({events:[octReserve]},{now:'2026-10-14T16:00:00Z'})[1].code,'UNKN',
-  'No confirmed boundary means no inferred future overnight');
+assert.equal(ticker.buildWeeklyOvernightModules({events:[octReserve]},{now:'2026-10-14T16:00:00Z'})[1].code,'ORD',
+  'A known RAP predicts the next reserve overnight without a future day-off export');
+assert.equal(ticker.buildWeeklyOvernightModules({events:[octReserve]},{now:'2026-10-14T16:00:00Z'})[3].code,'UNKN',
+  'Reserve overnight inference expires after two blank days');
 const dfwFlight=flight('dfw-assignment','DFW','2026-10-15T15:00:00Z','2026-10-15T23:00:00Z');
 const assigned=ticker.buildWeeklyOvernightModules({events:[octReserve,octOff,dfwFlight]},{now:'2026-10-14T16:00:00Z'});
 assert.equal(assigned[1].code,'DFW','Assigned flight destination overrides inferred ORD');
