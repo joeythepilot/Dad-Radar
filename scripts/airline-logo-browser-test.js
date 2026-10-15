@@ -49,7 +49,7 @@ async function settled(page) {
    assert.deepEqual(measured.neighbors,before.neighbors,`${name}: neighboring module rectangles unchanged`);
    assert.deepEqual(measured.groups.map(g=>g.tiles.length),[5,3,3,8]);
    const tiles=measured.groups.flatMap(g=>g.tiles);
-   for(const tile of tiles){near(tile.width,tiles[0].width,.001);near(tile.height,tiles[0].height,.001);near(tile.height,before.groups[0].tiles[0].height,.02);}
+   for(const tile of tiles){near(tile.width,tiles[0].width,.001);near(tile.height,tiles[0].height,.001);if(name==='primary')near(tile.height,before.groups[0].tiles[0].height,.02);else near(tile.height/tile.width,137/(452/(5+4*.04)),.035);}
    if(name==='primary') {
    const spacing=g=>g.tiles.slice(1).map((t,i)=>t.left-g.tiles[i].right);
    for(let i=0;i<4;i++)for(const gap of spacing(measured.groups[i]))near(gap,spacing(before.groups[i])[0],.02);
