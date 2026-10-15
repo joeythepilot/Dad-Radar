@@ -104,3 +104,20 @@ without replacing the original exception if evidence collection also fails.
 The original hosted timeout remains unattributed; other historical weekly/map
 and animation timeouts are still open evidence gaps. A new exact-SHA full gate
 is required before deployment; the diagnostic's pass is not a release override.
+
+Final exact candidate6a93622 passed full gate38766744118 on attempt1 and
+Windows contract38766744189. Weekly passed in Chromium38727ms and WebKit
+39495ms; family passed both engines, WebKit106542ms. These results validate
+the corrected proof, not retrospective attribution of the original timeout.
+The full gate ran16:10:31–16:28:44 UTC. Its last worker was queued after the
+16:11:01 plan and did not start until16:22:24 (11m23s); it then executed once
+and passed. That observed runner wait is separate from test execution or
+rerunning failed assertions. WebKit power191664ms, split-flap19561ms and
+posters39186ms completed in that last worker. No suite retries were used.
+
+Private deployment38769394894 validated the gate and ran full Windows tests
+in118641ms, then requested restart16:31:35 and confirmed new process16:31:48.
+Independent status38769884787 confirmed exact healthy identity. Existing npm
+dependency-audit warnings were visible during installation and were not changed
+or claimed resolved by this presentation/test release; separate dependency
+triage remains outside this correction. No audit-force or security workaround.

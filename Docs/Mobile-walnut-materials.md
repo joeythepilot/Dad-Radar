@@ -116,3 +116,16 @@ installation was denied; no permission bypass was attempted. Hosted testing
 provided the actual WebKit evidence. Independent review found no blocking issue
 in the corrected proof. A fresh exact-candidate full gate is still required;
 no deployment is claimed by this record.
+
+## Release receipt — October 15, 2026
+
+Approved photographic framing is now deployed as6a93622c0cb8cf2bc4fea4c087c93bebccf75141.
+Full exact-SHA gate38766744118 and Windows contract38766744189 passed; PR22
+merged through a guarded production fast-forward. Private deploy252/
+run38769394894 passed full Windows verification and brokered restart.
+Independent status253/run38769884787 confirms the exact healthy running
+candidate, clean checkout and new instance1792081908092-3408-i7g7vu.
+No approved runtime/artwork change was made while correcting the proofs.
+The subsequent verified-baseline/receipt commit is metadata, not a redeployment.
+See the execution record and reliability audit for measured evidence and the
+explicitly unresolved historical weekly-timeout attribution.

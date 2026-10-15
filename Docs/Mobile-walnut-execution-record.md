@@ -27,3 +27,40 @@ Task 2: complete (commits 64700d9..f9a93d6, tests: npm test → Mobile backgroun
 
 Final release: remote candidate42de9e2fe24be5d79b94ac64714c720e56ed59d2 has exact local reviewed tree d8f4a9bfbfbbd60a4936692e4eeae69111d3027a. Full hosted verification38684048944 and Windows contract38684048920 succeeded. Guarded fast-forward to production completed; PR18 merged. Private deploy244/run38684863318 passed full Windows tests and restarted existing broker. Separate status245/run38685140815 confirms installed/upstream/running42de9e2, CLEAN tree, HEALTHY service, new instance1792040850053-10008-bha6er. Executor unchanged6136ff37958ad68212c90b4363c2e23deadbe68b664b410da673f206edef2618; protected task UNAVAILABLE is expected low-privilege visibility. No claim of family-device visual acceptance. Metadata-only baseline record follows; no second runtime deployment needed.
 Task 3: complete (commits f9a93d6..9b235a9, tests: npm test → Mobile background startup tests passed.)
+
+## Approved photographic profile framing release — October 15, 2026
+
+Joey rejected the earlier flat strips/backing as an inadequate match to the
+mockup. Actual photographic miters and inward-facing returns now frame each
+unchanged module opening; matching broad walnut fills remaining negative space.
+The complete actual candidate was visually approved at09:55 Chicago, with an
+explicit deployment request. Approval does not derive from a passing test.
+
+Final running candidate: `6a93622c0cb8cf2bc4fea4c087c93bebccf75141`, exact tree
+`fef5d924a2af888105ebb2d715c426a6e95c6e52`, equal to local reviewed928b53f.
+Runtime/artwork bytes remain identical to the approved local6962d5d candidate;
+later changes correct verification only. No original metal/mechanisms, layout,
+primary display, security protocol, runner privilege or executor changed.
+
+Full exact-SHA gate38766744118 and Windows contract38766744189 succeeded on
+attempt1. Both Chromium workers and all three WebKit workers passed. In WebKit,
+weekly took39495ms and family106542ms; the complete walnut lifecycle, eight
+layouts/return signature and real decode/resize challenge remain active.
+Earlier failures, invalid diagnostic harnesses and controlled test corrections
+are documented in Mobile-walnut-materials and the test reliability audit.
+The original weekly timeout remains unattributed; no blanket flaky-test claim.
+
+Production `agent/mobile-companion` was advanced with an expected-head lease
+froma192e40 to the exact passing candidate. PR22 is merged. Private deployment
+252/run38769394894 validated the full hosted gate, ran full Windows tests
+(118641ms), and used the existing brokered restart. Separate status253/
+run38769884787 confirms installed/upstream/running candidate, CLEAN checkout,
+HEALTHY service and new instance1792081908092-3408-i7g7vu, replacing
+1792069977094-21100-chw49h. Executor SHA256 remains
+6136ff37958ad68212c90b4363c2e23deadbe68b664b410da673f206edef2618.
+UNAVAILABLE protected task visibility is expected for Network Service.
+
+This subsequent receipt/baseline commit is metadata only and is not a second
+runtime deployment. Physical family-device visual acceptance and iOS12/Pi
+performance remain distinct, unclaimed checks. The purpose remains a tangible,
+beautiful connection for Allison and Delaney, not a test-score exercise.
