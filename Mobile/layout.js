@@ -55,7 +55,7 @@
     var walnut = document.createElement('picture');
     walnut.className = 'family-walnut';
     walnut.setAttribute('aria-hidden', 'true');
-    walnut.innerHTML = '<source media="(aspect-ratio < 1/1)" srcset="/assets/hardware/HomingBeacon_Walnut_Overlay_Portrait_v1.png">' +
+    walnut.innerHTML = '<source media="not all and (min-aspect-ratio: 1/1)" srcset="/assets/hardware/HomingBeacon_Walnut_Overlay_Portrait_v1.png">' +
       '<img src="/assets/hardware/HomingBeacon_Walnut_Overlay_Landscape_v1.png" alt="" draggable="false">';
     document.getElementById('dashboard').appendChild(walnut);
     // The approved photographic plate is a separate mobile-only rear layer.
