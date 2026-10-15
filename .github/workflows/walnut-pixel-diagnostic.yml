@@ -1,0 +1,31 @@
+name: Walnut pixel diagnostic
+on:
+  push:
+    branches: [diag/walnut-webkit-pixels]
+permissions:
+  contents: read
+jobs:
+  family-webkit:
+    runs-on: macos-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm install --no-save --package-lock=false playwright@1.63.0
+      - run: npx playwright install webkit
+      - run: node scripts/component-browser-test.js
+        env:
+          DADRADAR_BROWSER_FOCUS: family
+          DADRADAR_BROWSER_ENGINE: webkit
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: walnut-webkit-diagnostic
+          path: artifacts/
+          retention-days: 7

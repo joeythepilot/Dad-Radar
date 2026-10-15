@@ -51,7 +51,9 @@ async function checkMobileWood(page){
    return{side,actual:[...n.getContext('2d').getImageData(col,row,1,1).data],expected:[...c.getImageData(col,row,1,1).data]};
   });
  });
- for(const sample of landmarks){assert.equal(sample.expected[3],255,'Reference landmark lies within the photographed board');sample.actual.forEach((v,i)=>assert(Math.abs(v-sample.expected[i])<=1,sample.side+' frame raster must match the photographed source and inward orientation'));}
+ console.log('WALNUT_RASTER_DIAGNOSTIC',JSON.stringify({viewport:page.viewportSize(),landmarks}));
+ await page.screenshot({path:require('node:path').join(process.env.DADRADAR_ARTIFACT_ROOT||'artifacts','family','walnut-latest.png'),fullPage:true});
+ for(const sample of landmarks){assert.equal(sample.expected[3],255,'Reference landmark lies within the photographed board');sample.actual.forEach((v,i)=>assert(Math.abs(v-sample.expected[i])<=1,sample.side+' frame raster must match the photographed source and inward orientation: '+JSON.stringify({viewport:page.viewportSize(),sample})));}
  const size=page.viewportSize(),baseline=require('./fixtures/mobile-wood-baseline.json').cases.find(c=>c.viewport.width===size.width&&c.viewport.height===size.height);
  if(baseline){
   const actual=await page.evaluate(selectors=>selectors.map(s=>({selector:s,nodes:[...document.querySelectorAll(s)].map(n=>({rect:n.getBoundingClientRect().toJSON(),x:n.getAttribute('x'),y:n.getAttribute('y'),width:n.getAttribute('width'),height:n.getAttribute('height')}))})),baseline.geometry.map(g=>g.selector));
