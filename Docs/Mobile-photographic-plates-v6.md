@@ -49,6 +49,21 @@ assets; the three approved instrument plates remain byte-exact and unchanged.
 
 ## Limits and fallback
 
+### October 15 clock recess and raster-density correction
+
+The shared clock windows now have an opaque dark recess behind the unchanged
+live drums and colon. Leaving these entire windows transparent exposed walnut
+between the separate wheels. Split-flap apertures remain transparent.
+
+Metal canvas backing stores now include the complete panel's uniform scale in
+their device-pixel ratio. Previously a 1920-wide Retina panel displayed a
+1645-pixel split-flap canvas across 3084 device pixels; it now renders 3084.
+Portrait tablet and clock canvases receive the same correction. Source image
+bytes, physical texture scale, mechanism artwork and walnut PNGs are unchanged;
+this removes avoidable rendering softness but does not invent source detail.
+Retina tablet/wide/portrait cases check actual displayed pixel coverage and
+opaque clock recesses in the existing family browser proof.
+
 Rendering is performed only on resize/startup, not in an animation loop. All six
 photographic inputs currently load before mounting; an asset failure leaves the
 native unplated layout usable. Approximately 10.7 MB of additional PNG transfer

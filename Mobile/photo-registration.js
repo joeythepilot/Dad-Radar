@@ -28,7 +28,8 @@
  };
  function load(src){return new Promise(function(resolve,reject){var im=new Image();im.onload=function(){resolve(im);};im.onerror=reject;im.src=src;});}
  function draw(canvas,photo,targets,bay){
-  var clearance=3,dpr=Math.min(root.devicePixelRatio||1,3),f=fitBody(photo.body,bay,clearance);
+  var panelScale=parseFloat(document.getElementById('dashboard').style.getPropertyValue('--family-panel-scale'))||1;
+  var clearance=3,dpr=(root.devicePixelRatio||1)*panelScale,f=fitBody(photo.body,bay,clearance);
   var width=Math.ceil(bay.width*dpr),height=Math.ceil((bay.height+2*clearance)*dpr);
   if(canvas.width!==width)canvas.width=width;if(canvas.height!==height)canvas.height=height;
   canvas.style.width=bay.width+'px';canvas.style.height=(bay.height+2*clearance)+'px';
@@ -49,7 +50,11 @@
    var plan=registerEdges(h,targets[i],6);
    plan.edges.forEach(function(e){ctx.drawImage(photo.original,e.sx,e.sy,e.sw,e.sh,e.dx,e.dy,e.dw,e.dh);});
   });
-  targets.forEach(function(t){ctx.clearRect(t.x,t.y,t.width,t.height);});
+  targets.forEach(function(t){
+   ctx.clearRect(t.x,t.y,t.width,t.height);
+   // The clock's shared recess is opaque behind the separate live drums/colon.
+   if(photo.name==='Clock'){ctx.fillStyle='#0b0a09';ctx.fillRect(t.x,t.y,t.width,t.height);}
+  });
   canvas._photoEvidence={profile:photo.name,fit:f,body:photo.body,holes:targets,bay:bay,dpr:dpr,source:photo.original.src};
  }
  function makeCanvas(parent,kind){var n=document.createElement('canvas');n.className='family-photo-plate family-'+kind+'-plate';n.setAttribute('aria-hidden','true');parent.insertBefore(n,parent.firstChild);return n;}

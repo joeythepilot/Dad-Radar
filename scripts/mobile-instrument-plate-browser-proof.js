@@ -65,7 +65,7 @@ async function checkMobileSplitFlapPlate(page){
     if(allowed.some(a=>u>=a.x&&u<=a.x+a.w&&v>=a.y&&v<=a.y+a.h))continue;
     compared++;const i=(y*canvas.width+x)*4;if(actual[i]!==original[i]||actual[i+1]!==original[i+1]||actual[i+2]!==original[i+2]||actual[i+3]!==original[i+3]){changedOutside++;if(outsideSamples.length<12)outsideSamples.push({x,y,u,v,actual:[...actual.slice(i,i+4)],original:[...original.slice(i,i+4)]});}
    }
-   result.push({...e,rect:p.toJSON(),changedOutside,outsideSamples,compared,alpha:e.holes.map(t=>ctx.getImageData(Math.floor((t.x+t.width/2)*e.dpr),Math.floor((t.y+t.height/2+3)*e.dpr),1,1).data[3])});
+   result.push({...e,rect:p.toJSON(),changedOutside,outsideSamples,compared,backingWidth:canvas.width,requiredWidth:Math.ceil(p.width*devicePixelRatio),alpha:e.holes.map(t=>ctx.getImageData(Math.floor((t.x+t.width/2)*e.dpr),Math.floor((t.y+t.height/2+3)*e.dpr),1,1).data[3])});
   }
   const ids=['flight-number','flight-origin','flight-destination','status-value'];
   return {plates:result,groups:ids.map(id=>{const ns=[...document.getElementById(id).querySelectorAll('.flap-character')],rs=ns.map(n=>n.getBoundingClientRect());return{count:ns.length,hinges:document.getElementById(id).querySelectorAll('.flap-fixed-hardware').length,left:rs[0].left,top:rs[0].top,right:rs.at(-1).right,bottom:rs[0].bottom}}),viewport:innerWidth,panelScale:parseFloat(document.getElementById('dashboard').style.getPropertyValue('--family-panel-scale'))||1,module:document.querySelector('.flight-strip-module').getBoundingClientRect().toJSON(),clocks:[...document.querySelectorAll('.clock-wheel,.period-wheel')].map(n=>[n.getAttribute('x'),n.getAttribute('y'),n.getAttribute('width'),n.getAttribute('height')])};
@@ -74,7 +74,8 @@ async function checkMobileSplitFlapPlate(page){
  for(const e of evidence.plates){
   assert.equal(e.changedOutside,0,'Every pixel outside the local aperture bands matches the selected photograph: '+e.profile+' '+JSON.stringify(e.outsideSamples));
   assert(e.compared>500,'Meaningful unaffected photographic area was compared');
-  assert(e.alpha.every(a=>a===0),'Native windows have genuine alpha transparency');
+  assert(e.alpha.every(a=>a===(e.profile==='Clock'?255:0)),e.profile==='Clock'?'Clock recess blocks wood between the unchanged live drums':'Native split-flap windows retain genuine alpha transparency');
+  assert(e.backingWidth>=e.requiredWidth,'Metal canvas resolves every displayed device pixel after panel scaling');
   assert.equal(e.fit.scaleX,e.fit.scaleY,'Whole photograph uses one scale');
   const f=e.fit,b=e.body,p=e.rect,s=evidence.panelScale;
   assert(p.left+(f.x+b[0]*f.scale)*s>=-0.5&&p.left+(f.x+b[2]*f.scale)*s<=evidence.viewport+0.5,'No photographed outer edge is clipped at a viewport side');

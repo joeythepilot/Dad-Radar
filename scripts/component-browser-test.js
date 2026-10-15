@@ -23,7 +23,7 @@ fs.mkdirSync(output,{recursive:true});
     ['tablet',1024,768,'/mobile'],['wide',1920,1080,'/mobile'],['square',768,768,'/mobile'],['narrow',320,740,'/mobile'],
     ['portrait-tablet',768,1024,'/mobile'],['legacy-full',390,844,'/mobile/full?layout=compact']];
   for(const [name,width,height,route] of views){
-   const page=await browser.newPage({viewport:{width,height},serviceWorkers:'block'});
+   const page=await browser.newPage({viewport:{width,height},deviceScaleFactor:focus==='family'&&['tablet','wide','portrait-tablet'].includes(name)?2:1,serviceWorkers:'block'});
    const settled=observeBrowserErrors(page);
    const responses=[];page.on('response',r=>{if(r.status()>=400)responses.push(`${r.status()} ${r.url()}`);});
    await page.route('**/*',r=>r.request().url().startsWith(origin)||r.request().url().startsWith('blob:')?r.continue():r.abort());

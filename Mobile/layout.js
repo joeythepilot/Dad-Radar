@@ -61,7 +61,7 @@
     frame.appendChild(dashboard);
     if (window.Image && window.fetch) {
       var renderer = document.createElement('script');
-      renderer.src = '/Mobile/photo-registration.js?v=7';
+      renderer.src = '/Mobile/photo-registration.js?v=8';
       renderer.onload = function () { window.DadRadarMobilePhotos.start(); };
       document.head.appendChild(renderer);
     }
