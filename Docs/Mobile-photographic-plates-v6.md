@@ -72,3 +72,10 @@ is a possible follow-up, not part of this release. No physical iOS 12.5.5 or Pi
 performance result is claimed by the local Chromium proof. Hosted Chromium and
 WebKit and the exact-SHA release gate must pass before deployment. Installation,
 independent running identity and family visual acceptance are separate evidence.
+
+
+### Native split-flap plate v8
+
+The split-flap housing now mounts as one transparent PNG per orientation, at native 6578×893 landscape and 2118×536 portrait. Original mechanisms and module layout remain unchanged. Canvas/donor/aperture-edge patching is removed. The finished image already contains the measured openings and mounts with one uniform scale.
+
+Offline physical-material authoring is preserved at [source/mobile-metal-native8](https://github.com/joeythepilot/Dad-Radar/tree/source/mobile-metal-native8/artwork/split-flap-native8), commit e5a19d3017ac41375c0305256eedc410e041921a. These are new geometry/material renders, not enlarged v7 photographs. Eight source pixels per native CSS pixel supply real visible detail. Browser checks examine actual source alpha around every aperture and compare mechanisms against the independent approved geometry fixture. Visual acceptance remains separate from numerical verification.

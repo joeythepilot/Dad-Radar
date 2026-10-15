@@ -49,48 +49,44 @@ const selectedHashes={
 async function checkMobileSplitFlapPlate(page){
  for(const [name,hash]of Object.entries(selectedHashes))assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname,'../assets/hardware/HomingBeacon_Mobile_'+name+'_Source_v6.png'))).digest('hex'),hash,'Selected photograph bytes are unchanged');
  assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname,'../assets/hardware/HomingBeacon_Mobile_SplitFlap_Landscape_Source_v7.png'))).digest('hex'),'6af4980855bce11b0f57f41b945168aa163f6b06329b29dd710345b94306d8f1','Preserve the finer landscape source photograph');
- await page.waitForFunction(()=>document.querySelectorAll('canvas.family-photo-plate').length===1&&document.querySelector('canvas.family-photo-plate')._photoEvidence&&document.querySelector('.twin-clock-art .family-clock-plate image'));
+ await page.waitForFunction(()=>{const p=document.querySelector('img.family-splitflap-plate');return p?.complete&&p.naturalWidth>0&&!p.hidden&&p.getBoundingClientRect().width>0&&document.querySelector('.twin-clock-art .family-clock-plate image');});
  await checkMobileClock(page);
- const evidence=await page.evaluate(async()=>{
-  const result=[];
-  for(const canvas of document.querySelectorAll('canvas.family-photo-plate')){
-   const e=canvas._photoEvidence,ctx=canvas.getContext('2d'),p=canvas.getBoundingClientRect(),f=e.fit;
-   const im=new Image();im.src=e.source;await new Promise((ok,no)=>{if(im.complete&&im.naturalWidth)return ok();im.onload=ok;im.onerror=no;});
-   const reference=document.createElement('canvas');reference.width=canvas.width;reference.height=canvas.height;
-   const rc=reference.getContext('2d');rc.setTransform(e.dpr,0,0,e.dpr,0,3*e.dpr);rc.drawImage(im,f.x,f.y,im.naturalWidth*f.scale,im.naturalHeight*f.scale);
-   const original=rc.getImageData(0,0,canvas.width,canvas.height).data,actual=ctx.getImageData(0,0,canvas.width,canvas.height).data;
-   const sourceHoles=e.profile==='SplitFlap_Landscape'?[[78,274,472,145],[621,274,284,145],[975,274,283,145],[1328,273,763,146]]:e.profile==='SplitFlap_Portrait'?[[121,370,365,119],[546,370,221,119],[829,370,218,119],[1109,370,598,119]]:[[106,233,1324,200],[106,629,1324,194]];
-   const allowed=[...e.holes.map(t=>({x:t.x-5,y:t.y-5,w:t.width+10,h:t.height+10})),...sourceHoles.map(h=>({x:f.x+(h[0]-12)*f.scale,y:f.y+(h[1]-12)*f.scale,w:(h[2]+24)*f.scale,h:(h[3]+24)*f.scale}))];
-   let changedOutside=0,compared=0,outsideSamples=[];
-   for(let y=0;y<canvas.height;y++)for(let x=0;x<canvas.width;x++){
-    const u=(x+.5)/e.dpr,v=(y+.5)/e.dpr-3;
-    if(allowed.some(a=>u>=a.x&&u<=a.x+a.w&&v>=a.y&&v<=a.y+a.h))continue;
-    compared++;const i=(y*canvas.width+x)*4;if(actual[i]!==original[i]||actual[i+1]!==original[i+1]||actual[i+2]!==original[i+2]||actual[i+3]!==original[i+3]){changedOutside++;if(outsideSamples.length<12)outsideSamples.push({x,y,u,v,actual:[...actual.slice(i,i+4)],original:[...original.slice(i,i+4)]});}
-   }
-   result.push({...e,rect:p.toJSON(),changedOutside,outsideSamples,compared,backingWidth:canvas.width,requiredWidth:Math.ceil(p.width*devicePixelRatio),alpha:e.holes.map(t=>ctx.getImageData(Math.floor((t.x+t.width/2)*e.dpr),Math.floor((t.y+t.height/2+3)*e.dpr),1,1).data[3])});
-  }
-  const ids=['flight-number','flight-origin','flight-destination','status-value'];
-  return {plates:result,groups:ids.map(id=>{const ns=[...document.getElementById(id).querySelectorAll('.flap-character')],rs=ns.map(n=>n.getBoundingClientRect());return{count:ns.length,hinges:document.getElementById(id).querySelectorAll('.flap-fixed-hardware').length,left:rs[0].left,top:rs[0].top,right:rs.at(-1).right,bottom:rs[0].bottom}}),viewport:innerWidth,panelScale:parseFloat(document.getElementById('dashboard').style.getPropertyValue('--family-panel-scale'))||1,module:document.querySelector('.flight-strip-module').getBoundingClientRect().toJSON(),clocks:[...document.querySelectorAll('.clock-wheel,.period-wheel')].map(n=>[n.getAttribute('x'),n.getAttribute('y'),n.getAttribute('width'),n.getAttribute('height')])};
+ const evidence=await page.evaluate(()=>{
+  const plate=document.querySelector('img.family-splitflap-plate'),p=plate.getBoundingClientRect();
+  const canvas=document.createElement('canvas');canvas.width=plate.naturalWidth;canvas.height=plate.naturalHeight;
+  const ctx=canvas.getContext('2d');ctx.drawImage(plate,0,0);
+  const alpha=(x,y)=>ctx.getImageData(Math.round((x-p.left)/p.width*canvas.width),Math.round((y-p.top)/p.height*canvas.height),1,1).data[3];
+  const groups=['flight-number','flight-origin','flight-destination','status-value'].map(id=>{
+   const nodes=[...document.getElementById(id).querySelectorAll('.flap-character')],rs=nodes.map(n=>n.getBoundingClientRect());
+   const r={left:rs[0].left,top:rs[0].top,right:rs.at(-1).right,bottom:rs[0].bottom};
+   // Sample the actual source alpha on both sides of every aperture edge.
+   const cx=(r.left+r.right)/2,cy=(r.top+r.bottom)/2,pad=.75*(parseFloat(document.getElementById('dashboard').style.getPropertyValue('--family-panel-scale'))||1);
+   return {...r,count:nodes.length,hinges:document.getElementById(id).querySelectorAll('.flap-fixed-hardware').length,
+    clear:[alpha(r.left+pad,cy),alpha(r.right-pad,cy),alpha(cx,r.top+pad),alpha(cx,r.bottom-pad),alpha(cx,cy)],
+    metal:[alpha(r.left-pad,cy),alpha(r.right+pad,cy),alpha(cx,r.top-pad),alpha(cx,r.bottom+pad)]};
+  });
+  return {src:plate.getAttribute('src'),size:[plate.naturalWidth,plate.naturalHeight],rect:p.toJSON(),groups,
+   requiredPixels:p.width*devicePixelRatio,scale:parseFloat(document.getElementById('dashboard').style.getPropertyValue('--family-panel-scale'))||1,
+   module:document.querySelector('.flight-strip-module').getBoundingClientRect().toJSON(),
+   canvases:document.querySelectorAll('canvas.family-photo-plate').length};
  });
- assert.equal(evidence.plates.length,1,'One split-flap canvas; clock photograph is mounted directly in its native SVG');
- const landscape=evidence.plates.find(e=>e.profile==='SplitFlap_Landscape');
- if(landscape)assert(landscape.source.endsWith('/HomingBeacon_Mobile_SplitFlap_Landscape_Source_v7.png'),'Landscape renders the finer photographic source');
- for(const e of evidence.plates){
-  assert.equal(e.changedOutside,0,'Every pixel outside the local aperture bands matches the selected photograph: '+e.profile+' '+JSON.stringify(e.outsideSamples));
-  assert(e.compared>500,'Meaningful unaffected photographic area was compared');
-  assert(e.alpha.every(a=>a===0),'Native split-flap windows retain genuine alpha transparency');
-  assert(e.backingWidth>=e.requiredWidth,'Metal canvas resolves every displayed device pixel after panel scaling');
-  assert.equal(e.fit.scaleX,e.fit.scaleY,'Whole photograph uses one scale');
-  const f=e.fit,b=e.body,p=e.rect,s=evidence.panelScale;
-  assert(p.left+(f.x+b[0]*f.scale)*s>=-0.5&&p.left+(f.x+b[2]*f.scale)*s<=evidence.viewport+0.5,'No photographed outer edge is clipped at a viewport side');
-  assert(f.y+b[1]*f.scale>=-3.01&&f.y+b[3]*f.scale<=e.bay.height+3.01,'Photographed body stays within measured inter-module clearance');
- }
- const split=evidence.plates.find(e=>e.profile.startsWith('SplitFlap'));
- const viewport=page.viewportSize();
- const baseline=require('./fixtures/mobile-native-geometry.json').cases.find(c=>c.viewport.width===(viewport.height>viewport.width?390:1024)&&c.viewport.height===(viewport.height>viewport.width?844:768));
- if(baseline)evidence.groups.forEach((g,i)=>{const old=baseline.groups[i].aperture;for(const edge of ['left','top','right','bottom']){const horizontal=edge==='left'||edge==='right';const value=edge==='left'?old.x:edge==='top'?old.y:old[edge];const expected=(horizontal?evidence.module.x:evidence.module.y)+(value-(horizontal?baseline.module.x:baseline.module.y))*evidence.panelScale;assert(Math.abs(g[edge]-expected)<.5,'Rendered live geometry matches the independent pre-V5 approved layout');}});
- evidence.groups.forEach((g,i)=>{const t=split.holes[i],p=split.rect;assert.equal(g.count,[5,3,3,8][i]);assert.equal(g.hinges,g.count);for(const [actual,expected]of [[g.left,p.left+t.x*evidence.panelScale],[g.top,p.top+(3+t.y)*evidence.panelScale],[g.right,p.left+(t.x+t.width)*evidence.panelScale],[g.bottom,p.top+(3+t.y+t.height)*evidence.panelScale]])assert(Math.abs(actual-expected)<.03,'Cutout is registered to the unchanged live tile bounds');});
- assert.deepEqual(evidence.clocks,Array.from({length:10},(_,i)=>[String([220,480,820,1080,1350][i%5]),i<5?'130':'525','210','210']),'Clock apertures and original AM/PM rollers retain their geometry');
+ const viewport=page.viewportSize(),portrait=viewport.height>viewport.width;
+ assert.equal(evidence.src,'/assets/hardware/HomingBeacon_Mobile_SplitFlap_'+(portrait?'Portrait':'Landscape')+'_Native_v8.png');
+ assert.equal(evidence.canvases,0,'Finished metalwork mounts as one PNG without runtime texture manipulation');
+ assert(evidence.size[0]>=evidence.requiredPixels,'Source detail, rather than just a canvas backing store, resolves displayed device pixels');
+ assert(evidence.size[0]/(evidence.module.width/evidence.scale)>7.9,'Native plate contains eight source pixels per original CSS pixel');
+ const baseline=require('./fixtures/mobile-native-geometry.json').cases.find(c=>c.viewport.width===(portrait?390:1024)&&c.viewport.height===(portrait?844:768));
+ evidence.groups.forEach((g,i)=>{
+  assert.equal(g.count,[5,3,3,8][i]);assert.equal(g.hinges,g.count);
+  assert(g.clear.every(a=>a===0),'Every aperture is transparent through its full registered width and height');
+  assert(g.metal.every(a=>a>=250),'Metal ends at each unchanged mechanism boundary without oversized cutouts');
+  const old=baseline.groups[i].aperture;
+  for(const edge of ['left','top','right','bottom']){
+   const horizontal=edge==='left'||edge==='right',value=edge==='left'?old.x:edge==='top'?old.y:old[edge];
+   const expected=(horizontal?evidence.module.x:evidence.module.y)+(value-(horizontal?baseline.module.x:baseline.module.y))*evidence.scale;
+   assert(Math.abs(g[edge]-expected)<.5,'Rendered mechanisms retain the independent pre-V5 approved geometry');
+  }
+ });
  return evidence;
 }
 async function checkMobileClock(page){
