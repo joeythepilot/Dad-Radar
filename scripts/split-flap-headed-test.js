@@ -164,25 +164,28 @@ const server = http.createServer((request, response) => {
           `${engine}: a flap displaying a character has its light on`);
         assert.equal(await page.locator('.flap-character').first().locator('.flap-glyph svg [data-printed-ink="A"]').count(),2,
           `${engine}: both stationary halves use outlined ink rather than browser font text`);
-        await page.evaluate(()=>{
+        // Start the real flip and capture its transient evidence in the same
+        // browser task. Separate driver round trips can outlast the animation
+        // on a loaded WebKit runner and inspect already-removed moving halves.
+        const {moving,printMotion}=await page.evaluate(()=>{
           const cell=document.querySelector('.flap-character');
           window.splitFlapArtworkProof=flipFlapOnce(cell,'Z');
+          const texture=selector=>[...cell.querySelectorAll(selector+' mask ellipse')].map(n=>n.outerHTML).join('');
+          return {
+            moving:[...cell.querySelectorAll('.flap-flip-top,.flap-flip-bottom')].map(n=>{
+              const s=getComputedStyle(n);return {image:s.backgroundImage,size:s.backgroundSize,height:parseFloat(s.height),cellHeight:parseFloat(getComputedStyle(n.parentElement).height),animation:s.animationName};
+            }),
+            printMotion:{
+              outgoing:cell.querySelector('.flap-flip-top [data-printed-ink]')?.getAttribute('data-printed-ink'),
+              incoming:cell.querySelector('.flap-flip-bottom [data-printed-ink]')?.getAttribute('data-printed-ink'),
+              topMatches:texture('.flap-static-top')===texture('.flap-flip-top'),
+              bottomMatches:texture('.flap-static-bottom')===texture('.flap-flip-bottom')
+            }
+          };
         });
-        const moving=await page.locator('.flap-flip-top,.flap-flip-bottom').evaluateAll(nodes=>nodes.map(n=>{
-          const s=getComputedStyle(n);return {image:s.backgroundImage,size:s.backgroundSize,height:parseFloat(s.height),cellHeight:parseFloat(getComputedStyle(n.parentElement).height),animation:s.animationName};
-        }));
         assert.equal(moving.length,2,`${engine}: both moving halves exist during a flip`);
         assert(moving.every(s=>/experimental-v2.*experimental-surface\.png/.test(s.image)&&Math.abs(parseFloat(s.size.split(' ')[1])*s.height/100-s.cellHeight)<0.1&&s.animation!=='none'),
           `${engine}: animated halves use matching halves of the approved hardware-free material`);
-        const printMotion=await page.locator('.flap-character').first().evaluate(cell=>{
-          const texture=selector=>[...cell.querySelectorAll(selector+' mask ellipse')].map(n=>n.outerHTML).join('');
-          return {
-            outgoing:cell.querySelector('.flap-flip-top [data-printed-ink]')?.getAttribute('data-printed-ink'),
-            incoming:cell.querySelector('.flap-flip-bottom [data-printed-ink]')?.getAttribute('data-printed-ink'),
-            topMatches:texture('.flap-static-top')===texture('.flap-flip-top'),
-            bottomMatches:texture('.flap-static-bottom')===texture('.flap-flip-bottom')
-          };
-        });
         assert.deepEqual(printMotion,{outgoing:'A',incoming:'Z',topMatches:true,bottomMatches:true},
           `${engine}: fixed ink wear moves with both matching halves`);
         await page.evaluate(()=>window.splitFlapArtworkProof);
