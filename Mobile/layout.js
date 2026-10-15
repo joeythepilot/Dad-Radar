@@ -48,22 +48,29 @@
     };
     Object.keys(sizes).forEach(function (name) { module.style.setProperty(name, sizes[name] + 'px'); });
     if (splitFlapGeometry) {
-      // Keep the existing tile height/material/mechanisms. Register the intact
-      // photograph independently on each axis; its measured openings are taller
-      // in proportion than the existing responsive tile assemblies.
-      var photoWidth = Math.min(module.clientWidth - 8, (tile * 5 + gap * 4) * splitFlapGeometry.width / splitFlapGeometry.windows[0].width);
+      // V5: fit the COMPLETE photographic plate inside the original module.
+      // One scale factor keeps brass screw heads circular and the enamel texture
+      // unstretched. Extra end metal is part of the image, not a CSS border.
+      var photoWidth = Math.min(module.clientWidth - 2,
+        module.clientHeight * splitFlapGeometry.width / splitFlapGeometry.height);
       var xScale = photoWidth / splitFlapGeometry.width;
-      var tileHeight = originalTile * 1.56;
-      var photoHeight = tileHeight * splitFlapGeometry.height / splitFlapGeometry.windows[0].height;
-      var fittedTile = (splitFlapGeometry.windows[0].width * xScale - gap * 4) / 5;
+      var photoHeight = splitFlapGeometry.height * xScale;
+      var firstWindow = splitFlapGeometry.windows[0];
+      var fittedTile = firstWindow.width * xScale / (5 + 4 * 0.04);
+      var fittedGap = fittedTile * 0.04;
+      var tileHeight = firstWindow.height * xScale;
       module.style.setProperty('--family-plate-width', photoWidth + 'px');
       module.style.setProperty('--family-plate-height', photoHeight + 'px');
       module.style.setProperty('--flap-width', fittedTile + 'px');
+      module.style.setProperty('--flap-height', tileHeight + 'px');
+      module.style.setProperty('--flap-gap', fittedGap + 'px');
+      module.style.setProperty('--family-flap-font-size', fittedTile * 0.74 + 'px');
+      module.style.setProperty('--family-flap-radius', fittedTile * 0.08 + 'px');
       var ids = ['flight-number', 'flight-origin', 'flight-destination', 'status-value'];
       splitFlapGeometry.windows.forEach(function (opening, index) {
         var group = document.getElementById(ids[index]);
         group.style.setProperty('--plate-group-left', opening.x * xScale + 'px');
-        group.style.setProperty('--plate-group-top', opening.y * photoHeight / splitFlapGeometry.height + 'px');
+        group.style.setProperty('--plate-group-top', opening.y * xScale + 'px');
         group.style.setProperty('--plate-group-width', opening.width * xScale + 'px');
         group.style.setProperty('--plate-group-gap', (opening.width * xScale - fittedTile * opening.tiles) / (opening.tiles - 1) + 'px');
       });
@@ -72,7 +79,7 @@
   }
   function mount() {
     // Leave the existing board usable if the optional hardware asset cannot load.
-    if (window.fetch) window.fetch('/assets/hardware/HomingBeacon_SplitFlap_Geometry_v3.json').then(function (response) {
+    if (window.fetch) window.fetch('/assets/hardware/HomingBeacon_SplitFlap_Geometry_v5.json').then(function (response) {
       if (!response.ok) throw new Error('Split-flap geometry unavailable');
       return response.json();
     }).then(function (geometry) {
@@ -86,7 +93,7 @@
         fit();
       };
       plate.onerror = function () { if (plate.parentNode) plate.parentNode.removeChild(plate); };
-      plate.src = '/assets/hardware/HomingBeacon_SplitFlap_Measured_Transparent_v3.png';
+      plate.src = '/assets/hardware/HomingBeacon_SplitFlap_WideEnds_Transparent_v5.png';
       board.insertBefore(plate, board.firstChild);
     }).catch(function () {});
     // The approved photographic plate is a separate mobile-only rear layer.
