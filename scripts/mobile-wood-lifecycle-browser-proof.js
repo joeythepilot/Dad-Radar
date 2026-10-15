@@ -33,6 +33,7 @@ async function checkMobileWoodLifecycle(browser,origin){
  await slow.close();
  await checkMobileWoodPosterArrival(browser,origin);
  await checkMobileWoodPosterFallback(browser,origin);
+ await checkMobileWoodDecodeResize(browser,origin);
  const primary=await browser.newPage({viewport:{width:1920,height:1080},serviceWorkers:'block'}),requests=[];
  primary.on('request',r=>requests.push(r.url()));await primary.route('**/*',r=>r.request().url().startsWith(origin)||r.request().url().startsWith('blob:')?r.continue():r.abort());await primary.goto(origin+'/');await primary.waitForSelector('#dashboard:not([hidden])');
  assert.equal(await primary.locator('canvas.family-walnut').count(),0);assert(!requests.some(u=>u.includes('wood-registration')||u.includes('Walnut_')),'Primary does not request walnut code or photographs');await primary.close();
@@ -85,4 +86,26 @@ async function checkMobileWoodPosterFallback(browser,origin){
   assert.equal(await alpha(),0,'Missing-poster fallback remains unobscured outside the previous printed-image cutout');
  }finally{await p.close();}
 }
-module.exports={checkMobileWoodLifecycle,checkMobileWoodPosterArrival,checkMobileWoodPosterFallback};
+async function checkMobileWoodDecodeResize(browser,origin){
+ const p=await browser.newPage({viewport:{width:844,height:390},serviceWorkers:'block'});
+ await p.route('**/*',r=>r.request().url().startsWith(origin)||r.request().url().startsWith('blob:')?r.continue():r.abort());
+ try{
+  await p.goto(origin+'/mobile');await p.waitForFunction(()=>document.querySelector('canvas.family-walnut')?._woodEvidence&&document.querySelectorAll('canvas.family-photo-plate').length===2);
+  await p.locator('#destination-poster').evaluate(n=>n.decode());await p.evaluate(()=>window.DadRadarMobileWood.fit());
+  await p.evaluate(()=>{
+   const decode=HTMLImageElement.prototype.decode;
+   HTMLImageElement.prototype.decode=function(){
+    if(!this.src.endsWith('/HomingBeacon_Walnut_Profile_Atlas_v2.png'))return decode.call(this);
+    window.walnutReferenceDecodeHeld=true;
+    return new Promise(resolve=>{window.releaseWalnutReferenceDecode=resolve;}).then(()=>decode.call(this));
+   };
+  });
+  const proof=checkMobileWood(p);
+  await Promise.race([p.waitForFunction(()=>window.walnutReferenceDecodeHeld),proof.then(()=>{throw new Error('Reference decode challenge was not exercised');})]);
+  await p.setViewportSize({width:932,height:430});
+  await p.waitForFunction(()=>{const e=document.querySelector('canvas.family-walnut')?._woodEvidence;return e&&Math.abs(e.height-430)<.1;});
+  await p.evaluate(()=>window.releaseWalnutReferenceDecode());
+  await proof;
+ }finally{await p.close();}
+}
+module.exports={checkMobileWoodLifecycle,checkMobileWoodPosterArrival,checkMobileWoodPosterFallback,checkMobileWoodDecodeResize};

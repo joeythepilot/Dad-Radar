@@ -39,19 +39,23 @@ async function checkMobileWood(page){
  // Top and left stock have independently specified 0/-90deg orientations;
  // deleting the piece paint or reversing its inward return must fail here.
  const landmarks=await page.locator('canvas.family-walnut').evaluate(async n=>{
-  const e=n._woodEvidence,photo=new Image();photo.src='/assets/hardware/HomingBeacon_Walnut_Profile_Atlas_v2.png';await photo.decode();
+  const photo=new Image();photo.src='/assets/hardware/HomingBeacon_Walnut_Profile_Atlas_v2.png';await photo.decode();
+  const e=n._woodEvidence;
   return ['top','left'].map(side=>{
    const p=e.pieces.find(p=>p.id==='.destination-panel'&&p.side===side),reference=document.createElement('canvas');reference.width=n.width;reference.height=n.height;
    const c=reference.getContext('2d');c.scale(e.dpr,e.dpr);
-   let x,y;
-   if(side==='top'){c.translate(p.x,p.y);x=p.x+p.width/2;y=p.y+p.height-1.25;}
-   else{c.translate(p.x,p.y+p.height);c.rotate(-Math.PI/2);x=p.x+p.width-1.25;y=p.y+p.height/2;}
+   let col,row;
+   // Select the last complete device pixel BEFORE the .5 CSSpx aperture
+   // safety clear. A fixed CSS point can straddle that fractional clear in
+   // WebKit, even though its RGB correctly matches the photographed board.
+   if(side==='top'){c.translate(p.x,p.y);col=Math.floor((p.x+p.width/2)*e.dpr);row=Math.floor((p.y+p.height-.5)*e.dpr)-1;}
+   else{c.translate(p.x,p.y+p.height);c.rotate(-Math.PI/2);col=Math.floor((p.x+p.width-.5)*e.dpr)-1;row=Math.floor((p.y+p.height/2)*e.dpr);}
    c.drawImage(photo,p.sx,p.sy,p.sw,p.sh,0,0,p.length,p.thickness);
-   const col=Math.floor(x*e.dpr),row=Math.floor(y*e.dpr);
-   return{side,actual:[...n.getContext('2d').getImageData(col,row,1,1).data],expected:[...c.getImageData(col,row,1,1).data]};
+   const intersectsClear=e.protectedAreas.some(r=>col<(r.x+r.width+.5)*e.dpr&&col+1>(r.x-.5)*e.dpr&&row<(r.y+r.height+.5)*e.dpr&&row+1>(r.y-.5)*e.dpr);
+   return{side,pixel:{col,row},intersectsClear,actual:[...n.getContext('2d').getImageData(col,row,1,1).data],expected:[...c.getImageData(col,row,1,1).data]};
   });
  });
- for(const sample of landmarks){assert.equal(sample.expected[3],255,'Reference landmark lies within the photographed board');sample.actual.forEach((v,i)=>assert(Math.abs(v-sample.expected[i])<=1,sample.side+' frame raster must match the photographed source and inward orientation'));}
+ for(const sample of landmarks){const detail=JSON.stringify({viewport:page.viewportSize(),sample});assert.equal(sample.intersectsClear,false,'The entire landmark pixel must lie outside every aperture safety clear: '+detail);assert.equal(sample.expected[3],255,'Reference landmark lies within the photographed board: '+detail);assert.equal(sample.actual[3],255,'An interior frame landmark must be opaque: '+detail);sample.actual.forEach((v,i)=>assert(Math.abs(v-sample.expected[i])<=1,sample.side+' frame raster must match the photographed source and inward orientation: '+detail));}
  const size=page.viewportSize(),baseline=require('./fixtures/mobile-wood-baseline.json').cases.find(c=>c.viewport.width===size.width&&c.viewport.height===size.height);
  if(baseline){
   const actual=await page.evaluate(selectors=>selectors.map(s=>({selector:s,nodes:[...document.querySelectorAll(s)].map(n=>({rect:n.getBoundingClientRect().toJSON(),x:n.getAttribute('x'),y:n.getAttribute('y'),width:n.getAttribute('width'),height:n.getAttribute('height')}))})),baseline.geometry.map(g=>g.selector));

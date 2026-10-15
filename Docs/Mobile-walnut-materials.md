@@ -84,3 +84,35 @@ This candidate is local and not published, merged or deployed. Full-candidate
 visual acceptance, hosted exact-SHA Chromium/WebKit release gates and physical
 family-device/performance acceptance are not claimed. The previously deployed
 flat walnut remains rejected; passing tests do not overturn that judgment.
+
+## Release verification correction
+
+Joey approved the complete actual candidate on October15 at09:55 Chicago and
+requested deployment. Initial remote candidate9999c1e had the exact approved
+local6962d5d tree. Its full gate38756534121 failed the new WebKit raster landmark
+at768×1024; it was not deployed. The build-aware focused diagnostic38761120900
+reproduced top actual[48,29,19,203] vs expected[48,29,19,255]. RGB was exact;
+the old fixed1.25CSSpx sample intersected a fractional aperture safety clear.
+
+The proof now chooses a complete device pixel before that clear and independently
+asserts its whole footprint intersects no protected clear. Actual and reference
+alpha must both equal255; RGB tolerance remains1, not relaxed. The actual wood,
+apertures, registration, geometry and every product/source image byte are unchanged.
+
+A separate controlled test proved the reference could retain old evidence while
+awaiting image decoding across a real resize. It holds only reference decode,
+resizes the actual844×390 display to932×430 and releases decode. Old proof RED:
+actual[0,0,0,0] vs expected[78,52,38,255]. Reading current evidence after decoding
+makes the identical challenge GREEN and is retained in the family lifecycle.
+Initial proof errors propagate rather than hiding behind the held-decode wait.
+The missing-frame-paint negative control still fails with opaque backing intact.
+
+Two earlier isolated diagnostic attempts were invalid: direct invocation skipped
+the normal browser-build hook, so their fresh checkouts had no app bundle and no
+flaps. A speculative startup wait was removed after identifying this harness
+mistake. The diagnostic workflow exists only on the isolated diagnostic branch;
+it is not merged into the release or installed at home. Local WebKit OS-library
+installation was denied; no permission bypass was attempted. Hosted testing
+provided the actual WebKit evidence. Independent review found no blocking issue
+in the corrected proof. A fresh exact-candidate full gate is still required;
+no deployment is claimed by this record.
