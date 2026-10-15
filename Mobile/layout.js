@@ -1,5 +1,6 @@
 (function () {
   'use strict';
+  var splitFlapGeometry;
   function fit() {
     var viewer = document.querySelector('.display-viewer');
     var dashboard = document.getElementById('dashboard');
@@ -22,6 +23,9 @@
     var module = dashboard.querySelector('.flight-strip-module');
     var board = dashboard.querySelector('.flight-board');
     if (!module || !board) return;
+    // Measure the original flow, not our positioned plate's resulting width.
+    // This prevents ResizeObserver feedback from progressively shrinking it.
+    if (splitFlapGeometry) module.classList.remove('family-splitflap-mounted');
     module.style.setProperty('--family-board-padding', Math.min(24, width * 0.0125) + 'px');
     var style = getComputedStyle(board);
     var boardWidth = board.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
@@ -43,8 +47,47 @@
       '--route-section-gap': sectionGap
     };
     Object.keys(sizes).forEach(function (name) { module.style.setProperty(name, sizes[name] + 'px'); });
+    if (splitFlapGeometry) {
+      // Keep the existing tile height/material/mechanisms. Register the intact
+      // photograph independently on each axis; its measured openings are taller
+      // in proportion than the existing responsive tile assemblies.
+      var photoWidth = Math.min(module.clientWidth - 8, (tile * 5 + gap * 4) * splitFlapGeometry.width / splitFlapGeometry.windows[0].width);
+      var xScale = photoWidth / splitFlapGeometry.width;
+      var tileHeight = originalTile * 1.56;
+      var photoHeight = tileHeight * splitFlapGeometry.height / splitFlapGeometry.windows[0].height;
+      var fittedTile = (splitFlapGeometry.windows[0].width * xScale - gap * 4) / 5;
+      module.style.setProperty('--family-plate-width', photoWidth + 'px');
+      module.style.setProperty('--family-plate-height', photoHeight + 'px');
+      module.style.setProperty('--flap-width', fittedTile + 'px');
+      var ids = ['flight-number', 'flight-origin', 'flight-destination', 'status-value'];
+      splitFlapGeometry.windows.forEach(function (opening, index) {
+        var group = document.getElementById(ids[index]);
+        group.style.setProperty('--plate-group-left', opening.x * xScale + 'px');
+        group.style.setProperty('--plate-group-top', opening.y * photoHeight / splitFlapGeometry.height + 'px');
+        group.style.setProperty('--plate-group-width', opening.width * xScale + 'px');
+        group.style.setProperty('--plate-group-gap', (opening.width * xScale - fittedTile * opening.tiles) / (opening.tiles - 1) + 'px');
+      });
+      module.classList.add('family-splitflap-mounted');
+    }
   }
   function mount() {
+    // Leave the existing board usable if the optional hardware asset cannot load.
+    if (window.fetch) window.fetch('/assets/hardware/HomingBeacon_SplitFlap_Geometry_v3.json').then(function (response) {
+      if (!response.ok) throw new Error('Split-flap geometry unavailable');
+      return response.json();
+    }).then(function (geometry) {
+      var board = document.querySelector('.flight-board');
+      var plate = document.createElement('img');
+      plate.className = 'family-splitflap-plate';
+      plate.alt = ''; plate.setAttribute('aria-hidden', 'true'); plate.draggable = false;
+      plate.onload = function () {
+        splitFlapGeometry = geometry;
+        board.closest('.flight-strip-module').classList.add('family-splitflap-mounted');
+        fit();
+      };
+      plate.src = '/assets/hardware/HomingBeacon_SplitFlap_Measured_Transparent_v3.png';
+      board.insertBefore(plate, board.firstChild);
+    }).catch(function () {});
     // The approved photographic plate is a separate mobile-only rear layer.
     // Keep every existing instrument child and its mechanism unchanged.
     document.querySelectorAll('.instrument-slot .instrument').forEach(function (instrument) {

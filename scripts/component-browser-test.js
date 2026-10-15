@@ -47,6 +47,7 @@ fs.mkdirSync(output,{recursive:true});
     assert(fit.viewer.height>=fit.body.height-2,'Full dashboard viewer receives the mobile viewport height');
     assert.equal(await page.locator('script[src*="deployment-refresh.js"]').count(),1,'Independent refresh watchdog is present');
     await require('./mobile-instrument-plate-browser-proof').checkMobileInstrumentPlates(page);
+    await require('./mobile-instrument-plate-browser-proof').checkMobileSplitFlapPlate(page);
    }
    await settled(`${focus}/${name}`);
    assert.deepEqual(responses,[],`${name}: production assets load`);

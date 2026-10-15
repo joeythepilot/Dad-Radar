@@ -1,0 +1,45 @@
+{
+  "width": 2048,
+  "height": 300,
+  "windows": [
+    {
+      "label": "FLIGHT",
+      "x": 95,
+      "y": 68,
+      "width": 452,
+      "height": 180,
+      "tiles": 5
+    },
+    {
+      "label": "FROM",
+      "x": 600,
+      "y": 68,
+      "width": 271,
+      "height": 180,
+      "tiles": 3
+    },
+    {
+      "label": "TO",
+      "x": 924,
+      "y": 68,
+      "width": 271,
+      "height": 180,
+      "tiles": 3
+    },
+    {
+      "label": "STATUS",
+      "x": 1248,
+      "y": 68,
+      "width": 722,
+      "height": 180,
+      "tiles": 8
+    }
+  ],
+  "ratio": {
+    "FLIGHT": 1.0,
+    "FROM": 0.599558,
+    "TO": 0.599558,
+    "STATUS": 1.597345
+  },
+  "note": "Artwork only. Real responsive DOM aperture registration must be checked in portrait and landscape; this is not a deployment."
+}
