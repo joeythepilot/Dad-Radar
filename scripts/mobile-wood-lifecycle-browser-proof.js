@@ -10,7 +10,6 @@ async function checkMobileWoodLifecycle(browser,origin){
   assert.equal(intercepted,1,'Failure fixture must intercept the actual current material input: '+input);
   await p.waitForFunction(()=>window.DadRadarMobileWood?.failed);
   assert.equal(await p.locator('canvas.family-walnut').count(),0,'Failed input never leaves a partial overlay');
-  await p.waitForFunction(()=>document.querySelectorAll('.flap-character').length===19,null,{timeout:15000});
   assert.equal(await p.locator('.flap-character').count(),19,'All original live flaps remain usable');
   await p.waitForSelector('canvas.family-clock-plate');await p.close();
  }

@@ -19,7 +19,7 @@ jobs:
       - run: npm ci
       - run: npm install --no-save --package-lock=false playwright@1.63.0
       - run: npx playwright install webkit
-      - run: node scripts/component-browser-test.js
+      - run: npm run test:browser -- --suite family --engine webkit
         env:
           DADRADAR_BROWSER_FOCUS: family
           DADRADAR_BROWSER_ENGINE: webkit
