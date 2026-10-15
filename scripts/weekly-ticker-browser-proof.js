@@ -18,6 +18,21 @@ async function checkWeeklyTicker(page, compact, label, output, expectedModules) 
 
   assert.equal(await bank.count(), 1, "Full/desktop gets exactly one weekly overnight bank");
 
+  const expectedLabels = expectedModules.map(module => module.day + " overnight " + (module.code === "HOME" ? "home" : module.code === "UNKN" ? "unknown" : module.code));
+  const readinessSnapshot = async stage => {
+    const snapshot = await page.evaluate(() => ({
+      time: new Date().toISOString(), elapsed: performance.now(),
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      settings: window.dadRadarSettings,
+      labels: [...document.querySelectorAll("#weekly-overnight-bank .weekly-overnight-bay")].map(b=>b.getAttribute("aria-label")),
+      arts: [...document.querySelectorAll(".weekly-overnight-module-art")].map(a=>({src:a.src,complete:a.complete,width:a.naturalWidth,height:a.naturalHeight})),
+      resources: performance.getEntriesByType("resource").map(e=>({name:e.name,start:e.startTime,end:e.responseEnd})),
+      timeline: window.__weeklyTimeline
+    }));
+    console.log("WEEKLY_READINESS "+JSON.stringify({stage,label,expectedLabels,snapshot}));
+    fs.writeFileSync(path.join(output,`${label}-${stage}.json`),JSON.stringify({expectedLabels,snapshot},null,2));
+  };
+  try {
   await page.waitForFunction(expected => {
     const node = document.getElementById("weekly-overnight-bank");
     if (!node) return false;
@@ -27,8 +42,16 @@ async function checkWeeklyTicker(page, compact, label, output, expectedModules) 
     if (JSON.stringify(labels) !== JSON.stringify(expected)) return false;
     const resources = performance.getEntriesByType("resource").map(entry => entry.name);
     return resources.some(name => name.includes("/assets/hardware/weekly-overnight/weekly-overnight-module.png"));
-  }, expectedModules.map(module => module.day + " overnight " + (module.code === "HOME" ? "home" : module.code === "UNKN" ? "unknown" : module.code)),
+  }, expectedLabels,
   {timeout: 4000, polling: 25});
+  } catch(error) {
+    await readinessSnapshot("failed");
+    await page.screenshot({path:path.join(output,`${label}-failed.png`)});
+    await page.waitForTimeout(1000);
+    await readinessSnapshot("failed-plus-one-second");
+    throw error;
+  }
+  await readinessSnapshot("ready");
 
   await page.waitForFunction(() => {
     const art = document.querySelector(".weekly-overnight-module-art");

@@ -1,11 +1,11 @@
-name: Walnut pixel diagnostic
+name: Weekly readiness diagnostic
 on:
   push:
     branches: [diag/walnut-webkit-pixels]
 permissions:
   contents: read
 jobs:
-  family-webkit:
+  weekly-webkit:
     runs-on: macos-latest
     timeout-minutes: 15
     steps:
@@ -19,13 +19,10 @@ jobs:
       - run: npm ci
       - run: npm install --no-save --package-lock=false playwright@1.63.0
       - run: npx playwright install webkit
-      - run: npm run test:browser -- --suite family --engine webkit
-        env:
-          DADRADAR_BROWSER_FOCUS: family
-          DADRADAR_BROWSER_ENGINE: webkit
+      - run: npm run test:browser -- --suite weekly --engine webkit
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: walnut-webkit-diagnostic
+          name: weekly-readiness-diagnostic
           path: artifacts/
           retention-days: 7

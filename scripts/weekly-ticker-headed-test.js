@@ -101,6 +101,19 @@ const server = http.createServer((request,response) => {
             hasTouch:name !== "desktop"
           });
           const assertBrowserSettled = observeBrowserErrors(page);
+          console.log("WEEKLY_FIXTURE "+JSON.stringify({name,referenceNow:referenceNow.toISOString(),expectedModules}));
+          page.on("pageerror",error=>console.log("WEEKLY_PAGE_ERROR "+error.stack));
+          page.on("requestfailed",request=>console.log("WEEKLY_REQUEST_FAILED "+JSON.stringify({url:request.url(),error:request.failure()})));
+          page.on("response",response=>{if(response.url().includes("/api/calendar/upcoming"))console.log("WEEKLY_CALENDAR_RESPONSE "+JSON.stringify({url:response.url(),status:response.status(),time:new Date().toISOString()}));});
+          await page.addInitScript(()=>{
+            window.__weeklyTimeline=[];
+            let previous;
+            setInterval(()=>{
+              const labels=[...document.querySelectorAll("#weekly-overnight-bank .weekly-overnight-bay")].map(b=>b.getAttribute("aria-label"));
+              const value=JSON.stringify(labels);
+              if(value!==previous){window.__weeklyTimeline.push({elapsed:performance.now(),labels});previous=value;}
+            },50);
+          });
           await page.route("**/*", route => route.request().url().startsWith(origin) || route.request().url().startsWith("blob:") ? route.continue() : route.abort());
           const url = name.startsWith("desktop") ? "/" : "/mobile";
           await page.goto(origin + url,{waitUntil:"load"});
