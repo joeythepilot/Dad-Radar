@@ -14,6 +14,7 @@ function load(pathname, width, height) {
   const board = {clientWidth: width, clientHeight: 100, style};
   const dashboard = {
     style: {},
+    appendChild() {},
     querySelector(selector) {
       return selector === '.flight-strip-module' ? module : selector === '.flight-board' ? board : null;
     }

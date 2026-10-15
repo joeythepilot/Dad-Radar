@@ -14,14 +14,14 @@ fs.mkdirSync(output,{recursive:true});
  const origin=`http://127.0.0.1:${server.address().port}`;
  const browser=await ({chromium,webkit})[engine].launch({headless:true});
  try {
-  if(focus==='family')await require('./mobile-wood-lifecycle-browser-proof').checkMobileWoodLifecycle(browser,origin);
   const views=focus==='duty'?[
    ['kiosk',1920,1080,'/'],['desktop',1440,900,'/'],['tablet',1024,768,'/'],
    ['family-landscape',844,390,'/mobile'],['family-portrait',390,844,'/mobile']
   ]:focus==='posters'?[
    ['kiosk',1920,1080,'/'],['family-portrait',390,844,'/mobile']
   ]:[['phone-portrait',390,844,'/mobile'],['phone-landscape',844,390,'/mobile'],
-    ['tablet',1024,768,'/mobile'],['legacy-full',390,844,'/mobile/full?layout=compact']];
+    ['tablet',1024,768,'/mobile'],['square',768,768,'/mobile'],['narrow',320,740,'/mobile'],
+    ['portrait-tablet',768,1024,'/mobile'],['legacy-full',390,844,'/mobile/full?layout=compact']];
   for(const [name,width,height,route] of views){
    const page=await browser.newPage({viewport:{width,height},serviceWorkers:'block'});
    const settled=observeBrowserErrors(page);
@@ -49,8 +49,7 @@ fs.mkdirSync(output,{recursive:true});
     assert.equal(await page.locator('script[src*="deployment-refresh.js"]').count(),1,'Independent refresh watchdog is present');
     await require('./mobile-instrument-plate-browser-proof').checkMobileInstrumentPlates(page);
     await require('./mobile-instrument-plate-browser-proof').checkMobileSplitFlapPlate(page);
-    await page.waitForFunction(()=>document.querySelector('canvas.family-walnut')?._woodEvidence);
-    await require('./mobile-wood-browser-proof').checkMobileWood(page);
+    await require('./mobile-walnut-overlay-browser-proof').checkMobileWalnutOverlay(page);
     await require('./mobile-frame-browser-proof').checkMobileFrames(page);
    }
    await settled(`${focus}/${name}`);

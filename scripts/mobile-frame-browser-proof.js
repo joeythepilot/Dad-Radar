@@ -6,7 +6,7 @@ async function checkMobileFrames(page){
   const style=(n,pseudo)=>{const s=getComputedStyle(n,pseudo);return{shadow:s.boxShadow,borders:[s.borderTopColor,s.borderRightColor,s.borderBottomColor,s.borderLeftColor],background:s.backgroundImage,content:s.content,display:s.display};};
   return{
    housings:[...document.querySelectorAll('.module,.flight-board,.destination-stage,.route-map-shell')].map(n=>({name:n.className,style:style(n)})),
-   overlays:[['.flight-strip-module','::before'],['.flight-strip-module','::after'],['.flight-board','::before'],['.flight-board','::after'],['.destination-panel','::after'],['.destination-stage','::after'],['.daily-schedule-panel','::after'],['.vintage-map-panel','::after'],['.route-map-shell','::after']].map(([selector,pseudo])=>({selector,pseudo,style:style(document.querySelector(selector),pseudo)})),
+   overlays:[['.flight-strip-module','::before'],['.flight-strip-module','::after'],['.flight-board','::before'],['.flight-board','::after'],['.destination-panel','::before'],['.destination-panel','::after'],['.destination-stage','::after'],['.daily-schedule-panel','::after'],['.vintage-map-panel','::after'],['.route-map-shell','::after']].map(([selector,pseudo])=>({selector,pseudo,style:style(document.querySelector(selector),pseudo)})),
    flapShadow:getComputedStyle(document.querySelector('.flap-character')).boxShadow,
    mapPaper:getComputedStyle(document.querySelector('.route-map-shell')).backgroundColor,
    drums:document.querySelectorAll('.drum-clock-mechanism').length

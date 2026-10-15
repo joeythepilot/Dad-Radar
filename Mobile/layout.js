@@ -44,7 +44,6 @@
     };
     Object.keys(sizes).forEach(function (name) { module.style.setProperty(name, sizes[name] + 'px'); });
     if (window.DadRadarMobilePhotos) window.DadRadarMobilePhotos.fit();
-    if (window.DadRadarMobileWood) window.DadRadarMobileWood.fit();
   }
   function mount() {
     if (window.Image && window.fetch) {
@@ -52,11 +51,13 @@
       renderer.src = '/Mobile/photo-registration.js?v=6';
       renderer.onload = function () { window.DadRadarMobilePhotos.start(); };
       document.head.appendChild(renderer);
-      var wood = document.createElement('script');
-      wood.src = '/Mobile/wood-registration.js?v=1';
-      wood.onload = function () { window.DadRadarMobileWood.start(); };
-      document.head.appendChild(wood);
     }
+    var walnut = document.createElement('picture');
+    walnut.className = 'family-walnut';
+    walnut.setAttribute('aria-hidden', 'true');
+    walnut.innerHTML = '<source media="(aspect-ratio < 1/1)" srcset="/assets/hardware/HomingBeacon_Walnut_Overlay_Portrait_v1.png">' +
+      '<img src="/assets/hardware/HomingBeacon_Walnut_Overlay_Landscape_v1.png" alt="" draggable="false">';
+    document.getElementById('dashboard').appendChild(walnut);
     // The approved photographic plate is a separate mobile-only rear layer.
     // Keep every existing instrument child and its mechanism unchanged.
     document.querySelectorAll('.instrument-slot .instrument').forEach(function (instrument) {

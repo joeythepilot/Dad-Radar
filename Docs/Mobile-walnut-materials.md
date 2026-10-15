@@ -1,5 +1,34 @@
 # Mobile walnut: material and registration record
 
+## Current replacement: finished photographs, October 15
+
+Joey rejected the constructed framing below after deployment. It is historical,
+not visual approval of the installed result. The wood renderer, atlas assembly,
+wood lifecycle machinery and their construction-specific tests are removed.
+
+The replacement is one native `picture` element behind the unchanged modules,
+using `HomingBeacon_Walnut_Overlay_Landscape_v1.png` (1672x941) or
+`HomingBeacon_Walnut_Overlay_Portrait_v1.png` (783x2007). Native media selection
+uses the same strict portrait predicate as the existing layout; square is landscape.
+The complete photograph scales to the existing dashboard. Portrait has solid
+photographed walnut beneath the modules, avoiding exposed transparent gaps.
+It is not an above-content stencil and makes no claim of registered portrait
+apertures. No runtime wood canvas, texture construction, masks, observers or
+repainting remain. Original instruments, clock/flap mechanisms and layout remain.
+The mobile-only blurred poster backdrop is also removed so the real wood shows.
+
+Both assets are direct built-in image-generation outputs, not upscaled or
+assembled from texture strips. Landscape prompt: preserve the finished frame
+photograph while reducing clear windows under opaque modules. Portrait final
+prompt: fill interior holes with matching photographed walnut panels; preserve
+the complete frame profiles, composition, color, grain and lighting.
+
+Local mounted-art review and functional tests are separate evidence. The image
+test checks decode, selection, placement and pointer pass-through, not visual
+approval. Hosted release verification and deployment are recorded separately.
+
+## Superseded runtime construction history
+
 Joey approved the corrected warm satin walnut study and implementation plan on October 14, 2026. Generated full-dashboard studies are references only; their altered modules/text are not production art.
 
 The independent source is an unmodified 2172x724 RGB photograph generated with the built-in image tool: eight distinct horizontal walnut stock boards. Production name `HomingBeacon_Mobile_Walnut_Source_v1.png`, SHA256 `b8bbdbb07e9459d7faf4b09314f536df6de0886e4f7fab132f55a5c147faaafc`. It contains no dashboard, paper, metal or labels. Measured board rows are [10,76], [100,75], [189,76], [278,77], [369,76], [458,76], [548,75], [636,76]; usable X=16..2156. All original generated studies and this source are retained.
