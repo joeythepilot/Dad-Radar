@@ -13,6 +13,8 @@ const near=(a,b,tolerance=.04)=>assert(Math.abs(a-b)<=tolerance,`${a} != ${b} (t
 fs.mkdirSync(output,{recursive:true});
 async function geometry(page) {
  return page.evaluate(ids=>({
+  panel:document.getElementById('dashboard').getBoundingClientRect().toJSON(),
+  panelScale:parseFloat(document.getElementById('dashboard').style.getPropertyValue('--family-panel-scale'))||1,
   groups:ids.map(id=>({id,rect:document.getElementById(id).getBoundingClientRect().toJSON(),
    tiles:[...document.getElementById(id).children].map(n=>n.getBoundingClientRect().toJSON())})),
   neighbors:[...document.querySelectorAll(".destination-panel,.daily-schedule-panel,.vintage-map-panel,.route-map-shell,.sequence-mileage-badge,.weekly-overnight-bank,.weekly-overnight-bay,.instrument-slot,.twin-clock-art,.clock-wheel,.period-wheel")].map(n=>({id:n.id,class:n.className,rect:n.getBoundingClientRect().toJSON()}))
@@ -46,7 +48,22 @@ async function settled(page) {
     await page.close();continue;
    }
    const before=JSON.parse(fs.readFileSync(path.join(__dirname,"fixtures/airline-logo-geometry",`baseline-${name}-geometry.json`)));
-   assert.deepEqual(measured.neighbors,before.neighbors,`${name}: neighboring module rectangles unchanged`);
+   if(name==='primary')assert.deepEqual(measured.neighbors,before.neighbors,`${name}: neighboring module rectangles unchanged`);
+   else {
+    // Preserve the independent approved native layout, then apply the same
+    // uniform scale/origin as the whole panel. No snapshot is regenerated.
+    const portrait=height>width,reference=JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/airline-logo-geometry',`baseline-${portrait?'phone-portrait':'tablet'}-geometry.json`)));
+    const oldTop=portrait?0:(768-576)/2,s=measured.panelScale,p=measured.panel;
+    assert.equal(measured.neighbors.length,reference.neighbors.length,`${name}: all neighboring modules remain`);
+    measured.neighbors.forEach((n,i)=>{
+     const old=reference.neighbors[i];assert.deepEqual([n.id,n.class],[old.id,old.class]);
+     for(const key of ['x','left','right','y','top','bottom','width','height']) {
+      const horizontal=['x','left','right'].includes(key),vertical=['y','top','bottom'].includes(key);
+      const expected=horizontal?p.x+old.rect[key]*s:vertical?p.y+(old.rect[key]-oldTop)*s:old.rect[key]*s;
+      near(n.rect[key],expected,.05);
+     }
+    });
+   }
    assert.deepEqual(measured.groups.map(g=>g.tiles.length),[5,3,3,8]);
    const tiles=measured.groups.flatMap(g=>g.tiles);
    const native=name==='primary'?null:require('./fixtures/mobile-native-geometry.json').cases.find(c=>c.viewport.width===width&&c.viewport.height===height);

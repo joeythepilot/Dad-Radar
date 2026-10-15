@@ -22,6 +22,7 @@ async function checkFullHardware(page) {
       return {name:n.className,left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height};
     });
     return {width:map.width,height:map.height,top:map.top,bottom:map.bottom,
+      panelScale:parseFloat(document.getElementById('dashboard').style.getPropertyValue('--family-panel-scale'))||1,
       scale:Number(getComputedStyle(shell).getPropertyValue('--family-hardware-scale')),
       stacked:shell.classList.contains('map-hardware-stacked'),modules};
   });
@@ -31,12 +32,12 @@ async function checkFullHardware(page) {
   for (const m of data.modules) {
     assert(m.width/data.width <= .42, `${m.name} occupies no more than 42% of map width`);
     assert(m.top >= data.top + .70*data.height, `${m.name} must stay in the lower 30%, not over the middle of the map`);
-    assert(data.bottom-m.bottom <= 20, 'All readouts stay near the lower bezel, never on 90px stilts');
+    assert(data.bottom-m.bottom <= 20*data.panelScale, 'All readouts stay near the lower bezel, never on 90px stilts');
   }
   const coverage=data.modules.reduce((a,m)=>a+m.width*m.height,0)/(data.width*data.height);
   assert(coverage<=.20, `Readouts cover ${(coverage*100).toFixed(1)}% of map; maximum is 20%`);
   const widths=data.modules.map(m=>m.width);
-  assert(Math.abs(widths[0]-274*data.scale)<1,
+  assert(Math.abs(widths[0]-274*data.scale*data.panelScale)<1,
     'The sequence housing retains its existing proportional scale');
   return {...data,coverage};
 }
