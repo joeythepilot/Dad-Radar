@@ -25,7 +25,19 @@ the complete frame profiles, composition, color, grain and lighting.
 
 Local mounted-art review and functional tests are separate evidence. The image
 test checks decode, selection, placement and pointer pass-through, not visual
-approval. Hosted release verification and deployment are recorded separately.
+approval. Hosted release verification and deployment are recorded below.
+
+Final runtime: `999bb21d45cee07747da1b5998cca357796da977`, tree
+`84577378306ca3d72febb6d3142f26c558a41916` (reviewed local405b00c).
+Full hosted gate38777695164 and Windows contract38777695255 passed on that SHA.
+PR23 merged by guarded fast-forward. Private deploy254/run38778918431 passed
+full Windows tests (116253ms) and the existing managed restart; independent
+status255/run38779462042 confirms exact installed/upstream/running SHA, CLEAN,
+HEALTHY and new instance1792086012490-16804-4prh1i. Executor6136ff37958ad68212c90b4363c2e23deadbe68b664b410da673f206edef2618
+and low-privilege identity are unchanged. These receipt edits are metadata only,
+not another runtime deployment. Earlier candidate49ecea8 was superseded by the
+older-Safari-compatible image-selection correction, not deployed or retried to
+hide a test failure. No physical family-device visual acceptance is inferred.
 
 ## Superseded runtime construction history
 
