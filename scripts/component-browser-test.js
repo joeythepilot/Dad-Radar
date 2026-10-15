@@ -44,6 +44,7 @@ fs.mkdirSync(output,{recursive:true});
     assert.equal(await page.locator('#flight-destination').getAttribute('aria-label'),'AVL');
     assert(await page.locator('.daily-schedule-panel').isVisible(),'Family route renders duty alongside the flight');
     assert.equal(await page.locator('.family-layout-control,.family-layout-bar').count(),0,'No layout switch or bar consumes screen space');
+    assert.equal(await page.locator('#display-power-switch,.display-power-curtain,.power-crt-screen').count(),0,'Family routes remain isolated from primary power adapters');
     const fit=await page.locator('.display-viewer').evaluate(n=>({viewer:n.getBoundingClientRect().toJSON(),body:document.body.getBoundingClientRect().toJSON()}));
     assert(fit.viewer.height>=fit.body.height-2,'Full dashboard viewer receives the mobile viewport height');
     assert.equal(await page.locator('script[src*="deployment-refresh.js"]').count(),1,'Independent refresh watchdog is present');

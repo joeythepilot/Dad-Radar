@@ -13,7 +13,7 @@ for(const files of [['Mobile/layout.css'],['models/schedule-state.js'],['App/clo
   assert.equal(new Set(plan.workers.map(w=>w.id)).size,plan.workers.length,'Workers have unique artifact/retry identities');
   assert(plan.workers.length<=5,'Browser parallelism remains bounded');
 }
-const broad=selectPlan(['Mobile/layout.css']);
+const broad=selectPlan(['index.html']);
 assert.equal(broad.workers.filter(w=>w.engine==='webkit').length,3,'Broad WebKit coverage is balanced across three independently retryable workers');
 assert.equal(broad.workers.filter(w=>w.engine==='chromium').length,2);
 assert(broad.workers.every(w=>w.estimatedSeconds<=340),'No broad worker retains the former full serial runtime');
@@ -31,7 +31,7 @@ assert.deepEqual(suites(['README.md','Docs/Family-beta-guide.md']),[],'Docs do n
 assert.equal(selectPlan(['README.md']).regression,false);
 assert.equal(selectPlan(['App/clock-drums-test.js']).regression,true);
 assert.deepEqual(suites(['App/weekly-ticker.js']),['weekly','duty'],'Weekly edits select their duty integration without unrelated artwork scenarios');
-for(const file of ['index.html','Mobile/layout.css','scripts/build-browser.js','package-lock.json','App/new-shared-code.js','.github/workflows/map-hardware-beta.yml']) {
+for(const file of ['index.html','scripts/build-browser.js','package-lock.json','App/new-shared-code.js','.github/workflows/map-hardware-beta.yml']) {
   assert.equal(selectPlan([file]).full,true,`${file}: shared/unknown code needs broad coverage`);
   assert.deepEqual(selectPlan([file]).matrix,fullMatrix());
 }
@@ -45,6 +45,32 @@ assert.deepEqual(suites(['config/posters.js']),['posters']);
 assert.deepEqual(suites(['App/daily-duty-card.js']),['duty']);
 assert.deepEqual(suites(['server/calendar-service.js']),[],'Calendar adapter behavior is covered by the fast deterministic pass');
 assert.deepEqual(suites(['server/family-password.js']),['family']);
+// A future unknown Mobile file must still broaden. These are reviewed owners,
+// not a blanket exemption for a directory that can introduce shared behavior.
+assert.equal(selectPlan(['Mobile/new-shared-code.js']).full,true);
+for(const file of ['Mobile/photo-registration.js','Mobile/photo-registration-test.js','scripts/mobile-instrument-plate-browser-proof.js']) {
+  const plan=selectPlan([file]);
+  assert.equal(plan.full,false,file+': photo mounting has known rendered consumers');
+  assert.equal(plan.windowsFull,false,file+': artwork mounting does not change the Windows host');
+  assert.deepEqual([...new Set(plan.matrix.map(j=>j.suite))],['split-flap','clocks','family']);
+}
+for(const file of ['Mobile/layout.js','Mobile/layout.css','Mobile/layout-test.js']) {
+  const plan=selectPlan([file]);
+  assert.equal(plan.full,false,file+': family layout does not change primary power/audio/refresh controllers');
+  assert.equal(plan.windowsFull,false);
+  assert.deepEqual([...new Set(plan.matrix.map(j=>j.suite))],['weekly','airline-logo','split-flap','map','artwork','clocks','duty','posters','family']);
+}
+const actualGraphicsChange=selectPlan(['Mobile/layout.js','Mobile/photo-registration.js','scripts/component-browser-test.js','scripts/mobile-instrument-plate-browser-proof.js','Docs/Mobile-photographic-plates-v6.md']);
+assert.equal(actualGraphicsChange.full,false,'Replay the actual clock/raster correction, including its proof files');
+assert.equal(actualGraphicsChange.windowsFull,false,'The actual graphics release runs Windows startup smoke');
+assert(!actualGraphicsChange.matrix.some(j=>['power','audio','deployment'].includes(j.suite)),'No unrelated primary power/audio/refresh scenarios');
+for(const file of ['assets/hardware/HomingBeacon_Walnut_Overlay_Landscape_v2.png','assets/hardware/HomingBeacon_Walnut_Overlay_Portrait_v2.png','assets/hardware/HomingBeacon_Approved_Instrument_Plate_Transparent_v1.png']) {
+  assert.deepEqual(suites([file]),['family'],file+': approved mobile-only PNG runs its actual mounting proof');
+  assert.equal(selectPlan([file]).windowsFull,false);
+}
+assert.equal(selectPlan(['assets/hardware/new-unreviewed-plate.png']).full,true,'A new asset needs its consumers reviewed');
+assert.deepEqual(suites(['assets/hardware/HomingBeacon_Walnut_Overlay_Landscape_v3.png']),['family'],'A new version of a reviewed mobile-only asset retains its owner');
+assert.deepEqual(suites(['assets/hardware/HomingBeacon_Mobile_Clock_Source_v7.png']),['split-flap','clocks','family'],'New photographic asset versions do not fall back to an unrelated full audit');
 assert.equal(selectPlan(['App/clock-drums.js']).windowsFull,false);
 assert.equal(selectPlan(['scripts/windows-display.js']).windowsFull,true);
 assert.equal(selectPlan([], {uncertain:true}).full,true,'Unknown diffs never silently skip coverage');
@@ -85,6 +111,29 @@ try {
   fs.writeFileSync(path.join(repo,'App.js'),'new');git('add','App.js');git('-c','user.name=Protocol Test','-c','user.email=protocol@example.invalid','commit','-m','third');
   const range=JSON.parse(execFileSync(process.execPath,[path.join(__dirname,'browser-test-plan.js')],{cwd:repo,encoding:'utf8',env:{...process.env,GITHUB_OUTPUT:'',GITHUB_STEP_SUMMARY:'',DADRADAR_DIFF_BASE:first}}));
   assert.deepEqual(range.files.sort(),['App.js','README.md'],'Baseline selection includes all intervening commits');
+  // Exercise the real CLI over real git history and a real production PNG,
+  // including a version increment and multiple commits since the baseline.
+  const graphicsBase=git('rev-parse','HEAD').toString().trim();
+  const actualAsset='assets/hardware/HomingBeacon_Walnut_Overlay_Landscape_v2.png';
+  const nextAsset='assets/hardware/HomingBeacon_Walnut_Overlay_Landscape_v3.png';
+  fs.mkdirSync(path.join(repo,'assets/hardware'),{recursive:true});
+  fs.copyFileSync(path.join(__dirname,'..',actualAsset),path.join(repo,nextAsset));
+  git('add',nextAsset);git('-c','user.name=Protocol Test','-c','user.email=protocol@example.invalid','commit','-m','Replace mobile frame photo');
+  const cliPlan=()=>JSON.parse(execFileSync(process.execPath,[path.join(__dirname,'browser-test-plan.js')],{cwd:repo,encoding:'utf8',env:{...process.env,GITHUB_OUTPUT:'',GITHUB_STEP_SUMMARY:'',DADRADAR_TEST_MODE:'scoped',DADRADAR_DIFF_BASE:graphicsBase}}));
+  const imagePlan=cliPlan();
+  assert.deepEqual(imagePlan.files,[nextAsset]);
+  assert.equal(imagePlan.full,false);assert.equal(imagePlan.windowsFull,false);
+  assert.deepEqual(imagePlan.matrix,[{suite:'family',engine:'chromium'},{suite:'family',engine:'webkit'}],'Actual PNG version update runs its mounting cases on both engines');
+  fs.mkdirSync(path.join(repo,'Mobile'));
+  fs.copyFileSync(path.join(__dirname,'../Mobile/photo-registration.js'),path.join(repo,'Mobile/photo-registration.js'));
+  git('add','Mobile/photo-registration.js');git('-c','user.name=Protocol Test','-c','user.email=protocol@example.invalid','commit','-m','Correct photographic mounting');
+  const mountingPlan=cliPlan();
+  assert.deepEqual(mountingPlan.files.sort(),['Mobile/photo-registration.js',nextAsset]);
+  assert.equal(mountingPlan.full,false);assert.equal(mountingPlan.windowsFull,false);
+  assert.deepEqual([...new Set(mountingPlan.matrix.map(j=>j.suite))],['split-flap','clocks','family'],'Second commit retains every consumer from the complete baseline diff');
+  fs.writeFileSync(path.join(repo,'Mobile/new-shared-code.js'),'// unreviewed dependency');
+  git('add','Mobile/new-shared-code.js');git('-c','user.name=Protocol Test','-c','user.email=protocol@example.invalid','commit','-m','Add unknown dependency');
+  assert.equal(cliPlan().full,true,'Unknown code in a later commit still requires broad verification');
 } finally {fs.rmSync(repo,{recursive:true,force:true});}
 console.log('Testing protocol selection and independent failure collection passed.');
 const {assertReleaseResults}=require('./browser-test-plan');

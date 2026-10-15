@@ -68,6 +68,11 @@ own(['scripts/approved-artwork-browser-test.js','scripts/approved-artwork-test.j
 own(pairs('server',['family-password','mobile-access']),['family']);
 own(pairs('Mobile',['view-model']),['family']);
 own(['Mobile/family-auth.js','server/mobile-startup-test.js'],['family']);
+// Reviewed mobile-only consumers. Unknown Mobile files still use full fallback.
+own([...pairs('Mobile',['layout']),'Mobile/layout.css'],['weekly','airline-logo','split-flap','map','artwork','clocks','duty','posters','family']);
+own([...pairs('Mobile',['photo-registration']),'scripts/mobile-instrument-plate-browser-proof.js'],['split-flap','clocks','family']);
+own(['scripts/mobile-frame-browser-proof.js','scripts/mobile-walnut-overlay-browser-proof.js'],['family']);
+own(['scripts/component-browser-test.js'],['duty','posters','family']);
 // These adapters/models are exercised by the complete, inexpensive hosted regression.
 // State/controller changes also check their rendered consumers; adapter-only changes do not.
 own(pairs('server',['calendar-service','pilot-schedule-parser','adsb-lol-service','flightradar24-service','flightaware-operational-service','flightaware-route-service','live-flight-provider-service','weather-radar-service','live-flight-diagnostic','diagnostic-log']),[]);
@@ -89,6 +94,8 @@ function selectPlan(files,{full=false,uncertain=false}={}) {
   for(const p of paths){
     const rule=known.get(p);
     if(rule){rule.suites.forEach(s=>selected.add(s));windowsFull=windowsFull||rule.windowsFull;}
+    else if(/^assets\/hardware\/HomingBeacon_(Walnut_Overlay_(Landscape|Portrait)|Approved_Instrument_Plate_Transparent)_v\d+\.png$/.test(p))selected.add('family');
+    else if(/^assets\/hardware\/HomingBeacon_Mobile_(SplitFlap_(Landscape|Portrait)|Clock)_(Source|CutoutDonor)_v\d+\.png$/.test(p))['split-flap','clocks','family'].forEach(s=>selected.add(s));
     else if(/^assets\/destinations\/[^/]+\.png$/.test(p))selected.add('posters');
     else if(/^assets\/maps\/[^/]+\.(svg|jpg|png)$/.test(p))selected.add('map');
     else if(p==='assets/hardware/approved-map-artwork.json')selected.add('artwork');

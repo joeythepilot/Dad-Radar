@@ -38,7 +38,20 @@ Use workflow mode `scoped` (default) for selected release verification or `full`
 | Clock digits, ETA states, arrival/next leg, independent lighting and aperture/crop registration | clocks on both engines; broad artwork no longer repeats complete clock scenarios |
 | Selected poster decode/foreground path | posters on both engines; compact route has no poster |
 | Full family rendering on phone portrait, phone landscape, tablet and legacy Full URL; watchdog and no layout bar | family; auth semantics are additionally owned by the real HTTP password/Access tests |
+| Mobile photo registration and its exact source/donor PNGs | split-flap, clocks and family; Windows startup smoke |
+| Approved mobile walnut overlays and instrument plate PNG | family mounting/alpha/stacking proof; Windows startup smoke |
+| Mobile layout JS/CSS and its unit test | weekly, airline-logo, split-flap, map, artwork, clocks, duty, posters, family; Windows startup smoke; primary-only power/audio/refresh scenarios excluded |
+| Shared component-browser-test harness | duty, posters and family; every consumer of that harness |
 | Audio gesture/diagnostic controls | audio; unit tests independently cover flap, map motor, short-flight chimes and station identifier |
+
+Mobile photo/wood owners include future numeric versions of the same reviewed
+asset roles; a routine PNG version bump must not silently restore full fallback.
+New asset roles and unknown Mobile code still require full coverage. The real
+CLI regression uses a production PNG and multiple Git commits to verify both
+selected cases and Windows smoke across the complete baseline diff. Layout
+changes retain all nine affected suites; a material-only change does not inherit
+that broader layout scope. Changes to the selector itself still require one
+full verification before release.
 | Refresh/offline/wake/reload behavior | deployment |
 
 Approved artwork hashes and physical geometry remain exact where approval requires them. Map/terrain cache revisions are checked once in the expanded-map asset contract, not frozen to historical strings. The unused contiguous-US asset assertion is retired; the current expanded map's geography/lakes/borders remain protected. Map home/throttle regressions exercise rendering rather than variable/call spelling. Poster approved membership is independently recorded without freezing catalog size at 175. Duty source tests retain raster dimensions/build inclusion; rendered fit replaces literal CSS spelling.
