@@ -85,6 +85,7 @@
         board.closest('.flight-strip-module').classList.add('family-splitflap-mounted');
         fit();
       };
+      plate.onerror = function () { if (plate.parentNode) plate.parentNode.removeChild(plate); };
       plate.src = '/assets/hardware/HomingBeacon_SplitFlap_Measured_Transparent_v3.png';
       board.insertBefore(plate, board.firstChild);
     }).catch(function () {});

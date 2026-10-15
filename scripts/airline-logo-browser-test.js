@@ -50,6 +50,7 @@ async function settled(page) {
    assert.deepEqual(measured.groups.map(g=>g.tiles.length),[5,3,3,8]);
    const tiles=measured.groups.flatMap(g=>g.tiles);
    for(const tile of tiles){near(tile.width,tiles[0].width,.001);near(tile.height,tiles[0].height,.001);near(tile.height,before.groups[0].tiles[0].height,.02);}
+   if(name==='primary') {
    const spacing=g=>g.tiles.slice(1).map((t,i)=>t.left-g.tiles[i].right);
    for(let i=0;i<4;i++)for(const gap of spacing(measured.groups[i]))near(gap,spacing(before.groups[i])[0],.02);
    const gaps=gs=>gs.slice(1).map((g,i)=>g.tiles[0].left-gs[i].tiles.at(-1).right);
@@ -61,6 +62,11 @@ async function settled(page) {
    near(tiles.at(-1).right,oldRight,.3); // Native 1/64px CSS layout quantization, explicitly recorded.
    result.geometry[name].groupGaps=newGaps;
    result.geometry[name].rightEdgeResidual=tiles.at(-1).right-oldRight;
+   } else {
+    // Mobile groups now register to the approved photographic plate, not the
+    // superseded unplated spacing snapshot. Keep all primary geometry above.
+    result.geometry[name].approvedPlate=await require('./mobile-instrument-plate-browser-proof').checkMobileSplitFlapPlate(page);
+   }
    const cells=page.locator(".flap-character"),logo=page.locator("#flight-number>.flap-character").first();
    assert((await cells.evaluateAll(ns=>ns.map(n=>getComputedStyle(n.querySelector(".flap-hardware-left")).backgroundImage))).every(s=>s.includes("experimental-v4/experimental-fixed.png")));
    assert((await cells.evaluateAll(ns=>ns.map(n=>getComputedStyle(n.querySelector(".flap-hardware-left")).backgroundSize))).every(s=>s==="auto 100%"));
