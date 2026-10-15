@@ -2,18 +2,22 @@
 const assert=require('node:assert/strict');
 const {checkMobileWood}=require('./mobile-wood-browser-proof');
 async function checkMobileWoodLifecycle(browser,origin){
- for(const suffix of ['Source','Infill']){
+ for(const input of ['HomingBeacon_Walnut_Profile_Atlas_v2.png','HomingBeacon_Map_Walnut_Frame_Study_v3.png']){
   const p=await browser.newPage({viewport:{width:390,height:844},serviceWorkers:'block'});
-  await p.route('**/*',r=>{const u=r.request().url();if(u.includes('Walnut_'+suffix+'_v1.png'))return r.abort();return u.startsWith(origin)||u.startsWith('blob:')?r.continue():r.abort();});
-  await p.goto(origin+'/mobile');await p.waitForFunction(()=>window.DadRadarMobileWood?.failed);
+  let intercepted=0;
+  await p.route('**/*',r=>{const u=r.request().url();if(new URL(u).pathname==='/assets/hardware/'+input){intercepted++;return r.abort();}return u.startsWith(origin)||u.startsWith('blob:')?r.continue():r.abort();});
+  await p.goto(origin+'/mobile');
+  assert.equal(intercepted,1,'Failure fixture must intercept the actual current material input: '+input);
+  await p.waitForFunction(()=>window.DadRadarMobileWood?.failed);
   assert.equal(await p.locator('canvas.family-walnut').count(),0,'Failed input never leaves a partial overlay');
   assert.equal(await p.locator('.flap-character').count(),19,'All original live flaps remain usable');
   await p.waitForSelector('canvas.family-clock-plate');await p.close();
  }
  const slow=await browser.newPage({viewport:{width:844,height:390},serviceWorkers:'block'});
- let release;const held=new Promise(r=>{release=r});
- await slow.route('**/*',async r=>{const u=r.request().url();if(!u.startsWith(origin)&&!u.startsWith('blob:'))return r.abort();if(u.includes('Walnut_Source_v1.png'))await held;return r.continue();});
+ let release,intercepted=0;const held=new Promise(r=>{release=r});
+ await slow.route('**/*',async r=>{const u=r.request().url();if(!u.startsWith(origin)&&!u.startsWith('blob:'))return r.abort();if(new URL(u).pathname==='/assets/hardware/HomingBeacon_Walnut_Profile_Atlas_v2.png'){intercepted++;await held;}return r.continue();});
  await slow.goto(origin+'/mobile',{waitUntil:'domcontentloaded'});await slow.waitForSelector('canvas.family-clock-plate');
+ assert.equal(intercepted,1,'Slow-load fixture must hold the current stock, not an obsolete asset');
  assert.equal(await slow.locator('canvas.family-walnut').count(),0,'Slow material does not block or partially cover the live display');
  release();await slow.waitForFunction(()=>document.querySelector('canvas.family-walnut')?._woodEvidence);
  const first=await checkMobileWood(slow);

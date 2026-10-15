@@ -24,20 +24,40 @@
   var scale=Math.max(height/source.width,width/source.height,minScale||0),sw=height/scale,sh=width/scale;
   return{x:0,y:0,width:width,height:height,scale:scale,sw:sw,sh:sh,sx:(source.width-sw)/2,sy:(source.height-sh)/2};
  }
- var api={planWoodPieces:planWoodPieces,planWoodBacking:planWoodBacking,stock:stock};
+ function planProfileFrames(openings,source,width,height){
+  if(!source||!(source.width>0)||!source.rows||!source.rows.length)throw new Error('Invalid profile source');
+  var regions=[],pieces=[],longest=0;
+  openings.forEach(function(r){if(!(r.width>0&&r.height>0&&r.trim>0))return;regions.push({id:r.id,x:r.x,y:r.y,width:r.width,height:r.height,left:Math.max(0,r.x-r.trim),right:Math.min(width,r.x+r.width+r.trim),top:Math.max(0,r.y-r.trim),bottom:Math.min(height,r.y+r.height+r.trim)});});
+  regions.forEach(function(a){regions.forEach(function(b){if(a===b)return;
+   if(a.y<b.y+b.height&&b.y<a.y+a.height){if(a.x+a.width<=b.x)a.right=Math.min(a.right,(a.x+a.width+b.x)/2);if(b.x+b.width<=a.x)a.left=Math.max(a.left,(b.x+b.width+a.x)/2);}
+   if(a.x<b.x+b.width&&b.x<a.x+a.width){if(a.y+a.height<=b.y)a.bottom=Math.min(a.bottom,(a.y+a.height+b.y)/2);if(b.y+b.height<=a.y)a.top=Math.max(a.top,(b.y+b.height+a.y)/2);}
+  });});
+  regions.forEach(function(r){var l=r.left,t=r.top,rr=r.right,b=r.bottom,x=r.x,y=r.y,xr=x+r.width,yb=y+r.height;
+   [{side:'top',x:l,y:t,width:rr-l,height:y-t,rotation:0,polygon:[[l,t],[rr,t],[xr,y],[x,y]]},
+    {side:'right',x:xr,y:t,width:rr-xr,height:b-t,rotation:90,polygon:[[rr,t],[rr,b],[xr,yb],[xr,y]]},
+    {side:'bottom',x:l,y:yb,width:rr-l,height:b-yb,rotation:180,polygon:[[rr,b],[l,b],[x,yb],[xr,yb]]},
+    {side:'left',x:l,y:t,width:x-l,height:b-t,rotation:270,polygon:[[l,b],[l,t],[x,y],[x,yb]]}].forEach(function(p){
+     if(!(p.width>0&&p.height>0))return;p.id=r.id;p.vertical=p.rotation===90||p.rotation===270;p.length=p.vertical?p.height:p.width;p.thickness=p.vertical?p.width:p.height;longest=Math.max(longest,p.length);pieces.push(p);
+    });
+  });
+  var scale=Math.max(longest/source.width,source.minScale||0.1);
+  pieces.forEach(function(p,i){p.row=i%source.rows.length;var row=source.rows[p.row];p.scale=scale;p.sw=p.length/scale;p.sh=p.thickness/scale;if(p.sh>row[1])throw new Error('Profile stock is too narrow');p.sx=(source.x||0)+(source.width-p.sw)*((i*.38196601125)%1);p.sy=row[0]+row[1]-p.sh;});
+  return pieces;
+ }
+ var api={planWoodPieces:planWoodPieces,planWoodBacking:planWoodBacking,planProfileFrames:planProfileFrames,stock:stock};
  if(typeof module==='object'&&module.exports)module.exports=api;
  else {
-  var image=null,infill=null,canvas=null,started=false;
+  var image=null,infill=null,mapFrame=null,canvas=null,started=false;
   var frames=['.destination-panel','.daily-schedule-panel','.vintage-map-panel','.weekly-overnight-bank'];
   function fit(){
    var dashboard=document.getElementById('dashboard');
    if(!image||!canvas||!dashboard||dashboard.hidden)return;
    var box=dashboard.getBoundingClientRect(),width=box.width,height=box.height;
    if(!(width>0&&height>0))return;
-   var regions=[{id:'perimeter',x:7,y:7,width:width-14,height:height-14,trim:5}],protectedAreas=[];
+   var regions=[{id:'perimeter',x:7,y:7,width:width-14,height:height-14,trim:7}],protectedAreas=[],mapOpening=null;
    function rect(n){var r=n.getBoundingClientRect();return{x:r.left-box.left,y:r.top-box.top,width:r.width,height:r.height};}
    frames.forEach(function(selector){
-    var n=dashboard.querySelector(selector);if(!n)return;var r=rect(n);r.id=selector;r.trim=3;regions.push(r);
+    var n=dashboard.querySelector(selector);if(!n)return;var r=rect(n);
     var content=selector==='.vintage-map-panel'?n.querySelector('.route-map-shell'):selector==='.destination-panel'?n.querySelector('.destination-poster-image'):n;
     var opening=content?rect(content):r;
     if(selector==='.destination-panel'){
@@ -48,7 +68,7 @@
       opening={x:opening.x+(opening.width-w)/2,y:opening.y+(opening.height-h)/2,width:w,height:h};
      }else opening=r;
     }
-    protectedAreas.push(opening);
+    opening.id=selector;opening.trim=selector==='.vintage-map-panel'?9:5;regions.push(opening);protectedAreas.push(opening);if(selector==='.vintage-map-panel')mapOpening=opening;
    });
    ['.flight-strip-module','.twin-clock-panel'].forEach(function(selector){
     var n=dashboard.querySelector(selector),photo=n&&n.querySelector('.family-photo-plate');
@@ -56,32 +76,38 @@
     if(n&&!(photo&&photo._photoEvidence))protectedAreas.push(rect(n));
    });
    Array.prototype.forEach.call(dashboard.querySelectorAll('.family-instrument-plate'),function(n,i){
-    var r=rect(n),b={id:'instrument-'+i,x:r.x+r.width*50/1254,y:r.y+r.height*90/1254,width:r.width*1145/1254,height:r.height*1062/1254,trim:2.5};regions.push(b);protectedAreas.push(b);
+    var r=rect(n),b={id:'instrument-'+i,x:r.x+r.width*50/1254,y:r.y+r.height*90/1254,width:r.width*1145/1254,height:r.height*1062/1254,trim:4};regions.push(b);protectedAreas.push(b);
    });
    Array.prototype.forEach.call(dashboard.querySelectorAll('.family-photo-plate'),function(n){
     var e=n._photoEvidence;if(!e)return;var r=rect(n),f=e.fit,b=e.body;
-    protectedAreas.push({x:r.x+f.x+b[0]*f.scale,y:r.y+3+f.y+b[1]*f.scale,width:(b[2]-b[0])*f.scale,height:(b[3]-b[1])*f.scale});
+    var body={id:'metal-'+regions.length,x:r.x+f.x+b[0]*f.scale,y:r.y+3+f.y+b[1]*f.scale,width:(b[2]-b[0])*f.scale,height:(b[3]-b[1])*f.scale,trim:3};protectedAreas.push(body);regions.push(body);
     e.holes.forEach(function(h){protectedAreas.push({x:r.x+h.x,y:r.y+3+h.y,width:h.width,height:h.height});});
    });
    var dpr=Math.min(3,root.devicePixelRatio||1),ctx=canvas.getContext('2d');
    canvas.width=Math.ceil(width*dpr);canvas.height=Math.ceil(height*dpr);
    canvas.style.width=width+'px';canvas.style.height=height+'px';
    ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,canvas.width,canvas.height);ctx.setTransform(dpr,0,0,dpr,0,0);
-   var pieces=planWoodPieces(regions,stock),field=planWoodBacking(width,height,{width:infill.naturalWidth,height:infill.naturalHeight},pieces.length?pieces[0].scale:0);
-   var input={x:stock.x,width:stock.width,rows:stock.rows,minScale:field.scale};pieces=planWoodPieces(regions,input);
-   // One continuous genuine source crop, uniformly scaled and rotated; no
-   // tiled patches or stretched trim. Existing stock pieces sit above it.
-   ctx.save();ctx.translate(field.width,0);ctx.rotate(Math.PI/2);ctx.drawImage(infill,field.sx,field.sy,field.sw,field.sh,0,0,field.height,field.width);ctx.restore();
-   pieces.forEach(function(p){ctx.save();if(p.vertical){ctx.translate(p.x+p.width,p.y);ctx.rotate(Math.PI/2);ctx.drawImage(image,p.sx,p.sy,p.sw,p.sh,0,0,p.height,p.width);}else ctx.drawImage(image,p.sx,p.sy,p.sw,p.sh,p.x,p.y,p.width,p.height);ctx.restore();});
+   var source={x:16,width:1504,rows:[[8,52],[70,52],[132,52],[194,52],[256,52],[318,52],[380,52],[442,52]],minScale:.2};
+   // Do not partition the module frames against their enclosing perimeter.
+   var pieces=planProfileFrames(regions.slice(1),source,width,height).concat(planProfileFrames(regions.slice(0,1),source,width,height));
+   var field=planWoodBacking(width,height,{width:1504,height:492},0);
+   ctx.save();ctx.translate(field.width,0);ctx.rotate(Math.PI/2);ctx.drawImage(infill,16+field.sx,516+field.sy,field.sw,field.sh,0,0,field.height,field.width);ctx.restore();
+   pieces.forEach(function(p){ctx.save();ctx.beginPath();p.polygon.forEach(function(v,i){if(i)ctx.lineTo(v[0],v[1]);else ctx.moveTo(v[0],v[1]);});ctx.closePath();ctx.clip();
+    if(p.rotation===90){ctx.translate(p.x+p.width,p.y);ctx.rotate(Math.PI/2);}else if(p.rotation===180){ctx.translate(p.x+p.width,p.y+p.height);ctx.rotate(Math.PI);}else if(p.rotation===270){ctx.translate(p.x,p.y+p.height);ctx.rotate(-Math.PI/2);}else ctx.translate(p.x,p.y);
+    ctx.drawImage(image,p.sx,p.sy,p.sw,p.sh,0,0,p.length,p.thickness);ctx.restore();});
+   var approvedMap=null;
+   if(mapOpening){var h={x:69,y:64,width:1399,height:894},s=(h.width*mapOpening.width+h.height*mapOpening.height)/(h.width*h.width+h.height*h.height),ex=(h.width*s-mapOpening.width)/2,ey=(h.height*s-mapOpening.height)/2;
+    if(Math.max(Math.abs(ex),Math.abs(ey))<.75){var mx=mapOpening.x-ex-h.x*s,my=mapOpening.y-ey-h.y*s;ctx.drawImage(mapFrame,mx,my,mapFrame.naturalWidth*s,mapFrame.naturalHeight*s);approvedMap={scale:s,x:mx,y:my,edgeError:[ex,ey]};}
+   }
    protectedAreas.forEach(function(r){ctx.clearRect(r.x-0.5,r.y-0.5,r.width+1,r.height+1);});
-   canvas._woodEvidence={source:image.src,infill:field,pieces:pieces,regions:regions,protectedAreas:protectedAreas,dpr:dpr,width:width,height:height};
+   canvas._woodEvidence={source:image.src,infill:field,pieces:pieces,regions:regions,protectedAreas:protectedAreas,dpr:dpr,width:width,height:height,profiled:true,approvedMap:approvedMap};
   }
   api.fit=fit;
   api.start=function(){
    if(started||!document.documentElement.hasAttribute('data-family-full'))return;started=true;
    function load(src){return new Promise(function(ok,no){var n=new Image();n.onload=function(){ok(n);};n.onerror=no;n.src=src;});}
-   Promise.all([load('/assets/hardware/HomingBeacon_Mobile_Walnut_Source_v1.png'),load('/assets/hardware/HomingBeacon_Mobile_Walnut_Infill_v1.png')]).then(function(images){
-    image=images[0];infill=images[1];canvas=document.createElement('canvas');canvas.className='family-walnut';canvas.setAttribute('aria-hidden','true');
+   Promise.all([load('/assets/hardware/HomingBeacon_Walnut_Profile_Atlas_v2.png'),load('/assets/hardware/HomingBeacon_Map_Walnut_Frame_Study_v3.png')]).then(function(images){
+    image=images[0];infill=images[0];mapFrame=images[1];canvas=document.createElement('canvas');canvas.className='family-walnut';canvas.setAttribute('aria-hidden','true');
     var dashboard=document.getElementById('dashboard');if(!dashboard)return;dashboard.appendChild(canvas);fit();
     var posterFitPending=false;
     function posterChanged(){

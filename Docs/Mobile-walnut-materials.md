@@ -25,3 +25,62 @@ Independent review identified two poster lifecycle defects before release: captu
 New browser coverage exhaustively checks negative-space alpha outside actual cutouts and one-pixel antialias seams, plus an independent DOM-derived map-reveal sample. Its RED run found 2926 empty pixels on the old landscape implementation. A separate late-poster RED run found a stale black letterbox (alpha0 vs255) without the load refit. The retained lifecycle suite now includes eight actual viewport layouts with an identical return pixel signature, delayed poster arrival, failed material inputs, slow wood and primary isolation. Existing independently captured native geometry and exact photographic source/registration proofs remain in force. Visual acceptance is based on actual DOM renders, not generated mockups. Physical iOS12/Pi performance and family-device acceptance remain separate from hosted/browser evidence.
 
 The first full hosted gate passed all new walnut/family lifecycle and geometry checks in Chromium and WebKit, but failed an existing primary split-flap transient-artwork proof: separate driver reads outlasted the real flip, leaving outgoing/incoming halves undefined. An injected one-second driver response delay reproduced the race in the unchanged Chromium product. The proof now captures transient material/ink evidence atomically with starting the real flip, retains every material/ink assertion and awaits actual settlement. No production flap, animation duration, audio or mechanism was changed; the same latency injection passes. A fresh exact-SHA full gate is required after this test-only correction.
+
+## October 15: corrective framed-module candidate — not deployed
+
+The preceding implementation/release evidence is historical, not visual approval.
+Joey subsequently rejected its flat backing/thin-strip appearance. He approved
+the actual darker map-frame proof at 09:22 Chicago ("Yes! Much better! Continue.")
+and authorized extending that construction across the unchanged mobile layout.
+The map-only record is in `Docs/Walnut-map-frame-study.md`.
+
+The full candidate uses an additional unmodified built-in image output,
+`HomingBeacon_Walnut_Profile_Atlas_v2.png`, 1536×1024, SHA256
+`a299c20f3b474f334f3af223352d0e1dd26e2c6520d296a300135e7f69ef3e8d`.
+It is generated photographic artwork, not a camera photograph of built trim.
+One silhouette-guided generation produced eight continuous horizontal satin
+walnut boards with shallow inner edge returns, plus a broad matching face below;
+the approved map source supplied the finish reference. Usable stock is
+X16..1520, rows Y8/70/132/194/256/318/380/442, each52 pixels high.
+The uninterrupted broad face crop is X16,Y516,1504×492.
+
+`planProfileFrames` makes four trapezoidal miter cuts around each existing
+opening. Adjacent frames meet at the midpoint of their available gap. Every
+board is one continuous, uniformly scaled source crop, rotated0/90/180/270
+degrees so its photographed return faces inward. No rail is assembled from
+repeated patches or edge-pixel extensions; source stock may be reused in
+bounded crops. This is square-section applied trim, not a newly routed cabinet
+rebate, CSS bevel, generated replacement dashboard or resized mechanism.
+
+The byte-identical approved complete map photograph is retained where its
+uniform whole-object fit is qualified (844×390 viewport); its two edge errors
+remain under0.06CSSpx. Other aspect ratios use the photographic stock pieces,
+not a nonuniformly stretched map frame. Matching broad infill covers the remaining
+negative space. Original DOM geometry, metal assets, working apertures and
+poster/fallback lifecycle are preserved. No primary-display code changes.
+
+Actual local landscape, portrait and tablet renders were inspected. Full
+`npm test`, focused Chromium family/lifecycle checks (eight layouts, return
+signature, both current-input failures, slow load, late poster/fallback and
+primary isolation), original prewood geometry/alpha checks and diff check passed.
+Literal miter/shared-boundary unit tests and current material hash pins were
+added. Failure fixtures now assert interception of the actual input, preventing
+a retired filename from turning into a misleading condition timeout.
+
+An independent read-only review found no Critical/Important renderer defect in
+the inspected layouts. It withdrew an initial source-overlap concern after
+distinguishing ordinary bounded stock crops from the prohibited artificial
+edge-pixel padding. A minor raster-proof gap prompted actual top/left source
+pixel landmarks and fitting/nonfitting map-branch assertions. These protect
+technical rendering, not aesthetic approval.
+
+A negative-control browser run suppressed only the real overlay's stock-piece
+draws while leaving the broad backing and registration evidence intact. The new
+actual-source raster check rejected it. The unmodified renderer then passed the
+complete focused family suite. The lower portrait scroll content was also
+inspected, including the duty card and third instrument.
+
+This candidate is local and not published, merged or deployed. Full-candidate
+visual acceptance, hosted exact-SHA Chromium/WebKit release gates and physical
+family-device/performance acceptance are not claimed. The previously deployed
+flat walnut remains rejected; passing tests do not overturn that judgment.

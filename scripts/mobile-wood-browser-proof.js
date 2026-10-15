@@ -22,6 +22,10 @@ async function checkMobileWood(page){
   return{...e,rect:box.toJSON(),dashboard:dashboard.toJSON(),covered,checked,woodPixels,signature,unfilled,negativeChecked,mapReveal};
  });
  assert(e&&e.pieces.length>0,'Mounted wood supplies real piece registration evidence');
+ assert(e.profiled,'The mounted candidate uses profiled module joinery, not the retired flat-strip renderer');
+ assert(e.source.endsWith('/HomingBeacon_Walnut_Profile_Atlas_v2.png'),'Current profiled photographic stock is actually loaded');
+ if(Math.abs(e.width-693.328125)<.1&&Math.abs(e.height-390)<.1)assert(e.approvedMap,'The approved complete map photograph is retained at its qualified fit');
+ if(e.height>e.width||Math.abs(e.width-1024)<.1)assert.equal(e.approvedMap,null,'Nonfitting layouts use genuine profiled pieces, not a stretched whole frame');
  assert(e.infill&&e.infill.scale>0,'A broad photographic face fills instrument-column negative space, not stretched narrow trim');
  assert(Math.abs(e.rect.left-e.dashboard.left)<.01&&Math.abs(e.rect.top-e.dashboard.top)<.01,'Wood origin must match dashboard, not viewport');
  assert.equal(e.covered,0,'No original aperture/module/photographic metal body is covered by wood');
@@ -31,6 +35,23 @@ async function checkMobileWood(page){
  assert(e.checked>1000&&e.woodPixels>500,'Meaningful original area and visible photographic wood were tested');
  for(const p of e.pieces){const l=p.vertical?p.height:p.width,t=p.vertical?p.width:p.height;assert(Math.abs(l/p.sw-t/p.sh)<1e-9,'No nonuniform photographic scaling');}
  assert(Math.abs(e.infill.height/e.infill.sw-e.infill.width/e.infill.sh)<1e-9,'Broad face is also uniformly scaled');
+ // Actual source-pixel landmarks, not just opaque backing or reported plans.
+ // Top and left stock have independently specified 0/-90deg orientations;
+ // deleting the piece paint or reversing its inward return must fail here.
+ const landmarks=await page.locator('canvas.family-walnut').evaluate(async n=>{
+  const e=n._woodEvidence,photo=new Image();photo.src='/assets/hardware/HomingBeacon_Walnut_Profile_Atlas_v2.png';await photo.decode();
+  return ['top','left'].map(side=>{
+   const p=e.pieces.find(p=>p.id==='.destination-panel'&&p.side===side),reference=document.createElement('canvas');reference.width=n.width;reference.height=n.height;
+   const c=reference.getContext('2d');c.scale(e.dpr,e.dpr);
+   let x,y;
+   if(side==='top'){c.translate(p.x,p.y);x=p.x+p.width/2;y=p.y+p.height-1.25;}
+   else{c.translate(p.x,p.y+p.height);c.rotate(-Math.PI/2);x=p.x+p.width-1.25;y=p.y+p.height/2;}
+   c.drawImage(photo,p.sx,p.sy,p.sw,p.sh,0,0,p.length,p.thickness);
+   const col=Math.floor(x*e.dpr),row=Math.floor(y*e.dpr);
+   return{side,actual:[...n.getContext('2d').getImageData(col,row,1,1).data],expected:[...c.getImageData(col,row,1,1).data]};
+  });
+ });
+ for(const sample of landmarks){assert.equal(sample.expected[3],255,'Reference landmark lies within the photographed board');sample.actual.forEach((v,i)=>assert(Math.abs(v-sample.expected[i])<=1,sample.side+' frame raster must match the photographed source and inward orientation'));}
  const size=page.viewportSize(),baseline=require('./fixtures/mobile-wood-baseline.json').cases.find(c=>c.viewport.width===size.width&&c.viewport.height===size.height);
  if(baseline){
   const actual=await page.evaluate(selectors=>selectors.map(s=>({selector:s,nodes:[...document.querySelectorAll(s)].map(n=>({rect:n.getBoundingClientRect().toJSON(),x:n.getAttribute('x'),y:n.getAttribute('y'),width:n.getAttribute('width'),height:n.getAttribute('height')}))})),baseline.geometry.map(g=>g.selector));
