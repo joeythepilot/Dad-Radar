@@ -6,9 +6,17 @@
     if (!viewer || !dashboard) return;
     var portrait = window.innerHeight > window.innerWidth;
     document.documentElement.classList.toggle('family-full-portrait', portrait);
-    var width = portrait ? viewer.clientWidth : Math.min(viewer.clientWidth, viewer.clientHeight * 16 / 9);
+    // Keep the PNG and its live openings on one uniformly scaled panel.
+    var width = portrait ? 390 : 1024;
+    var height = portrait ? 1000 : 576;
+    var scale = portrait ? viewer.clientWidth / width : Math.min(viewer.clientWidth / width, viewer.clientHeight / height);
+    var frame = dashboard.parentElement;
+    frame.style.width = width * scale + 'px';
+    frame.style.height = height * scale + 'px';
     dashboard.style.width = width + 'px';
-    dashboard.style.height = (portrait ? Math.max(1000, viewer.clientHeight) : width * 9 / 16) + 'px';
+    dashboard.style.height = height + 'px';
+    dashboard.style.transform = 'scale(' + scale + ')';
+    dashboard.style.setProperty('--family-panel-scale', scale);
     // The raster Today’s Duty card has calibrated overlay geometry and must scale
     // as one physical object. Legacy web duty panels may still reflow when narrow.
     var duty = dashboard.querySelector('.daily-schedule-panel');
@@ -46,17 +54,22 @@
     if (window.DadRadarMobilePhotos) window.DadRadarMobilePhotos.fit();
   }
   function mount() {
+    var dashboard = document.getElementById('dashboard');
+    var frame = document.createElement('div');
+    frame.className = 'family-panel-viewport';
+    dashboard.parentElement.insertBefore(frame, dashboard);
+    frame.appendChild(dashboard);
     if (window.Image && window.fetch) {
       var renderer = document.createElement('script');
-      renderer.src = '/Mobile/photo-registration.js?v=6';
+      renderer.src = '/Mobile/photo-registration.js?v=7';
       renderer.onload = function () { window.DadRadarMobilePhotos.start(); };
       document.head.appendChild(renderer);
     }
     var walnut = document.createElement('picture');
     walnut.className = 'family-walnut';
     walnut.setAttribute('aria-hidden', 'true');
-    walnut.innerHTML = '<source media="not all and (min-aspect-ratio: 1/1)" srcset="/assets/hardware/HomingBeacon_Walnut_Overlay_Portrait_v1.png">' +
-      '<img src="/assets/hardware/HomingBeacon_Walnut_Overlay_Landscape_v1.png" alt="" draggable="false">';
+    walnut.innerHTML = '<source media="not all and (min-aspect-ratio: 1/1)" srcset="/assets/hardware/HomingBeacon_Walnut_Overlay_Portrait_v2.png">' +
+      '<img src="/assets/hardware/HomingBeacon_Walnut_Overlay_Landscape_v2.png" alt="" draggable="false">';
     document.getElementById('dashboard').appendChild(walnut);
     // The approved photographic plate is a separate mobile-only rear layer.
     // Keep every existing instrument child and its mechanism unchanged.

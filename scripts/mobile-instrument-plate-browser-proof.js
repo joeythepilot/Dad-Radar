@@ -68,7 +68,7 @@ async function checkMobileSplitFlapPlate(page){
    result.push({...e,rect:p.toJSON(),changedOutside,outsideSamples,compared,alpha:e.holes.map(t=>ctx.getImageData(Math.floor((t.x+t.width/2)*e.dpr),Math.floor((t.y+t.height/2+3)*e.dpr),1,1).data[3])});
   }
   const ids=['flight-number','flight-origin','flight-destination','status-value'];
-  return {plates:result,groups:ids.map(id=>{const ns=[...document.getElementById(id).querySelectorAll('.flap-character')],rs=ns.map(n=>n.getBoundingClientRect());return{count:ns.length,hinges:document.getElementById(id).querySelectorAll('.flap-fixed-hardware').length,left:rs[0].left,top:rs[0].top,right:rs.at(-1).right,bottom:rs[0].bottom}}),viewport:innerWidth,clocks:[...document.querySelectorAll('.clock-wheel,.period-wheel')].map(n=>[n.getAttribute('x'),n.getAttribute('y'),n.getAttribute('width'),n.getAttribute('height')])};
+  return {plates:result,groups:ids.map(id=>{const ns=[...document.getElementById(id).querySelectorAll('.flap-character')],rs=ns.map(n=>n.getBoundingClientRect());return{count:ns.length,hinges:document.getElementById(id).querySelectorAll('.flap-fixed-hardware').length,left:rs[0].left,top:rs[0].top,right:rs.at(-1).right,bottom:rs[0].bottom}}),viewport:innerWidth,panelScale:parseFloat(document.getElementById('dashboard').style.getPropertyValue('--family-panel-scale'))||1,module:document.querySelector('.flight-strip-module').getBoundingClientRect().toJSON(),clocks:[...document.querySelectorAll('.clock-wheel,.period-wheel')].map(n=>[n.getAttribute('x'),n.getAttribute('y'),n.getAttribute('width'),n.getAttribute('height')])};
  });
  assert.equal(evidence.plates.length,2,'One continuous split-flap and one twin-clock photograph');
  for(const e of evidence.plates){
@@ -76,15 +76,15 @@ async function checkMobileSplitFlapPlate(page){
   assert(e.compared>500,'Meaningful unaffected photographic area was compared');
   assert(e.alpha.every(a=>a===0),'Native windows have genuine alpha transparency');
   assert.equal(e.fit.scaleX,e.fit.scaleY,'Whole photograph uses one scale');
-  const f=e.fit,b=e.body,p=e.rect;
-  assert(p.left+f.x+b[0]*f.scale>=-0.5&&p.left+f.x+b[2]*f.scale<=evidence.viewport+0.5,'No photographed outer edge is clipped at a viewport side');
+  const f=e.fit,b=e.body,p=e.rect,s=evidence.panelScale;
+  assert(p.left+(f.x+b[0]*f.scale)*s>=-0.5&&p.left+(f.x+b[2]*f.scale)*s<=evidence.viewport+0.5,'No photographed outer edge is clipped at a viewport side');
   assert(f.y+b[1]*f.scale>=-3.01&&f.y+b[3]*f.scale<=e.bay.height+3.01,'Photographed body stays within measured inter-module clearance');
  }
  const split=evidence.plates.find(e=>e.profile.startsWith('SplitFlap'));
  const viewport=page.viewportSize();
- const baseline=require('./fixtures/mobile-native-geometry.json').cases.find(c=>c.viewport.width===viewport.width&&c.viewport.height===viewport.height);
- if(baseline)evidence.groups.forEach((g,i)=>{const old=baseline.groups[i].aperture;for(const edge of ['left','top','right','bottom']){const expected=edge==='left'?old.x:edge==='top'?old.y:old[edge];assert(Math.abs(g[edge]-expected)<.5,'Rendered live geometry matches the independent pre-V5 approved layout');}});
- evidence.groups.forEach((g,i)=>{const t=split.holes[i],p=split.rect;assert.equal(g.count,[5,3,3,8][i]);assert.equal(g.hinges,g.count);for(const [actual,expected]of [[g.left,p.left+t.x],[g.top,p.top+3+t.y],[g.right,p.left+t.x+t.width],[g.bottom,p.top+3+t.y+t.height]])assert(Math.abs(actual-expected)<.03,'Cutout is registered to the unchanged live tile bounds');});
+ const baseline=require('./fixtures/mobile-native-geometry.json').cases.find(c=>c.viewport.width===(viewport.height>viewport.width?390:1024)&&c.viewport.height===(viewport.height>viewport.width?844:768));
+ if(baseline)evidence.groups.forEach((g,i)=>{const old=baseline.groups[i].aperture;for(const edge of ['left','top','right','bottom']){const horizontal=edge==='left'||edge==='right';const value=edge==='left'?old.x:edge==='top'?old.y:old[edge];const expected=(horizontal?evidence.module.x:evidence.module.y)+(value-(horizontal?baseline.module.x:baseline.module.y))*evidence.panelScale;assert(Math.abs(g[edge]-expected)<.5,'Rendered live geometry matches the independent pre-V5 approved layout');}});
+ evidence.groups.forEach((g,i)=>{const t=split.holes[i],p=split.rect;assert.equal(g.count,[5,3,3,8][i]);assert.equal(g.hinges,g.count);for(const [actual,expected]of [[g.left,p.left+t.x*evidence.panelScale],[g.top,p.top+(3+t.y)*evidence.panelScale],[g.right,p.left+(t.x+t.width)*evidence.panelScale],[g.bottom,p.top+(3+t.y+t.height)*evidence.panelScale]])assert(Math.abs(actual-expected)<.03,'Cutout is registered to the unchanged live tile bounds');});
  assert.deepEqual(evidence.clocks,Array.from({length:10},(_,i)=>[String([220,480,820,1080,1350][i%5]),i<5?'130':'525','210','210']),'Clock apertures and original AM/PM rollers retain their geometry');
  return evidence;
 }

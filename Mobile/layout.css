@@ -2,8 +2,8 @@ html[data-family-full] { height: 100%; overflow: hidden; }
 html[data-family-full] body { margin: 0; height: 100vh; height: 100dvh; width: 100%; box-sizing: border-box; overflow: hidden; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
 html[data-family-full] .display-viewer { flex: 1; min-height: 0; min-width: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 html[data-family-full] .dashboard { position:relative; isolation:isolate; flex: none; max-width: 100%; max-height: 100%; }
-/* Finished cabinet photograph, behind the unchanged live modules. */
-html[data-family-full] .family-walnut { position:absolute; inset:0; z-index:-1; pointer-events:none; }
+/* Static wooden frames above content; complete front hardware above wood. */
+html[data-family-full] .family-walnut { position:absolute; inset:0; z-index:10; pointer-events:none; }
 html[data-family-full] .family-walnut img { display:block; width:100%; height:100%; max-width:none; max-height:none; }
 html[data-family-full] .diagnostic-chime-button { display: none !important; }
 /* Original approved RGBA plate, behind the untouched instrument assembly.
@@ -191,3 +191,12 @@ html[data-family-full] .family-duty-narrow:not(.is-physical-duty-card) .daily-sc
 html[data-family-full] .family-duty-narrow:not(.is-physical-duty-card) .daily-schedule-label {
   grid-area:route; overflow:visible; white-space:normal; overflow-wrap:break-word; line-height:1.25;
 }
+
+/* The whole panel scales together; the photographs never stretch or drift. */
+html[data-family-full] .dashboard { --outer-padding:7px; --panel-gap:6px; }
+html[data-family-full] .family-panel-viewport { position:relative; flex:none; margin:0 auto; }
+html[data-family-full] .family-panel-viewport > .dashboard { position:absolute; top:0; left:0; max-width:none; max-height:none; transform-origin:top left; }
+html[data-family-full] .flight-strip-module,
+html[data-family-full] .twin-clock-panel,
+html[data-family-full] .instrument-rail { position:relative; z-index:20; }
+html.family-full-portrait .instrument-slot .instrument { width:93.6px!important; height:93.6px!important; }

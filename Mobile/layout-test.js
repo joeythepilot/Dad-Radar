@@ -13,13 +13,14 @@ function load(pathname, width, height) {
   const module = {style};
   const board = {clientWidth: width, clientHeight: 100, style};
   const dashboard = {
-    style: {},
+    style: {setProperty(name,value) { this[name]=value; }},
     appendChild() {},
     querySelector(selector) {
       return selector === '.flight-strip-module' ? module : selector === '.flight-board' ? board : null;
     }
   };
-  const viewer = {clientWidth: width, clientHeight: height};
+  const viewer = {clientWidth: width, clientHeight: height, insertBefore() {}};
+  dashboard.parentElement=viewer;
   const document = {
     readyState: 'loading',
     documentElement: {classList: {toggle() {}}},
@@ -30,7 +31,7 @@ function load(pathname, width, height) {
     getElementById(id) { return id === 'dashboard' ? dashboard : null; },
     createElement(tag) {
       created.push(tag);
-      return {className: '', setAttribute() {}, appendChild() {}, addEventListener() {}};
+      return {className: '', style: {}, setAttribute() {}, appendChild(child) { child.parentElement=this; }, addEventListener() {}};
     }
   };
   const context = {
@@ -51,7 +52,10 @@ for (const [name, width, height] of [['phone portrait', 390, 844], ['phone lands
   assert.deepEqual(result.redirects, [], `${name}: /mobile stays on the full view`);
   assert(!result.created.includes('select'), `${name}: no layout selector is mounted`);
   const expectedWidth = width < height ? width : Math.min(width, height * 16 / 9);
-  assert.equal(result.dashboard.style.width, `${expectedWidth}px`, `${name}: full dashboard uses the available viewport`);
+  const nativeWidth=width<height?390:1024;
+  assert.equal(result.dashboard.style.width, `${nativeWidth}px`, `${name}: panel keeps its photographic proportions`);
+  assert.equal(result.dashboard.parentElement.style.width, `${expectedWidth}px`, `${name}: full dashboard uses the available viewport`);
+  assert.equal(result.dashboard.style['--family-panel-scale'],expectedWidth/nativeWidth,`${name}: one uniform scale applies to wood and modules`);
 }
 const legacy = load('/mobile/full', 390, 844);
 assert.deepEqual(legacy.redirects, [], 'Old Full bookmarks stay usable');

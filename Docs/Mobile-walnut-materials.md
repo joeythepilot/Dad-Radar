@@ -170,3 +170,33 @@ No approved runtime/artwork change was made while correcting the proofs.
 The subsequent verified-baseline/receipt commit is metadata, not a redeployment.
 See the execution record and reliability audit for measured evidence and the
 explicitly unresolved historical weekly-timeout attribution.
+
+### October 15 — front-mounted walnut frames, V2
+
+Joey corrected the construction order: live display, visible wooden faceplate,
+then the complete approved front metal assemblies. The bare physical-template
+study that exposed black around circular dials is rejected. It is not installed.
+
+V2 uses one pre-rendered transparent PNG per orientation. Frames were authored
+as extruded walnut pieces, with separate grain direction on rails/stiles, miter
+joints and small eased edges. The existing generated walnut photograph is a
+material texture; no claim of a photographed physical prototype is made.
+Four windows register to the existing mobile poster, duty card, map and weekly
+bank. Walnut fills the space behind the complete approved instruments. The
+approved instrument and selected clock/split-flap source PNGs are unchanged.
+This is display artwork based on the approved mobile modules, not a revision
+to the October11 printed physical cutting template or a manufacturing cut list.
+
+The browser loads only the finished PNG: no wood modeling, slicing or canvas
+renderer is installed. Wood is above content at z10; metal assembly parents are
+above wood at z20. Existing1024x576 landscape and390x1000 portrait arrangements
+scale uniformly as complete panels. This prevents fixed-pixel insets from moving
+inside a stretched full-panel photograph. The existing metal canvas registrar
+converts screen coordinates back to panel coordinates under that uniform scale.
+
+Verification covers real PNG alpha immediately inside/outside all four window
+edges, complete approved plates, exact normalized live tile bounds, original
+clock SVG geometry, eight Chromium viewports including1920x1080, and orientation
+transitions. The full application test body passed after a separately verified
+browser build. Primary dashboard, live data, clocks and instrument mechanisms
+are unchanged. Physical iOS12 inspection remains a device-level check.

@@ -20,7 +20,7 @@ fs.mkdirSync(output,{recursive:true});
   ]:focus==='posters'?[
    ['kiosk',1920,1080,'/'],['family-portrait',390,844,'/mobile']
   ]:[['phone-portrait',390,844,'/mobile'],['phone-landscape',844,390,'/mobile'],
-    ['tablet',1024,768,'/mobile'],['square',768,768,'/mobile'],['narrow',320,740,'/mobile'],
+    ['tablet',1024,768,'/mobile'],['wide',1920,1080,'/mobile'],['square',768,768,'/mobile'],['narrow',320,740,'/mobile'],
     ['portrait-tablet',768,1024,'/mobile'],['legacy-full',390,844,'/mobile/full?layout=compact']];
   for(const [name,width,height,route] of views){
    const page=await browser.newPage({viewport:{width,height},serviceWorkers:'block'});

@@ -57,21 +57,22 @@
  function fit(){
   if(!api.ready)return;
   var m=document.querySelector('.flight-strip-module'),board=document.querySelector('.flight-board');if(!m||!board)return;
+  var scale=parseFloat(document.getElementById('dashboard').style.getPropertyValue('--family-panel-scale'))||1;
   var mr=m.getBoundingClientRect(),cs=getComputedStyle(m),photo=photos[innerHeight>innerWidth?'portrait':'landscape'];
   if(mr.width<=0||mr.height<=0)return;
-  var targets=['flight-number','flight-origin','flight-destination','status-value'].map(function(id){return union(document.getElementById(id).querySelectorAll('.flap-character'),mr);});
+  var targets=['flight-number','flight-origin','flight-destination','status-value'].map(function(id){var t=union(document.getElementById(id).querySelectorAll('.flap-character'),mr);return{x:t.x/scale,y:t.y/scale,width:t.width/scale,height:t.height/scale};});
   if(!targets.every(function(t){return t.width>0&&t.height>0;}))return;
   var canvas=m.querySelector('.family-splitflap-plate')||makeCanvas(m,'splitflap');
   canvas.style.left=-parseFloat(cs.borderLeftWidth)+'px';canvas.style.top=(-3-parseFloat(cs.borderTopWidth))+'px';
-  draw(canvas,photo,targets,{width:mr.width,height:mr.height});m.classList.add('family-photo-mounted');
+  draw(canvas,photo,targets,{width:mr.width/scale,height:mr.height/scale});m.classList.add('family-photo-mounted');
   var panel=document.querySelector('.twin-clock-panel'),art=panel&&panel.querySelector('.twin-clock-art');if(!art)return;
   var pr=panel.getBoundingClientRect(),matrix=art.getScreenCTM();if(!matrix)return;
   var clockTargets=Array.prototype.map.call(art.querySelectorAll('.drum-clock'),function(row){
    var wheels=Array.prototype.map.call(row.querySelectorAll('.clock-wheel,.period-wheel'),function(w){var x=+w.getAttribute('x'),y=+w.getAttribute('y');return{x:matrix.a*x+matrix.e-pr.left,y:matrix.d*y+matrix.f-pr.top,right:matrix.a*(x+210)+matrix.e-pr.left,bottom:matrix.d*(y+210)+matrix.f-pr.top};});
-   var x=Math.min.apply(null,wheels.map(function(w){return w.x;})),y=wheels[0].y;return{x:x,y:y,width:Math.max.apply(null,wheels.map(function(w){return w.right;}))-x,height:wheels[0].bottom-y};
+   var x=Math.min.apply(null,wheels.map(function(w){return w.x;})),y=wheels[0].y;return{x:x/scale,y:y/scale,width:(Math.max.apply(null,wheels.map(function(w){return w.right;}))-x)/scale,height:(wheels[0].bottom-y)/scale};
   });
   var clock=panel.querySelector('.family-clock-plate')||makeCanvas(panel,'clock');
-  draw(clock,photos.clock,clockTargets,{width:pr.width,height:pr.height});panel.classList.add('family-clock-photo-mounted');
+  draw(clock,photos.clock,clockTargets,{width:pr.width/scale,height:pr.height/scale});panel.classList.add('family-clock-photo-mounted');
  }
  api.fit=fit;
  api.start=function(){
