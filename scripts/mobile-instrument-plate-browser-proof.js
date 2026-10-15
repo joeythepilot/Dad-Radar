@@ -49,7 +49,8 @@ const selectedHashes={
 async function checkMobileSplitFlapPlate(page){
  for(const [name,hash]of Object.entries(selectedHashes))assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname,'../assets/hardware/HomingBeacon_Mobile_'+name+'_Source_v6.png'))).digest('hex'),hash,'Selected photograph bytes are unchanged');
  assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname,'../assets/hardware/HomingBeacon_Mobile_SplitFlap_Landscape_Source_v7.png'))).digest('hex'),'6af4980855bce11b0f57f41b945168aa163f6b06329b29dd710345b94306d8f1','Preserve the finer landscape source photograph');
- await page.waitForFunction(()=>document.querySelectorAll('canvas.family-photo-plate').length===2&&[...document.querySelectorAll('canvas.family-photo-plate')].every(n=>n._photoEvidence));
+ await page.waitForFunction(()=>document.querySelectorAll('canvas.family-photo-plate').length===1&&document.querySelector('canvas.family-photo-plate')._photoEvidence&&document.querySelector('.twin-clock-art .family-clock-plate image'));
+ await checkMobileClock(page);
  const evidence=await page.evaluate(async()=>{
   const result=[];
   for(const canvas of document.querySelectorAll('canvas.family-photo-plate')){
@@ -71,13 +72,13 @@ async function checkMobileSplitFlapPlate(page){
   const ids=['flight-number','flight-origin','flight-destination','status-value'];
   return {plates:result,groups:ids.map(id=>{const ns=[...document.getElementById(id).querySelectorAll('.flap-character')],rs=ns.map(n=>n.getBoundingClientRect());return{count:ns.length,hinges:document.getElementById(id).querySelectorAll('.flap-fixed-hardware').length,left:rs[0].left,top:rs[0].top,right:rs.at(-1).right,bottom:rs[0].bottom}}),viewport:innerWidth,panelScale:parseFloat(document.getElementById('dashboard').style.getPropertyValue('--family-panel-scale'))||1,module:document.querySelector('.flight-strip-module').getBoundingClientRect().toJSON(),clocks:[...document.querySelectorAll('.clock-wheel,.period-wheel')].map(n=>[n.getAttribute('x'),n.getAttribute('y'),n.getAttribute('width'),n.getAttribute('height')])};
  });
- assert.equal(evidence.plates.length,2,'One continuous split-flap and one twin-clock photograph');
+ assert.equal(evidence.plates.length,1,'One split-flap canvas; clock photograph is mounted directly in its native SVG');
  const landscape=evidence.plates.find(e=>e.profile==='SplitFlap_Landscape');
  if(landscape)assert(landscape.source.endsWith('/HomingBeacon_Mobile_SplitFlap_Landscape_Source_v7.png'),'Landscape renders the finer photographic source');
  for(const e of evidence.plates){
   assert.equal(e.changedOutside,0,'Every pixel outside the local aperture bands matches the selected photograph: '+e.profile+' '+JSON.stringify(e.outsideSamples));
   assert(e.compared>500,'Meaningful unaffected photographic area was compared');
-  assert(e.alpha.every(a=>a===(e.profile==='Clock'?255:0)),e.profile==='Clock'?'Clock recess blocks wood between the unchanged live drums':'Native split-flap windows retain genuine alpha transparency');
+  assert(e.alpha.every(a=>a===0),'Native split-flap windows retain genuine alpha transparency');
   assert(e.backingWidth>=e.requiredWidth,'Metal canvas resolves every displayed device pixel after panel scaling');
   assert.equal(e.fit.scaleX,e.fit.scaleY,'Whole photograph uses one scale');
   const f=e.fit,b=e.body,p=e.rect,s=evidence.panelScale;
@@ -92,4 +93,44 @@ async function checkMobileSplitFlapPlate(page){
  assert.deepEqual(evidence.clocks,Array.from({length:10},(_,i)=>[String([220,480,820,1080,1350][i%5]),i<5?'130':'525','210','210']),'Clock apertures and original AM/PM rollers retain their geometry');
  return evidence;
 }
-module.exports={checkMobileInstrumentPlates,checkMobileSplitFlapPlate};
+async function checkMobileClock(page){
+ const result=await page.evaluate(async()=>{
+  const art=document.querySelector('.twin-clock-art'),ns='http://www.w3.org/2000/svg';
+  const rect=(parent,x,y,w,h)=>{const n=document.createElementNS(ns,'rect');for(const [k,v]of Object.entries({x,y,width:w,height:h,opacity:0}))n.setAttribute(k,v);parent.appendChild(n);return n;};
+  const bounds=n=>{const r=n.getBoundingClientRect();return{x:r.x,y:r.y,width:r.width,height:r.height};};
+  const wheels=[...art.querySelectorAll('.clock-wheel,.period-wheel')].map((wheel,i)=>{
+   const vb=wheel.viewBox.baseVal;
+   const actual=rect(wheel,vb.x,vb.y+(vb.height-vb.width)/2,vb.width,vb.width);
+   const expected=rect(art,[220,480,820,1080,1350][i%5],i<5?130:525,210,210);
+   const result={actual:bounds(actual),expected:bounds(expected)};actual.remove();expected.remove();return result;
+  });
+  // Legacy Safari can omit ancestor CSS transforms from this API. The actual
+  // rendered SVG probes above remain the independent geometry reference.
+  const original=art.getScreenCTM;
+  art.getScreenCTM=()=>({a:1,d:1,e:0,f:0});
+  let registration;
+  try{
+   window.DadRadarMobilePhotos.fit();
+   const c=document.querySelector('canvas.family-clock-plate');
+   if(c){const e=c._photoEvidence,r=c.getBoundingClientRect(),s=r.width/e.bay.width,t=e.holes[0];registration={x:r.left+t.x*s,y:r.top+(3+t.y)*s,width:t.width*s,height:t.height*s};}
+  }finally{art.getScreenCTM=original;window.DadRadarMobilePhotos.fit();}
+  const plate=art.querySelector('.family-clock-plate');
+  if(!plate)return{wheels,registration,nativePlate:false};
+  // Rasterize only the real plate group: every point inside either complete
+  // opening must be a dark recess, including spaces between the live drums.
+  const copy=document.createElementNS(ns,'svg');copy.setAttribute('xmlns',ns);copy.setAttribute('viewBox','178 2 1418 824');copy.setAttribute('width',1418);copy.setAttribute('height',824);copy.appendChild(plate.cloneNode(true));
+  const im=copy.querySelector('image'),url=im.getAttribute('href');
+  const blob=await(await fetch(url)).blob();const data=await new Promise(r=>{const reader=new FileReader();reader.onload=()=>r(reader.result);reader.readAsDataURL(blob);});im.setAttribute('href',data);
+  const raster=new Image();raster.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(new XMLSerializer().serializeToString(copy));await raster.decode();
+  const c=document.createElement('canvas');c.width=1418;c.height=824;const ctx=c.getContext('2d');ctx.drawImage(raster,0,0);
+  const recess=[];for(const y of [131,235,339,526,630,734])for(const x of [221,455,710,785,1055,1320,1559])recess.push([...ctx.getImageData(x-178,y-2,1,1).data]);
+  return{wheels,registration,nativePlate:true,source:url,recess};
+ });
+ for(const w of result.wheels)for(const key of ['x','y','width','height'])assert(Math.abs(w.actual[key]-w.expected[key])<.03,'Rendered clock drum '+key+' matches the approved position and spacing');
+ if(result.registration){const r=result.registration,a=result.wheels[0].expected;assert(Math.abs(r.x-a.x)<.5&&Math.abs(r.y-a.y)<.5,'Clock opening stays registered when legacy Safari returns an untransformed screen matrix');}
+ assert(result.nativePlate,'Clock photograph shares the original mechanism SVG coordinates');
+ assert.equal(result.source,'/assets/hardware/HomingBeacon_Mobile_Clock_Source_v6.png','Restore the approved clock photograph');
+ assert(result.recess.every(p=>p[3]===255&&p.slice(0,3).every(c=>c<20)),'Complete clock openings remain dark behind the original drums, with no wood or metal strips between them');
+ return result;
+}
+module.exports={checkMobileInstrumentPlates,checkMobileSplitFlapPlate,checkMobileClock};

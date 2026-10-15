@@ -23,8 +23,7 @@
  root.DadRadarMobilePhotos=api;
  var prefix='/assets/hardware/HomingBeacon_Mobile_',photos={
   landscape:{name:'SplitFlap_Landscape',sourceVersion:7,body:[16,203,2155,487],donorBody:[14,201,2161,496],holes:[[78,274,472,145],[621,274,284,145],[975,274,283,145],[1328,273,763,146]]},
-  portrait:{name:'SplitFlap_Portrait',body:[7,218,1820,636],donorBody:[7,216,1820,638],holes:[[121,370,365,119],[546,370,221,119],[829,370,218,119],[1109,370,598,119]]},
-  clock:{name:'Clock',body:[52,95,1484,940],donorBody:[52,95,1485,940],holes:[[106,233,1324,200],[106,629,1324,194]]}
+  portrait:{name:'SplitFlap_Portrait',body:[7,218,1820,636],donorBody:[7,216,1820,638],holes:[[121,370,365,119],[546,370,221,119],[829,370,218,119],[1109,370,598,119]]}
  };
  function load(src){return new Promise(function(resolve,reject){var im=new Image();im.onload=function(){resolve(im);};im.onerror=reject;im.src=src;});}
  function draw(canvas,photo,targets,bay){
@@ -52,8 +51,6 @@
   });
   targets.forEach(function(t){
    ctx.clearRect(t.x,t.y,t.width,t.height);
-   // The clock's shared recess is opaque behind the separate live drums/colon.
-   if(photo.name==='Clock'){ctx.fillStyle='#0b0a09';ctx.fillRect(t.x,t.y,t.width,t.height);}
   });
   canvas._photoEvidence={profile:photo.name,fit:f,body:photo.body,holes:targets,bay:bay,dpr:dpr,source:photo.original.src};
  }
@@ -70,14 +67,20 @@
   var canvas=m.querySelector('.family-splitflap-plate')||makeCanvas(m,'splitflap');
   canvas.style.left=-parseFloat(cs.borderLeftWidth)+'px';canvas.style.top=(-3-parseFloat(cs.borderTopWidth))+'px';
   draw(canvas,photo,targets,{width:mr.width/scale,height:mr.height/scale});m.classList.add('family-photo-mounted');
-  var panel=document.querySelector('.twin-clock-panel'),art=panel&&panel.querySelector('.twin-clock-art');if(!art)return;
-  var pr=panel.getBoundingClientRect(),matrix=art.getScreenCTM();if(!matrix)return;
-  var clockTargets=Array.prototype.map.call(art.querySelectorAll('.drum-clock'),function(row){
-   var wheels=Array.prototype.map.call(row.querySelectorAll('.clock-wheel,.period-wheel'),function(w){var x=+w.getAttribute('x'),y=+w.getAttribute('y');return{x:matrix.a*x+matrix.e-pr.left,y:matrix.d*y+matrix.f-pr.top,right:matrix.a*(x+210)+matrix.e-pr.left,bottom:matrix.d*(y+210)+matrix.f-pr.top};});
-   var x=Math.min.apply(null,wheels.map(function(w){return w.x;})),y=wheels[0].y;return{x:x/scale,y:y/scale,width:(Math.max.apply(null,wheels.map(function(w){return w.right;}))-x)/scale,height:(wheels[0].bottom-y)/scale};
-  });
-  var clock=panel.querySelector('.family-clock-plate')||makeCanvas(panel,'clock');
-  draw(clock,photos.clock,clockTargets,{width:pr.width/scale,height:pr.height/scale});panel.classList.add('family-clock-photo-mounted');
+  var panel=document.querySelector('.twin-clock-panel'),art=panel&&panel.querySelector('.twin-clock-art');
+  if(art&&!art.querySelector('.family-clock-plate')){
+   // Restore the approved photographic preview's single uniform placement.
+   // Plate and original drums share native SVG coordinates, without a second
+   // screen-space fit (getScreenCTM is inconsistent on older Safari).
+   var clock=document.createElementNS('http://www.w3.org/2000/svg','g');
+   clock.setAttribute('class','family-clock-plate');clock.setAttribute('aria-hidden','true');
+   clock.innerHTML='<defs><clipPath id="family-clock-metal"><path clip-rule="evenodd" d="M178 2H1596V826H178Z M220 130H1560V340H220Z M220 525H1560V735H220Z"/></clipPath></defs>'+
+    '<rect x="212" y="122" width="1356" height="226" fill="#0b0a09"/>'+
+    '<rect x="212" y="517" width="1356" height="226" fill="#0b0a09"/>'+
+    '<image href="'+prefix+'Clock_Source_v6.png" x="112.32346115053463" y="-103.67151994894778" width="1555.3530776989307" height="1036.9020517992872" clip-path="url(#family-clock-metal)"/>';
+   art.insertBefore(clock,art.querySelector('.drum-clock'));
+   panel.classList.add('family-clock-photo-mounted');
+  }
  }
  api.fit=fit;
  api.start=function(){

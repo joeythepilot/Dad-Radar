@@ -32,8 +32,6 @@ html[data-family-full] .family-photo-mounted .flight-board::after { display:none
 html[data-family-full] .family-photo-plate {
  position:absolute; max-width:none; max-height:none; z-index:1; pointer-events:none;
 }
-html[data-family-full] .family-clock-plate { left:0; top:-3px; z-index:0; }
-html[data-family-full] .family-clock-photo-mounted .twin-clock-art { position:relative; z-index:1; }
 html[data-family-full] .family-clock-photo-mounted .clock-caption { opacity:0; }
 /* Real photographic materials provide the housings. Keep the invisible border
    widths/padding as geometry: removing them would move registered mechanisms.
