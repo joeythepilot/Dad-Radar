@@ -1,0 +1,5215 @@
+{
+  "source": "b4759aa243dbbc563f265b10456cc67e00b19a04",
+  "cases": [
+    {
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "geometry": [
+        {
+          "selector": "#dashboard",
+          "nodes": [
+            {
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "width": 320,
+                "height": 1000,
+                "top": 0,
+                "right": 320,
+                "bottom": 1000,
+                "left": 0
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".flight-strip-module",
+          "nodes": [
+            {
+              "rect": {
+                "x": 7,
+                "y": 7,
+                "width": 214.3125,
+                "height": 49.96875,
+                "top": 7,
+                "right": 221.3125,
+                "bottom": 56.96875,
+                "left": 7
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".twin-clock-panel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 227.3125,
+                "y": 7,
+                "width": 85.671875,
+                "height": 49.96875,
+                "top": 7,
+                "right": 312.984375,
+                "bottom": 56.96875,
+                "left": 227.3125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".destination-panel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 7,
+                "y": 531.984375,
+                "width": 214.296875,
+                "height": 313.953125,
+                "top": 531.984375,
+                "right": 221.296875,
+                "bottom": 845.9375,
+                "left": 7
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".daily-schedule-panel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 7,
+                "y": 851.9375,
+                "width": 214.296875,
+                "height": 141.0625,
+                "top": 851.9375,
+                "right": 221.296875,
+                "bottom": 993,
+                "left": 7
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".vintage-map-panel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 7,
+                "y": 62.96875,
+                "width": 305.984375,
+                "height": 382.203125,
+                "top": 62.96875,
+                "right": 312.984375,
+                "bottom": 445.171875,
+                "left": 7
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".route-map-shell",
+          "nodes": [
+            {
+              "rect": {
+                "x": 16,
+                "y": 71.96875,
+                "width": 289.984375,
+                "height": 364.203125,
+                "top": 71.96875,
+                "right": 305.984375,
+                "bottom": 436.171875,
+                "left": 16
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".weekly-overnight-bank",
+          "nodes": [
+            {
+              "rect": {
+                "x": 7,
+                "y": 451.171875,
+                "width": 305.984375,
+                "height": 72.796875,
+                "top": 451.171875,
+                "right": 312.984375,
+                "bottom": 523.96875,
+                "left": 7
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".weekly-overnight-bay",
+          "nodes": [
+            {
+              "rect": {
+                "x": 7,
+                "y": 451.171875,
+                "width": 43.703125,
+                "height": 72.796875,
+                "top": 451.171875,
+                "right": 50.703125,
+                "bottom": 523.96875,
+                "left": 7
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 50.703125,
+                "y": 451.171875,
+                "width": 43.71875,
+                "height": 72.796875,
+                "top": 451.171875,
+                "right": 94.421875,
+                "bottom": 523.96875,
+                "left": 50.703125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 94.421875,
+                "y": 451.171875,
+                "width": 43.703125,
+                "height": 72.796875,
+                "top": 451.171875,
+                "right": 138.125,
+                "bottom": 523.96875,
+                "left": 94.421875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 138.125,
+                "y": 451.171875,
+                "width": 43.71875,
+                "height": 72.796875,
+                "top": 451.171875,
+                "right": 181.84375,
+                "bottom": 523.96875,
+                "left": 138.125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 181.84375,
+                "y": 451.171875,
+                "width": 43.703125,
+                "height": 72.796875,
+                "top": 451.171875,
+                "right": 225.546875,
+                "bottom": 523.96875,
+                "left": 181.84375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 225.546875,
+                "y": 451.171875,
+                "width": 43.71875,
+                "height": 72.796875,
+                "top": 451.171875,
+                "right": 269.265625,
+                "bottom": 523.96875,
+                "left": 225.546875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 269.265625,
+                "y": 451.171875,
+                "width": 43.71875,
+                "height": 72.796875,
+                "top": 451.171875,
+                "right": 312.984375,
+                "bottom": 523.96875,
+                "left": 269.265625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".instrument-slot",
+          "nodes": [
+            {
+              "rect": {
+                "x": 227.296875,
+                "y": 531.984375,
+                "width": 85.6875,
+                "height": 149.671875,
+                "top": 531.984375,
+                "right": 312.984375,
+                "bottom": 681.65625,
+                "left": 227.296875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 227.296875,
+                "y": 687.65625,
+                "width": 85.6875,
+                "height": 149.671875,
+                "top": 687.65625,
+                "right": 312.984375,
+                "bottom": 837.328125,
+                "left": 227.296875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 227.296875,
+                "y": 843.328125,
+                "width": 85.6875,
+                "height": 149.671875,
+                "top": 843.328125,
+                "right": 312.984375,
+                "bottom": 993,
+                "left": 227.296875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".instrument",
+          "nodes": [
+            {
+              "rect": {
+                "x": 231.234375,
+                "y": 568.421875,
+                "width": 76.796875,
+                "height": 76.796875,
+                "top": 568.421875,
+                "right": 308.03125,
+                "bottom": 645.21875,
+                "left": 231.234375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 231.234375,
+                "y": 724.09375,
+                "width": 76.796875,
+                "height": 76.796875,
+                "top": 724.09375,
+                "right": 308.03125,
+                "bottom": 800.890625,
+                "left": 231.234375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 231.234375,
+                "y": 879.765625,
+                "width": 76.796875,
+                "height": 76.796875,
+                "top": 879.765625,
+                "right": 308.03125,
+                "bottom": 956.5625,
+                "left": 231.234375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".flap-character",
+          "nodes": [
+            {
+              "rect": {
+                "x": 21,
+                "y": 24.984375,
+                "width": 8.46875,
+                "height": 13.984375,
+                "top": 24.984375,
+                "right": 29.46875,
+                "bottom": 38.96875,
+                "left": 21
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 29.8125,
+                "y": 24.984375,
+                "width": 8.46875,
+                "height": 13.984375,
+                "top": 24.984375,
+                "right": 38.28125,
+                "bottom": 38.96875,
+                "left": 29.8125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 38.625,
+                "y": 24.984375,
+                "width": 8.46875,
+                "height": 13.984375,
+                "top": 24.984375,
+                "right": 47.09375,
+                "bottom": 38.96875,
+                "left": 38.625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 47.4375,
+                "y": 24.984375,
+                "width": 8.46875,
+                "height": 13.984375,
+                "top": 24.984375,
+                "right": 55.90625,
+                "bottom": 38.96875,
+                "left": 47.4375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 56.25,
+                "y": 24.984375,
+                "width": 8.46875,
+                "height": 13.984375,
+                "top": 24.984375,
+                "right": 64.71875,
+                "bottom": 38.96875,
+                "left": 56.25
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 71.9375,
+                "y": 24.984375,
+                "width": 8.46875,
+                "height": 13.984375,
+                "top": 24.984375,
+                "right": 80.40625,
+                "bottom": 38.96875,
+                "left": 71.9375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 80.75,
+                "y": 24.984375,
+                "width": 8.46875,
+                "height": 13.984375,
+                "top": 24.984375,
+                "right": 89.21875,
+                "bottom": 38.96875,
+                "left": 80.75
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 89.5625,
+                "y": 24.984375,
+                "width": 8.46875,
+                "height": 13.984375,
+                "top": 24.984375,
+                "right": 98.03125,
+                "bottom": 38.96875,
+                "left": 89.5625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 103.859375,
+                "y": 24.984375,
+                "width": 8.46875,
+                "height": 13.984375,
+                "top": 24.984375,
+                "right": 112.328125,
+                "bottom": 38.96875,
+                "left": 103.859375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 112.671875,
+                "y": 24.984375,
+                "width": 8.46875,
+                "height": 13.984375,
+                "top": 24.984375,
+                "right": 121.140625,
+                "bottom": 38.96875,
+                "left": 112.671875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 121.484375,
+                "y": 24.984375,
+                "width": 8.46875,
+                "height": 13.984375,
+                "top": 24.984375,
+                "right": 129.953125,
+                "bottom": 38.96875,
+                "left": 121.484375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 137.15625,
+                "y": 24.984375,
+                "width": 8.46875,
+                "height": 13.984375,
+                "top": 24.984375,
+                "right": 145.625,
+                "bottom": 38.96875,
+                "left": 137.15625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 145.96875,
+                "y": 24.984375,
+                "width": 8.46875,
+                "height": 13.984375,
+                "top": 24.984375,
+                "right": 154.4375,
+                "bottom": 38.96875,
+                "left": 145.96875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 154.78125,
+                "y": 24.984375,
+                "width": 8.46875,
+                "height": 13.984375,
+                "top": 24.984375,
+                "right": 163.25,
+                "bottom": 38.96875,
+                "left": 154.78125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 163.59375,
+                "y": 24.984375,
+                "width": 8.46875,
+                "height": 13.984375,
+                "top": 24.984375,
+                "right": 172.0625,
+                "bottom": 38.96875,
+                "left": 163.59375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 172.40625,
+                "y": 24.984375,
+                "width": 8.46875,
+                "height": 13.984375,
+                "top": 24.984375,
+                "right": 180.875,
+                "bottom": 38.96875,
+                "left": 172.40625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 181.21875,
+                "y": 24.984375,
+                "width": 8.46875,
+                "height": 13.984375,
+                "top": 24.984375,
+                "right": 189.6875,
+                "bottom": 38.96875,
+                "left": 181.21875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 190.03125,
+                "y": 24.984375,
+                "width": 8.46875,
+                "height": 13.984375,
+                "top": 24.984375,
+                "right": 198.5,
+                "bottom": 38.96875,
+                "left": 190.03125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 198.84375,
+                "y": 24.984375,
+                "width": 8.46875,
+                "height": 13.984375,
+                "top": 24.984375,
+                "right": 207.3125,
+                "bottom": 38.96875,
+                "left": 198.84375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".clock-wheel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 226.16651916503906,
+                "y": 11.75623893737793,
+                "width": 74.69346618652344,
+                "height": 18.82684326171875,
+                "top": 11.75623893737793,
+                "right": 300.8599853515625,
+                "bottom": 30.58308219909668,
+                "left": 226.16651916503906
+              },
+              "x": "220",
+              "y": "130",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 225.2992401123047,
+                "y": 11.75623893737793,
+                "width": 74.69343566894531,
+                "height": 18.82684326171875,
+                "top": 11.75623893737793,
+                "right": 299.99267578125,
+                "bottom": 30.58308219909668,
+                "left": 225.2992401123047
+              },
+              "x": "480",
+              "y": "130",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 223.33079528808594,
+                "y": 11.75623893737793,
+                "width": 74.69343566894531,
+                "height": 18.82684326171875,
+                "top": 11.75623893737793,
+                "right": 298.02423095703125,
+                "bottom": 30.58308219909668,
+                "left": 223.33079528808594
+              },
+              "x": "820",
+              "y": "130",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 222.46351623535156,
+                "y": 11.75623893737793,
+                "width": 74.69343566894531,
+                "height": 18.82684326171875,
+                "top": 11.75623893737793,
+                "right": 297.1569519042969,
+                "bottom": 30.58308219909668,
+                "left": 222.46351623535156
+              },
+              "x": "1080",
+              "y": "130",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 226.16651916503906,
+                "y": 35.62111282348633,
+                "width": 74.69346618652344,
+                "height": 18.82684326171875,
+                "top": 35.62111282348633,
+                "right": 300.8599853515625,
+                "bottom": 54.44795608520508,
+                "left": 226.16651916503906
+              },
+              "x": "220",
+              "y": "525",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 225.2992401123047,
+                "y": 35.62111282348633,
+                "width": 74.69343566894531,
+                "height": 18.82684326171875,
+                "top": 35.62111282348633,
+                "right": 299.99267578125,
+                "bottom": 54.44795608520508,
+                "left": 225.2992401123047
+              },
+              "x": "480",
+              "y": "525",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 223.33079528808594,
+                "y": 35.62111282348633,
+                "width": 74.69343566894531,
+                "height": 18.82684326171875,
+                "top": 35.62111282348633,
+                "right": 298.02423095703125,
+                "bottom": 54.44795608520508,
+                "left": 223.33079528808594
+              },
+              "x": "820",
+              "y": "525",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 222.46351623535156,
+                "y": 35.62111282348633,
+                "width": 74.69343566894531,
+                "height": 18.82684326171875,
+                "top": 35.62111282348633,
+                "right": 297.1569519042969,
+                "bottom": 54.44795608520508,
+                "left": 222.46351623535156
+              },
+              "x": "1080",
+              "y": "525",
+              "width": "210",
+              "height": "210"
+            }
+          ]
+        },
+        {
+          "selector": ".period-wheel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 294.43817138671875,
+                "y": 11.75623893737793,
+                "width": 74.69345092773438,
+                "height": 18.82684326171875,
+                "top": 11.75623893737793,
+                "right": 369.1316223144531,
+                "bottom": 30.58308219909668,
+                "left": 294.43817138671875
+              },
+              "x": "1350",
+              "y": "130",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 294.43817138671875,
+                "y": 35.62111282348633,
+                "width": 74.69345092773438,
+                "height": 18.82684326171875,
+                "top": 35.62111282348633,
+                "right": 369.1316223144531,
+                "bottom": 54.44795608520508,
+                "left": 294.43817138671875
+              },
+              "x": "1350",
+              "y": "525",
+              "width": "210",
+              "height": "210"
+            }
+          ]
+        },
+        {
+          "selector": ".clock-colon",
+          "nodes": [
+            {
+              "rect": {
+                "x": 261.75042724609375,
+                "y": 19.115468978881836,
+                "width": 0.8458251953125,
+                "height": 4.410469055175781,
+                "top": 19.115468978881836,
+                "right": 262.59625244140625,
+                "bottom": 23.525938034057617,
+                "left": 261.75042724609375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 261.75042724609375,
+                "y": 42.980342864990234,
+                "width": 0.8458251953125,
+                "height": 4.410469055175781,
+                "top": 42.980342864990234,
+                "right": 262.59625244140625,
+                "bottom": 47.390811920166016,
+                "left": 261.75042724609375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".destination-poster-image",
+          "nodes": [
+            {
+              "rect": {
+                "x": 10,
+                "y": 534.984375,
+                "width": 208.296875,
+                "height": 307.953125,
+                "top": 534.984375,
+                "right": 218.296875,
+                "bottom": 842.9375,
+                "left": 10
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        }
+      ],
+      "regions": [
+        {
+          "selector": ".destination-panel",
+          "rect": {
+            "x": 7,
+            "y": 531.984375,
+            "width": 214.296875,
+            "height": 313.953125,
+            "top": 531.984375,
+            "right": 221.296875,
+            "bottom": 845.9375,
+            "left": 7
+          },
+          "padding": [
+            "2px",
+            "2px",
+            "2px",
+            "2px"
+          ],
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px"
+          ],
+          "background": "linear-gradient(145deg, rgba(29, 32, 34, 0.98), rgba(7, 9, 10, 0.99) 62%)"
+        },
+        {
+          "selector": ".daily-schedule-panel",
+          "rect": {
+            "x": 7,
+            "y": 851.9375,
+            "width": 214.296875,
+            "height": 141.0625,
+            "top": 851.9375,
+            "right": 221.296875,
+            "bottom": 993,
+            "left": 7
+          },
+          "padding": [
+            "0px",
+            "0px",
+            "0px",
+            "0px"
+          ],
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px"
+          ],
+          "background": "none"
+        },
+        {
+          "selector": ".vintage-map-panel",
+          "rect": {
+            "x": 7,
+            "y": 62.96875,
+            "width": 305.984375,
+            "height": 382.203125,
+            "top": 62.96875,
+            "right": 312.984375,
+            "bottom": 445.171875,
+            "left": 7
+          },
+          "padding": [
+            "8px",
+            "6px",
+            "8px",
+            "8px"
+          ],
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px"
+          ],
+          "background": "linear-gradient(145deg, rgb(28, 27, 23), rgb(9, 10, 9) 66%)"
+        },
+        {
+          "selector": ".weekly-overnight-bank",
+          "rect": {
+            "x": 7,
+            "y": 451.171875,
+            "width": 305.984375,
+            "height": 72.796875,
+            "top": 451.171875,
+            "right": 312.984375,
+            "bottom": 523.96875,
+            "left": 7
+          },
+          "padding": [
+            "0px",
+            "0px",
+            "0px",
+            "0px"
+          ],
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px"
+          ],
+          "background": "none"
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "geometry": [
+        {
+          "selector": "#dashboard",
+          "nodes": [
+            {
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "width": 390,
+                "height": 1000,
+                "top": 0,
+                "right": 390,
+                "bottom": 1000,
+                "left": 0
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".flight-strip-module",
+          "nodes": [
+            {
+              "rect": {
+                "x": 7,
+                "y": 7,
+                "width": 264.71875,
+                "height": 61,
+                "top": 7,
+                "right": 271.71875,
+                "bottom": 68,
+                "left": 7
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".twin-clock-panel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 277.71875,
+                "y": 7,
+                "width": 105.28125,
+                "height": 61,
+                "top": 7,
+                "right": 383,
+                "bottom": 68,
+                "left": 277.71875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".destination-panel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 7,
+                "y": 537.5,
+                "width": 264.71875,
+                "height": 310.140625,
+                "top": 537.5,
+                "right": 271.71875,
+                "bottom": 847.640625,
+                "left": 7
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".daily-schedule-panel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 7,
+                "y": 853.640625,
+                "width": 264.71875,
+                "height": 139.359375,
+                "top": 853.640625,
+                "right": 271.71875,
+                "bottom": 993,
+                "left": 7
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".vintage-map-panel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 7,
+                "y": 74,
+                "width": 376,
+                "height": 377.578125,
+                "top": 74,
+                "right": 383,
+                "bottom": 451.578125,
+                "left": 7
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".route-map-shell",
+          "nodes": [
+            {
+              "rect": {
+                "x": 16,
+                "y": 83,
+                "width": 360,
+                "height": 359.578125,
+                "top": 83,
+                "right": 376,
+                "bottom": 442.578125,
+                "left": 16
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".weekly-overnight-bank",
+          "nodes": [
+            {
+              "rect": {
+                "x": 7,
+                "y": 457.578125,
+                "width": 376,
+                "height": 71.90625,
+                "top": 457.578125,
+                "right": 383,
+                "bottom": 529.484375,
+                "left": 7
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".weekly-overnight-bay",
+          "nodes": [
+            {
+              "rect": {
+                "x": 7,
+                "y": 457.578125,
+                "width": 53.703125,
+                "height": 71.90625,
+                "top": 457.578125,
+                "right": 60.703125,
+                "bottom": 529.484375,
+                "left": 7
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 60.703125,
+                "y": 457.578125,
+                "width": 53.71875,
+                "height": 71.90625,
+                "top": 457.578125,
+                "right": 114.421875,
+                "bottom": 529.484375,
+                "left": 60.703125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 114.421875,
+                "y": 457.578125,
+                "width": 53.71875,
+                "height": 71.90625,
+                "top": 457.578125,
+                "right": 168.140625,
+                "bottom": 529.484375,
+                "left": 114.421875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 168.140625,
+                "y": 457.578125,
+                "width": 53.703125,
+                "height": 71.90625,
+                "top": 457.578125,
+                "right": 221.84375,
+                "bottom": 529.484375,
+                "left": 168.140625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 221.84375,
+                "y": 457.578125,
+                "width": 53.71875,
+                "height": 71.90625,
+                "top": 457.578125,
+                "right": 275.5625,
+                "bottom": 529.484375,
+                "left": 221.84375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 275.5625,
+                "y": 457.578125,
+                "width": 53.71875,
+                "height": 71.90625,
+                "top": 457.578125,
+                "right": 329.28125,
+                "bottom": 529.484375,
+                "left": 275.5625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 329.28125,
+                "y": 457.578125,
+                "width": 53.71875,
+                "height": 71.90625,
+                "top": 457.578125,
+                "right": 383,
+                "bottom": 529.484375,
+                "left": 329.28125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".instrument-slot",
+          "nodes": [
+            {
+              "rect": {
+                "x": 277.71875,
+                "y": 537.5,
+                "width": 105.28125,
+                "height": 147.828125,
+                "top": 537.5,
+                "right": 383,
+                "bottom": 685.328125,
+                "left": 277.71875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 277.71875,
+                "y": 691.328125,
+                "width": 105.28125,
+                "height": 147.828125,
+                "top": 691.328125,
+                "right": 383,
+                "bottom": 839.15625,
+                "left": 277.71875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 277.71875,
+                "y": 845.15625,
+                "width": 105.28125,
+                "height": 147.828125,
+                "top": 845.15625,
+                "right": 383,
+                "bottom": 992.984375,
+                "left": 277.71875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".instrument",
+          "nodes": [
+            {
+              "rect": {
+                "x": 283.0625,
+                "y": 564.609375,
+                "width": 93.59375,
+                "height": 93.59375,
+                "top": 564.609375,
+                "right": 376.65625,
+                "bottom": 658.203125,
+                "left": 283.0625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 283.0625,
+                "y": 718.4375,
+                "width": 93.59375,
+                "height": 93.59375,
+                "top": 718.4375,
+                "right": 376.65625,
+                "bottom": 812.03125,
+                "left": 283.0625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 283.0625,
+                "y": 872.265625,
+                "width": 93.59375,
+                "height": 93.59375,
+                "top": 872.265625,
+                "right": 376.65625,
+                "bottom": 965.859375,
+                "left": 283.0625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".flap-character",
+          "nodes": [
+            {
+              "rect": {
+                "x": 21.875,
+                "y": 28.625,
+                "width": 10.75,
+                "height": 17.734375,
+                "top": 28.625,
+                "right": 32.625,
+                "bottom": 46.359375,
+                "left": 21.875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 33.078125,
+                "y": 28.625,
+                "width": 10.75,
+                "height": 17.734375,
+                "top": 28.625,
+                "right": 43.828125,
+                "bottom": 46.359375,
+                "left": 33.078125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 44.28125,
+                "y": 28.625,
+                "width": 10.75,
+                "height": 17.734375,
+                "top": 28.625,
+                "right": 55.03125,
+                "bottom": 46.359375,
+                "left": 44.28125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 55.484375,
+                "y": 28.625,
+                "width": 10.75,
+                "height": 17.734375,
+                "top": 28.625,
+                "right": 66.234375,
+                "bottom": 46.359375,
+                "left": 55.484375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 66.6875,
+                "y": 28.625,
+                "width": 10.75,
+                "height": 17.734375,
+                "top": 28.625,
+                "right": 77.4375,
+                "bottom": 46.359375,
+                "left": 66.6875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 85.703125,
+                "y": 28.625,
+                "width": 10.75,
+                "height": 17.734375,
+                "top": 28.625,
+                "right": 96.453125,
+                "bottom": 46.359375,
+                "left": 85.703125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 96.90625,
+                "y": 28.625,
+                "width": 10.75,
+                "height": 17.734375,
+                "top": 28.625,
+                "right": 107.65625,
+                "bottom": 46.359375,
+                "left": 96.90625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 108.109375,
+                "y": 28.625,
+                "width": 10.75,
+                "height": 17.734375,
+                "top": 28.625,
+                "right": 118.859375,
+                "bottom": 46.359375,
+                "left": 108.109375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 126.25,
+                "y": 28.625,
+                "width": 10.75,
+                "height": 17.734375,
+                "top": 28.625,
+                "right": 137,
+                "bottom": 46.359375,
+                "left": 126.25
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 137.453125,
+                "y": 28.625,
+                "width": 10.75,
+                "height": 17.734375,
+                "top": 28.625,
+                "right": 148.203125,
+                "bottom": 46.359375,
+                "left": 137.453125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 148.65625,
+                "y": 28.625,
+                "width": 10.75,
+                "height": 17.734375,
+                "top": 28.625,
+                "right": 159.40625,
+                "bottom": 46.359375,
+                "left": 148.65625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 167.671875,
+                "y": 28.625,
+                "width": 10.75,
+                "height": 17.734375,
+                "top": 28.625,
+                "right": 178.421875,
+                "bottom": 46.359375,
+                "left": 167.671875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 178.875,
+                "y": 28.625,
+                "width": 10.75,
+                "height": 17.734375,
+                "top": 28.625,
+                "right": 189.625,
+                "bottom": 46.359375,
+                "left": 178.875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 190.078125,
+                "y": 28.625,
+                "width": 10.75,
+                "height": 17.734375,
+                "top": 28.625,
+                "right": 200.828125,
+                "bottom": 46.359375,
+                "left": 190.078125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 201.28125,
+                "y": 28.625,
+                "width": 10.75,
+                "height": 17.734375,
+                "top": 28.625,
+                "right": 212.03125,
+                "bottom": 46.359375,
+                "left": 201.28125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 212.484375,
+                "y": 28.625,
+                "width": 10.75,
+                "height": 17.734375,
+                "top": 28.625,
+                "right": 223.234375,
+                "bottom": 46.359375,
+                "left": 212.484375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 223.6875,
+                "y": 28.625,
+                "width": 10.75,
+                "height": 17.734375,
+                "top": 28.625,
+                "right": 234.4375,
+                "bottom": 46.359375,
+                "left": 223.6875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 234.890625,
+                "y": 28.625,
+                "width": 10.75,
+                "height": 17.734375,
+                "top": 28.625,
+                "right": 245.640625,
+                "bottom": 46.359375,
+                "left": 234.890625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 246.09375,
+                "y": 28.625,
+                "width": 10.75,
+                "height": 17.734375,
+                "top": 28.625,
+                "right": 256.84375,
+                "bottom": 46.359375,
+                "left": 246.09375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".clock-wheel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 276.46856689453125,
+                "y": 12.714570999145508,
+                "width": 91.521484375,
+                "height": 23.06843376159668,
+                "top": 12.714570999145508,
+                "right": 367.99005126953125,
+                "bottom": 35.78300476074219,
+                "left": 276.46856689453125
+              },
+              "x": "220",
+              "y": "130",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 275.4058837890625,
+                "y": 12.714570999145508,
+                "width": 91.521484375,
+                "height": 23.06843376159668,
+                "top": 12.714570999145508,
+                "right": 366.9273681640625,
+                "bottom": 35.78300476074219,
+                "left": 275.4058837890625
+              },
+              "x": "480",
+              "y": "130",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 272.99395751953125,
+                "y": 12.714570999145508,
+                "width": 91.521484375,
+                "height": 23.06843376159668,
+                "top": 12.714570999145508,
+                "right": 364.51544189453125,
+                "bottom": 35.78300476074219,
+                "left": 272.99395751953125
+              },
+              "x": "820",
+              "y": "130",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 271.9313049316406,
+                "y": 12.714570999145508,
+                "width": 91.521484375,
+                "height": 23.06843376159668,
+                "top": 12.714570999145508,
+                "right": 363.4527893066406,
+                "bottom": 35.78300476074219,
+                "left": 271.9313049316406
+              },
+              "x": "1080",
+              "y": "130",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 276.46856689453125,
+                "y": 41.95607376098633,
+                "width": 91.521484375,
+                "height": 23.068431854248047,
+                "top": 41.95607376098633,
+                "right": 367.99005126953125,
+                "bottom": 65.02450561523438,
+                "left": 276.46856689453125
+              },
+              "x": "220",
+              "y": "525",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 275.4058837890625,
+                "y": 41.95607376098633,
+                "width": 91.521484375,
+                "height": 23.068431854248047,
+                "top": 41.95607376098633,
+                "right": 366.9273681640625,
+                "bottom": 65.02450561523438,
+                "left": 275.4058837890625
+              },
+              "x": "480",
+              "y": "525",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 272.99395751953125,
+                "y": 41.95607376098633,
+                "width": 91.521484375,
+                "height": 23.068431854248047,
+                "top": 41.95607376098633,
+                "right": 364.51544189453125,
+                "bottom": 65.02450561523438,
+                "left": 272.99395751953125
+              },
+              "x": "820",
+              "y": "525",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 271.9313049316406,
+                "y": 41.95607376098633,
+                "width": 91.521484375,
+                "height": 23.068431854248047,
+                "top": 41.95607376098633,
+                "right": 363.4527893066406,
+                "bottom": 65.02450561523438,
+                "left": 271.9313049316406
+              },
+              "x": "1080",
+              "y": "525",
+              "width": "210",
+              "height": "210"
+            }
+          ]
+        },
+        {
+          "selector": ".period-wheel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 360.1214599609375,
+                "y": 12.714570999145508,
+                "width": 91.521484375,
+                "height": 23.06843376159668,
+                "top": 12.714570999145508,
+                "right": 451.6429443359375,
+                "bottom": 35.78300476074219,
+                "left": 360.1214599609375
+              },
+              "x": "1350",
+              "y": "130",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 360.1214599609375,
+                "y": 41.95607376098633,
+                "width": 91.521484375,
+                "height": 23.068431854248047,
+                "top": 41.95607376098633,
+                "right": 451.6429443359375,
+                "bottom": 65.02450561523438,
+                "left": 360.1214599609375
+              },
+              "x": "1350",
+              "y": "525",
+              "width": "210",
+              "height": "210"
+            }
+          ]
+        },
+        {
+          "selector": ".clock-colon",
+          "nodes": [
+            {
+              "rect": {
+                "x": 320.0693359375,
+                "y": 21.731796264648438,
+                "width": 1.036407470703125,
+                "height": 5.404125213623047,
+                "top": 21.731796264648438,
+                "right": 321.1057434082031,
+                "bottom": 27.135921478271484,
+                "left": 320.0693359375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 320.0693359375,
+                "y": 50.97330093383789,
+                "width": 1.036407470703125,
+                "height": 5.404125213623047,
+                "top": 50.97330093383789,
+                "right": 321.1057434082031,
+                "bottom": 56.37742614746094,
+                "left": 320.0693359375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".destination-poster-image",
+          "nodes": [
+            {
+              "rect": {
+                "x": 10,
+                "y": 540.5,
+                "width": 258.71875,
+                "height": 304.140625,
+                "top": 540.5,
+                "right": 268.71875,
+                "bottom": 844.640625,
+                "left": 10
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        }
+      ],
+      "regions": [
+        {
+          "selector": ".destination-panel",
+          "rect": {
+            "x": 7,
+            "y": 537.5,
+            "width": 264.71875,
+            "height": 310.140625,
+            "top": 537.5,
+            "right": 271.71875,
+            "bottom": 847.640625,
+            "left": 7
+          },
+          "padding": [
+            "2px",
+            "2px",
+            "2px",
+            "2px"
+          ],
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px"
+          ],
+          "background": "linear-gradient(145deg, rgba(29, 32, 34, 0.98), rgba(7, 9, 10, 0.99) 62%)"
+        },
+        {
+          "selector": ".daily-schedule-panel",
+          "rect": {
+            "x": 7,
+            "y": 853.640625,
+            "width": 264.71875,
+            "height": 139.359375,
+            "top": 853.640625,
+            "right": 271.71875,
+            "bottom": 993,
+            "left": 7
+          },
+          "padding": [
+            "0px",
+            "0px",
+            "0px",
+            "0px"
+          ],
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px"
+          ],
+          "background": "none"
+        },
+        {
+          "selector": ".vintage-map-panel",
+          "rect": {
+            "x": 7,
+            "y": 74,
+            "width": 376,
+            "height": 377.578125,
+            "top": 74,
+            "right": 383,
+            "bottom": 451.578125,
+            "left": 7
+          },
+          "padding": [
+            "8px",
+            "6px",
+            "8px",
+            "8px"
+          ],
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px"
+          ],
+          "background": "linear-gradient(145deg, rgb(28, 27, 23), rgb(9, 10, 9) 66%)"
+        },
+        {
+          "selector": ".weekly-overnight-bank",
+          "rect": {
+            "x": 7,
+            "y": 457.578125,
+            "width": 376,
+            "height": 71.90625,
+            "top": 457.578125,
+            "right": 383,
+            "bottom": 529.484375,
+            "left": 7
+          },
+          "padding": [
+            "0px",
+            "0px",
+            "0px",
+            "0px"
+          ],
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px"
+          ],
+          "background": "none"
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "geometry": [
+        {
+          "selector": "#dashboard",
+          "nodes": [
+            {
+              "rect": {
+                "x": 75.328125,
+                "y": 0,
+                "width": 693.328125,
+                "height": 390,
+                "top": 0,
+                "right": 768.65625,
+                "bottom": 390,
+                "left": 75.328125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".flight-strip-module",
+          "nodes": [
+            {
+              "rect": {
+                "x": 82.328125,
+                "y": 7,
+                "width": 551.046875,
+                "height": 70.296875,
+                "top": 7,
+                "right": 633.375,
+                "bottom": 77.296875,
+                "left": 82.328125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".twin-clock-panel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 639.375,
+                "y": 7,
+                "width": 122.28125,
+                "height": 70.296875,
+                "top": 7,
+                "right": 761.65625,
+                "bottom": 77.296875,
+                "left": 639.375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".destination-panel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 82.328125,
+                "y": 83.296875,
+                "width": 177.40625,
+                "height": 202.640625,
+                "top": 83.296875,
+                "right": 259.734375,
+                "bottom": 285.9375,
+                "left": 82.328125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".daily-schedule-panel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 82.328125,
+                "y": 291.9375,
+                "width": 177.40625,
+                "height": 91.046875,
+                "top": 291.9375,
+                "right": 259.734375,
+                "bottom": 382.984375,
+                "left": 82.328125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".vintage-map-panel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 265.734375,
+                "y": 83.296875,
+                "width": 373.640625,
+                "height": 246.703125,
+                "top": 83.296875,
+                "right": 639.375,
+                "bottom": 330,
+                "left": 265.734375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".route-map-shell",
+          "nodes": [
+            {
+              "rect": {
+                "x": 274.734375,
+                "y": 92.296875,
+                "width": 357.640625,
+                "height": 228.703125,
+                "top": 92.296875,
+                "right": 632.375,
+                "bottom": 321,
+                "left": 274.734375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".weekly-overnight-bank",
+          "nodes": [
+            {
+              "rect": {
+                "x": 265.734375,
+                "y": 336,
+                "width": 373.640625,
+                "height": 47,
+                "top": 336,
+                "right": 639.375,
+                "bottom": 383,
+                "left": 265.734375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".weekly-overnight-bay",
+          "nodes": [
+            {
+              "rect": {
+                "x": 265.734375,
+                "y": 336,
+                "width": 53.375,
+                "height": 47,
+                "top": 336,
+                "right": 319.109375,
+                "bottom": 383,
+                "left": 265.734375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 319.109375,
+                "y": 336,
+                "width": 53.375,
+                "height": 47,
+                "top": 336,
+                "right": 372.484375,
+                "bottom": 383,
+                "left": 319.109375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 372.484375,
+                "y": 336,
+                "width": 53.375,
+                "height": 47,
+                "top": 336,
+                "right": 425.859375,
+                "bottom": 383,
+                "left": 372.484375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 425.859375,
+                "y": 336,
+                "width": 53.375,
+                "height": 47,
+                "top": 336,
+                "right": 479.234375,
+                "bottom": 383,
+                "left": 425.859375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 479.234375,
+                "y": 336,
+                "width": 53.375,
+                "height": 47,
+                "top": 336,
+                "right": 532.609375,
+                "bottom": 383,
+                "left": 479.234375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 532.609375,
+                "y": 336,
+                "width": 53.375,
+                "height": 47,
+                "top": 336,
+                "right": 585.984375,
+                "bottom": 383,
+                "left": 532.609375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 585.984375,
+                "y": 336,
+                "width": 53.375,
+                "height": 47,
+                "top": 336,
+                "right": 639.359375,
+                "bottom": 383,
+                "left": 585.984375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".instrument-slot",
+          "nodes": [
+            {
+              "rect": {
+                "x": 639.375,
+                "y": 83.296875,
+                "width": 122.28125,
+                "height": 95.890625,
+                "top": 83.296875,
+                "right": 761.65625,
+                "bottom": 179.1875,
+                "left": 639.375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 639.375,
+                "y": 185.1875,
+                "width": 122.28125,
+                "height": 95.90625,
+                "top": 185.1875,
+                "right": 761.65625,
+                "bottom": 281.09375,
+                "left": 639.375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 639.375,
+                "y": 287.09375,
+                "width": 122.28125,
+                "height": 95.890625,
+                "top": 287.09375,
+                "right": 761.65625,
+                "bottom": 382.984375,
+                "left": 639.375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".instrument",
+          "nodes": [
+            {
+              "rect": {
+                "x": 656.875,
+                "y": 88.09375,
+                "width": 86.28125,
+                "height": 86.28125,
+                "top": 88.09375,
+                "right": 743.15625,
+                "bottom": 174.375,
+                "left": 656.875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 656.859375,
+                "y": 189.984375,
+                "width": 86.296875,
+                "height": 86.296875,
+                "top": 189.984375,
+                "right": 743.15625,
+                "bottom": 276.28125,
+                "left": 656.859375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 656.875,
+                "y": 291.890625,
+                "width": 86.28125,
+                "height": 86.28125,
+                "top": 291.890625,
+                "right": 743.15625,
+                "bottom": 378.171875,
+                "left": 656.875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".flap-character",
+          "nodes": [
+            {
+              "rect": {
+                "x": 100.984375,
+                "y": 22.6875,
+                "width": 23.578125,
+                "height": 38.90625,
+                "top": 22.6875,
+                "right": 124.5625,
+                "bottom": 61.59375,
+                "left": 100.984375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 125.546875,
+                "y": 22.6875,
+                "width": 23.578125,
+                "height": 38.90625,
+                "top": 22.6875,
+                "right": 149.125,
+                "bottom": 61.59375,
+                "left": 125.546875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 150.109375,
+                "y": 22.6875,
+                "width": 23.578125,
+                "height": 38.90625,
+                "top": 22.6875,
+                "right": 173.6875,
+                "bottom": 61.59375,
+                "left": 150.109375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 174.671875,
+                "y": 22.6875,
+                "width": 23.578125,
+                "height": 38.90625,
+                "top": 22.6875,
+                "right": 198.25,
+                "bottom": 61.59375,
+                "left": 174.671875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 199.234375,
+                "y": 22.6875,
+                "width": 23.578125,
+                "height": 38.90625,
+                "top": 22.6875,
+                "right": 222.8125,
+                "bottom": 61.59375,
+                "left": 199.234375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 240.203125,
+                "y": 22.6875,
+                "width": 23.578125,
+                "height": 38.90625,
+                "top": 22.6875,
+                "right": 263.78125,
+                "bottom": 61.59375,
+                "left": 240.203125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 264.765625,
+                "y": 22.6875,
+                "width": 23.578125,
+                "height": 38.90625,
+                "top": 22.6875,
+                "right": 288.34375,
+                "bottom": 61.59375,
+                "left": 264.765625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 289.328125,
+                "y": 22.6875,
+                "width": 23.578125,
+                "height": 38.90625,
+                "top": 22.6875,
+                "right": 312.90625,
+                "bottom": 61.59375,
+                "left": 289.328125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 329.109375,
+                "y": 22.6875,
+                "width": 23.578125,
+                "height": 38.90625,
+                "top": 22.6875,
+                "right": 352.6875,
+                "bottom": 61.59375,
+                "left": 329.109375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 353.671875,
+                "y": 22.6875,
+                "width": 23.578125,
+                "height": 38.90625,
+                "top": 22.6875,
+                "right": 377.25,
+                "bottom": 61.59375,
+                "left": 353.671875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 378.234375,
+                "y": 22.6875,
+                "width": 23.578125,
+                "height": 38.90625,
+                "top": 22.6875,
+                "right": 401.8125,
+                "bottom": 61.59375,
+                "left": 378.234375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 419.203125,
+                "y": 22.6875,
+                "width": 23.578125,
+                "height": 38.90625,
+                "top": 22.6875,
+                "right": 442.78125,
+                "bottom": 61.59375,
+                "left": 419.203125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 443.765625,
+                "y": 22.6875,
+                "width": 23.578125,
+                "height": 38.90625,
+                "top": 22.6875,
+                "right": 467.34375,
+                "bottom": 61.59375,
+                "left": 443.765625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 468.328125,
+                "y": 22.6875,
+                "width": 23.578125,
+                "height": 38.90625,
+                "top": 22.6875,
+                "right": 491.90625,
+                "bottom": 61.59375,
+                "left": 468.328125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 492.890625,
+                "y": 22.6875,
+                "width": 23.578125,
+                "height": 38.90625,
+                "top": 22.6875,
+                "right": 516.46875,
+                "bottom": 61.59375,
+                "left": 492.890625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 517.453125,
+                "y": 22.6875,
+                "width": 23.578125,
+                "height": 38.90625,
+                "top": 22.6875,
+                "right": 541.03125,
+                "bottom": 61.59375,
+                "left": 517.453125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 542.015625,
+                "y": 22.6875,
+                "width": 23.578125,
+                "height": 38.90625,
+                "top": 22.6875,
+                "right": 565.59375,
+                "bottom": 61.59375,
+                "left": 542.015625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 566.578125,
+                "y": 22.6875,
+                "width": 23.578125,
+                "height": 38.90625,
+                "top": 22.6875,
+                "right": 590.15625,
+                "bottom": 61.59375,
+                "left": 566.578125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 591.140625,
+                "y": 22.6875,
+                "width": 23.578125,
+                "height": 38.90625,
+                "top": 22.6875,
+                "right": 614.71875,
+                "bottom": 61.59375,
+                "left": 591.140625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".clock-wheel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 638.4114379882812,
+                "y": 13.585515975952148,
+                "width": 105.4700927734375,
+                "height": 26.58424186706543,
+                "top": 13.585515975952148,
+                "right": 743.8815307617188,
+                "bottom": 40.16975784301758,
+                "left": 638.4114379882812
+              },
+              "x": "220",
+              "y": "130",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 637.186767578125,
+                "y": 13.585515975952148,
+                "width": 105.4700927734375,
+                "height": 26.58424186706543,
+                "top": 13.585515975952148,
+                "right": 742.6568603515625,
+                "bottom": 40.16975784301758,
+                "left": 637.186767578125
+              },
+              "x": "480",
+              "y": "130",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 634.4072875976562,
+                "y": 13.585515975952148,
+                "width": 105.4700927734375,
+                "height": 26.58424186706543,
+                "top": 13.585515975952148,
+                "right": 739.8773803710938,
+                "bottom": 40.16975784301758,
+                "left": 634.4072875976562
+              },
+              "x": "820",
+              "y": "130",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 633.1826171875,
+                "y": 13.585515975952148,
+                "width": 105.4700927734375,
+                "height": 26.58424186706543,
+                "top": 13.585515975952148,
+                "right": 738.6527099609375,
+                "bottom": 40.16975784301758,
+                "left": 633.1826171875
+              },
+              "x": "1080",
+              "y": "130",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 638.4114379882812,
+                "y": 47.283653259277344,
+                "width": 105.4700927734375,
+                "height": 26.584243774414062,
+                "top": 47.283653259277344,
+                "right": 743.8815307617188,
+                "bottom": 73.8678970336914,
+                "left": 638.4114379882812
+              },
+              "x": "220",
+              "y": "525",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 637.186767578125,
+                "y": 47.283653259277344,
+                "width": 105.4700927734375,
+                "height": 26.584243774414062,
+                "top": 47.283653259277344,
+                "right": 742.6568603515625,
+                "bottom": 73.8678970336914,
+                "left": 637.186767578125
+              },
+              "x": "480",
+              "y": "525",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 634.4072875976562,
+                "y": 47.283653259277344,
+                "width": 105.4700927734375,
+                "height": 26.584243774414062,
+                "top": 47.283653259277344,
+                "right": 739.8773803710938,
+                "bottom": 73.8678970336914,
+                "left": 634.4072875976562
+              },
+              "x": "820",
+              "y": "525",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 633.1826171875,
+                "y": 47.283653259277344,
+                "width": 105.4700927734375,
+                "height": 26.584243774414062,
+                "top": 47.283653259277344,
+                "right": 738.6527099609375,
+                "bottom": 73.8678970336914,
+                "left": 633.1826171875
+              },
+              "x": "1080",
+              "y": "525",
+              "width": "210",
+              "height": "210"
+            }
+          ]
+        },
+        {
+          "selector": ".period-wheel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 734.813720703125,
+                "y": 13.585515975952148,
+                "width": 105.47003173828125,
+                "height": 26.58424186706543,
+                "top": 13.585515975952148,
+                "right": 840.2837524414062,
+                "bottom": 40.16975784301758,
+                "left": 734.813720703125
+              },
+              "x": "1350",
+              "y": "130",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 734.813720703125,
+                "y": 47.283653259277344,
+                "width": 105.47003173828125,
+                "height": 26.584243774414062,
+                "top": 47.283653259277344,
+                "right": 840.2837524414062,
+                "bottom": 73.8678970336914,
+                "left": 734.813720703125
+              },
+              "x": "1350",
+              "y": "525",
+              "width": "210",
+              "height": "210"
+            }
+          ]
+        },
+        {
+          "selector": ".clock-colon",
+          "nodes": [
+            {
+              "rect": {
+                "x": 688.6572875976562,
+                "y": 23.97703742980957,
+                "width": 1.19439697265625,
+                "height": 6.227756500244141,
+                "top": 23.97703742980957,
+                "right": 689.8516845703125,
+                "bottom": 30.20479393005371,
+                "left": 688.6572875976562
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 688.6572875976562,
+                "y": 57.675174713134766,
+                "width": 1.19439697265625,
+                "height": 6.227756500244141,
+                "top": 57.675174713134766,
+                "right": 689.8516845703125,
+                "bottom": 63.902931213378906,
+                "left": 688.6572875976562
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".destination-poster-image",
+          "nodes": [
+            {
+              "rect": {
+                "x": 85.328125,
+                "y": 86.78125,
+                "width": 171.390625,
+                "height": 195.65625,
+                "top": 86.78125,
+                "right": 256.71875,
+                "bottom": 282.4375,
+                "left": 85.328125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        }
+      ],
+      "regions": [
+        {
+          "selector": ".destination-panel",
+          "rect": {
+            "x": 82.328125,
+            "y": 83.296875,
+            "width": 177.40625,
+            "height": 202.640625,
+            "top": 83.296875,
+            "right": 259.734375,
+            "bottom": 285.9375,
+            "left": 82.328125
+          },
+          "padding": [
+            "2px",
+            "2px",
+            "2px",
+            "2px"
+          ],
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px"
+          ],
+          "background": "linear-gradient(145deg, rgba(29, 32, 34, 0.98), rgba(7, 9, 10, 0.99) 62%)"
+        },
+        {
+          "selector": ".daily-schedule-panel",
+          "rect": {
+            "x": 82.328125,
+            "y": 291.9375,
+            "width": 177.40625,
+            "height": 91.046875,
+            "top": 291.9375,
+            "right": 259.734375,
+            "bottom": 382.984375,
+            "left": 82.328125
+          },
+          "padding": [
+            "0px",
+            "0px",
+            "0px",
+            "0px"
+          ],
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px"
+          ],
+          "background": "none"
+        },
+        {
+          "selector": ".vintage-map-panel",
+          "rect": {
+            "x": 265.734375,
+            "y": 83.296875,
+            "width": 373.640625,
+            "height": 246.703125,
+            "top": 83.296875,
+            "right": 639.375,
+            "bottom": 330,
+            "left": 265.734375
+          },
+          "padding": [
+            "8px",
+            "6px",
+            "8px",
+            "8px"
+          ],
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px"
+          ],
+          "background": "linear-gradient(145deg, rgb(28, 27, 23), rgb(9, 10, 9) 66%)"
+        },
+        {
+          "selector": ".weekly-overnight-bank",
+          "rect": {
+            "x": 265.734375,
+            "y": 336,
+            "width": 373.640625,
+            "height": 47,
+            "top": 336,
+            "right": 639.375,
+            "bottom": 383,
+            "left": 265.734375
+          },
+          "padding": [
+            "0px",
+            "0px",
+            "0px",
+            "0px"
+          ],
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px"
+          ],
+          "background": "none"
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "geometry": [
+        {
+          "selector": "#dashboard",
+          "nodes": [
+            {
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "width": 768,
+                "height": 1024,
+                "top": 0,
+                "right": 768,
+                "bottom": 1024,
+                "left": 0
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".flight-strip-module",
+          "nodes": [
+            {
+              "rect": {
+                "x": 7,
+                "y": 7,
+                "width": 536.875,
+                "height": 122.609375,
+                "top": 7,
+                "right": 543.875,
+                "bottom": 129.609375,
+                "left": 7
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".twin-clock-panel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 549.875,
+                "y": 7,
+                "width": 211.125,
+                "height": 122.609375,
+                "top": 7,
+                "right": 761,
+                "bottom": 129.609375,
+                "left": 549.875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".destination-panel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 7,
+                "y": 580.296875,
+                "width": 536.875,
+                "height": 297.171875,
+                "top": 580.296875,
+                "right": 543.875,
+                "bottom": 877.46875,
+                "left": 7
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".daily-schedule-panel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 7,
+                "y": 883.46875,
+                "width": 536.875,
+                "height": 133.515625,
+                "top": 883.46875,
+                "right": 543.875,
+                "bottom": 1016.984375,
+                "left": 7
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".vintage-map-panel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 7,
+                "y": 135.609375,
+                "width": 754,
+                "height": 361.765625,
+                "top": 135.609375,
+                "right": 761,
+                "bottom": 497.375,
+                "left": 7
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".route-map-shell",
+          "nodes": [
+            {
+              "rect": {
+                "x": 16,
+                "y": 144.609375,
+                "width": 738,
+                "height": 343.765625,
+                "top": 144.609375,
+                "right": 754,
+                "bottom": 488.375,
+                "left": 16
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".weekly-overnight-bank",
+          "nodes": [
+            {
+              "rect": {
+                "x": 7,
+                "y": 503.375,
+                "width": 754,
+                "height": 68.921875,
+                "top": 503.375,
+                "right": 761,
+                "bottom": 572.296875,
+                "left": 7
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".weekly-overnight-bay",
+          "nodes": [
+            {
+              "rect": {
+                "x": 7,
+                "y": 503.375,
+                "width": 107.703125,
+                "height": 68.921875,
+                "top": 503.375,
+                "right": 114.703125,
+                "bottom": 572.296875,
+                "left": 7
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 114.703125,
+                "y": 503.375,
+                "width": 107.71875,
+                "height": 68.921875,
+                "top": 503.375,
+                "right": 222.421875,
+                "bottom": 572.296875,
+                "left": 114.703125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 222.421875,
+                "y": 503.375,
+                "width": 107.71875,
+                "height": 68.921875,
+                "top": 503.375,
+                "right": 330.140625,
+                "bottom": 572.296875,
+                "left": 222.421875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 330.140625,
+                "y": 503.375,
+                "width": 107.703125,
+                "height": 68.921875,
+                "top": 503.375,
+                "right": 437.84375,
+                "bottom": 572.296875,
+                "left": 330.140625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 437.84375,
+                "y": 503.375,
+                "width": 107.71875,
+                "height": 68.921875,
+                "top": 503.375,
+                "right": 545.5625,
+                "bottom": 572.296875,
+                "left": 437.84375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 545.5625,
+                "y": 503.375,
+                "width": 107.71875,
+                "height": 68.921875,
+                "top": 503.375,
+                "right": 653.28125,
+                "bottom": 572.296875,
+                "left": 545.5625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 653.28125,
+                "y": 503.375,
+                "width": 107.71875,
+                "height": 68.921875,
+                "top": 503.375,
+                "right": 761,
+                "bottom": 572.296875,
+                "left": 653.28125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".instrument-slot",
+          "nodes": [
+            {
+              "rect": {
+                "x": 549.875,
+                "y": 580.296875,
+                "width": 211.125,
+                "height": 141.5625,
+                "top": 580.296875,
+                "right": 761,
+                "bottom": 721.859375,
+                "left": 549.875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 549.875,
+                "y": 727.859375,
+                "width": 211.125,
+                "height": 141.5625,
+                "top": 727.859375,
+                "right": 761,
+                "bottom": 869.421875,
+                "left": 549.875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 549.875,
+                "y": 875.421875,
+                "width": 211.125,
+                "height": 141.5625,
+                "top": 875.421875,
+                "right": 761,
+                "bottom": 1016.984375,
+                "left": 549.875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".instrument",
+          "nodes": [
+            {
+              "rect": {
+                "x": 589.9375,
+                "y": 586.078125,
+                "width": 130,
+                "height": 130,
+                "top": 586.078125,
+                "right": 719.9375,
+                "bottom": 716.078125,
+                "left": 589.9375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 589.9375,
+                "y": 733.640625,
+                "width": 130,
+                "height": 130,
+                "top": 733.640625,
+                "right": 719.9375,
+                "bottom": 863.640625,
+                "left": 589.9375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 589.9375,
+                "y": 881.203125,
+                "width": 130,
+                "height": 130,
+                "top": 881.203125,
+                "right": 719.9375,
+                "bottom": 1011.203125,
+                "left": 589.9375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".flap-character",
+          "nodes": [
+            {
+              "rect": {
+                "x": 26.59375,
+                "y": 49.453125,
+                "width": 22.84375,
+                "height": 37.703125,
+                "top": 49.453125,
+                "right": 49.4375,
+                "bottom": 87.15625,
+                "left": 26.59375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 50.390625,
+                "y": 49.453125,
+                "width": 22.84375,
+                "height": 37.703125,
+                "top": 49.453125,
+                "right": 73.234375,
+                "bottom": 87.15625,
+                "left": 50.390625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 74.1875,
+                "y": 49.453125,
+                "width": 22.84375,
+                "height": 37.703125,
+                "top": 49.453125,
+                "right": 97.03125,
+                "bottom": 87.15625,
+                "left": 74.1875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 97.984375,
+                "y": 49.453125,
+                "width": 22.84375,
+                "height": 37.703125,
+                "top": 49.453125,
+                "right": 120.828125,
+                "bottom": 87.15625,
+                "left": 97.984375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 121.78125,
+                "y": 49.453125,
+                "width": 22.84375,
+                "height": 37.703125,
+                "top": 49.453125,
+                "right": 144.625,
+                "bottom": 87.15625,
+                "left": 121.78125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 161.453125,
+                "y": 49.453125,
+                "width": 22.84375,
+                "height": 37.703125,
+                "top": 49.453125,
+                "right": 184.296875,
+                "bottom": 87.15625,
+                "left": 161.453125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 185.25,
+                "y": 49.453125,
+                "width": 22.84375,
+                "height": 37.703125,
+                "top": 49.453125,
+                "right": 208.09375,
+                "bottom": 87.15625,
+                "left": 185.25
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 209.046875,
+                "y": 49.453125,
+                "width": 22.84375,
+                "height": 37.703125,
+                "top": 49.453125,
+                "right": 231.890625,
+                "bottom": 87.15625,
+                "left": 209.046875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 247.59375,
+                "y": 49.453125,
+                "width": 22.84375,
+                "height": 37.703125,
+                "top": 49.453125,
+                "right": 270.4375,
+                "bottom": 87.15625,
+                "left": 247.59375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 271.390625,
+                "y": 49.453125,
+                "width": 22.84375,
+                "height": 37.703125,
+                "top": 49.453125,
+                "right": 294.234375,
+                "bottom": 87.15625,
+                "left": 271.390625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 295.1875,
+                "y": 49.453125,
+                "width": 22.84375,
+                "height": 37.703125,
+                "top": 49.453125,
+                "right": 318.03125,
+                "bottom": 87.15625,
+                "left": 295.1875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 334.859375,
+                "y": 49.453125,
+                "width": 22.84375,
+                "height": 37.703125,
+                "top": 49.453125,
+                "right": 357.703125,
+                "bottom": 87.15625,
+                "left": 334.859375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 358.65625,
+                "y": 49.453125,
+                "width": 22.84375,
+                "height": 37.703125,
+                "top": 49.453125,
+                "right": 381.5,
+                "bottom": 87.15625,
+                "left": 358.65625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 382.453125,
+                "y": 49.453125,
+                "width": 22.84375,
+                "height": 37.703125,
+                "top": 49.453125,
+                "right": 405.296875,
+                "bottom": 87.15625,
+                "left": 382.453125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 406.25,
+                "y": 49.453125,
+                "width": 22.84375,
+                "height": 37.703125,
+                "top": 49.453125,
+                "right": 429.09375,
+                "bottom": 87.15625,
+                "left": 406.25
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 430.046875,
+                "y": 49.453125,
+                "width": 22.84375,
+                "height": 37.703125,
+                "top": 49.453125,
+                "right": 452.890625,
+                "bottom": 87.15625,
+                "left": 430.046875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 453.84375,
+                "y": 49.453125,
+                "width": 22.84375,
+                "height": 37.703125,
+                "top": 49.453125,
+                "right": 476.6875,
+                "bottom": 87.15625,
+                "left": 453.84375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 477.640625,
+                "y": 49.453125,
+                "width": 22.84375,
+                "height": 37.703125,
+                "top": 49.453125,
+                "right": 500.484375,
+                "bottom": 87.15625,
+                "left": 477.640625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 501.4375,
+                "y": 49.453125,
+                "width": 22.84375,
+                "height": 37.703125,
+                "top": 49.453125,
+                "right": 524.28125,
+                "bottom": 87.15625,
+                "left": 501.4375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".clock-wheel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 547.1174926757812,
+                "y": 18.486228942871094,
+                "width": 183.957275390625,
+                "height": 46.3673095703125,
+                "top": 18.486228942871094,
+                "right": 731.0747680664062,
+                "bottom": 64.8535385131836,
+                "left": 547.1174926757812
+              },
+              "x": "220",
+              "y": "130",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 544.9815673828125,
+                "y": 18.486228942871094,
+                "width": 183.957275390625,
+                "height": 46.3673095703125,
+                "top": 18.486228942871094,
+                "right": 728.9388427734375,
+                "bottom": 64.8535385131836,
+                "left": 544.9815673828125
+              },
+              "x": "480",
+              "y": "130",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 540.1336059570312,
+                "y": 18.486228942871094,
+                "width": 183.957275390625,
+                "height": 46.3673095703125,
+                "top": 18.486228942871094,
+                "right": 724.0908813476562,
+                "bottom": 64.8535385131836,
+                "left": 540.1336059570312
+              },
+              "x": "820",
+              "y": "130",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 537.9976196289062,
+                "y": 18.486228942871094,
+                "width": 183.957275390625,
+                "height": 46.3673095703125,
+                "top": 18.486228942871094,
+                "right": 721.9548950195312,
+                "bottom": 64.8535385131836,
+                "left": 537.9976196289062
+              },
+              "x": "1080",
+              "y": "130",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 547.1174926757812,
+                "y": 77.2613525390625,
+                "width": 183.957275390625,
+                "height": 46.3673095703125,
+                "top": 77.2613525390625,
+                "right": 731.0747680664062,
+                "bottom": 123.628662109375,
+                "left": 547.1174926757812
+              },
+              "x": "220",
+              "y": "525",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 544.9815673828125,
+                "y": 77.2613525390625,
+                "width": 183.957275390625,
+                "height": 46.3673095703125,
+                "top": 77.2613525390625,
+                "right": 728.9388427734375,
+                "bottom": 123.628662109375,
+                "left": 544.9815673828125
+              },
+              "x": "480",
+              "y": "525",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 540.1336059570312,
+                "y": 77.2613525390625,
+                "width": 183.957275390625,
+                "height": 46.3673095703125,
+                "top": 77.2613525390625,
+                "right": 724.0908813476562,
+                "bottom": 123.628662109375,
+                "left": 540.1336059570312
+              },
+              "x": "820",
+              "y": "525",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 537.9976196289062,
+                "y": 77.2613525390625,
+                "width": 183.957275390625,
+                "height": 46.3673095703125,
+                "top": 77.2613525390625,
+                "right": 721.9548950195312,
+                "bottom": 123.628662109375,
+                "left": 537.9976196289062
+              },
+              "x": "1080",
+              "y": "525",
+              "width": "210",
+              "height": "210"
+            }
+          ]
+        },
+        {
+          "selector": ".period-wheel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 715.259033203125,
+                "y": 18.486228942871094,
+                "width": 183.95721435546875,
+                "height": 46.3673095703125,
+                "top": 18.486228942871094,
+                "right": 899.2162475585938,
+                "bottom": 64.8535385131836,
+                "left": 715.259033203125
+              },
+              "x": "1350",
+              "y": "130",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 715.259033203125,
+                "y": 77.2613525390625,
+                "width": 183.95721435546875,
+                "height": 46.3673095703125,
+                "top": 77.2613525390625,
+                "right": 899.2162475585938,
+                "bottom": 123.628662109375,
+                "left": 715.259033203125
+              },
+              "x": "1350",
+              "y": "525",
+              "width": "210",
+              "height": "210"
+            }
+          ]
+        },
+        {
+          "selector": ".clock-colon",
+          "nodes": [
+            {
+              "rect": {
+                "x": 634.754638671875,
+                "y": 36.61075973510742,
+                "width": 2.0831298828125,
+                "height": 10.862236022949219,
+                "top": 36.61075973510742,
+                "right": 636.8377685546875,
+                "bottom": 47.47299575805664,
+                "left": 634.754638671875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 634.754638671875,
+                "y": 95.3858871459961,
+                "width": 2.0831298828125,
+                "height": 10.862236022949219,
+                "top": 95.3858871459961,
+                "right": 636.8377685546875,
+                "bottom": 106.24812316894531,
+                "left": 634.754638671875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".destination-poster-image",
+          "nodes": [
+            {
+              "rect": {
+                "x": 10,
+                "y": 583.296875,
+                "width": 530.875,
+                "height": 291.171875,
+                "top": 583.296875,
+                "right": 540.875,
+                "bottom": 874.46875,
+                "left": 10
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        }
+      ],
+      "regions": [
+        {
+          "selector": ".destination-panel",
+          "rect": {
+            "x": 7,
+            "y": 580.296875,
+            "width": 536.875,
+            "height": 297.171875,
+            "top": 580.296875,
+            "right": 543.875,
+            "bottom": 877.46875,
+            "left": 7
+          },
+          "padding": [
+            "2px",
+            "2px",
+            "2px",
+            "2px"
+          ],
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px"
+          ],
+          "background": "linear-gradient(145deg, rgba(29, 32, 34, 0.98), rgba(7, 9, 10, 0.99) 62%)"
+        },
+        {
+          "selector": ".daily-schedule-panel",
+          "rect": {
+            "x": 7,
+            "y": 883.46875,
+            "width": 536.875,
+            "height": 133.515625,
+            "top": 883.46875,
+            "right": 543.875,
+            "bottom": 1016.984375,
+            "left": 7
+          },
+          "padding": [
+            "0px",
+            "0px",
+            "0px",
+            "0px"
+          ],
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px"
+          ],
+          "background": "none"
+        },
+        {
+          "selector": ".vintage-map-panel",
+          "rect": {
+            "x": 7,
+            "y": 135.609375,
+            "width": 754,
+            "height": 361.765625,
+            "top": 135.609375,
+            "right": 761,
+            "bottom": 497.375,
+            "left": 7
+          },
+          "padding": [
+            "8px",
+            "6px",
+            "8px",
+            "8px"
+          ],
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px"
+          ],
+          "background": "linear-gradient(145deg, rgb(28, 27, 23), rgb(9, 10, 9) 66%)"
+        },
+        {
+          "selector": ".weekly-overnight-bank",
+          "rect": {
+            "x": 7,
+            "y": 503.375,
+            "width": 754,
+            "height": 68.921875,
+            "top": 503.375,
+            "right": 761,
+            "bottom": 572.296875,
+            "left": 7
+          },
+          "padding": [
+            "0px",
+            "0px",
+            "0px",
+            "0px"
+          ],
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px"
+          ],
+          "background": "none"
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "geometry": [
+        {
+          "selector": "#dashboard",
+          "nodes": [
+            {
+              "rect": {
+                "x": 0,
+                "y": 96,
+                "width": 1024,
+                "height": 576,
+                "top": 96,
+                "right": 1024,
+                "bottom": 672,
+                "left": 0
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".flight-strip-module",
+          "nodes": [
+            {
+              "rect": {
+                "x": 7,
+                "y": 103,
+                "width": 822.1875,
+                "height": 105.625,
+                "top": 103,
+                "right": 829.1875,
+                "bottom": 208.625,
+                "left": 7
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".twin-clock-panel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 835.1875,
+                "y": 103,
+                "width": 181.8125,
+                "height": 105.625,
+                "top": 103,
+                "right": 1017,
+                "bottom": 208.625,
+                "left": 835.1875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".destination-panel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 7,
+                "y": 214.625,
+                "width": 266.6875,
+                "height": 306.609375,
+                "top": 214.625,
+                "right": 273.6875,
+                "bottom": 521.234375,
+                "left": 7
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".daily-schedule-panel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 7,
+                "y": 527.234375,
+                "width": 266.6875,
+                "height": 137.75,
+                "top": 527.234375,
+                "right": 273.6875,
+                "bottom": 664.984375,
+                "left": 7
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".vintage-map-panel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 279.6875,
+                "y": 214.625,
+                "width": 555.5,
+                "height": 373.265625,
+                "top": 214.625,
+                "right": 835.1875,
+                "bottom": 587.890625,
+                "left": 279.6875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".route-map-shell",
+          "nodes": [
+            {
+              "rect": {
+                "x": 288.6875,
+                "y": 223.625,
+                "width": 539.5,
+                "height": 355.265625,
+                "top": 223.625,
+                "right": 828.1875,
+                "bottom": 578.890625,
+                "left": 288.6875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".weekly-overnight-bank",
+          "nodes": [
+            {
+              "rect": {
+                "x": 279.6875,
+                "y": 593.890625,
+                "width": 555.5,
+                "height": 71.09375,
+                "top": 593.890625,
+                "right": 835.1875,
+                "bottom": 664.984375,
+                "left": 279.6875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".weekly-overnight-bay",
+          "nodes": [
+            {
+              "rect": {
+                "x": 279.6875,
+                "y": 593.890625,
+                "width": 79.34375,
+                "height": 71.09375,
+                "top": 593.890625,
+                "right": 359.03125,
+                "bottom": 664.984375,
+                "left": 279.6875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 359.03125,
+                "y": 593.890625,
+                "width": 79.359375,
+                "height": 71.09375,
+                "top": 593.890625,
+                "right": 438.390625,
+                "bottom": 664.984375,
+                "left": 359.03125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 438.390625,
+                "y": 593.890625,
+                "width": 79.359375,
+                "height": 71.09375,
+                "top": 593.890625,
+                "right": 517.75,
+                "bottom": 664.984375,
+                "left": 438.390625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 517.75,
+                "y": 593.890625,
+                "width": 79.359375,
+                "height": 71.09375,
+                "top": 593.890625,
+                "right": 597.109375,
+                "bottom": 664.984375,
+                "left": 517.75
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 597.109375,
+                "y": 593.890625,
+                "width": 79.359375,
+                "height": 71.09375,
+                "top": 593.890625,
+                "right": 676.46875,
+                "bottom": 664.984375,
+                "left": 597.109375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 676.46875,
+                "y": 593.890625,
+                "width": 79.359375,
+                "height": 71.09375,
+                "top": 593.890625,
+                "right": 755.828125,
+                "bottom": 664.984375,
+                "left": 676.46875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 755.828125,
+                "y": 593.890625,
+                "width": 79.34375,
+                "height": 71.09375,
+                "top": 593.890625,
+                "right": 835.171875,
+                "bottom": 664.984375,
+                "left": 755.828125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".instrument-slot",
+          "nodes": [
+            {
+              "rect": {
+                "x": 835.1875,
+                "y": 214.625,
+                "width": 181.8125,
+                "height": 146.125,
+                "top": 214.625,
+                "right": 1017,
+                "bottom": 360.75,
+                "left": 835.1875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 835.1875,
+                "y": 366.75,
+                "width": 181.8125,
+                "height": 146.125,
+                "top": 366.75,
+                "right": 1017,
+                "bottom": 512.875,
+                "left": 835.1875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 835.1875,
+                "y": 518.875,
+                "width": 181.8125,
+                "height": 146.125,
+                "top": 518.875,
+                "right": 1017,
+                "bottom": 665,
+                "left": 835.1875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".instrument",
+          "nodes": [
+            {
+              "rect": {
+                "x": 858.328125,
+                "y": 220.421875,
+                "width": 134.515625,
+                "height": 134.515625,
+                "top": 220.421875,
+                "right": 992.84375,
+                "bottom": 354.9375,
+                "left": 858.328125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 858.328125,
+                "y": 372.546875,
+                "width": 134.515625,
+                "height": 134.515625,
+                "top": 372.546875,
+                "right": 992.84375,
+                "bottom": 507.0625,
+                "left": 858.328125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 858.328125,
+                "y": 524.671875,
+                "width": 134.515625,
+                "height": 134.515625,
+                "top": 524.671875,
+                "right": 992.84375,
+                "bottom": 659.1875,
+                "left": 858.328125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".flap-character",
+          "nodes": [
+            {
+              "rect": {
+                "x": 29.796875,
+                "y": 126.359375,
+                "width": 35.6875,
+                "height": 58.890625,
+                "top": 126.359375,
+                "right": 65.484375,
+                "bottom": 185.25,
+                "left": 29.796875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 66.984375,
+                "y": 126.359375,
+                "width": 35.6875,
+                "height": 58.890625,
+                "top": 126.359375,
+                "right": 102.671875,
+                "bottom": 185.25,
+                "left": 66.984375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 104.171875,
+                "y": 126.359375,
+                "width": 35.6875,
+                "height": 58.890625,
+                "top": 126.359375,
+                "right": 139.859375,
+                "bottom": 185.25,
+                "left": 104.171875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 141.359375,
+                "y": 126.359375,
+                "width": 35.6875,
+                "height": 58.890625,
+                "top": 126.359375,
+                "right": 177.046875,
+                "bottom": 185.25,
+                "left": 141.359375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 178.546875,
+                "y": 126.359375,
+                "width": 35.6875,
+                "height": 58.890625,
+                "top": 126.359375,
+                "right": 214.234375,
+                "bottom": 185.25,
+                "left": 178.546875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 239.984375,
+                "y": 126.359375,
+                "width": 35.6875,
+                "height": 58.890625,
+                "top": 126.359375,
+                "right": 275.671875,
+                "bottom": 185.25,
+                "left": 239.984375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 277.171875,
+                "y": 126.359375,
+                "width": 35.6875,
+                "height": 58.890625,
+                "top": 126.359375,
+                "right": 312.859375,
+                "bottom": 185.25,
+                "left": 277.171875
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 314.359375,
+                "y": 126.359375,
+                "width": 35.6875,
+                "height": 58.890625,
+                "top": 126.359375,
+                "right": 350.046875,
+                "bottom": 185.25,
+                "left": 314.359375
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 374.578125,
+                "y": 126.359375,
+                "width": 35.6875,
+                "height": 58.890625,
+                "top": 126.359375,
+                "right": 410.265625,
+                "bottom": 185.25,
+                "left": 374.578125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 411.765625,
+                "y": 126.359375,
+                "width": 35.6875,
+                "height": 58.890625,
+                "top": 126.359375,
+                "right": 447.453125,
+                "bottom": 185.25,
+                "left": 411.765625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 448.953125,
+                "y": 126.359375,
+                "width": 35.6875,
+                "height": 58.890625,
+                "top": 126.359375,
+                "right": 484.640625,
+                "bottom": 185.25,
+                "left": 448.953125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 510.390625,
+                "y": 126.359375,
+                "width": 35.6875,
+                "height": 58.890625,
+                "top": 126.359375,
+                "right": 546.078125,
+                "bottom": 185.25,
+                "left": 510.390625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 547.578125,
+                "y": 126.359375,
+                "width": 35.6875,
+                "height": 58.890625,
+                "top": 126.359375,
+                "right": 583.265625,
+                "bottom": 185.25,
+                "left": 547.578125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 584.765625,
+                "y": 126.359375,
+                "width": 35.6875,
+                "height": 58.890625,
+                "top": 126.359375,
+                "right": 620.453125,
+                "bottom": 185.25,
+                "left": 584.765625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 621.953125,
+                "y": 126.359375,
+                "width": 35.6875,
+                "height": 58.890625,
+                "top": 126.359375,
+                "right": 657.640625,
+                "bottom": 185.25,
+                "left": 621.953125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 659.140625,
+                "y": 126.359375,
+                "width": 35.6875,
+                "height": 58.890625,
+                "top": 126.359375,
+                "right": 694.828125,
+                "bottom": 185.25,
+                "left": 659.140625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 696.328125,
+                "y": 126.359375,
+                "width": 35.6875,
+                "height": 58.890625,
+                "top": 126.359375,
+                "right": 732.015625,
+                "bottom": 185.25,
+                "left": 696.328125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 733.515625,
+                "y": 126.359375,
+                "width": 35.6875,
+                "height": 58.890625,
+                "top": 126.359375,
+                "right": 769.203125,
+                "bottom": 185.25,
+                "left": 733.515625
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 770.703125,
+                "y": 126.359375,
+                "width": 35.6875,
+                "height": 58.890625,
+                "top": 126.359375,
+                "right": 806.390625,
+                "bottom": 185.25,
+                "left": 770.703125
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".clock-wheel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 832.7786865234375,
+                "y": 112.89511108398438,
+                "width": 158.4747314453125,
+                "height": 39.944305419921875,
+                "top": 112.89511108398438,
+                "right": 991.25341796875,
+                "bottom": 152.83941650390625,
+                "left": 832.7786865234375
+              },
+              "x": "220",
+              "y": "130",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 830.9385986328125,
+                "y": 112.89511108398438,
+                "width": 158.4747314453125,
+                "height": 39.944305419921875,
+                "top": 112.89511108398438,
+                "right": 989.413330078125,
+                "bottom": 152.83941650390625,
+                "left": 830.9385986328125
+              },
+              "x": "480",
+              "y": "130",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 826.7622680664062,
+                "y": 112.89511108398438,
+                "width": 158.47467041015625,
+                "height": 39.944305419921875,
+                "top": 112.89511108398438,
+                "right": 985.2369384765625,
+                "bottom": 152.83941650390625,
+                "left": 826.7622680664062
+              },
+              "x": "820",
+              "y": "130",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 824.9221801757812,
+                "y": 112.89511108398438,
+                "width": 158.47467041015625,
+                "height": 39.944305419921875,
+                "top": 112.89511108398438,
+                "right": 983.3968505859375,
+                "bottom": 152.83941650390625,
+                "left": 824.9221801757812
+              },
+              "x": "1080",
+              "y": "130",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 832.7786865234375,
+                "y": 163.5284423828125,
+                "width": 158.4747314453125,
+                "height": 39.94432067871094,
+                "top": 163.5284423828125,
+                "right": 991.25341796875,
+                "bottom": 203.47276306152344,
+                "left": 832.7786865234375
+              },
+              "x": "220",
+              "y": "525",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 830.9385986328125,
+                "y": 163.5284423828125,
+                "width": 158.4747314453125,
+                "height": 39.94432067871094,
+                "top": 163.5284423828125,
+                "right": 989.413330078125,
+                "bottom": 203.47276306152344,
+                "left": 830.9385986328125
+              },
+              "x": "480",
+              "y": "525",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 826.7622680664062,
+                "y": 163.5284423828125,
+                "width": 158.47467041015625,
+                "height": 39.94432067871094,
+                "top": 163.5284423828125,
+                "right": 985.2369384765625,
+                "bottom": 203.47276306152344,
+                "left": 826.7622680664062
+              },
+              "x": "820",
+              "y": "525",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 824.9221801757812,
+                "y": 163.5284423828125,
+                "width": 158.47467041015625,
+                "height": 39.94432067871094,
+                "top": 163.5284423828125,
+                "right": 983.3968505859375,
+                "bottom": 203.47276306152344,
+                "left": 824.9221801757812
+              },
+              "x": "1080",
+              "y": "525",
+              "width": "210",
+              "height": "210"
+            }
+          ]
+        },
+        {
+          "selector": ".period-wheel",
+          "nodes": [
+            {
+              "rect": {
+                "x": 977.6285400390625,
+                "y": 112.89511108398438,
+                "width": 158.4747314453125,
+                "height": 39.944305419921875,
+                "top": 112.89511108398438,
+                "right": 1136.103271484375,
+                "bottom": 152.83941650390625,
+                "left": 977.6285400390625
+              },
+              "x": "1350",
+              "y": "130",
+              "width": "210",
+              "height": "210"
+            },
+            {
+              "rect": {
+                "x": 977.6285400390625,
+                "y": 163.5284423828125,
+                "width": 158.4747314453125,
+                "height": 39.94432067871094,
+                "top": 163.5284423828125,
+                "right": 1136.103271484375,
+                "bottom": 203.47276306152344,
+                "left": 977.6285400390625
+              },
+              "x": "1350",
+              "y": "525",
+              "width": "210",
+              "height": "210"
+            }
+          ]
+        },
+        {
+          "selector": ".clock-colon",
+          "nodes": [
+            {
+              "rect": {
+                "x": 908.2759399414062,
+                "y": 128.5089569091797,
+                "width": 1.79461669921875,
+                "height": 9.3575439453125,
+                "top": 128.5089569091797,
+                "right": 910.070556640625,
+                "bottom": 137.8665008544922,
+                "left": 908.2759399414062
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            {
+              "rect": {
+                "x": 908.2759399414062,
+                "y": 179.14230346679688,
+                "width": 1.79461669921875,
+                "height": 9.3575439453125,
+                "top": 179.14230346679688,
+                "right": 910.070556640625,
+                "bottom": 188.49984741210938,
+                "left": 908.2759399414062
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        },
+        {
+          "selector": ".destination-poster-image",
+          "nodes": [
+            {
+              "rect": {
+                "x": 10,
+                "y": 219.0625,
+                "width": 260.671875,
+                "height": 297.734375,
+                "top": 219.0625,
+                "right": 270.671875,
+                "bottom": 516.796875,
+                "left": 10
+              },
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            }
+          ]
+        }
+      ],
+      "regions": [
+        {
+          "selector": ".destination-panel",
+          "rect": {
+            "x": 7,
+            "y": 214.625,
+            "width": 266.6875,
+            "height": 306.609375,
+            "top": 214.625,
+            "right": 273.6875,
+            "bottom": 521.234375,
+            "left": 7
+          },
+          "padding": [
+            "2px",
+            "2px",
+            "2px",
+            "2px"
+          ],
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px"
+          ],
+          "background": "linear-gradient(145deg, rgba(29, 32, 34, 0.98), rgba(7, 9, 10, 0.99) 62%)"
+        },
+        {
+          "selector": ".daily-schedule-panel",
+          "rect": {
+            "x": 7,
+            "y": 527.234375,
+            "width": 266.6875,
+            "height": 137.75,
+            "top": 527.234375,
+            "right": 273.6875,
+            "bottom": 664.984375,
+            "left": 7
+          },
+          "padding": [
+            "0px",
+            "0px",
+            "0px",
+            "0px"
+          ],
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px"
+          ],
+          "background": "none"
+        },
+        {
+          "selector": ".vintage-map-panel",
+          "rect": {
+            "x": 279.6875,
+            "y": 214.625,
+            "width": 555.5,
+            "height": 373.265625,
+            "top": 214.625,
+            "right": 835.1875,
+            "bottom": 587.890625,
+            "left": 279.6875
+          },
+          "padding": [
+            "8px",
+            "6px",
+            "8px",
+            "8px"
+          ],
+          "border": [
+            "1px",
+            "1px",
+            "1px",
+            "1px"
+          ],
+          "background": "linear-gradient(145deg, rgb(28, 27, 23), rgb(9, 10, 9) 66%)"
+        },
+        {
+          "selector": ".weekly-overnight-bank",
+          "rect": {
+            "x": 279.6875,
+            "y": 593.890625,
+            "width": 555.5,
+            "height": 71.09375,
+            "top": 593.890625,
+            "right": 835.1875,
+            "bottom": 664.984375,
+            "left": 279.6875
+          },
+          "padding": [
+            "0px",
+            "0px",
+            "0px",
+            "0px"
+          ],
+          "border": [
+            "0px",
+            "0px",
+            "0px",
+            "0px"
+          ],
+          "background": "none"
+        }
+      ]
+    }
+  ]
+}

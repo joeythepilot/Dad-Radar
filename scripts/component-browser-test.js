@@ -14,6 +14,7 @@ fs.mkdirSync(output,{recursive:true});
  const origin=`http://127.0.0.1:${server.address().port}`;
  const browser=await ({chromium,webkit})[engine].launch({headless:true});
  try {
+  if(focus==='family')await require('./mobile-wood-lifecycle-browser-proof').checkMobileWoodLifecycle(browser,origin);
   const views=focus==='duty'?[
    ['kiosk',1920,1080,'/'],['desktop',1440,900,'/'],['tablet',1024,768,'/'],
    ['family-landscape',844,390,'/mobile'],['family-portrait',390,844,'/mobile']
@@ -48,6 +49,8 @@ fs.mkdirSync(output,{recursive:true});
     assert.equal(await page.locator('script[src*="deployment-refresh.js"]').count(),1,'Independent refresh watchdog is present');
     await require('./mobile-instrument-plate-browser-proof').checkMobileInstrumentPlates(page);
     await require('./mobile-instrument-plate-browser-proof').checkMobileSplitFlapPlate(page);
+    await page.waitForFunction(()=>document.querySelector('canvas.family-walnut')?._woodEvidence);
+    await require('./mobile-wood-browser-proof').checkMobileWood(page);
    }
    await settled(`${focus}/${name}`);
    assert.deepEqual(responses,[],`${name}: production assets load`);
