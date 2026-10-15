@@ -1,0 +1,42 @@
+{
+  "width": 2208,
+  "height": 257,
+  "windows": [
+    {
+      "label": "FLIGHT",
+      "x": 175,
+      "y": 68,
+      "width": 452,
+      "height": 137,
+      "tiles": 5
+    },
+    {
+      "label": "FROM",
+      "x": 680,
+      "y": 68,
+      "width": 271,
+      "height": 137,
+      "tiles": 3
+    },
+    {
+      "label": "TO",
+      "x": 1004,
+      "y": 68,
+      "width": 271,
+      "height": 137,
+      "tiles": 3
+    },
+    {
+      "label": "STATUS",
+      "x": 1328,
+      "y": 68,
+      "width": 722,
+      "height": 137,
+      "tiles": 8
+    }
+  ],
+  "source": "HomingBeacon_SplitFlap_Proportional_Transparent_v4.png",
+  "revision": "V5 restores wider end bands: 175px left and 158px right; no crop of four measured apertures",
+  "registration": "Uniform image scale only. Preserve 5/3/3/8 original mechanisms.",
+  "status": "Pending PNG upload, actual browser proof and release"
+}
