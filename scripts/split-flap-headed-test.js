@@ -116,7 +116,29 @@ const server = http.createServer((request, response) => {
 
         await page.goto(origin + "/", {waitUntil: "load"});
         await page.waitForSelector("#dashboard:not([hidden])", {timeout: 12000});
-        await page.waitForSelector(".flap-character", {timeout: 5000});
+        // Dashboard visibility does not establish readiness of all its flaps.
+        // Wait for the actual 19-cell mechanism with the browser startup budget.
+        await page.waitForFunction(() => {
+          const cells = [...document.querySelectorAll(".flap-character")];
+          return cells.length === 19 && cells.every(cell => {
+            const box = cell.getBoundingClientRect();
+            return box.width > 0 && box.height > 0 && getComputedStyle(cell).visibility === "visible";
+          });
+        }, null, {timeout: 30000}).catch(async error => {
+          try {
+            console.error("Split-flap startup layout:", await page.evaluate(() => ({
+            boot: document.querySelector(".status-message")?.textContent,
+            cells: [...document.querySelectorAll(".flap-character")].map(cell => {
+              const box = cell.getBoundingClientRect(), style = getComputedStyle(cell);
+              return {width: box.width, height: box.height, visibility: style.visibility, flex: style.flexBasis};
+            })
+            })));
+            await page.screenshot({path: path.join(output, `split-flap-startup-failure-${engine}.png`)});
+          } catch (diagnosticError) {
+            console.error("Could not capture split-flap startup diagnostics:", diagnosticError.message);
+          }
+          throw error;
+        });
 
         const evidence = await page.evaluate(() => {
           const flap = document.querySelector(".flap-character");
