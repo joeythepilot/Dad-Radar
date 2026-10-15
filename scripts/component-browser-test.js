@@ -51,6 +51,7 @@ fs.mkdirSync(output,{recursive:true});
     await require('./mobile-instrument-plate-browser-proof').checkMobileSplitFlapPlate(page);
     await page.waitForFunction(()=>document.querySelector('canvas.family-walnut')?._woodEvidence);
     await require('./mobile-wood-browser-proof').checkMobileWood(page);
+    await require('./mobile-frame-browser-proof').checkMobileFrames(page);
    }
    await settled(`${focus}/${name}`);
    assert.deepEqual(responses,[],`${name}: production assets load`);

@@ -34,6 +34,32 @@ html[data-family-full] .family-photo-plate {
 html[data-family-full] .family-clock-plate { left:0; top:-3px; z-index:0; }
 html[data-family-full] .family-clock-photo-mounted .twin-clock-art { position:relative; z-index:1; }
 html[data-family-full] .family-clock-photo-mounted .clock-caption { opacity:0; }
+/* Real photographic materials provide the housings. Keep the invisible border
+   widths/padding as geometry: removing them would move registered mechanisms.
+   Never target flap/drum/instrument internals or the map's printed paper. */
+html[data-family-full] .dashboard .module,
+html[data-family-full] .dashboard .flight-board,
+html[data-family-full] .dashboard .destination-stage {
+  border-color:transparent !important;
+  background:none !important;
+  box-shadow:none !important;
+}
+html[data-family-full] .dashboard .route-map-shell {
+  border-color:transparent !important;
+  box-shadow:none !important;
+}
+html[data-family-full] .dashboard .flight-strip-module::before,
+html[data-family-full] .dashboard .flight-strip-module::after,
+html[data-family-full] .dashboard .flight-board::before,
+html[data-family-full] .dashboard .flight-board::after,
+html[data-family-full] .dashboard .destination-panel::after,
+html[data-family-full] .dashboard .destination-stage::after,
+html[data-family-full] .dashboard .daily-schedule-panel::after,
+html[data-family-full] .dashboard .vintage-map-panel::after,
+html[data-family-full] .dashboard .route-map-shell::after {
+  content:none !important;
+  display:none !important;
+}
 html[data-family-full] .flight-board { min-width: 0; min-height: 0; padding: 3px var(--family-board-padding, 6px) !important; }
 html[data-family-full] .flight-board-row { display: flex !important; align-items: center !important; justify-content: space-between; gap: 0 !important; transform: none !important; }
 html[data-family-full] #flight-number { width: var(--flight-flap-group-width) !important; min-width: 0 !important; max-width: none !important; flex: 0 0 var(--flight-flap-group-width) !important; }
