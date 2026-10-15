@@ -22,7 +22,7 @@
  if(typeof module==='object'&&module.exports){module.exports=api;return;}
  root.DadRadarMobilePhotos=api;
  var prefix='/assets/hardware/HomingBeacon_Mobile_',photos={
-  landscape:{name:'SplitFlap_Landscape',body:[14,205,2158,493],donorBody:[14,201,2161,496],holes:[[96,282,466,137],[638,282,271,137],[983,282,274,137],[1333,282,744,137]]},
+  landscape:{name:'SplitFlap_Landscape',sourceVersion:7,body:[16,203,2155,487],donorBody:[14,201,2161,496],holes:[[78,274,472,145],[621,274,284,145],[975,274,283,145],[1328,273,763,146]]},
   portrait:{name:'SplitFlap_Portrait',body:[7,218,1820,636],donorBody:[7,216,1820,638],holes:[[121,370,365,119],[546,370,221,119],[829,370,218,119],[1109,370,598,119]]},
   clock:{name:'Clock',body:[52,95,1484,940],donorBody:[52,95,1485,940],holes:[[106,233,1324,200],[106,629,1324,194]]}
  };
@@ -82,6 +82,6 @@
  api.fit=fit;
  api.start=function(){
   if(api.starting)return;api.starting=true;
-  Promise.all(Object.keys(photos).map(function(key){var p=photos[key];return Promise.all([load(prefix+p.name+'_Source_v6.png'),load(prefix+p.name+'_CutoutDonor_v6.png')]).then(function(images){p.original=images[0];p.donor=images[1];});})).then(function(){api.ready=true;fit();}).catch(function(){api.failed=true;});
+  Promise.all(Object.keys(photos).map(function(key){var p=photos[key];return Promise.all([load(prefix+p.name+'_Source_v'+(p.sourceVersion||6)+'.png'),load(prefix+p.name+'_CutoutDonor_v6.png')]).then(function(images){p.original=images[0];p.donor=images[1];});})).then(function(){api.ready=true;fit();}).catch(function(){api.failed=true;});
  };
 })(typeof window==='object'?window:this);

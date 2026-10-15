@@ -48,6 +48,7 @@ const selectedHashes={
 };
 async function checkMobileSplitFlapPlate(page){
  for(const [name,hash]of Object.entries(selectedHashes))assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname,'../assets/hardware/HomingBeacon_Mobile_'+name+'_Source_v6.png'))).digest('hex'),hash,'Selected photograph bytes are unchanged');
+ assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname,'../assets/hardware/HomingBeacon_Mobile_SplitFlap_Landscape_Source_v7.png'))).digest('hex'),'6af4980855bce11b0f57f41b945168aa163f6b06329b29dd710345b94306d8f1','Preserve the finer landscape source photograph');
  await page.waitForFunction(()=>document.querySelectorAll('canvas.family-photo-plate').length===2&&[...document.querySelectorAll('canvas.family-photo-plate')].every(n=>n._photoEvidence));
  const evidence=await page.evaluate(async()=>{
   const result=[];
@@ -57,7 +58,7 @@ async function checkMobileSplitFlapPlate(page){
    const reference=document.createElement('canvas');reference.width=canvas.width;reference.height=canvas.height;
    const rc=reference.getContext('2d');rc.setTransform(e.dpr,0,0,e.dpr,0,3*e.dpr);rc.drawImage(im,f.x,f.y,im.naturalWidth*f.scale,im.naturalHeight*f.scale);
    const original=rc.getImageData(0,0,canvas.width,canvas.height).data,actual=ctx.getImageData(0,0,canvas.width,canvas.height).data;
-   const sourceHoles=e.profile==='SplitFlap_Landscape'?[[96,282,466,137],[638,282,271,137],[983,282,274,137],[1333,282,744,137]]:e.profile==='SplitFlap_Portrait'?[[121,370,365,119],[546,370,221,119],[829,370,218,119],[1109,370,598,119]]:[[106,233,1324,200],[106,629,1324,194]];
+   const sourceHoles=e.profile==='SplitFlap_Landscape'?[[78,274,472,145],[621,274,284,145],[975,274,283,145],[1328,273,763,146]]:e.profile==='SplitFlap_Portrait'?[[121,370,365,119],[546,370,221,119],[829,370,218,119],[1109,370,598,119]]:[[106,233,1324,200],[106,629,1324,194]];
    const allowed=[...e.holes.map(t=>({x:t.x-5,y:t.y-5,w:t.width+10,h:t.height+10})),...sourceHoles.map(h=>({x:f.x+(h[0]-12)*f.scale,y:f.y+(h[1]-12)*f.scale,w:(h[2]+24)*f.scale,h:(h[3]+24)*f.scale}))];
    let changedOutside=0,compared=0,outsideSamples=[];
    for(let y=0;y<canvas.height;y++)for(let x=0;x<canvas.width;x++){
@@ -71,6 +72,8 @@ async function checkMobileSplitFlapPlate(page){
   return {plates:result,groups:ids.map(id=>{const ns=[...document.getElementById(id).querySelectorAll('.flap-character')],rs=ns.map(n=>n.getBoundingClientRect());return{count:ns.length,hinges:document.getElementById(id).querySelectorAll('.flap-fixed-hardware').length,left:rs[0].left,top:rs[0].top,right:rs.at(-1).right,bottom:rs[0].bottom}}),viewport:innerWidth,panelScale:parseFloat(document.getElementById('dashboard').style.getPropertyValue('--family-panel-scale'))||1,module:document.querySelector('.flight-strip-module').getBoundingClientRect().toJSON(),clocks:[...document.querySelectorAll('.clock-wheel,.period-wheel')].map(n=>[n.getAttribute('x'),n.getAttribute('y'),n.getAttribute('width'),n.getAttribute('height')])};
  });
  assert.equal(evidence.plates.length,2,'One continuous split-flap and one twin-clock photograph');
+ const landscape=evidence.plates.find(e=>e.profile==='SplitFlap_Landscape');
+ if(landscape)assert(landscape.source.endsWith('/HomingBeacon_Mobile_SplitFlap_Landscape_Source_v7.png'),'Landscape renders the finer photographic source');
  for(const e of evidence.plates){
   assert.equal(e.changedOutside,0,'Every pixel outside the local aperture bands matches the selected photograph: '+e.profile+' '+JSON.stringify(e.outsideSamples));
   assert(e.compared>500,'Meaningful unaffected photographic area was compared');
