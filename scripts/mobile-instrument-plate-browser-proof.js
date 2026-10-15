@@ -41,49 +41,51 @@ async function checkMobileInstrumentPlates(page){
  }
  return evidence;
 }
+const selectedHashes={
+ SplitFlap_Landscape:'674ad8e60815d867c8f808f6952012021dbcebaf08ffe0180e4654fd3e3ea3c8',
+ SplitFlap_Portrait:'040a6fd8fc8dee5227b934fd7b519c9edd033b582c07afc6646e1650aecedb03',
+ Clock:'6430d7ce6dba54712679ece3e889c265cce314ee8a72cd6a4dfef5aa28b6227d'
+};
 async function checkMobileSplitFlapPlate(page){
- const plate=page.locator('.family-splitflap-plate');
- await plate.waitFor({state:'attached'});
- assert.equal(await plate.count(),1,'One continuous approved plate surrounds all four mobile groups');
- assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname,'../assets/hardware/HomingBeacon_SplitFlap_WideEnds_Transparent_v5.png'))).digest('hex'),
-  '9c911775d1329cfbee04d3d46da1a9dc599f70cb75c6a4ef8690c6f9b3fcb246','Preserve exact approved split-flap photograph');
- await plate.evaluate(n=>n.decode());
- await page.locator('.family-splitflap-mounted').waitFor({state:'attached'});
- const manifest=JSON.parse(fs.readFileSync(path.join(__dirname,'../assets/hardware/HomingBeacon_SplitFlap_Geometry_v5.json'),'utf8'));
- assert.deepEqual(manifest.windows.map(w=>[w.x,w.y,w.width,w.height,w.tiles]),
-  [[175,68,452,137,5],[680,68,271,137,3],[1004,68,271,137,3],[1328,68,722,137,8]],'Use approved measured registration');
- const evidence=await page.evaluate(manifest=>{
-  const plate=document.querySelector('.family-splitflap-plate'),p=plate.getBoundingClientRect();
-  const m=plate.closest('.flight-strip-module').getBoundingClientRect();
-  const canvas=document.createElement('canvas');canvas.width=2208;canvas.height=257;
-  const ctx=canvas.getContext('2d');ctx.drawImage(plate,0,0);
+ for(const [name,hash]of Object.entries(selectedHashes))assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname,'../assets/hardware/HomingBeacon_Mobile_'+name+'_Source_v6.png'))).digest('hex'),hash,'Selected photograph bytes are unchanged');
+ await page.waitForFunction(()=>document.querySelectorAll('canvas.family-photo-plate').length===2&&[...document.querySelectorAll('canvas.family-photo-plate')].every(n=>n._photoEvidence));
+ const evidence=await page.evaluate(async()=>{
+  const result=[];
+  for(const canvas of document.querySelectorAll('canvas.family-photo-plate')){
+   const e=canvas._photoEvidence,ctx=canvas.getContext('2d'),p=canvas.getBoundingClientRect(),f=e.fit;
+   const im=new Image();im.src=e.source;await new Promise((ok,no)=>{if(im.complete&&im.naturalWidth)return ok();im.onload=ok;im.onerror=no;});
+   const reference=document.createElement('canvas');reference.width=canvas.width;reference.height=canvas.height;
+   const rc=reference.getContext('2d');rc.setTransform(e.dpr,0,0,e.dpr,0,3*e.dpr);rc.drawImage(im,f.x,f.y,im.naturalWidth*f.scale,im.naturalHeight*f.scale);
+   const original=rc.getImageData(0,0,canvas.width,canvas.height).data,actual=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+   const sourceHoles=e.profile==='SplitFlap_Landscape'?[[96,282,466,137],[638,282,271,137],[983,282,274,137],[1333,282,744,137]]:e.profile==='SplitFlap_Portrait'?[[121,370,365,119],[546,370,221,119],[829,370,218,119],[1109,370,598,119]]:[[106,233,1324,200],[106,629,1324,194]];
+   const allowed=[...e.holes.map(t=>({x:t.x-5,y:t.y-5,w:t.width+10,h:t.height+10})),...sourceHoles.map(h=>({x:f.x+(h[0]-12)*f.scale,y:f.y+(h[1]-12)*f.scale,w:(h[2]+24)*f.scale,h:(h[3]+24)*f.scale}))];
+   let changedOutside=0,compared=0,outsideSamples=[];
+   for(let y=0;y<canvas.height;y++)for(let x=0;x<canvas.width;x++){
+    const u=(x+.5)/e.dpr,v=(y+.5)/e.dpr-3;
+    if(allowed.some(a=>u>=a.x&&u<=a.x+a.w&&v>=a.y&&v<=a.y+a.h))continue;
+    compared++;const i=(y*canvas.width+x)*4;if(actual[i]!==original[i]||actual[i+1]!==original[i+1]||actual[i+2]!==original[i+2]||actual[i+3]!==original[i+3]){changedOutside++;if(outsideSamples.length<12)outsideSamples.push({x,y,u,v,actual:[...actual.slice(i,i+4)],original:[...original.slice(i,i+4)]});}
+   }
+   result.push({...e,rect:p.toJSON(),changedOutside,outsideSamples,compared,alpha:e.holes.map(t=>ctx.getImageData(Math.floor((t.x+t.width/2)*e.dpr),Math.floor((t.y+t.height/2+3)*e.dpr),1,1).data[3])});
+  }
   const ids=['flight-number','flight-origin','flight-destination','status-value'];
-  return {size:[plate.naturalWidth,plate.naturalHeight],src:plate.getAttribute('src'),
-   plateBounds:{left:p.left,top:p.top,right:p.right,bottom:p.bottom,width:p.width,height:p.height},
-   moduleBounds:{left:m.left,top:m.top,right:m.right,bottom:m.bottom,width:m.width,height:m.height},
-   pointerEvents:getComputedStyle(plate).pointerEvents,
-   groups:manifest.windows.map((w,i)=>{
-    const group=document.getElementById(ids[i]),tiles=[...group.querySelectorAll('.flap-character')];
-    const opening={left:p.left+w.x*p.width/2208,top:p.top+w.y*p.height/257,right:p.left+(w.x+w.width)*p.width/2208,bottom:p.top+(w.y+w.height)*p.height/257};
-    const a=tiles[0].getBoundingClientRect(),b=tiles[tiles.length-1].getBoundingClientRect();
-    return {label:w.label,count:tiles.length,opening,tiles:{left:a.left,top:a.top,right:b.right,bottom:b.bottom},
-     alpha:ctx.getImageData(w.x+Math.floor(w.width/2),w.y+Math.floor(w.height/2),1,1).data[3],hinges:group.querySelectorAll('.flap-hinge').length};
-   })};
- },manifest);
- assert.deepEqual(evidence.size,[2208,257]);
- assert.equal(evidence.src,'/assets/hardware/HomingBeacon_SplitFlap_WideEnds_Transparent_v5.png');
- assert.equal(evidence.pointerEvents,'none');
- const p=evidence.plateBounds,m=evidence.moduleBounds;
- assert(p.left>=m.left-0.5&&p.right<=m.right+0.5&&p.top>=m.top-0.5&&p.bottom<=m.bottom+0.5,
-  'The complete photographic plate stays inside the preserved mobile housing');
- assert(Math.abs(p.width/2208-p.height/257)<0.001,'The entire photograph uses one scale factor');
- assert(p.width/m.width>0.96||p.height/m.height>0.96,
-  'The proportional plate fills the limiting housing dimension without excessive margins');
- assert(Math.abs((evidence.groups[0].opening.right-evidence.groups[0].opening.left)/452 - (evidence.groups[0].opening.bottom-evidence.groups[0].opening.top)/137)<0.001,'V5 plate is uniformly scaled');
- evidence.groups.forEach((g,i)=>{
-  assert.equal(g.count,[5,3,3,8][i]);assert.equal(g.alpha,0,'Approved apertures are genuinely transparent');
-  for(const edge of ['left','top','right','bottom'])assert(Math.abs(g.tiles[edge]-g.opening[edge])<1,`${g.label} ${edge}: tiles=${JSON.stringify(g.tiles)} opening=${JSON.stringify(g.opening)}`);
+  return {plates:result,groups:ids.map(id=>{const ns=[...document.getElementById(id).querySelectorAll('.flap-character')],rs=ns.map(n=>n.getBoundingClientRect());return{count:ns.length,hinges:document.getElementById(id).querySelectorAll('.flap-fixed-hardware').length,left:rs[0].left,top:rs[0].top,right:rs.at(-1).right,bottom:rs[0].bottom}}),viewport:innerWidth,clocks:[...document.querySelectorAll('.clock-wheel,.period-wheel')].map(n=>[n.getAttribute('x'),n.getAttribute('y'),n.getAttribute('width'),n.getAttribute('height')])};
  });
+ assert.equal(evidence.plates.length,2,'One continuous split-flap and one twin-clock photograph');
+ for(const e of evidence.plates){
+  assert.equal(e.changedOutside,0,'Every pixel outside the local aperture bands matches the selected photograph: '+e.profile+' '+JSON.stringify(e.outsideSamples));
+  assert(e.compared>500,'Meaningful unaffected photographic area was compared');
+  assert(e.alpha.every(a=>a===0),'Native windows have genuine alpha transparency');
+  assert.equal(e.fit.scaleX,e.fit.scaleY,'Whole photograph uses one scale');
+  const f=e.fit,b=e.body,p=e.rect;
+  assert(p.left+f.x+b[0]*f.scale>=-0.5&&p.left+f.x+b[2]*f.scale<=evidence.viewport+0.5,'No photographed outer edge is clipped at a viewport side');
+  assert(f.y+b[1]*f.scale>=-3.01&&f.y+b[3]*f.scale<=e.bay.height+3.01,'Photographed body stays within measured inter-module clearance');
+ }
+ const split=evidence.plates.find(e=>e.profile.startsWith('SplitFlap'));
+ const viewport=page.viewportSize();
+ const baseline=require('./fixtures/mobile-native-geometry.json').cases.find(c=>c.viewport.width===viewport.width&&c.viewport.height===viewport.height);
+ if(baseline)evidence.groups.forEach((g,i)=>{const old=baseline.groups[i].aperture;for(const edge of ['left','top','right','bottom']){const expected=edge==='left'?old.x:edge==='top'?old.y:old[edge];assert(Math.abs(g[edge]-expected)<.5,'Rendered live geometry matches the independent pre-V5 approved layout');}});
+ evidence.groups.forEach((g,i)=>{const t=split.holes[i],p=split.rect;assert.equal(g.count,[5,3,3,8][i]);assert.equal(g.hinges,g.count);for(const [actual,expected]of [[g.left,p.left+t.x],[g.top,p.top+3+t.y],[g.right,p.left+t.x+t.width],[g.bottom,p.top+3+t.y+t.height]])assert(Math.abs(actual-expected)<.03,'Cutout is registered to the unchanged live tile bounds');});
+ assert.deepEqual(evidence.clocks,Array.from({length:10},(_,i)=>[String([220,480,820,1080,1350][i%5]),i<5?'130':'525','210','210']),'Clock apertures and original AM/PM rollers retain their geometry');
  return evidence;
 }
 module.exports={checkMobileInstrumentPlates,checkMobileSplitFlapPlate};

@@ -1,6 +1,5 @@
 (function () {
   'use strict';
-  var splitFlapGeometry;
   function fit() {
     var viewer = document.querySelector('.display-viewer');
     var dashboard = document.getElementById('dashboard');
@@ -23,9 +22,6 @@
     var module = dashboard.querySelector('.flight-strip-module');
     var board = dashboard.querySelector('.flight-board');
     if (!module || !board) return;
-    // Measure the original flow, not our positioned plate's resulting width.
-    // This prevents ResizeObserver feedback from progressively shrinking it.
-    if (splitFlapGeometry) module.classList.remove('family-splitflap-mounted');
     module.style.setProperty('--family-board-padding', Math.min(24, width * 0.0125) + 'px');
     var style = getComputedStyle(board);
     var boardWidth = board.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
@@ -47,55 +43,15 @@
       '--route-section-gap': sectionGap
     };
     Object.keys(sizes).forEach(function (name) { module.style.setProperty(name, sizes[name] + 'px'); });
-    if (splitFlapGeometry) {
-      // V5: fit the COMPLETE photographic plate inside the original module.
-      // One scale factor keeps brass screw heads circular and the enamel texture
-      // unstretched. Extra end metal is part of the image, not a CSS border.
-      var photoWidth = Math.min(module.clientWidth - 2,
-        module.clientHeight * splitFlapGeometry.width / splitFlapGeometry.height);
-      var xScale = photoWidth / splitFlapGeometry.width;
-      var photoHeight = splitFlapGeometry.height * xScale;
-      var firstWindow = splitFlapGeometry.windows[0];
-      var fittedTile = firstWindow.width * xScale / (5 + 4 * 0.04);
-      var fittedGap = fittedTile * 0.04;
-      var tileHeight = firstWindow.height * xScale;
-      module.style.setProperty('--family-plate-width', photoWidth + 'px');
-      module.style.setProperty('--family-plate-height', photoHeight + 'px');
-      module.style.setProperty('--flap-width', fittedTile + 'px');
-      module.style.setProperty('--flap-height', tileHeight + 'px');
-      module.style.setProperty('--flap-gap', fittedGap + 'px');
-      module.style.setProperty('--family-flap-font-size', fittedTile * 0.74 + 'px');
-      module.style.setProperty('--family-flap-radius', fittedTile * 0.08 + 'px');
-      var ids = ['flight-number', 'flight-origin', 'flight-destination', 'status-value'];
-      splitFlapGeometry.windows.forEach(function (opening, index) {
-        var group = document.getElementById(ids[index]);
-        group.style.setProperty('--plate-group-left', opening.x * xScale + 'px');
-        group.style.setProperty('--plate-group-top', opening.y * xScale + 'px');
-        group.style.setProperty('--plate-group-width', opening.width * xScale + 'px');
-        group.style.setProperty('--plate-group-gap', (opening.width * xScale - fittedTile * opening.tiles) / (opening.tiles - 1) + 'px');
-      });
-      module.classList.add('family-splitflap-mounted');
-    }
+    if (window.DadRadarMobilePhotos) window.DadRadarMobilePhotos.fit();
   }
   function mount() {
-    // Leave the existing board usable if the optional hardware asset cannot load.
-    if (window.fetch) window.fetch('/assets/hardware/HomingBeacon_SplitFlap_Geometry_v5.json').then(function (response) {
-      if (!response.ok) throw new Error('Split-flap geometry unavailable');
-      return response.json();
-    }).then(function (geometry) {
-      var board = document.querySelector('.flight-board');
-      var plate = document.createElement('img');
-      plate.className = 'family-splitflap-plate';
-      plate.alt = ''; plate.setAttribute('aria-hidden', 'true'); plate.draggable = false;
-      plate.onload = function () {
-        splitFlapGeometry = geometry;
-        board.closest('.flight-strip-module').classList.add('family-splitflap-mounted');
-        fit();
-      };
-      plate.onerror = function () { if (plate.parentNode) plate.parentNode.removeChild(plate); };
-      plate.src = '/assets/hardware/HomingBeacon_SplitFlap_WideEnds_Transparent_v5.png';
-      board.insertBefore(plate, board.firstChild);
-    }).catch(function () {});
+    if (window.Image && window.fetch) {
+      var renderer = document.createElement('script');
+      renderer.src = '/Mobile/photo-registration.js?v=6';
+      renderer.onload = function () { window.DadRadarMobilePhotos.start(); };
+      document.head.appendChild(renderer);
+    }
     // The approved photographic plate is a separate mobile-only rear layer.
     // Keep every existing instrument child and its mechanism unchanged.
     document.querySelectorAll('.instrument-slot .instrument').forEach(function (instrument) {
