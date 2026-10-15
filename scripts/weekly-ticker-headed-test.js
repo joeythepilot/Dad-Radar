@@ -109,6 +109,22 @@ const server = http.createServer((request,response) => {
           // transition, so this proof waits for readiness without changing the
           // startup delay itself.
           if (!compact) await page.waitForSelector("#dashboard:not([hidden])",{timeout:12000});
+          if(name==="desktop") {
+            // Exercise a late schedule through the real renderer, without
+            // holding a provider request beyond its own network timeout.
+            await page.waitForFunction(modules=>{
+              const bank=document.getElementById("weekly-overnight-bank");
+              if(!bank)return false;
+              const bays=[...bank.querySelectorAll(".weekly-overnight-bay")];
+              const expected=modules.map(m=>m.day+" overnight "+(m.code==="HOME"?"home":m.code==="UNKN"?"unknown":m.code));
+              return bank.dadRadarWeeklyOvernight&&JSON.stringify(bays.map(b=>b.getAttribute("aria-label")))===JSON.stringify(expected);
+            },expectedModules);
+            await page.evaluate(modules=>{
+              const renderer=document.getElementById("weekly-overnight-bank").dadRadarWeeklyOvernight;
+              renderer.setModules(modules.map(m=>({...m,code:"UNKN",characters:["U","N","K","N"]})),{animate:false});
+              setTimeout(()=>renderer.setModules(modules,{animate:false}),4500);
+            },expectedModules);
+          }
           const label = `${engine}-ticker-${name}`;
           const evidence = await checkWeeklyTicker(page,compact,label,output,expectedModules);
           if(name === "desktop") {

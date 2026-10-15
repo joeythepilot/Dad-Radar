@@ -25,6 +25,10 @@ async function checkWeeklyTicker(page, compact, label, output, expectedModules) 
   assert.equal(await bank.count(), 1, "Full/desktop gets exactly one weekly overnight bank");
 
   const expectedLabels = expectedModules.map(module => module.day + " overnight " + (module.code === "HOME" ? "home" : module.code === "UNKN" ? "unknown" : module.code));
+  // These are startup prerequisites, not animation deadlines. Return as soon
+  // as real state/artwork is ready, within the normal browser startup budget.
+  const deadline = Date.now()+30000;
+  const readiness = () => ({timeout:Math.max(1,deadline-Date.now()),polling:100});
   let readinessPhase = "schedule labels";
   try {
     await page.waitForFunction(expected => {
@@ -34,10 +38,10 @@ async function checkWeeklyTicker(page, compact, label, output, expectedModules) 
       if (bays.length !== 7) return false;
       const labels = bays.map(bay => bay.getAttribute("aria-label"));
       return JSON.stringify(labels) === JSON.stringify(expected);
-    }, expectedLabels, {timeout: 4000, polling: 25});
+    }, expectedLabels, readiness());
 
     readinessPhase = "seven decoded approved-size images";
-    await page.waitForFunction(weeklyArtworkReady, null, {timeout:4000,polling:25});
+    await page.waitForFunction(weeklyArtworkReady, null, readiness());
   } catch(error) {
     try {
       const actual = await page.evaluate(() => ({
@@ -58,7 +62,7 @@ async function checkWeeklyTicker(page, compact, label, output, expectedModules) 
     const panel = document.querySelector(".daily-schedule-panel.is-physical-duty-card");
     const art = panel?.querySelector(".daily-schedule-card-art");
     return Boolean(art && art.complete && art.naturalWidth > 0);
-  }, null, {timeout:4000,polling:25});
+  }, null, readiness());
 
   await page.waitForTimeout(120);
 
