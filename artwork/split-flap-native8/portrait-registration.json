@@ -1,0 +1,43 @@
+{
+  "width": 2118,
+  "height": 536,
+  "nativeBay": {
+    "width": 264.71875,
+    "height": 61
+  },
+  "nativeCanvasHeight": 67,
+  "body": {
+    "x": 8.659739592076221e-15,
+    "y": 2.9836079702151146,
+    "width": 264.71875,
+    "height": 61.03278405956977
+  },
+  "holes": [
+    {
+      "x": 14.875,
+      "y": 24.625,
+      "width": 55.5625,
+      "height": 17.734375
+    },
+    {
+      "x": 78.703125,
+      "y": 24.625,
+      "width": 33.15625,
+      "height": 17.734375
+    },
+    {
+      "x": 119.25,
+      "y": 24.625,
+      "width": 33.15625,
+      "height": 17.734375
+    },
+    {
+      "x": 160.671875,
+      "y": 24.625,
+      "width": 89.171875,
+      "height": 17.734375
+    }
+  ],
+  "pixelScale": 8.000944398536182,
+  "method": "Physical geometry, unique enamel microrelief, printed ink material and actual slotted brass screw meshes. No input photograph resampling."
+}
