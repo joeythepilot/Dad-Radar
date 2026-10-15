@@ -20,7 +20,9 @@ const fullMatrix=()=>SUITES.flatMap(s=>s.engines.map(engine=>({suite:s.suite,eng
 // Rounded observed seconds guide scheduling only; they never select coverage.
 const runtimeHints={
   chromium:{power:35,weekly:40,'airline-logo':30,'split-flap':10,map:95,artwork:45,deployment:15,audio:20,clocks:20,duty:30,posters:15,family:25},
-  webkit:{power:280,weekly:80,'split-flap':25,map:150,clocks:70,duty:120,posters:35,family:80}
+  // Family now includes full walnut lifecycle/eight resizes: clean hosted run
+  // 38739031060 measured 249s, not the old pre-walnut 80s estimate.
+  webkit:{power:280,weekly:80,'split-flap':25,map:150,clocks:70,duty:120,posters:35,family:250}
 };
 function browserWorkers(matrix){
   return ['chromium','webkit'].flatMap(engine=>{

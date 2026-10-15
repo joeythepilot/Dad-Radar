@@ -17,6 +17,11 @@ const broad=selectPlan(['Mobile/layout.css']);
 assert.equal(broad.workers.filter(w=>w.engine==='webkit').length,3,'Broad WebKit coverage is balanced across three independently retryable workers');
 assert.equal(broad.workers.filter(w=>w.engine==='chromium').length,2);
 assert(broad.workers.every(w=>w.estimatedSeconds<=340),'No broad worker retains the former full serial runtime');
+// Replay actual clean run 38739031060 timings; this is deterministic scheduler
+// coverage, not a wall-clock deadline imposed on a loaded hosted runner.
+const observedWebkitMs={power:281884,weekly:81053,'split-flap':25831,map:150933,clocks:51843,duty:88944,posters:33055,family:248949};
+const replay=broad.workers.filter(w=>w.engine==='webkit').map(w=>w.suites.split(',').reduce((sum,suite)=>sum+observedWebkitMs[suite],0));
+assert(Math.max(...replay)<=360000,'Known slow family proof must not share an overloaded worker with map/posters');
 assert.equal(selectPlan(['App/clock-drums.js']).workers.length,2,'Small clock scope still reuses one installed engine per worker');
 for(const engine of ['chromium','webkit'])assert(fullMatrix().some(j=>j.suite==='power'&&j.engine===engine),`Full release must verify display power in ${engine}`);
 const suites=files=>[...new Set(selectPlan(files).matrix.map(j=>j.suite))];
@@ -50,12 +55,21 @@ try {
   const failed=path.join(tmp,'fail.js'),later=path.join(tmp,'later.js'),marker=path.join(tmp,'marker');
   fs.writeFileSync(failed,'process.exit(7)');
   fs.writeFileSync(later,`require('node:fs').writeFileSync(${JSON.stringify(marker)},'ran')`);
-  const result=runCases([{suite:'failure',engine:'chromium',file:failed},{suite:'later',engine:'chromium',file:later}],{artifactRoot:path.join(tmp,'artifacts'),quiet:true});
+  const events=[],log=console.log;
+  let result;
+  try {
+    console.log=message=>events.push({message,laterRan:fs.existsSync(marker)});
+    result=runCases([{suite:'failure',engine:'chromium',file:failed},{suite:'later',engine:'chromium',file:later}],{artifactRoot:path.join(tmp,'artifacts')});
+  } finally {console.log=log;}
   assert.equal(result.exitCode,1,'Any failed suite makes the overall result fail');
   assert.equal(result.results[0].status,7);
   assert.equal(result.results[1].status,0);
   assert.equal(fs.readFileSync(marker,'utf8'),'ran','Later independent suites must run after failure');
   assert.notEqual(result.results[0].artifactDirectory,result.results[1].artifactDirectory,'Evidence is isolated per suite/engine');
+  const reports=events.filter(e=>e.message.startsWith('BROWSER_CASE_RESULT '));
+  assert.equal(reports.length,2,'Each completed case reports its result immediately');
+  assert.equal(reports[0].laterRan,false,'First failure is reported before later cases execute');
+  assert.deepEqual(reports.map(e=>JSON.parse(e.message.slice('BROWSER_CASE_RESULT '.length)).status),[7,0]);
 } finally {fs.rmSync(tmp,{recursive:true,force:true});}
 const repo=fs.mkdtempSync(path.join(os.tmpdir(),'dad-radar-diff-'));
 try {
@@ -91,3 +105,28 @@ assert(needsWindowsContract(['ops/home-control/DadRadarRemote.ps1','App/clock-dr
 assert(!needsWindowsContract(['App/clock-drums.js']));
 assert(!needsWindowsContract(['ops/home-control/verified-baseline.json']));
 assert(needsWindowsContract([], {uncertain:true}));
+
+// This test utility must delay delivery, not execution: browser animations
+// continue normally while an already-captured driver response is in transit.
+(async()=>{
+  const {withDelayedEvaluationResponse}=require('./browser-response-delay');
+  let calls=0;
+  const page={evaluate:async(fn,arg)=>{calls++;return fn(arg);}};
+  const original=page.evaluate;
+  const result=await withDelayedEvaluationResponse(page,async()=>{
+    const at=process.hrtime.bigint();
+    const sample=await page.evaluate(value=>({value}), 'captured');
+    assert(Number(process.hrtime.bigint()-at)/1e6>=15,'Response is actually delayed, not just labeled');
+    assert.equal(page.evaluate,original,'Only the first evaluation response is delayed');
+    return sample;
+  },20);
+  assert.deepEqual(result,{value:'captured'},'Delay preserves the sampled payload');
+  assert.equal(calls,1,'Delay never retries or re-executes the browser action');
+  assert.equal(page.evaluate,original);
+  const failure=new Error('real browser failure');
+  await assert.rejects(withDelayedEvaluationResponse(page,()=>page.evaluate(()=>{throw failure;}),1),error=>error===failure);
+  assert.equal(page.evaluate,original,'Browser failure restores the original evaluator');
+  await assert.rejects(withDelayedEvaluationResponse(page,async()=>{throw failure;},1),error=>error===failure);
+  assert.equal(page.evaluate,original,'Action failure before evaluation also restores it');
+  console.log('Delayed browser-response regression utility passed.');
+})().catch(error=>{console.error(error);process.exitCode=1;});

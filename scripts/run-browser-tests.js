@@ -14,6 +14,7 @@ function runCases(cases,{artifactRoot=path.resolve('artifacts/browser'),quiet=fa
       DADRADAR_BROWSER_ENGINE:job.engine,DADRADAR_BROWSER_FOCUS:job.focus||'',DADRADAR_ARTIFACT_ROOT:artifactDirectory}});
     const status=child.status===null?1:child.status;
     results.push({suite:job.suite,engine:job.engine,status,elapsedMs:Date.now()-started,artifactDirectory,error:child.error?.message,signal:child.signal});
+    if(!quiet)console.log('BROWSER_CASE_RESULT '+JSON.stringify(results[results.length-1]));
   }
   let sha=null;try {sha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();}catch {}
   fs.mkdirSync(artifactRoot,{recursive:true});

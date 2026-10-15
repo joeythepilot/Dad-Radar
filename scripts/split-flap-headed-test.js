@@ -5,6 +5,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const http = require("node:http");
 const {observeBrowserErrors} = require("./browser-error-proof");
+const {withDelayedEvaluationResponse} = require("./browser-response-delay");
 const {chromium, webkit} = require("playwright");
 
 const root = path.resolve(__dirname, "..");
@@ -167,6 +168,10 @@ const server = http.createServer((request, response) => {
         // Start the real flip and capture its transient evidence in the same
         // browser task. Separate driver round trips can outlast the animation
         // on a loaded WebKit runner and inspect already-removed moving halves.
+        // Retain the actual failure challenge in CI, not just a scratch repro.
+        // A response arrives after the real stroke has ended; the evidence must
+        // still describe its captured instant, without slowing the mechanism.
+        await withDelayedEvaluationResponse(page,async()=>{
         const {moving,printMotion}=await page.evaluate(()=>{
           const cell=document.querySelector('.flap-character');
           window.splitFlapArtworkProof=flipFlapOnce(cell,'Z');
@@ -190,6 +195,8 @@ const server = http.createServer((request, response) => {
           `${engine}: fixed ink wear moves with both matching halves`);
         await page.evaluate(()=>window.splitFlapArtworkProof);
         assert.equal(await page.locator('.flap-character').first().getAttribute('data-value'),'Z',`${engine}: flip settles on the new character`);
+        });
+        console.log(`${engine}: transient flap evidence survives 1000ms driver latency`);
         const settled=await page.locator('.flap-character').first().evaluate(cell=>{
           const prints=[...cell.querySelectorAll('[data-printed-ink]')];
           const ids=[...document.querySelectorAll('mask[id],linearGradient[id]')].map(n=>n.id);
