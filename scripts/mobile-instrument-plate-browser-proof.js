@@ -54,10 +54,13 @@ async function checkMobileSplitFlapPlate(page){
   [[175,68,452,137,5],[680,68,271,137,3],[1004,68,271,137,3],[1328,68,722,137,8]],'Use approved measured registration');
  const evidence=await page.evaluate(manifest=>{
   const plate=document.querySelector('.family-splitflap-plate'),p=plate.getBoundingClientRect();
+  const m=plate.closest('.flight-strip-module').getBoundingClientRect();
   const canvas=document.createElement('canvas');canvas.width=2208;canvas.height=257;
   const ctx=canvas.getContext('2d');ctx.drawImage(plate,0,0);
   const ids=['flight-number','flight-origin','flight-destination','status-value'];
   return {size:[plate.naturalWidth,plate.naturalHeight],src:plate.getAttribute('src'),
+   plateBounds:{left:p.left,top:p.top,right:p.right,bottom:p.bottom,width:p.width,height:p.height},
+   moduleBounds:{left:m.left,top:m.top,right:m.right,bottom:m.bottom,width:m.width,height:m.height},
    pointerEvents:getComputedStyle(plate).pointerEvents,
    groups:manifest.windows.map((w,i)=>{
     const group=document.getElementById(ids[i]),tiles=[...group.querySelectorAll('.flap-character')];
@@ -70,6 +73,12 @@ async function checkMobileSplitFlapPlate(page){
  assert.deepEqual(evidence.size,[2208,257]);
  assert.equal(evidence.src,'/assets/hardware/HomingBeacon_SplitFlap_WideEnds_Transparent_v5.png');
  assert.equal(evidence.pointerEvents,'none');
+ const p=evidence.plateBounds,m=evidence.moduleBounds;
+ assert(p.left>=m.left-0.5&&p.right<=m.right+0.5&&p.top>=m.top-0.5&&p.bottom<=m.bottom+0.5,
+  'The complete photographic plate stays inside the preserved mobile housing');
+ assert(Math.abs(p.width/2208-p.height/257)<0.001,'The entire photograph uses one scale factor');
+ assert(p.width/m.width>0.96||p.height/m.height>0.96,
+  'The proportional plate fills the limiting housing dimension without excessive margins');
  assert(Math.abs((evidence.groups[0].opening.right-evidence.groups[0].opening.left)/452 - (evidence.groups[0].opening.bottom-evidence.groups[0].opening.top)/137)<0.001,'V5 plate is uniformly scaled');
  evidence.groups.forEach((g,i)=>{
   assert.equal(g.count,[5,3,3,8][i]);assert.equal(g.alpha,0,'Approved apertures are genuinely transparent');
