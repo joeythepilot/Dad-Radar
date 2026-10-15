@@ -8,6 +8,12 @@ function transparent(color) {
   return color === "rgba(0, 0, 0, 0)" || color === "transparent";
 }
 
+// Self-contained because Playwright serializes this into the actual page.
+function weeklyArtworkReady() {
+  const arts = [...document.querySelectorAll("#weekly-overnight-bank .weekly-overnight-module-art")];
+  return arts.length === 7 && arts.every(art => art.complete && art.naturalWidth === 1192 && art.naturalHeight === 976);
+}
+
 async function checkWeeklyTicker(page, compact, label, output, expectedModules) {
   const bank = page.locator("#weekly-overnight-bank");
 
@@ -18,22 +24,35 @@ async function checkWeeklyTicker(page, compact, label, output, expectedModules) 
 
   assert.equal(await bank.count(), 1, "Full/desktop gets exactly one weekly overnight bank");
 
-  await page.waitForFunction(expected => {
-    const node = document.getElementById("weekly-overnight-bank");
-    if (!node) return false;
-    const bays = [...node.querySelectorAll(".weekly-overnight-bay")];
-    if (bays.length !== 7) return false;
-    const labels = bays.map(bay => bay.getAttribute("aria-label"));
-    if (JSON.stringify(labels) !== JSON.stringify(expected)) return false;
-    const resources = performance.getEntriesByType("resource").map(entry => entry.name);
-    return resources.some(name => name.includes("/assets/hardware/weekly-overnight/weekly-overnight-module.png"));
-  }, expectedModules.map(module => module.day + " overnight " + (module.code === "HOME" ? "home" : module.code === "UNKN" ? "unknown" : module.code)),
-  {timeout: 4000, polling: 25});
+  const expectedLabels = expectedModules.map(module => module.day + " overnight " + (module.code === "HOME" ? "home" : module.code === "UNKN" ? "unknown" : module.code));
+  let readinessPhase = "schedule labels";
+  try {
+    await page.waitForFunction(expected => {
+      const node = document.getElementById("weekly-overnight-bank");
+      if (!node) return false;
+      const bays = [...node.querySelectorAll(".weekly-overnight-bay")];
+      if (bays.length !== 7) return false;
+      const labels = bays.map(bay => bay.getAttribute("aria-label"));
+      return JSON.stringify(labels) === JSON.stringify(expected);
+    }, expectedLabels, {timeout: 4000, polling: 25});
 
-  await page.waitForFunction(() => {
-    const art = document.querySelector(".weekly-overnight-module-art");
-    return Boolean(art && art.complete && art.naturalWidth > 0);
-  }, null, {timeout:4000,polling:25});
+    readinessPhase = "seven decoded approved-size images";
+    await page.waitForFunction(weeklyArtworkReady, null, {timeout:4000,polling:25});
+  } catch(error) {
+    try {
+      const actual = await page.evaluate(() => ({
+        labels:[...document.querySelectorAll("#weekly-overnight-bank .weekly-overnight-bay")].map(b=>b.getAttribute("aria-label")),
+        images:[...document.querySelectorAll("#weekly-overnight-bank .weekly-overnight-module-art")].map(a=>({src:a.getAttribute("src"),complete:a.complete,width:a.naturalWidth,height:a.naturalHeight})),
+        browserTime:new Date().toISOString(), elapsed:performance.now()
+      }));
+      const evidence = {label,phase:readinessPhase,expectedLabels,actual};
+      console.error("WEEKLY_READINESS_FAILURE " + JSON.stringify(evidence));
+      fs.writeFileSync(path.join(output,`${label}-readiness-failure.json`),JSON.stringify(evidence,null,2));
+    } catch(diagnosticError) {
+      console.error("WEEKLY_READINESS_DIAGNOSTIC_ERROR " + String(diagnosticError));
+    }
+    throw error;
+  }
 
   await page.waitForFunction(() => {
     const panel = document.querySelector(".daily-schedule-panel.is-physical-duty-card");
@@ -207,4 +226,4 @@ async function checkWeeklyTicker(page, compact, label, output, expectedModules) 
   return data;
 }
 
-module.exports = {checkWeeklyTicker};
+module.exports = {checkWeeklyTicker,weeklyArtworkReady};

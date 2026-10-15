@@ -78,3 +78,29 @@ hosted default capture remains required by the unchanged full release gate.
 
 Physical iOS 12/Pi behavior is not established by these checks. Remaining
 historical weekly/map timeouts are not declared fixed without reproduction.
+
+## Weekly readiness correction during the walnut release
+
+Exact candidate 11dcb47, gate 38763346740, passed the corrected walnut proof
+in Chromium and WebKit. Its unchanged weekly/WebKit initial readiness check
+timed out at 4000 ms. Diagnostic 38765493859 retained that predicate and passed
+all six views: it did not reproduce or explain the original timeout. In the
+first desktop snapshot the correct labels existed by 1843 ms and the approved
+artwork request completed by 1481 ms. Do not label the historical failure fixed.
+
+A separate controlled real-Chromium case proved an invalid assumption in that
+predicate: after all seven original images decoded, clearing only Resource
+Timing history caused the original check to time out at 4000 ms. The corrected
+proof passes that retained challenge and all six actual display layouts. It
+requires actual labels, all seven decoded 1192x976 images, then the unchanged
+approved image paths, geometry, physical artwork and real animation assertions.
+This replaces incidental bookkeeping with a stricter actual-image contract;
+it does not increase either 4000 ms deadline or change the product.
+
+Fast predicate regressions reject missing/extra images and each of seven
+undecoded or wrong-size positions. Future readiness failures preserve the
+phase, expected/actual labels, image state and browser time in logs/artifacts,
+without replacing the original exception if evidence collection also fails.
+The original hosted timeout remains unattributed; other historical weekly/map
+and animation timeouts are still open evidence gaps. A new exact-SHA full gate
+is required before deployment; the diagnostic's pass is not a release override.

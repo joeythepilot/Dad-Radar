@@ -111,6 +111,21 @@ const server = http.createServer((request,response) => {
           if (!compact) await page.waitForSelector("#dashboard:not([hidden])",{timeout:12000});
           const label = `${engine}-ticker-${name}`;
           const evidence = await checkWeeklyTicker(page,compact,label,output,expectedModules);
+          if(name === "desktop") {
+            // Resource Timing is diagnostic history, not render readiness.
+            // A real decoded display must remain provable after that history
+            // is cleared (for example by monitoring or buffer management).
+            const weeklyTimingRemains = await page.evaluate(() => {
+              performance.clearResourceTimings();
+              return performance.getEntriesByType("resource").some(entry=>entry.name.includes("/weekly-overnight/weekly-overnight-module.png"));
+            });
+            assert.equal(weeklyTimingRemains,false,"The regression challenge really removes weekly request history");
+            // The normal proof above already changed and settled bay zero to
+            // DFW. Reuse that real state; do not add time before startup proof.
+            const settledModules=expectedModules.map((module,index)=>index===0
+              ? {...module,code:"DFW",characters:["D","F","W"," "]} : module);
+            await checkWeeklyTicker(page,compact,label+"-timing-history-cleared",output,settledModules);
+          }
           if(name==="desktop-hidpi"){
             await page.setViewportSize({width:2560,height:1440});
             await page.waitForFunction(()=>[...document.querySelectorAll(".weekly-overnight-module-canvas")].every(canvas=>{
