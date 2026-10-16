@@ -232,6 +232,8 @@ app.get(["/mobile", "/mobile/", "/mobile/full", "/mobile/full/"], (_request, res
   response.set("Cache-Control", "private, no-store").type("html").send(familyHtml);
 });
 
+app.use(require('./artwork-delivery').artworkDelivery);
+
 for (const directory of
   PUBLIC_DIRECTORIES) {
   app.use(

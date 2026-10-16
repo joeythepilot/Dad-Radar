@@ -58,5 +58,6 @@ fs.mkdirSync(output,{recursive:true});
    await page.screenshot({path:path.join(output,`${name}.png`),fullPage:true});
    await page.close();console.log(`${focus}/${engine}/${name}: passed`);
   }
+  if(focus==='family')await require('./mobile-loading-browser-proof').checkMobileLoading(browser,output,engine);
  } finally {await browser.close();await new Promise(resolve=>server.close(resolve));}
 })().catch(error=>{console.error(error);process.exitCode=1;server.close();});

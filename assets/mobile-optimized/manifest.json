@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "encoding": "lossless-webp-exact-rgba",
+  "entries": {
+    "/assets/hardware/HomingBeacon_Mobile_SplitFlap_Landscape_Native_v8.png": {
+      "file": "assets/mobile-optimized/HomingBeacon_Mobile_SplitFlap_Landscape_Native_v8-e1dcbf27a8a2.webp",
+      "sourceSha256": "e1dcbf27a8a254baa7aecf8d5137d774981740574fb542aa2f9dacb2be7853bf",
+      "sha256": "c5805d20b49577df36f855cfc9153f36120a4a2e9545256fe2ca71c1df8f4aa1",
+      "rgbaSha256": "af65d890fd7e7f4f7c647b1fad9467669649fbed362bbab49d5161ba48a75dbb",
+      "width": 6578,
+      "height": 893,
+      "sourceBytes": 6067696,
+      "bytes": 3627610
+    },
+    "/assets/hardware/HomingBeacon_Mobile_SplitFlap_Portrait_Native_v8.png": {
+      "file": "assets/mobile-optimized/HomingBeacon_Mobile_SplitFlap_Portrait_Native_v8-284fcaa02333.webp",
+      "sourceSha256": "284fcaa02333e60dd7b52fea340bb98af3e6a4f8243be5c72e4e7953ec679960",
+      "sha256": "7990e8bbc030c22f66afc6897484542d1d608eff0738c554efc9d3bd763d38df",
+      "rgbaSha256": "37dcd8458c07ffc8857513715d58ca39945d1740f986c527839d8ce94a567a9f",
+      "width": 2118,
+      "height": 536,
+      "sourceBytes": 1489630,
+      "bytes": 924474
+    },
+    "/assets/hardware/HomingBeacon_Walnut_Overlay_Landscape_v2.png": {
+      "file": "assets/mobile-optimized/HomingBeacon_Walnut_Overlay_Landscape_v2-c46745284bdc.webp",
+      "sourceSha256": "c46745284bdc3ec6af5b57190fddee2283ef6d16b14e0f9e1206ebfd933a8228",
+      "sha256": "2dc8b1d3aa5d462b3d3768b7ce136f5da584794518fae7b84d776c125a20fcd8",
+      "rgbaSha256": "db95e38c4159dfbc7b9ababf751f31c050616bf2d29c15733bceb0c52ce4da8a",
+      "width": 3072,
+      "height": 1728,
+      "sourceBytes": 3312557,
+      "bytes": 2207596
+    },
+    "/assets/hardware/HomingBeacon_Walnut_Overlay_Portrait_v2.png": {
+      "file": "assets/mobile-optimized/HomingBeacon_Walnut_Overlay_Portrait_v2-bec9658a9289.webp",
+      "sourceSha256": "bec9658a92892864483463d5cac5f80d5c148599f8e8b96c9a2a984838fd103b",
+      "sha256": "40fccce5cf57abc7f2c01eff78f7523551981991ff743d3f74b0ef34a35c226e",
+      "rgbaSha256": "b9682fafc6f05f3ff7194b0bf40090977506331248d9f372f1e38eafb2a67ef4",
+      "width": 1170,
+      "height": 3000,
+      "sourceBytes": 1660798,
+      "bytes": 1103004
+    },
+    "/assets/hardware/HomingBeacon_Mobile_Clock_Source_v6.png": {
+      "file": "assets/mobile-optimized/HomingBeacon_Mobile_Clock_Source_v6-6430d7ce6dba.webp",
+      "sourceSha256": "6430d7ce6dba54712679ece3e889c265cce314ee8a72cd6a4dfef5aa28b6227d",
+      "sha256": "a4baffc601f87d4443bec36d2d09a031455226200ca62a14e6f1713991dd6cb2",
+      "rgbaSha256": "f0a860220cbcfb56658fa96ee20fe441467499a6b637e9ed7ec2e46476800487",
+      "width": 1536,
+      "height": 1024,
+      "sourceBytes": 2379709,
+      "bytes": 1583574
+    },
+    "/assets/hardware/HomingBeacon_Approved_Instrument_Plate_Transparent_v1.png": {
+      "file": "assets/mobile-optimized/HomingBeacon_Approved_Instrument_Plate_Transparent_v1-1e2e79e546a0.webp",
+      "sourceSha256": "1e2e79e546a0f39c78132429a8909440e04293105ba8abd826a7047918018fb8",
+      "sha256": "e424a80a4198c822c2877aa589ebdf74950d05965f9dc6993f0444bf2d217b83",
+      "rgbaSha256": "5bf7b589a466d78eee4d6e5106fd0280de7ef26957e34b683275cfdffdef024b",
+      "width": 1254,
+      "height": 1254,
+      "sourceBytes": 2049924,
+      "bytes": 1255584
+    },
+    "/assets/hardware/clock-drum-mechanism.png": {
+      "file": "assets/mobile-optimized/clock-drum-mechanism-0962edd06b18.webp",
+      "sourceSha256": "0962edd06b180ec505b0f770a7196f89af74a3f444f0afc7f18ca3b3326416d4",
+      "sha256": "8b894c8b9e579ca6e8ef2cb3020c17fb3ce7df68386514354d058955cda3c515",
+      "rgbaSha256": "05e645da95aef6cb38b3f784d233e699a6ee36e7bf8b0d6e904442fc66bdbbbf",
+      "width": 1825,
+      "height": 460,
+      "sourceBytes": 1520395,
+      "bytes": 1015840
+    },
+    "/assets/hardware/weekly-overnight/weekly-overnight-module.png": {
+      "file": "assets/mobile-optimized/weekly-overnight-module-ac97916a25af.webp",
+      "sourceSha256": "ac97916a25af2ed2a5780e4a63857f53527738ae997e8b09667f9101f35e681e",
+      "sha256": "7106a7beffccddc32b76c86998afecbcd7df8b609357504f686b6b18528c75af",
+      "rgbaSha256": "41f39ed7b3e8dd8e6dfd1f5ec434db128f829d34b703b754bf954545e30d534d",
+      "width": 1192,
+      "height": 976,
+      "sourceBytes": 1763206,
+      "bytes": 1342316
+    },
+    "/assets/maps/aged-chart-paper.png": {
+      "file": "assets/mobile-optimized/aged-chart-paper-4618f3659bf9.webp",
+      "sourceSha256": "4618f3659bf92476fd1f5fa7588c129ae09908990072ab84b170e2aa81f93c94",
+      "sha256": "d9c18e67cc8e1096484479b290181c1d8a46dfaeea34ae57794db98b8d16d754",
+      "rgbaSha256": "371b01313ffa38bbc3eb73ddfa0380d0c1675eb71429960de8e1245bac322f28",
+      "width": 1536,
+      "height": 1024,
+      "sourceBytes": 2842865,
+      "bytes": 1807558
+    },
+    "/assets/ui/today-duty-card-weekly-paper.png": {
+      "file": "assets/mobile-optimized/today-duty-card-weekly-paper-ba7889f7c0b3.webp",
+      "sourceSha256": "ba7889f7c0b324da665bf9369c34fe83ed7608e9214bb1b1bffb4a964d483d7c",
+      "sha256": "a5f6d2347dda132afb922af3604ba44134e9e7e9624830cb6178b3dc6e87a86a",
+      "rgbaSha256": "d022c6d96d72536bb99521593617d34cdd820be0dbf85f6778db8e45a653966f",
+      "width": 1864,
+      "height": 843,
+      "sourceBytes": 1651464,
+      "bytes": 1222608
+    }
+  }
+}

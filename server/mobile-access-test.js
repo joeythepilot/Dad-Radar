@@ -2,6 +2,13 @@
 const assert=require('node:assert/strict');
 const crypto=require('node:crypto');
 const express=require('express');
+const http=require('node:http');
+function conditionalGet(url,headers) {
+  return new Promise((resolve,reject)=>http.get(url,{headers},response=>{
+    let bytes=0;response.on('data',chunk=>bytes+=chunk.length);
+    response.on('end',()=>resolve({status:response.statusCode,bytes,headers:response.headers}));
+  }).on('error',reject));
+}
 const {accessConfiguration,createVerifier,createMobileGateway}=require('./mobile-access');
 const {publicKey,privateKey}=crypto.generateKeyPairSync('rsa',{modulusLength:2048});
 const jwk={...publicKey.export({format:'jwk'}),kid:'fixture',use:'sig'};
@@ -28,6 +35,9 @@ function token(changes={},secret=privateKey) {
   await assert.rejects(createVerifier(config,{fetchImpl:async()=>{throw new Error('offline');}})(token()));
   const app=express();app.get('/mobile',(_q,r)=>r.send('family page'));app.post('/api/flights/lookup',(_q,r)=>r.json({ok:true}));
   app.get('/api/airports/AVL/surface',(_q,r)=>r.json({ok:true}));
+  app.get('/assets/ui/cache-fixture.png',(_q,r)=>r.set('Cache-Control','public, max-age=31536000').type('png').send(Buffer.from('public artwork fixture')));
+  app.get('/assets/private.json',(_q,r)=>r.set('Cache-Control','public, max-age=31536000').json({fixture:true}));
+  app.get('/assets/ui/missing.png',(_q,r)=>r.status(404).set('Cache-Control','public, max-age=31536000').send('missing'));
   const server=createMobileGateway(app,config,options).listen(0,'127.0.0.1');
   await new Promise(r=>server.once('listening',r));const base=`http://127.0.0.1:${server.address().port}`;
   try {
@@ -38,6 +48,18 @@ function token(changes={},secret=privateKey) {
     assert.equal((await fetch(base+'/api/diagnostics/recent',{headers})).status,404);
     assert.equal((await fetch(base+'/api/flights/lookup',{method:'POST',headers:{...headers,Origin:'https://evil.test'}})).status,403);
     assert.equal((await fetch(base+'/api/flights/lookup',{method:'POST',headers:{...headers,Origin:config.origin}})).status,200);
+    const artwork=await fetch(base+'/assets/ui/cache-fixture.png',{headers});
+    assert.equal(artwork.status,200);
+    assert.equal(artwork.headers.get('cache-control'),'private, max-age=0, must-revalidate','Public artwork can be reused privately but never without revalidation');
+    const conditional={...headers,'If-None-Match':artwork.headers.get('etag')};
+    const reused=await conditionalGet(base+'/assets/ui/cache-fixture.png',conditional);
+    assert.equal(reused.status,304);assert.equal(reused.bytes,0);
+    assert.equal(reused.headers['cache-control'],'private, max-age=0, must-revalidate');
+    const signedOut=await fetch(base+'/assets/ui/cache-fixture.png',{headers:{'If-None-Match':artwork.headers.get('etag')}});
+    assert.equal(signedOut.status,401);assert.match(signedOut.headers.get('cache-control'),/no-store/);
+    for(const route of ['/assets/private.json','/assets/ui/missing.png','/api/airports/AVL/surface','/mobile']) {
+      const response=await fetch(base+route,{headers});assert.match(response.headers.get('cache-control'),/no-store/,route);
+    }
   } finally {await new Promise(r=>server.close(r));}
   console.log('Mobile Access signature, authorization and HTTP tests passed.');
 })().catch(e=>{console.error(e);process.exitCode=1;});
