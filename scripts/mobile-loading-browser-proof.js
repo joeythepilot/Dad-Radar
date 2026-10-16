@@ -6,6 +6,10 @@ const {createMobileGateway}=require('../server/mobile-access');
 const {app}=require('../server/index');
 const manifest=require('../assets/mobile-optimized/manifest.json');
 const {observeBrowserErrors}=require('./browser-error-proof');
+function recordResponse(request,response,records) {
+  const originalPath=request.url.split('?')[0];
+  response.once('finish',()=>records.push({path:originalPath,status:response.statusCode,type:response.getHeader('Content-Type')||'',bytes:response.statusCode===304?0:Number(response.getHeader('Content-Length')||0),cache:response.getHeader('Cache-Control')}));
+}
 
 async function checkMobileLoading(browser,output,engine) {
   const fixture=createDisplayFixture(),testApp=express(),records=[];
@@ -23,7 +27,7 @@ async function checkMobileLoading(browser,output,engine) {
   gateway.use((_req,res)=>res.status(404).end());
   const server=gateway.listen(0,'127.0.0.1');
   await new Promise(resolve=>server.once('listening',resolve));
-  server.prependListener('request',(req,res)=>res.once('finish',()=>records.push({path:req.url.split('?')[0],status:res.statusCode,type:res.getHeader('Content-Type')||'',bytes:res.statusCode===304?0:Number(res.getHeader('Content-Length')||0),cache:res.getHeader('Cache-Control')})));
+  server.prependListener('request',(req,res)=>recordResponse(req,res,records));
   const base=`http://127.0.0.1:${server.address().port}`,reports=[];
   const auth={'Cf-Access-Jwt-Assertion':token};
   const errorChecks=new WeakMap();
@@ -40,9 +44,10 @@ async function checkMobileLoading(browser,output,engine) {
     const report={engine,name,artworkBytes:art.reduce((sum,r)=>sum+r.bytes,0),artwork304:art.filter(r=>r.status===304).length,
       webpResponses:art.filter(r=>String(r.type).startsWith('image/webp')).length,
       timings:await page.evaluate(()=>{const n=performance.getEntriesByType('navigation')[0];return {domContentLoadedMs:n.domContentLoadedEventEnd,loadMs:n.loadEventEnd};}),entries};
+    fs.writeFileSync(path.join(output,'mobile-loading-'+name+'.json'),JSON.stringify(report,null,2));
     assert.deepEqual(entries.filter(r=>r.status>=400),[],name+' has no failed production asset requests');
     for(const r of art)assert.equal(r.cache,'private, max-age=0, must-revalidate');
-    for(const r of entries.filter(r=>!art.includes(r)))assert.match(r.cache,/no-store/,name+' code, HTML and API data remain uncached');
+    for(const r of entries.filter(r=>!art.includes(r)))assert.match(r.cache,/no-store/,name+' '+r.path+' code, HTML and API data remain uncached');
     await errorChecks.get(page)(name);
     reports.push(report);return report;
   }
@@ -93,4 +98,4 @@ async function checkMobileLoading(browser,output,engine) {
     console.log('Mobile loading proof: '+JSON.stringify(reports.map(({name,artworkBytes,artwork304,webpResponses,timings})=>({name,artworkBytes,artwork304,webpResponses,timings}))));
   } finally {await new Promise(resolve=>server.close(resolve));}
 }
-module.exports={checkMobileLoading};
+module.exports={checkMobileLoading,recordResponse};
