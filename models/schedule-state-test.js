@@ -62,7 +62,7 @@ function testActiveFlight() {
   );
   assert.equal(
     result.state.flight.number,
-    "AA 4140"
+    "4140"
   );
   assert.equal(
     result.state.flight.origin,
@@ -391,7 +391,7 @@ function testPreferredFlightWinsCalendarOverlap() {
   );
   assert.equal(
     result.state.flight.number,
-    "AA 1429"
+    "1429"
   );
 }
 
@@ -646,6 +646,7 @@ function testSameDayBaseSitIsNotLayover() {
     ]),
     {
       now: "2026-08-04T18:10:00.000Z",
+      baseAirport: "ORD",
       arrivedHoldMinutes: 45
     }
   );
@@ -691,6 +692,7 @@ function testOvernightAtBaseRemainsLayover() {
     ]),
     {
       now: "2026-08-04T18:10:00.000Z",
+      baseAirport: "ORD",
       arrivedHoldMinutes: 45
     }
   );
@@ -952,6 +954,7 @@ function testCalendarLegKeyDistinguishesReplacementFlights() {
 }
 
 function runTests() {
+  testUnknownReserveStation();
   testCalendarLegKeyDistinguishesReplacementFlights();
   const dayOff={id:'day-off',kind:'duty-free',allDay:true,status:'confirmed',times:{startUtc:'2026-08-04T04:00:00Z',endUtc:'2026-08-06T04:00:00Z'}};
   const atHome=resolveScheduleState(createSchedule([dayOff]),{now:NOW});
@@ -1040,3 +1043,14 @@ testClockAloneCannotConfirmArrival();
 }
 
 runTests();
+
+function testUnknownReserveStation() {
+  const schedule = {events:[{id:"unassigned",kind:"reserve",reserveType:"STANDBY", times:{startUtc:"2026-08-04T13:00:00Z",endUtc:"2026-08-04T15:00:00Z"}}]};
+  const active = resolveScheduleState(schedule, {now:NOW});
+  assert.equal(active.state.locationAirport, null, "Unassigned reserve must not acquire an ORD base");
+  assert.equal(active.state.message, "DADDY IS ON RESERVE");
+  const inferred = resolveScheduleState(schedule, {now:"2026-08-05T14:00:00Z"});
+  assert.equal(inferred.mode, "RESERVE");
+  assert.equal(inferred.state.locationAirport, null);
+  assert.equal(inferred.state.message, "DADDY IS SCHEDULED FOR RESERVE");
+}
