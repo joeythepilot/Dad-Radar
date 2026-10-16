@@ -1,4 +1,4 @@
-﻿const assert = require("node:assert/strict");
+const assert = require("node:assert/strict");
 
 const {
   DISPLAY_TIME_ZONE,
@@ -24,6 +24,38 @@ function createEvent(overrides = {}) {
       "2026-08-01T12:00:00.000Z",
     ...overrides
   };
+}
+
+function testCarrierNeutralFlights() {
+  for (const [summary, carrier] of [["Flight UA1234 DEN->SEA", "UA"], ["FLT B6 123 JFK→BOS", "B6"], ["Flight UAL1234 DEN->SEA", "UAL"]]) {
+    const result = parsePilotEvent(createEvent({summary}));
+    assert.equal(result.kind, "flight", summary);
+    assert.equal(result.carrierCode, carrier);
+    assert.deepEqual(result.liveLookupCandidates, [`${carrier}${result.flightNumber}`]);
+  }
+  const unknown = parsePilotEvent(createEvent({summary:"Flight 1234 DEN->SEA"}));
+  assert.equal(unknown.carrierCode, null);
+  assert.deepEqual(unknown.liveLookupCandidates, [], "Missing carrier must not guess American or Envoy");
+  const configured = parsePilotEvent(createEvent({summary:"Flight 1234 DEN->SEA"}), {defaultCarrierCode:"UA"});
+  assert.equal(configured.carrierCode, "UA");
+  assert.deepEqual(configured.liveLookupCandidates, ["UA1234"]);
+  const explicit = parsePilotEvent(createEvent({summary:"Flight DL1234 DEN->SEA"}), {defaultCarrierCode:"UA"});
+  assert.equal(explicit.carrierCode, "DL");
+  const described = parsePilotEvent(createEvent({summary:"FLT 1234", description:"Flight: B61234 Stations: DEN->SEA Time: 2026-08-03T22:18:00 - 2026-08-04T01:18:00"}), {defaultCarrierCode:"UA"});
+  assert.equal(described.carrierCode, "B6");
+  assert.deepEqual(described.liveLookupCandidates, ["B61234"]);
+  assert.equal(parsePilotEvent(createEvent({summary:"STBY"})).airport, null);
+  const previousCarrier = process.env.PILOT_CARRIER_CODE;
+  try {
+    process.env.PILOT_CARRIER_CODE = "UA";
+    assert.equal(parsePilotSchedule([createEvent({summary:"Flight 1234 DEN->SEA"})]).events[0].carrierCode, "UA");
+    process.env.PILOT_CARRIER_CODE = "invalid";
+    assert.deepEqual(parsePilotSchedule([createEvent({summary:"Flight 1234 DEN->SEA"})]).events[0].liveLookupCandidates, []);
+  } finally {
+    if (previousCarrier === undefined) delete process.env.PILOT_CARRIER_CODE;
+    else process.env.PILOT_CARRIER_CODE = previousCarrier;
+  }
+
 }
 
 function testManualFltAlias() {
@@ -59,11 +91,7 @@ function testRosterFlightTimeZones() {
 
   assert.deepEqual(
     result.liveLookupCandidates,
-    [
-      "AA4140",
-      "MQ4140",
-      "ENY4140"
-    ]
+    []
   );
 
   assert.equal(
@@ -206,7 +234,7 @@ function testDeadheadSummary() {
   assert.equal(result.destination, "ROC");
   assert.deepEqual(
     result.liveLookupCandidates,
-    ["AA2456", "MQ2456", "ENY2456"]
+    ["AA2456"]
   );
   assert.equal(
     result.requiresFlightVerification,
@@ -534,6 +562,7 @@ function testOverlappingRapAndStandby() {
 }
 
 function runTests() {
+  testCarrierNeutralFlights();
   testRapRequiresExplicitStation();
   testOverlappingRapAndStandby();
   testImportedReserveAndLeaveDates();
@@ -547,7 +576,7 @@ function runTests() {
     const standby=parsePilotEvent(createEvent({summary:label,start:{dateTime:'2026-10-13T09:00:00-05:00'},end:{dateTime:'2026-10-13T17:00:00-05:00'}}));
     assert.equal(standby.kind,'reserve',label+' is reserve duty');
     assert.equal(standby.reserveType,'STANDBY');
-    assert.equal(standby.airport,'ORD');
+    assert.equal(standby.airport,null);
     assert.equal(standby.allDay,false);
   }
   assert.equal(parsePilotEvent(createEvent({summary:'Standby training'})).kind,'other');
@@ -577,7 +606,7 @@ function runTests() {
   assert.equal(flight.flightNumber, '3632');
   assert.equal(flight.times.startUtc, '2026-09-28T03:37:00.000Z');
   assert.equal(flight.times.endUtc, '2026-09-28T04:58:00.000Z');
-  assert.deepEqual(flight.liveLookupCandidates, ['AA3632', 'MQ3632', 'ENY3632']);
+  assert.deepEqual(flight.liveLookupCandidates, []);
   assert.equal(parsePilotEvent(createEvent({summary:'Layover in EVV'})).airport, 'EVV');
   assert.equal(parsePilotEvent(createEvent({summary:'Layover in EVV'})).kind, 'layover');
   assert.equal(parsePilotEvent(createEvent({summary:'FLT 3632'})).kind, 'other');
@@ -590,7 +619,7 @@ function runTests() {
     assert.equal(deadhead.travelRole, 'deadhead');
     assert.equal(deadhead.flightNumber, '3679');
     assert.equal(deadhead.route, 'ORD→EVV');
-    assert.deepEqual(deadhead.liveLookupCandidates, ['AA3679', 'MQ3679', 'ENY3679']);
+    assert.deepEqual(deadhead.liveLookupCandidates, []);
     assert.equal(deadhead.times.startUtc, '2026-09-28T03:37:00.000Z');
   }
   assert.equal(parsePilotEvent({...deadheadCci, summary:'FLT3679'}).kind, 'flight');
