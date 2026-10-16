@@ -31,7 +31,7 @@
 
     const DEFAULT_OPTIONS = Object.freeze({
       homeAirport: "AVL",
-      baseAirport: "ORD",
+      baseAirport: null,
       displayTimeZone: "America/New_York",
       boardingLeadMinutes: 30,
       delayGraceMinutes: 5,
@@ -196,7 +196,7 @@
       const carrier =
         String(
           event.carrierCode ??
-          (event.isCommute ? "" : "AA")
+          ""
         )
           .trim()
           .toUpperCase();
@@ -1129,7 +1129,7 @@
         const location = String(airportLocation(airport, airport)).toUpperCase();
         return createMessageState(
           "RESERVE",
-          `DADDY IS ON RESERVE IN ${location}`,
+          `DADDY IS ON RESERVE${airport ? ` IN ${location}` : ""}`,
           event,
           airport
         );
@@ -1184,7 +1184,7 @@
       const location = String(airportLocation(airport, airport)).toUpperCase();
       const result = createMessageState(
         "RESERVE",
-        `DADDY IS SCHEDULED FOR RESERVE IN ${location}`,
+        `DADDY IS SCHEDULED FOR RESERVE${airport ? ` IN ${location}` : ""}`,
         null,
         airport
       );
