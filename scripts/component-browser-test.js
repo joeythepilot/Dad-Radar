@@ -14,6 +14,7 @@ fs.mkdirSync(output,{recursive:true});
  const origin=`http://127.0.0.1:${server.address().port}`;
  const browser=await ({chromium,webkit})[engine].launch({headless:true});
  try {
+  if(focus==='family')await require('./mobile-loading-browser-proof').checkMobileLoading(browser,output,engine);
   const views=focus==='duty'?[
    ['kiosk',1920,1080,'/'],['desktop',1440,900,'/'],['tablet',1024,768,'/'],
    ['family-landscape',844,390,'/mobile'],['family-portrait',390,844,'/mobile']

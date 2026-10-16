@@ -60,9 +60,18 @@ function createMobileGateway(app, config, options = {}) {
   const gateway=express();
   gateway.disable('x-powered-by');
   gateway.use((request,response,next)=> {
-    // Static-file middleware must not replace the private gateway's no-store.
+    let authenticatedArtwork = false;
+    response.locals.allowArtworkRevalidation = () => { authenticatedArtwork = true; };
+    const cachePolicy = status => authenticatedArtwork && (status === 200 || status === 304)
+      ? 'private, max-age=0, must-revalidate' : 'private, no-store';
+    // No public caching, including when downstream static middleware sets it.
     const setHeader=response.setHeader;
-    response.setHeader=function(name,value) {return setHeader.call(this,name,String(name).toLowerCase()==='cache-control' ? 'private, no-store' : value);};
+    response.setHeader=function(name,value) {return setHeader.call(this,name,String(name).toLowerCase()==='cache-control' ? cachePolicy(this.statusCode) : value);};
+    const writeHead=response.writeHead;
+    response.writeHead=function(status,...args) {
+      setHeader.call(this,'Cache-Control',cachePolicy(status));
+      return writeHead.call(this,status,...args);
+    };
     // Preserve Origin on same-site password form submissions; no-referrer
     // makes browsers send Origin:null, which our CSRF check correctly rejects.
     response.set({'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':config.mode==='password' ? 'same-origin' : 'no-referrer','X-Frame-Options':'DENY'});
@@ -78,6 +87,11 @@ function createMobileGateway(app, config, options = {}) {
   }
   gateway.use(async (request,response,next)=> {
     if (!['GET','HEAD'].includes(request.method) && request.get('Origin')!==config.origin) {response.status(403).end();return;}
+    // Only built-in artwork/audio/fonts. Never code, configuration, HTML or data.
+    // Reject encoded paths/dot segments rather than broadening this exception.
+    if (['GET','HEAD'].includes(request.method) && /^\/assets\/(?:[a-z0-9][a-z0-9_.-]*\/)*[a-z0-9][a-z0-9_.-]*\.(?:png|webp|jpe?g|svg|woff2?|wav|mp3)$/i.test(request.path)) {
+      response.locals.allowArtworkRevalidation();
+    }
     // The remote companion needs viewing and lookup only, not diagnostics.
     const pathname=request.path.toLowerCase();
     // Authenticated display refresh only; do not expose the full health diagnostics.

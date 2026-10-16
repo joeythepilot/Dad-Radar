@@ -2083,6 +2083,9 @@ function handleKeyboardShortcut(event) {
    --------------------------------------------------------- */
 
 function startDashboardSequence() {
+  // The remote viewer is a window onto an already running appliance, not a
+  // second appliance powering up. Keep the primary's deliberate sequence.
+  const familyViewer = document.documentElement.hasAttribute('data-family-full');
   if (unitLabel) {
     unitLabel.textContent =
       dadRadarSettings.unitLabel;
@@ -2123,7 +2126,7 @@ function startDashboardSequence() {
       statusMessage.textContent =
         "SYSTEMS ONLINE";
     }
-  }, dadRadarSettings
+  }, familyViewer ? 0 : dadRadarSettings
     .startup
     .systemsOnlineDelayMs);
 
@@ -2142,7 +2145,7 @@ function startDashboardSequence() {
       ?.ready();
 
     scheduleFlightBoardBalance();
-  }, dadRadarSettings
+  }, familyViewer ? 0 : dadRadarSettings
     .startup
     .dashboardDelayMs);
 
