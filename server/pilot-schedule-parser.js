@@ -42,7 +42,7 @@ const DUTY_FREE_PATTERN =
 const VACATION_PATTERN = /^(?:Vacation|VAC)$/i;
 
 const RESERVE_BLOCK_PATTERN = /^Reserve\s+([A-Z]{3})$/i;
-const RAP_PATTERN = /^RAP$/i;
+const RAP_PATTERN = /^RAP\s+([A-Z]{3})$/i;
 const STANDBY_PATTERN = /^(?:Airport[\s-]*)?(?:Stand[\s-]*by|SBY|STBY)(?:\s*(?:shift\s*|#\s*)?\d{1,2})?(?:\s+([A-Z]{3}))?(?:\s*(?:shift\s*|#\s*)?\d{1,2})?$/i;
 
 function cleanText(value) {
@@ -565,13 +565,14 @@ function parsePilotEvent(
   }
 
   const reserveBlock = summary.match(RESERVE_BLOCK_PATTERN);
+  const rap = summary.match(RAP_PATTERN);
   const standby = summary.match(STANDBY_PATTERN);
-  if (RAP_PATTERN.test(summary) || standby || reserveBlock) {
+  if (rap || standby || reserveBlock) {
     return {
       id: event.id ?? null,
       kind: "reserve",
       reserveType: reserveBlock ? "BLOCK" : standby ? "STANDBY" : "RAP",
-      airport: normalizeAirport(reserveBlock?.[1] ?? standby?.[1]) ?? "ORD",
+      airport: normalizeAirport(reserveBlock?.[1] ?? rap?.[1] ?? standby?.[1]) ?? "ORD",
       allDay: Boolean(event.start?.date && event.end?.date),
       summary,
       description,
