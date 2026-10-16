@@ -18,6 +18,7 @@
   let lockedFlightEventKey = null;
   let taxiSilenceSince = null;
   let lastTaxiCheckAt = null;
+  let stationaryGround = null;
   let landingCandidate = false;
   let landingSilenceSince = null;
   let lastLandingCheckAt = null;
@@ -609,6 +610,53 @@
     return currentLiveFlight?.phase === "TAXI_IN";
   }
 
+  function groundDistanceMetres(a, b) {
+    const radians = Math.PI / 180;
+    const dy = (a.latitude - b.latitude) * radians;
+    const dx = (a.longitude - b.longitude) * radians;
+    const h = Math.sin(dy / 2) ** 2 + Math.cos(a.latitude * radians) *
+      Math.cos(b.latitude * radians) * Math.sin(dx / 2) ** 2;
+    return 6371000 * 2 * Math.asin(Math.sqrt(Math.min(1, h)));
+  }
+
+  function stationaryArrivalEstimate(snapshot, event, freshReport) {
+    const position = snapshot?.position;
+    const airport = global.dadRadarAirports?.lookupAirport(event?.destination);
+    const latitude = finiteCoordinate(position?.latitude);
+    const longitude = finiteCoordinate(position?.longitude);
+    const speed = finiteCoordinate(position?.groundSpeedKnots);
+    const now = Date.now();
+    if (!freshReport) {
+      if (!currentLiveFlight?.arrivalEstimated) stationaryGround = null;
+      return false;
+    }
+    if (position?.onGround !== true || speed === null || speed < 0 || speed > 1 ||
+        latitude === null || longitude === null || !airport ||
+        groundDistanceMetres({latitude, longitude}, airport) > 4 * 1852) {
+      stationaryGround = null;
+      return false;
+    }
+    const recordedAt = Date.parse(position.recordedAt);
+    // A persisted estimate survives reopening, but is never upgraded to gate
+    // confirmation. Fresh movement or a different position contradicts it.
+    if (currentLiveFlight?.arrivalEstimated && currentLiveFlight.phase === "TAXI_IN" && stationaryGround &&
+        recordedAt >= stationaryGround.recordedAt &&
+        groundDistanceMetres({latitude, longitude}, stationaryGround) <= 50) {
+      stationaryGround.checkedAt = now;
+      stationaryGround.recordedAt = recordedAt;
+      return true;
+    }
+    if (!stationaryGround || now - stationaryGround.checkedAt > 120000 ||
+        recordedAt < stationaryGround.recordedAt ||
+        groundDistanceMetres({latitude, longitude}, stationaryGround) > 50) {
+      stationaryGround = {latitude, longitude, since: recordedAt, checkedAt: now, recordedAt};
+      return false;
+    }
+    stationaryGround.checkedAt = now;
+    stationaryGround.recordedAt = recordedAt;
+    return recordedAt - stationaryGround.since >= 5 * 60000;
+  }
+
   function followingArrivalEvidence() {
     return followingGroundArrival() || landingCandidate;
   }
@@ -618,6 +666,7 @@
       if (!currentLiveFlight || !previousLiveResolved) { global.localStorage?.removeItem(TAXI_STORAGE_KEY); return; }
       global.localStorage?.setItem(TAXI_STORAGE_KEY, JSON.stringify({
         at: Date.now(), key: liveFlightEventKey, lock: lockedFlightEventKey, landingCandidate,
+        stationaryGround,
         snapshot: {...currentLiveFlight, filedRoute: null},
         resolved: previousLiveResolved ? {...previousLiveResolved, liveFlight: null,
           state: {...previousLiveResolved.state, flight: {...previousLiveResolved.state.flight, filedRoute: null}}} : null
@@ -640,6 +689,11 @@
           (!taxiCheckpoint && !landingCheckpoint && !flightCheckpoint) ||
           !currentSchedule.events.some(event => event.status !== "cancelled" && liveEventKey(event) === saved.key)) return;
       currentLiveFlight = saved.snapshot;
+      const anchor = saved.stationaryGround;
+      if (saved.snapshot.arrivalEstimated && anchor &&
+          [anchor.latitude, anchor.longitude, anchor.since, anchor.checkedAt, anchor.recordedAt].every(Number.isFinite)) {
+        stationaryGround = anchor;
+      }
       previousLiveResolved = saved.resolved;
       liveFlightEventKey = saved.key;
       lockedFlightEventKey = saved.lock;
@@ -656,6 +710,22 @@
     const settings =
       controllerSettings();
     resumeTaxiCheckpoint();
+
+    // Airline gate-IN belongs to the matched Calendar leg and outranks its
+    // retained ADS-B taxi checkpoint, including immediately after a restart.
+    const trackedEvent = currentSchedule.events?.find(event => liveEventKey(event) === liveFlightEventKey);
+    const actualIn = trackedEvent?.operational?.provider === "flightaware"
+      ? trackedEvent.operational.actualIn : null;
+    const gateIn = actualIn ? validDate(actualIn) : null;
+    if (gateIn && gateIn.getTime() <= Date.now()) {
+      currentLiveFlight = null;
+      previousLiveResolved = null;
+      lockedFlightEventKey = null;
+      stationaryGround = null;
+      taxiSilenceSince = null;
+      lastTaxiCheckAt = null;
+      landingCandidate = false;
+    }
 
     releaseStaleFlightLock(
       currentSchedule,
@@ -687,6 +757,7 @@
       liveFlightEventKey
     ) {
       currentLiveFlight = null;
+      stationaryGround = null;
       taxiSilenceSince = null;
       lastTaxiCheckAt = null;
       landingCandidate = false;
@@ -888,6 +959,7 @@
           const reportAt = Date.parse(liveFlight?.position?.recordedAt ?? "");
           const freshReport = Number.isFinite(reportAt) && Date.now() - reportAt <= 90000 &&
             Date.now() - reportAt >= -5000;
+          const stationaryEstimate = stationaryArrivalEstimate(liveFlight, requestedEvent, freshReport);
           if (landingCandidate) {
             if (lastLandingCheckAt === null || Date.now() - lastLandingCheckAt > 120000) landingSilenceSince = null;
             lastLandingCheckAt = Date.now();
@@ -948,6 +1020,7 @@
             currentLiveFlight = {
               ...liveFlight,
               phase: landed || taxiFollowup ? "TAXI_IN" : liveFlight.phase,
+              ...(stationaryEstimate && (landed || taxiFollowup) ? {arrivalEstimated: true} : {}),
               actualTrack:
                 appendLiveTrackPoint(
                   liveFlight
@@ -986,6 +1059,7 @@
         } catch (error) {
           // An outage or rate limit is not evidence of transponder shutdown.
           taxiSilenceSince = null;
+          if (!currentLiveFlight?.arrivalEstimated) stationaryGround = null;
           lastTaxiCheckAt = null;
           landingSilenceSince = null;
           lastLandingCheckAt = null;
