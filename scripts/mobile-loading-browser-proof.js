@@ -10,6 +10,9 @@ function recordResponse(request,response,records) {
   const originalPath=request.url.split('?')[0];
   response.once('finish',()=>records.push({path:originalPath,status:response.statusCode,type:response.getHeader('Content-Type')||'',bytes:response.statusCode===304?0:Number(response.getHeader('Content-Length')||0),cache:response.getHeader('Cache-Control')}));
 }
+function assertArtworkCache(record) {
+  assert.equal(record.cache,record.status===200||record.status===304 ? 'private, max-age=0, must-revalidate' : 'private, no-store',record.path);
+}
 
 async function checkMobileLoading(browser,output,engine) {
   const fixture=createDisplayFixture(),testApp=express(),records=[];
@@ -46,7 +49,7 @@ async function checkMobileLoading(browser,output,engine) {
       timings:await page.evaluate(()=>{const n=performance.getEntriesByType('navigation')[0];return {domContentLoadedMs:n.domContentLoadedEventEnd,loadMs:n.loadEventEnd};}),entries};
     fs.writeFileSync(path.join(output,'mobile-loading-'+name+'.json'),JSON.stringify(report,null,2));
     assert.deepEqual(entries.filter(r=>r.status>=400),[],name+' has no failed production asset requests');
-    for(const r of art)assert.equal(r.cache,'private, max-age=0, must-revalidate');
+    for(const r of art)assertArtworkCache(r);
     for(const r of entries.filter(r=>!art.includes(r)))assert.match(r.cache,/no-store/,name+' '+r.path+' code, HTML and API data remain uncached');
     await errorChecks.get(page)(name);
     reports.push(report);return report;
@@ -98,4 +101,4 @@ async function checkMobileLoading(browser,output,engine) {
     console.log('Mobile loading proof: '+JSON.stringify(reports.map(({name,artworkBytes,artwork304,webpResponses,timings})=>({name,artworkBytes,artwork304,webpResponses,timings}))));
   } finally {await new Promise(resolve=>server.close(resolve));}
 }
-module.exports={checkMobileLoading,recordResponse};
+module.exports={checkMobileLoading,recordResponse,assertArtworkCache};
