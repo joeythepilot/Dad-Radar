@@ -26,6 +26,35 @@ function createEvent(overrides = {}) {
   };
 }
 
+function testEditedCciCalendarTimesOverrideStaleDescription() {
+  const description = 'SEQ#: 6663 Flight#: 9868 Stations: CMI→ORD Local Time: Fri, Oct 16, 2026 17:00 - Fri, Oct 16, 2026 17:55 UTC Time: Fri, Oct 16, 2026 22:00 UTC - Fri, Oct 16, 2026 22:55 UTC';
+  const event = createEvent({summary: 'FLT 9868', description,
+    start: {dateTime: '2026-10-16T14:30:00-04:00'}, end: {dateTime: '2026-10-16T15:25:00-04:00'}});
+  const edited = parsePilotEvent(event);
+  assert.equal(edited.times.startUtc, '2026-10-16T18:30:00.000Z', 'A Calendar time edit must override stale embedded CCI text');
+  assert.equal(edited.times.endUtc, '2026-10-16T19:25:00.000Z');
+  assert.equal(edited.route, 'CMI→ORD', 'Keep imported flight identity while honoring its edited times');
+  assert.equal(edited.times.source, 'calendar-event-edited');
+  const untouched = parsePilotEvent({...event, start:{dateTime:'2026-10-16T17:00:00-04:00'}, end:{dateTime:'2026-10-16T17:55:00-04:00'}});
+  assert.equal(untouched.times.startUtc, '2026-10-16T22:00:00.000Z', 'Unmodified single-zone imports still use airport-correct explicit UTC');
+  assert.equal(untouched.times.endUtc, '2026-10-16T22:55:00.000Z');
+  const utc = parsePilotEvent({...event, start:{dateTime:'2026-10-16T22:00:00Z'}, end:{dateTime:'2026-10-16T22:55:00Z'}});
+  assert.equal(utc.times.source, 'description-utc-times', 'Instant-equivalent headers are not mistaken for edits');
+  const endOnly = parsePilotEvent({...event, start:{dateTime:'2026-10-16T17:00:00-04:00'}, end:{dateTime:'2026-10-16T19:00:00-04:00'}});
+  assert.equal(endOnly.times.startUtc, '2026-10-16T22:00:00.000Z', 'Resizing the end must preserve the untouched start timezone correction');
+  assert.equal(endOnly.times.endUtc, '2026-10-16T23:00:00.000Z');
+  for (const start of ['2026-10-16T21:00:00Z', '2026-10-16T16:00:00-05:00']) {
+    const normalized = parsePilotEvent({...event,start:{dateTime:start,timeZone:'America/New_York'},end:{dateTime:'2026-10-16T21:55:00Z',timeZone:'America/New_York'}});
+    assert.equal(normalized.times.startUtc,'2026-10-16T22:00:00.000Z','Equivalent original header representations preserve the CCI correction');
+  }
+  const calendarZone = parsePilotSchedule({calendarTimeZone:'America/New_York',events:[{...event,
+    start:{dateTime:'2026-10-16T21:00:00Z'},end:{dateTime:'2026-10-16T21:55:00Z'}}]});
+  assert.equal(calendarZone.events[0].times.startUtc,'2026-10-16T22:00:00.000Z','Calendar timezone metadata normalizes headers when per-event zone is absent');
+  const fold = parsePilotEvent({...event, description:'Flight#: 9868 Stations: ORD→CMI UTC Time: Sun, Nov 1, 2026 06:30 UTC - Sun, Nov 1, 2026 08:30 UTC',
+    start:{dateTime:'2026-11-01T01:30:00-06:00',timeZone:'America/Chicago'},end:{dateTime:'2026-11-01T02:30:00-06:00',timeZone:'America/Chicago'}});
+  assert.equal(fold.times.startUtc,'2026-11-01T07:30:00.000Z','An explicitly airport-zoned repeated-hour edit must retain its actual offset');
+}
+
 function testManualFltAlias() {
   const baseline = parsePilotEvent(createEvent({summary: "Flight 3553 MIA->MSY"}));
   for (const summary of ["FLT 3553 MIA->MSY", "flt 3553 mia -> msy", "FLT 3553 MIA→MSY"]) {
@@ -543,7 +572,8 @@ function runTests() {
   assert.equal(dutyFree.times.endUtc,'2026-10-04T04:00:00.000Z');
   assert.equal(parsePilotEvent(createEvent({summary:'RAP review'})).kind,'other');
   assert.equal(parsePilotEvent(createEvent({summary:'Reserve'})).kind,'other');
-  const cci = createEvent({summary: 'FLT 3632', description: 'SEQ#: 18073 Flight#: 3632 Stations: ORD→EVV Local Time: Sun, Sep 27, 2026\n22:37 - Sun, Sep 27, 2026 23:58 UTC Time: Mon, Sep 28, 2026 03:37 UTC - Mon,\nSep 28, 2026 04:58 UTC'});
+  testEditedCciCalendarTimesOverrideStaleDescription();
+  const cci = createEvent({summary: 'FLT 3632', start:{dateTime:'2026-09-27T22:37:00-04:00'}, end:{dateTime:'2026-09-27T23:58:00-04:00'}, description: 'SEQ#: 18073 Flight#: 3632 Stations: ORD→EVV Local Time: Sun, Sep 27, 2026\n22:37 - Sun, Sep 27, 2026 23:58 UTC Time: Mon, Sep 28, 2026 03:37 UTC - Mon,\nSep 28, 2026 04:58 UTC'});
   const flight = parsePilotEvent(cci);
   assert.equal(flight.kind, 'flight');
   assert.equal(flight.route, 'ORD→EVV');

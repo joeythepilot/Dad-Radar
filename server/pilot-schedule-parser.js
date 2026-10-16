@@ -205,7 +205,8 @@ function createFallbackTimes(event) {
 function createFlightTimes(
   event,
   flightDescription,
-  airportTimeZoneFor
+  airportTimeZoneFor,
+  calendarTimeZone
 ) {
   const fallback =
     createFallbackTimes(event);
@@ -215,6 +216,30 @@ function createFlightTimes(
   }
 
   if (flightDescription.startUtc && flightDescription.endUtc) {
+    // CCI puts airport-local wall times into a single-zone Calendar event.
+    // Retain its explicit UTC correction only while both event endpoints
+    // still match that original export (or the same UTC instants). Moving
+    // the event in Calendar must not be undone by stale description text.
+    const importedEndpoint = (value, utc, airport) => {
+      const header = parseCalendarDateTime(value);
+      const instant = DateTime.fromISO(utc);
+      const zone = airportTimeZoneFor(airport);
+      if (!header || !zone || header.toMillis() === instant.toMillis()) return utc;
+      const wall = header.setZone(value?.timeZone ?? calendarTimeZone ?? header.zoneName);
+      const airportHeader = header.setZone(zone);
+      const originalSingleZoneExport = wall.isValid && wall.offset !== airportHeader.offset &&
+        wall.toFormat('yyyy-MM-dd HH:mm:ss') === instant.setZone(zone).toFormat('yyyy-MM-dd HH:mm:ss');
+      return originalSingleZoneExport ? utc : header.toUTC().toISO();
+    };
+    let startUtc = importedEndpoint(event.start, flightDescription.startUtc, flightDescription.origin);
+    let endUtc = importedEndpoint(event.end, flightDescription.endUtc, flightDescription.destination);
+    if (fallback.startUtc && fallback.endUtc && fallback.endUtc > fallback.startUtc &&
+        (Date.parse(startUtc) !== Date.parse(flightDescription.startUtc) || Date.parse(endUtc) !== Date.parse(flightDescription.endUtc))) {
+      if (Date.parse(endUtc) <= Date.parse(startUtc)) {startUtc = fallback.startUtc; endUtc = fallback.endUtc;}
+      return {...fallback, source: 'calendar-event-edited', startUtc, endUtc,
+        startEastern:DateTime.fromISO(startUtc).setZone(DISPLAY_TIME_ZONE).toISO(),
+        endEastern:DateTime.fromISO(endUtc).setZone(DISPLAY_TIME_ZONE).toISO()};
+    }
     return {...fallback, source:'description-utc-times',
       departureZone:airportTimeZoneFor(flightDescription.origin),
       arrivalZone:airportTimeZoneFor(flightDescription.destination),
@@ -511,7 +536,8 @@ function parsePilotEvent(
         createFlightTimes(
           event,
           normalizedDescriptionFlight,
-          airportTimeZoneFor
+          airportTimeZoneFor,
+          options.calendarTimeZone
         ),
       updated:
         event.updated ?? null
@@ -620,7 +646,7 @@ function parsePilotSchedule(
       events.map((event) =>
         parsePilotEvent(
           event,
-          options
+          {...options, calendarTimeZone: options.calendarTimeZone ?? calendarData?.calendarTimeZone}
         )
       )
   };
