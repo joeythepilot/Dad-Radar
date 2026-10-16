@@ -5,7 +5,9 @@ async function run(){
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'companion-assets-'));
  fs.writeFileSync(path.join(dir,'art.webp'),'smaller artwork');
  fs.writeFileSync(path.join(dir,'code.gz'),zlib.gzipSync('original code'));
- fs.writeFileSync(path.join(dir,'manifest.json'),JSON.stringify({entries:{'/assets/test.png':{webp:'art.webp'},'/App/main.js':{gzip:'code.gz',type:'application/javascript'}}}));
+ fs.writeFileSync(path.join(dir,'housing.png'),'equivalent lossless PNG');
+ fs.writeFileSync(path.join(dir,'code.br'),zlib.brotliCompressSync('original code'));
+ fs.writeFileSync(path.join(dir,'manifest.json'),JSON.stringify({entries:{'/assets/test.png':{webp:'art.webp'},'/assets/native.png':{png:'housing.png'},'/App/main.js':{gzip:'code.gz',br:'code.br',type:'application/javascript'}}}));
  const app=express();app.use(require('./companion-assets').createCompanionAssets(dir));app.use((_q,r)=>r.type('png').send('original PNG'));
  const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));const base='http://127.0.0.1:'+server.address().port;
  const get=(route,headers)=>new Promise((resolve,reject)=>http.get(base+route,{headers},res=>{const parts=[];res.on('data',p=>parts.push(p));res.on('end',()=>resolve({status:res.statusCode,headers:res.headers,body:Buffer.concat(parts)}));}).on('error',reject));
@@ -16,6 +18,9 @@ async function run(){
   assert.equal((await get('/assets/test.png',{Accept:'image/png','If-None-Match':image.headers.etag})).status,200,'Variant ETag cannot suppress original PNG');
   assert.equal((await get('/assets/test.png',{Accept:'image/webp',Range:'bytes=0-2'})).body.toString(),'original PNG','Ranges retain original server behavior');
   const code=await get('/App/main.js',{'Accept-Encoding':'gzip'});assert.equal(code.headers['content-encoding'],'gzip');assert.equal(zlib.gunzipSync(code.body).toString(),'original code');
+  const native=await get('/assets/native.png',{Accept:'image/png'});assert.equal(native.body.toString(),'equivalent lossless PNG');assert.match(native.headers['content-type'],/image\/png/);assert.match(native.headers.vary,/Accept/);
+  assert.equal((await get('/assets/native.png',{Accept:'image/png','X-DadRadar-Original':'1'})).body.toString(),'original PNG');assert.match(native.headers.vary,/X-DadRadar-Original/);
+  const brotli=await get('/App/main.js',{'Accept-Encoding':'br,gzip;q=0.8'});assert.equal(brotli.headers['content-encoding'],'br');assert.equal(zlib.brotliDecompressSync(brotli.body).toString(),'original code');
   assert.equal((await get('/api/state',{'Accept-Encoding':'gzip'})).headers['content-encoding'],undefined,'Only built-in files are optimized');
   fs.unlinkSync(path.join(dir,'art.webp'));assert.equal((await get('/assets/test.png',{Accept:'image/webp'})).body.toString(),'original PNG','Missing derivative falls back');
   console.log('Companion asset negotiation, compression, conditional reuse, isolation and fallback passed.');

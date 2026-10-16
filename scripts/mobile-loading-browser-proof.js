@@ -56,7 +56,7 @@ async function checkMobileLoading(browser,output,engine) {
   }
   let context;
   try {
-    context=await browser.newContext({viewport:{width:844,height:390},deviceScaleFactor:2,serviceWorkers:'block',extraHTTPHeaders:auth});
+    context=await browser.newContext({viewport:{width:844,height:390},deviceScaleFactor:2,serviceWorkers:'block',extraHTTPHeaders:{...auth,'Accept-Encoding':'br,gzip'}});
     const page=await context.newPage();
     await mobileNetwork(page);
     const cold=await visit(page,'companion-cold');
@@ -64,7 +64,7 @@ async function checkMobileLoading(browser,output,engine) {
     const repeat=await visit(page,'companion-repeat');
     assert(repeat.artwork304>=5,'Browser actually revalidates artwork');
     assert(repeat.artworkBytes<cold.artworkBytes*0.1,'Repeat artwork/audio transfer drops at least 90%');
-    const originalContext=await browser.newContext({viewport:{width:844,height:390},deviceScaleFactor:2,serviceWorkers:'block',extraHTTPHeaders:{...auth,Accept:'image/png,*/*;q=0.1','Accept-Encoding':'identity'}});
+    const originalContext=await browser.newContext({viewport:{width:844,height:390},deviceScaleFactor:2,serviceWorkers:'block',extraHTTPHeaders:{...auth,Accept:'image/png,*/*;q=0.1','Accept-Encoding':'identity','X-DadRadar-Original':'1'}});
     let original;
     try{const originalPage=await originalContext.newPage();await mobileNetwork(originalPage);original=await visit(originalPage,'original-cold');}finally{await originalContext.close();}
     assert(cold.artworkBytes<original.artworkBytes*0.35,'First-visit artwork/audio transfer drops at least 65%');
@@ -78,11 +78,11 @@ async function checkMobileLoading(browser,output,engine) {
     // resolution, independently against originals in each browser engine.
     const quality=await page.evaluate(async entries=>{
       async function pixels(url,accept){
-        const response=await fetch(url,{headers:{Accept:accept}}),blob=await response.blob(),object=URL.createObjectURL(blob),im=new Image();
+        const response=await fetch(url,{headers:{Accept:accept,...(accept==='image/png'?{'X-DadRadar-Original':'1'}:{})}}),blob=await response.blob(),object=URL.createObjectURL(blob),im=new Image();
         try{im.src=object;await im.decode();const c=document.createElement('canvas'),scale=Math.min(1,2048/Math.max(im.naturalWidth,im.naturalHeight));c.width=Math.round(im.naturalWidth*scale);c.height=Math.round(im.naturalHeight*scale);const ctx=c.getContext('2d',{willReadFrequently:true});ctx.fillStyle='#806440';ctx.fillRect(0,0,c.width,c.height);ctx.drawImage(im,0,0,c.width,c.height);return {width:im.naturalWidth,height:im.naturalHeight,data:ctx.getImageData(0,0,c.width,c.height).data};}finally{URL.revokeObjectURL(object);}
       }
       const result=[];
-      for(const [url,expected] of entries){const a=await pixels(url,'image/png'),b=await pixels(url,'image/webp');let sum=0,squared=0;for(let i=0;i<a.data.length;i++){const difference=Math.abs(a.data[i]-b.data[i]);sum+=difference;squared+=difference*difference;}result.push({url,width:b.width,height:b.height,expected,meanError:sum/a.data.length,rmse:Math.sqrt(squared/a.data.length)});}
+      for(const [url,expected] of entries){const a=await pixels(url,'image/png'),b=await pixels(url,'image/webp,image/png;q=0.8');let sum=0,squared=0;for(let i=0;i<a.data.length;i++){const difference=Math.abs(a.data[i]-b.data[i]);sum+=difference;squared+=difference*difference;}result.push({url,width:b.width,height:b.height,expected,meanError:sum/a.data.length,rmse:Math.sqrt(squared/a.data.length)});}
       return result;
     },Object.entries(approvedSources));
     fs.writeFileSync(path.join(output,'companion-encoding-quality.json'),JSON.stringify(quality,null,2));
@@ -94,7 +94,7 @@ async function checkMobileLoading(browser,output,engine) {
     const sources=await page.evaluate(async entries=>{
       const results=[];
       for(const [url,expected] of entries){
-        const response=await fetch(url,{headers:{Accept:'image/png'}});
+        const response=await fetch(url,{headers:{Accept:'image/png','X-DadRadar-Original':'1'}});
         if(!response.ok||!response.headers.get('content-type')?.startsWith('image/png'))throw new Error('Approved PNG unavailable: '+url);
         const bytes=await response.arrayBuffer(),digest=await crypto.subtle.digest('SHA-256',bytes);
         results.push({url,expected:expected.sha256,actual:Array.from(new Uint8Array(digest),v=>v.toString(16).padStart(2,'0')).join('')});

@@ -5,9 +5,10 @@ const root=path.resolve(__dirname,'..'),dir=path.join(root,'runtime/companion-as
  let checked=0,maximumAlphaError=0;
  for(const [url,e] of Object.entries(manifest.entries)){
   assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(root,url.slice(1)))).digest('hex'),e.sourceSha256,url+' source hash');
-  if(!e.webp||!url.startsWith('/assets/hardware/'))continue;
-  const a=await sharp(path.join(root,url.slice(1))).ensureAlpha().raw().toBuffer({resolveWithObject:true}),b=await sharp(path.join(dir,e.webp)).ensureAlpha().raw().toBuffer({resolveWithObject:true});
+  if((!e.webp&&!e.png)||!url.startsWith('/assets/hardware/'))continue;
+  const a=await sharp(path.join(root,url.slice(1))).ensureAlpha().raw().toBuffer({resolveWithObject:true}),b=await sharp(path.join(dir,e.webp||e.png)).ensureAlpha().raw().toBuffer({resolveWithObject:true});
   assert.deepEqual(b.info,a.info,url+' full native dimensions/channels');
+  if(e.png){assert(a.data.equals(b.data),url+' lossless RGBA');const chunks=require('./build-companion-assets').pngChunks;const metadata=x=>chunks(x).filter(c=>c.type!=='IDAT').map(c=>c.bytes);assert.deepEqual(metadata(fs.readFileSync(path.join(root,url.slice(1)))),metadata(fs.readFileSync(path.join(dir,e.png))),url+' all original PNG metadata preserved');}
   let sum=0,squared=0,count=0;
   for(let i=0;i<a.data.length;i+=4){maximumAlphaError=Math.max(maximumAlphaError,Math.abs(a.data[i+3]-b.data[i+3]));if(a.data[i+3]>=242)for(let c=0;c<3;c++){const d=Math.abs(a.data[i+c]-b.data[i+c]);sum+=d;squared+=d*d;count++;}}
   assert.equal(maximumAlphaError,0,url+' alpha is lossless at every original pixel');
