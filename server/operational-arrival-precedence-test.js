@@ -93,7 +93,48 @@ async function run() {
     fs.rmSync(dir, {recursive: true, force: true});
   }
 
+  await testGateInDuringActiveTaxi();
   console.log("Operational arrival precedence test passed.");
+}
+
+async function testGateInDuringActiveTaxi() {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "dad-op-taxi-in-"));
+  let now = Date.now();
+  let actualIn = null;
+  const event = {id: "gate-after-taxi", kind: "flight", status: "confirmed", carrierCode: "AA", flightNumber: "3792",
+    origin: "ORD", destination: "AVL", liveLookupCandidates: ["AA3792", "ENY3792"],
+    times: {startUtc: new Date(now - 7200000).toISOString(), endUtc: new Date(now + 60000).toISOString()}};
+  const options = {
+    file: path.join(dir, "state.json"), now: () => now,
+    setInterval: () => ({}), clearInterval() {}, console: {warn() {}, error() {}},
+    getCalendar: async () => ({retrievedAt: new Date(now).toISOString(), events: [event]}),
+    getOperational: async () => ({provider: "flightaware", actualOut: event.times.startUtc,
+      actualOn: new Date(now - 60000).toISOString(), actualIn, retrievedAt: new Date(now).toISOString()}),
+    getFlight: async () => ({snapshot: {provider: "adsb.lol", phase: "ARRIVED", origin: "ORD", destination: "AVL",
+      ident: "ENY3792", progressPercent: 100, retrievedAt: new Date(now).toISOString(),
+      position: {latitude: 35.44, longitude: -82.54, onGround: true, groundSpeedKnots: 14,
+        headingDegrees: 160, recordedAt: new Date(now).toISOString()}}, attempts: []})
+  };
+  let master = createMasterStateService(options);
+  try {
+    await master.start();
+    await master.poll();
+    assert.equal(master.read().resolved.mode, "TAXI_IN");
+    now += 60000;
+    actualIn = new Date(now).toISOString();
+    await master.refreshCalendar();
+    const parked = master.read().resolved;
+    assert.equal(parked.mode, "ARRIVED", "Airline IN overrides retained moving-ground telemetry");
+    assert.equal(parked.state.flight.actualIn, actualIn);
+    assert.notEqual(parked.state.flight.arrivalEstimated, true);
+    master.stop();
+    master = createMasterStateService(options);
+    await master.start();
+    assert.equal(master.read().resolved.mode, "ARRIVED", "Arrival remains authoritative after a server restart");
+  } finally {
+    master.stop();
+    fs.rmSync(dir, {recursive: true, force: true});
+  }
 }
 
 run().catch((error) => {

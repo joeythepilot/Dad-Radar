@@ -1406,7 +1406,128 @@ async function testArrivalWithoutGroundCoverage() {
   assert.equal((await context.refreshLiveFlightState()).mode, "TAXI_IN");
 }
 
+async function arrivalFixture() {
+  const storage = createMemoryStorage();
+  let {context} = createBrowserContext({localStorage: storage});
+  vm.runInContext(readProjectFile("models/operational-schedule-state.js"), context);
+  let clock = Date.now();
+  let speed = 0;
+  let longitude = -82.54;
+  let unavailable = false;
+  let missing = false;
+  let reportLag = 0;
+  let ground = true;
+  let reportQuantum = 1;
+  context.Date = class extends Date {
+    constructor(...args) {super(...(args.length ? args : [clock]));}
+    static now() {return clock;}
+  };
+  const flight = activeFlightEvent();
+  flight.times.endUtc = new Date(clock + 60000).toISOString();
+  context.dadRadarCalendarApi = {getUpcomingEvents: async () => ({retrievedAt: new Date(clock).toISOString(), events: [flight]})};
+  context.dadRadarLiveFlightApi = {getFlightSnapshot: async () => {
+    if (unavailable) throw new Error("fixture provider outage");
+    if (missing) return null;
+    return {provider: "adsb.lol", phase: "ARRIVED", origin: "ORD", destination: "AVL", ident: "ENY4140", progressPercent: 100,
+      retrievedAt: new Date(clock).toISOString(), position: {latitude: 35.44, longitude, onGround: ground,
+        groundSpeedKnots: speed, headingDegrees: 170, recordedAt: new Date(Math.floor((clock - reportLag) / reportQuantum) * reportQuantum).toISOString(), updateType: "adsb_icao"}};
+  }};
+  await context.refreshCalendarState();
+  await context.refreshLiveFlightState();
+  return {get context() {return context;}, storage, flight, now: () => clock,
+    async reopen() {
+      const previous = context;
+      ({context} = createBrowserContext({localStorage: storage}));
+      vm.runInContext(readProjectFile("models/operational-schedule-state.js"), context);
+      context.Date = previous.Date;
+      context.dadRadarCalendarApi = previous.dadRadarCalendarApi;
+      context.dadRadarLiveFlightApi = previous.dadRadarLiveFlightApi;
+      const resolved = await context.refreshCalendarState();
+      return (await context.refreshLiveFlightState()) ?? resolved;
+    },
+    async minute(changes = {}) {
+      clock += changes.elapsed ?? 60000;
+      if (Object.hasOwn(changes, "speed")) speed = changes.speed;
+      if (Object.hasOwn(changes, "longitude")) longitude = changes.longitude;
+      if (Object.hasOwn(changes, "unavailable")) unavailable = changes.unavailable;
+      if (Object.hasOwn(changes, "missing")) missing = changes.missing;
+      if (Object.hasOwn(changes, "reportLag")) reportLag = changes.reportLag;
+      if (Object.hasOwn(changes, "ground")) ground = changes.ground;
+      if (Object.hasOwn(changes, "reportQuantum")) reportQuantum = changes.reportQuantum;
+      return context.refreshLiveFlightState();
+    }};
+}
+
+async function testStationaryArrivalEstimate() {
+  const f = await arrivalFixture();
+  for (let minute = 0; minute < 4; minute++) assert.equal((await f.minute()).mode, "TAXI_IN");
+  const parked = await f.minute();
+  assert.equal(parked.mode, "ARRIVED", "Fresh stationary reports must not hold TAXI IN indefinitely");
+  assert.equal(parked.state.flight.arrivalEstimated, true, "Stationary evidence is not airline gate confirmation");
+  await f.minute({unavailable: true});
+  assert.equal((await f.minute({unavailable: false})).mode, "ARRIVED", "An outage does not contradict an established stationary estimate");
+  await f.minute({reportLag: 120000});
+  assert.equal((await f.minute({reportLag: 0})).mode, "ARRIVED", "Stale telemetry does not erase an established stop anchor");
+  assert.equal((await f.reopen()).mode, "ARRIVED", "Reopening must retain a stationary estimate until movement contradicts it");
+  for (let minute = 0; minute < 7; minute++) await f.minute({missing: true});
+  assert.equal((await f.minute({missing: false, speed: 12}))?.mode, "TAXI_IN",
+    "A stationary estimate must keep following reports after healthy absence, not stop as a confirmed arrival");
+  for (let minute = 0; minute < 6; minute++) await f.minute({speed: 0});
+  for (let minute = 0; minute < 30; minute++) assert.equal((await f.minute()).mode, "ARRIVED");
+  const moving = await f.minute({speed: 12, longitude: -82.538});
+  assert.equal(moving.mode, "TAXI_IN", "A later moving report supersedes estimated parking");
+  assert.notEqual(moving.state.flight.arrivalEstimated, true);
+}
+
+async function testGateInEndsTaxiFollowup() {
+  const f = await arrivalFixture();
+  await f.minute({speed: 14});
+  f.flight.operational = {provider: "flightaware", actualIn: new Date(f.now()).toISOString()};
+  const arrived = await f.context.refreshCalendarState();
+  assert.equal(arrived.mode, "ARRIVED", "Authoritative gate IN must override live TAXI IN");
+  assert.notEqual(arrived.state.flight.arrivalEstimated, true);
+  assert.equal((await f.reopen()).mode, "ARRIVED", "Gate IN outranks a resumed taxi checkpoint");
+}
+
+async function testStationaryArrivalGuards() {
+  const creeping = await arrivalFixture();
+  for (let minute = 0; minute < 6; minute++) await creeping.minute();
+  await creeping.reopen();
+  let creepResult;
+  for (let minute = 1; minute <= 5; minute++) creepResult = await creeping.minute({speed: 0.8, longitude: -82.54 + minute * 0.0002});
+  assert.equal(creepResult.mode, "TAXI_IN", "Cumulative slow movement beyond the original stop must supersede an estimate, including after reopening");
+  const duplicated = await arrivalFixture();
+  let final;
+  for (let poll = 0; poll < 14; poll++) final = await duplicated.minute({elapsed: 30000, reportQuantum: 60000});
+  assert.equal(final.mode, "ARRIVED", "Repeated fresh timestamps between distinct reports must not reset the dwell window");
+  for (const changes of [{speed: 14}, {speed: null}, {ground: false}, {longitude: -83.0}]) {
+    const f = await arrivalFixture();
+    for (let minute = 0; minute < 35; minute++) {
+      const resolved = await f.minute(changes);
+      assert.equal(resolved.mode, "TAXI_IN", "No stationary estimate without fresh stopped destination-ground evidence");
+    }
+  }
+  const moving = await arrivalFixture();
+  for (let minute = 0; minute < 15; minute++) {
+    assert.equal((await moving.minute({longitude: -82.54 + minute * 0.001})).mode, "TAXI_IN",
+      "Changing positions cannot count as stationary even when speed is reported as zero");
+  }
+  for (const interruption of [{unavailable: true}, {reportLag: 120000}, {elapsed: 180000}]) {
+    const f = await arrivalFixture();
+    for (let minute = 0; minute < 4; minute++) await f.minute();
+    const paused = await f.minute(interruption);
+    assert.equal(paused.mode, "TAXI_IN");
+    for (let minute = 0; minute < 4; minute++) {
+      assert.equal((await f.minute({unavailable: false, reportLag: 0})).mode, "TAXI_IN",
+        "Outages, stale reports and missed checks reset stationary dwell");
+    }
+  }
+}
+
 async function runTests() {
+  await testStationaryArrivalEstimate();
+  await testGateInEndsTaxiFollowup();
+  await testStationaryArrivalGuards();
   await testArrivalWithoutGroundCoverage();
   await testCalendarPublishesState();
   await testExpiredCalendarShowsAuthorizationState();
