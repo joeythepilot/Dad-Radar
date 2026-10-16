@@ -108,6 +108,7 @@ function createMobileGateway(app, config, options = {}) {
     if(request.path==='/') {response.redirect('/mobile');return;}
     next();
   });
+  gateway.use(require('./companion-assets').createCompanionAssets());
   gateway.use(app);
   return gateway;
 }

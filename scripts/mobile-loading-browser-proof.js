@@ -29,10 +29,16 @@ async function checkMobileLoading(browser,output,engine) {
   await new Promise(resolve=>server.once('listening',resolve));
   server.prependListener('request',(req,res)=>recordResponse(req,res,records));
   const base='http://127.0.0.1:'+server.address().port,auth={'Cf-Access-Jwt-Assertion':token},checks=new WeakMap();
+  async function mobileNetwork(page){
+    if(engine!=='chromium')return;
+    const session=await page.context().newCDPSession(page);
+    await session.send('Network.enable');
+    await session.send('Network.emulateNetworkConditions',{offline:false,latency:80,downloadThroughput:1250000,uploadThroughput:625000});
+  }
   async function visit(page,name) {
     if(!checks.has(page))checks.set(page,observeBrowserErrors(page));
     records.length=0;
-    await page.goto(base+'/mobile',{waitUntil:'load'});
+    await page.goto(base+'/mobile',{waitUntil:'load',timeout:120000});
     await page.waitForSelector('#dashboard:not([hidden])');
     await page.waitForFunction(()=>document.querySelector('.flight-strip-module')?.classList.contains('family-photo-mounted'));
     await page.waitForFunction(()=>Array.from(document.images).every(image=>image.complete));
@@ -40,7 +46,7 @@ async function checkMobileLoading(browser,output,engine) {
     await page.evaluate(()=>document.fonts.ready);
     const entries=records.slice(),art=entries.filter(r=>r.path.startsWith('/assets/') && /\.(?:png|webp|jpe?g|svg|woff2?|wav|mp3)$/i.test(r.path));
     const report={engine,name,artworkBytes:art.reduce((sum,r)=>sum+r.bytes,0),artwork304:art.filter(r=>r.status===304).length,
-      timings:await page.evaluate(()=>{const n=performance.getEntriesByType('navigation')[0];return {domContentLoadedMs:n.domContentLoadedEventEnd,loadMs:n.loadEventEnd};}),entries};
+      timings:await page.evaluate(()=>{const n=performance.getEntriesByType('navigation')[0];return {domContentLoadedMs:n.domContentLoadedEventEnd,loadMs:n.loadEventEnd,readyMs:performance.now()};}),entries};
     fs.writeFileSync(path.join(output,'mobile-loading-'+name+'.json'),JSON.stringify(report,null,2));
     assert.deepEqual(entries.filter(r=>r.status>=400),[],name+' has no failed production requests');
     for(const record of art)assertArtworkCache(record);
@@ -52,11 +58,35 @@ async function checkMobileLoading(browser,output,engine) {
   try {
     context=await browser.newContext({viewport:{width:844,height:390},deviceScaleFactor:2,serviceWorkers:'block',extraHTTPHeaders:auth});
     const page=await context.newPage();
-    const cold=await visit(page,'original-png-cold');
-    assert(cold.entries.filter(r=>approvedSources[r.path]&&String(r.type).startsWith('image/png')).length>=5,'Approved PNGs, not unverified format substitutes, are delivered');
-    const repeat=await visit(page,'original-png-repeat');
+    await mobileNetwork(page);
+    const cold=await visit(page,'companion-cold');
+    assert(cold.entries.filter(r=>String(r.type).startsWith('image/webp')).length>=10,'Companion receives prebuilt encodings');
+    const repeat=await visit(page,'companion-repeat');
     assert(repeat.artwork304>=5,'Browser actually revalidates artwork');
     assert(repeat.artworkBytes<cold.artworkBytes*0.1,'Repeat artwork/audio transfer drops at least 90%');
+    const originalContext=await browser.newContext({viewport:{width:844,height:390},deviceScaleFactor:2,serviceWorkers:'block',extraHTTPHeaders:{...auth,Accept:'image/png,*/*;q=0.1','Accept-Encoding':'identity'}});
+    let original;
+    try{const originalPage=await originalContext.newPage();await mobileNetwork(originalPage);original=await visit(originalPage,'original-cold');}finally{await originalContext.close();}
+    assert(cold.artworkBytes<original.artworkBytes*0.35,'First-visit artwork/audio transfer drops at least 65%');
+    assert(cold.artworkBytes<15000000,'Cold artwork/audio stays below 15MB');
+    if(engine==='chromium'){assert(cold.timings.loadMs<original.timings.loadMs*0.55,'Cold load improves by at least 45% on the same simulated 10Mbps/80ms connection');assert(cold.timings.readyMs<original.timings.readyMs*0.55,'Complete visual readiness also improves under the same network');}
+    await require('./mobile-instrument-plate-browser-proof').checkMobileInstrumentPlates(page);
+    await require('./mobile-instrument-plate-browser-proof').checkMobileSplitFlapPlate(page);
+    await require('./mobile-walnut-overlay-browser-proof').checkMobileWalnutOverlay(page);
+    await require('./mobile-frame-browser-proof').checkMobileFrames(page);
+    // Quantify the intentional high-quality encoding at actual family display
+    // resolution, independently against originals in each browser engine.
+    const quality=await page.evaluate(async entries=>{
+      async function pixels(url,accept){
+        const response=await fetch(url,{headers:{Accept:accept}}),blob=await response.blob(),object=URL.createObjectURL(blob),im=new Image();
+        try{im.src=object;await im.decode();const c=document.createElement('canvas'),scale=Math.min(1,2048/Math.max(im.naturalWidth,im.naturalHeight));c.width=Math.round(im.naturalWidth*scale);c.height=Math.round(im.naturalHeight*scale);const ctx=c.getContext('2d',{willReadFrequently:true});ctx.fillStyle='#806440';ctx.fillRect(0,0,c.width,c.height);ctx.drawImage(im,0,0,c.width,c.height);return {width:im.naturalWidth,height:im.naturalHeight,data:ctx.getImageData(0,0,c.width,c.height).data};}finally{URL.revokeObjectURL(object);}
+      }
+      const result=[];
+      for(const [url,expected] of entries){const a=await pixels(url,'image/png'),b=await pixels(url,'image/webp');let sum=0,squared=0;for(let i=0;i<a.data.length;i++){const difference=Math.abs(a.data[i]-b.data[i]);sum+=difference;squared+=difference*difference;}result.push({url,width:b.width,height:b.height,expected,meanError:sum/a.data.length,rmse:Math.sqrt(squared/a.data.length)});}
+      return result;
+    },Object.entries(approvedSources));
+    for(const q of quality){assert.equal(q.width,q.expected.width);assert.equal(q.height,q.expected.height);assert(q.meanError<2.5,q.url+' average display error below one percent');assert(q.rmse<5,q.url+' fine detail encoding error bounded');}
+    fs.writeFileSync(path.join(output,'companion-encoding-quality.json'),JSON.stringify(quality,null,2));
     await page.setViewportSize({width:390,height:844});
     await page.waitForFunction(()=>document.querySelector('.family-splitflap-plate')?.src.includes('_Portrait_') && document.querySelector('.flight-strip-module')?.classList.contains('family-photo-mounted'));
     await page.screenshot({path:path.join(output,'loading-portrait.png'),fullPage:true});

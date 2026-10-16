@@ -109,3 +109,10 @@ const rollBundle = babel.transformSync(
     {bugfixes:true,modules:false,targets:"> 0.5%, not dead"}]], sourceType:"script"
 });
 fs.writeFileSync(path.join(projectRoot,"App/map-roll-browser.js"),rollBundle.code + "\n","utf8");
+
+// Windows host/autostart also invoke this file directly. Keep all generated
+// delivery files in this common entry point rather than only an npm wrapper.
+const companionBuild=require('node:child_process').spawnSync(process.execPath,
+  [path.join(__dirname,'build-companion-assets.js')],{stdio:'inherit'});
+if(companionBuild.error)throw companionBuild.error;
+if(companionBuild.status!==0)process.exit(companionBuild.status||1);
