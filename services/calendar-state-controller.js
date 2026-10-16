@@ -95,7 +95,7 @@
       homeAirport:
         settings.homeAirport,
       baseAirport:
-        settings.baseAirport ?? "ORD",
+        settings.baseAirport ?? null,
       displayTimeZone:
         settings.displayTimeZone,
       displayTimeZoneLabel:
