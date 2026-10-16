@@ -4,7 +4,7 @@ const dadRadarSettings = {
 
   homeAirport: "AVL",
   homeCity: "ASHEVILLE",
-  baseAirport: "ORD",
+  baseAirport: null,
 
   displayTimeZone: "America/New_York",
   displayTimeZoneLabel: "EASTERN TIME",
