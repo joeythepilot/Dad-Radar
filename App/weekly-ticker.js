@@ -190,9 +190,9 @@
           }
         });
 
-      // Envoy may publish only today's RAP/SBY. For future blank reserve
-      // dates, a known reserve shift predicts at most two blank overnights. Never infer past a different
-      // duty modifier or overwrite explicit calendar evidence.
+      // Imported rosters may publish only today's RAP/SBY. A known reserve
+      // shift predicts at most two blank future overnights. Never infer
+      // past a different duty modifier or overwrite explicit calendar evidence.
       const allEvents=sorted(schedule?.events);
       const reserveSeeds=allEvents.filter(event=>event.kind==="reserve" &&
         !event.allDay && event.airport &&
