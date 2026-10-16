@@ -12,6 +12,8 @@ The middleware runs after existing gateway authentication and authorization. Onl
 
 ## Acceptance evidence
 
+First hosted candidate0c59ff9d3fd0fd73ae402337c403a6c13ebb5582 passed Chromium timing/quality and all eight family layouts, but WebKit exceeded the display-error budget for the native8 landscape plate. It was not deployed. Independent offline comparison measured only0.227 mean/0.574RMS display error, so offline/source equality is insufficient. Use lossless encoding for BOTH native8 plates; preserve the same browser limits and log all ten comparisons before assertions. Do not claim a specific WebKit decoder cause without evidence. First Chromium controlled10Mbps/80ms result:44,919,529 to11,810,708 artwork/audio bytes; full readiness39.081 to10.788seconds. Those are rejected-candidate Chromium measurements, not final release or actual5G results.
+
 - Full npm test, including actual HTTP negotiation, q=0 fallback, ranges,304, original/variant separation, gzip bytes and missing-encoding fallback.
 - Verify every encoded source SHA; retain full native dimensions and exact alpha at every source pixel for all hardware. Native opaque RGB mean error <3/255 and RMS error <6/255.
 - Actual authenticated gateway Chromium/WebKit cold/repeat/original-fallback comparison; >=65% fewer cold artwork/audio bytes and <15MB, with >=90% fewer repeat bytes.

@@ -26,11 +26,14 @@ async function build(){
  let cursor=0,sourceBytes=0,encodedBytes=0;
  async function worker(){while(cursor<sources.length){
   const {relative,file,image}=sources[cursor++],bytes=fs.readFileSync(file),url='/'+relative;
-  const hash=crypto.createHash('sha256').update(version).update(bytes).digest('hex');
+  // WebKit's lossy decode of these transparent physical renders exceeded the
+  // browser display-error budget. Preserve them with lossless encoding.
+  const nativePlate=/HomingBeacon_Mobile_SplitFlap_(Landscape|Portrait)_Native_v8\.png$/.test(relative);
+  const hash=crypto.createHash('sha256').update(version+(nativePlate?'-lossless-native8':'')).update(bytes).digest('hex');
   const ext=image?'webp':'gz',name=hash+'.'+ext,target=path.join(output,name);
   if(!fs.existsSync(target)){
    let encoded;try{
-    encoded=image?await sharp(bytes).webp({quality:96,alphaQuality:100,effort:4}).toBuffer():zlib.gzipSync(bytes,{level:9});
+    encoded=image?await sharp(bytes).webp(nativePlate?{lossless:true,exact:true,effort:4}:{quality:96,alphaQuality:100,effort:4}).toBuffer():zlib.gzipSync(bytes,{level:9});
     if(image){const original=await sharp(bytes).ensureAlpha().raw().toBuffer(),decoded=await sharp(encoded).ensureAlpha().raw().toBuffer();
      if(!withinDetailBudget(original,decoded))encoded=await sharp(bytes).webp({lossless:true,exact:true,effort:4}).toBuffer();
     }

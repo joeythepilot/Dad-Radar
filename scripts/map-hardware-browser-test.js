@@ -191,6 +191,10 @@ async function transportProof(page, label) {
         ]) {
           const page=await browser.newPage({viewport:{width,height},serviceWorkers:'block',isMobile:name.includes('touch'),hasTouch:name.includes('touch'),deviceScaleFactor:name.includes('touch')?2:1});
           const assertBrowserSettled = observeBrowserErrors(page);
+          // Preserve diagnostics for intermittent WebKit navigation/network
+          // failures; the existing zero-browser-error assertion stays strict.
+          page.on('requestfailed',request=>console.log('MAP_FIXTURE_REQUEST_FAILED '+JSON.stringify({case:name,url:request.url(),error:request.failure()?.errorText})));
+          page.on('pageerror',error=>console.log('MAP_FIXTURE_PAGE_ERROR '+JSON.stringify({case:name,message:error.message,stack:error.stack})));
           await page.addInitScript(audioProbe);
           await page.route('**/*',route=>route.request().url().startsWith(origin)||route.request().url().startsWith('blob:')?route.continue():route.abort());
           const url=name==='desktop'?'/':'/mobile';

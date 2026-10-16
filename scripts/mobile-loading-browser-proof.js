@@ -85,8 +85,9 @@ async function checkMobileLoading(browser,output,engine) {
       for(const [url,expected] of entries){const a=await pixels(url,'image/png'),b=await pixels(url,'image/webp');let sum=0,squared=0;for(let i=0;i<a.data.length;i++){const difference=Math.abs(a.data[i]-b.data[i]);sum+=difference;squared+=difference*difference;}result.push({url,width:b.width,height:b.height,expected,meanError:sum/a.data.length,rmse:Math.sqrt(squared/a.data.length)});}
       return result;
     },Object.entries(approvedSources));
-    for(const q of quality){assert.equal(q.width,q.expected.width);assert.equal(q.height,q.expected.height);assert(q.meanError<2.5,q.url+' average display error below one percent');assert(q.rmse<5,q.url+' fine detail encoding error bounded');}
     fs.writeFileSync(path.join(output,'companion-encoding-quality.json'),JSON.stringify(quality,null,2));
+    console.log('Companion encoding quality: '+JSON.stringify(quality.map(({url,meanError,rmse})=>({url,meanError,rmse}))));
+    for(const q of quality){assert.equal(q.width,q.expected.width);assert.equal(q.height,q.expected.height);assert(q.meanError<2.5,q.url+' average display error below one percent');assert(q.rmse<5,q.url+' fine detail encoding error bounded');}
     await page.setViewportSize({width:390,height:844});
     await page.waitForFunction(()=>document.querySelector('.family-splitflap-plate')?.src.includes('_Portrait_') && document.querySelector('.flight-strip-module')?.classList.contains('family-photo-mounted'));
     await page.screenshot({path:path.join(output,'loading-portrait.png'),fullPage:true});
