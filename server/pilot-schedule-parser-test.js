@@ -424,13 +424,39 @@ function testImportedReserveAndLeaveDates() {
   assert.deepEqual(wheels([reserve,assigned,off]).slice(0,4),['ORD','DFW','UNKN','HOME']);
 }
 
+function testRapRequiresExplicitStation() {
+  // A missing/ignored station must never silently place a traveler at ORD.
+  for (const [summary,airport] of [['RAP ORD','ORD'],['RAP DFW','DFW'],['rap  mia','MIA'],['  RAP LAX  ','LAX']]) {
+    const result=parsePilotEvent(createEvent({summary,
+      start:{dateTime:'2026-10-15T09:00:00-05:00'},end:{dateTime:'2026-10-15T17:00:00-05:00'}}));
+    assert.equal(result.kind,'reserve',summary+' is a station-specific reserve assignment');
+    assert.equal(result.reserveType,'RAP');
+    assert.equal(result.airport,airport,'Use the explicitly supplied station, not a default');
+    assert.equal(result.times.startUtc,'2026-10-15T14:00:00.000Z');
+    assert.equal(result.times.endUtc,'2026-10-15T22:00:00.000Z');
+  }
+  for (const summary of ['RAP','RAP   ','RAP OR','RAP KORD','RAP O1D','RAP ORD training','RAP review']) {
+    const result=parsePilotEvent(createEvent({summary}));
+    assert.equal(result.kind,'other',summary+' must not imply a reserve station');
+    assert.equal(result.airport,undefined);
+    assert.equal(result.reserveType,undefined);
+  }
+  const {resolveScheduleState}=require('../models/schedule-state');
+  const event=createEvent({summary:'RAP DFW',start:{dateTime:'2026-10-15T09:00:00Z'},end:{dateTime:'2026-10-15T17:00:00Z'}});
+  const resolved=resolveScheduleState(parsePilotSchedule({events:[event]}),{now:'2026-10-15T12:00:00Z',displayTimeZone:'UTC'});
+  assert.equal(resolved.mode,'RESERVE');
+  assert.equal(resolved.event.airport,'DFW','The resolved family state retains the RAP station');
+  const unlocated=resolveScheduleState(parsePilotSchedule({events:[{...event,summary:'RAP'}]}),{now:'2026-10-15T12:00:00Z',displayTimeZone:'UTC'});
+  assert.notEqual(unlocated.mode,'RESERVE','An unqualified RAP cannot establish reserve location');
+}
+
 function testOverlappingRapAndStandby() {
   const {resolveScheduleState,buildDailySchedule}=require('../models/schedule-state');
   const {buildDutyCardView}=require('../App/daily-schedule-layout');
   const {buildWeeklyOvernightModules}=require('../App/weekly-ticker');
   // Explicit UTC is synthetic normalized test data, not an interpretation of
   // MobileCCI's floating ICS times. Preserve the two separate source events.
-  const rap=createEvent({id:'overlap-rap',summary:'RAP',
+  const rap=createEvent({id:'overlap-rap',summary:'RAP ORD',
     start:{dateTime:'2026-10-15T09:00:00Z'},end:{dateTime:'2026-10-15T23:00:00Z'}});
   const stby=createEvent({id:'overlap-stby',summary:'STBY',
     start:{dateTime:'2026-10-15T09:00:00Z'},end:{dateTime:'2026-10-15T16:59:59Z'}});
@@ -508,9 +534,10 @@ function testOverlappingRapAndStandby() {
 }
 
 function runTests() {
+  testRapRequiresExplicitStation();
   testOverlappingRapAndStandby();
   testImportedReserveAndLeaveDates();
-  const rap = parsePilotEvent(createEvent({summary:'RAP',start:{dateTime:'2026-10-01T09:00:00-05:00'},end:{dateTime:'2026-10-01T17:00:00-05:00'}}));
+  const rap = parsePilotEvent(createEvent({summary:'RAP ORD',start:{dateTime:'2026-10-01T09:00:00-05:00'},end:{dateTime:'2026-10-01T17:00:00-05:00'}}));
   assert.equal(rap.kind,'reserve');
   assert.equal(rap.airport,'ORD');
   assert.equal(rap.reserveType,'RAP');
