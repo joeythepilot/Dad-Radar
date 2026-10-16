@@ -91,11 +91,23 @@
     };
   }
 
+  function displayHomePointerAngle(state, homeAirport, lookupAirportCoordinates) {
+    if (Object.prototype.hasOwnProperty.call(state ?? {}, 'homePointerAngle')) {
+      const angle = state.homePointerAngle;
+      return typeof angle === 'number' && Number.isFinite(angle) && Math.abs(angle) <= 180
+        ? angle : null;
+    }
+    return homePointerAngle({home: lookupAirportCoordinates?.(homeAirport),
+      position: homePointerPosition(state, lookupAirportCoordinates ?? (() => null)),
+      heading: flightForInstruments(state)?.heading});
+  }
+
   const api = {
     altimeterNeedleAngles,
     flightForInstruments,
     homePointerAngle,
-    homePointerPosition
+    homePointerPosition,
+    displayHomePointerAngle
   };
 
   if (

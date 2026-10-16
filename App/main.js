@@ -1336,13 +1336,8 @@ function updateHomeBearingNeedle(state) {
   if (!homeBearingNeedle) return;
 
   const lookup = globalThis.dadRadarAirports?.getAirportCoordinates;
-  const home = lookup?.(dadRadarSettings.homeAirport);
-  const position = globalThis.dadRadarInstrumentMath
-    .homePointerPosition(state, lookup);
-  const heading = globalThis.dadRadarInstrumentMath
-    .flightForInstruments(state)?.heading;
   const angle = globalThis.dadRadarInstrumentMath
-    .homePointerAngle({home, position, heading});
+    .displayHomePointerAngle(state, dadRadarSettings.homeAirport, lookup);
 
   homeBearingNeedle.hidden = angle === null;
   if (angle !== null) {

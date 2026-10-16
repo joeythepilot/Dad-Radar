@@ -18,6 +18,7 @@ async function run() {
   const futureEvent={...event,id:'work-2',origin:'MSN',destination:'ORD',flightNumber:'4039',
     times:{startUtc:'2026-09-11T12:00:00Z',endUtc:'2026-09-11T13:00:00Z'}};
   const options = {
+    homePosition: {latitude:35.123456789,longitude:-82.987654321},
     file: path.join(dir, "state.json"), now: () => clock,
     console: {warn() {}, error() {}},
     setInterval(fn, delay) {const key = {}; jobs.set(key, {fn, delay}); return key;},
@@ -41,6 +42,16 @@ async function run() {
     await master.start();
     await master.poll();
     assert.equal(master.read().resolved.mode, "LANDING");
+    const publicState=master.read().resolved.state;
+    const math=require('../App/instrument-math');
+    assert.equal(publicState.homePointerAngle,math.homePointerAngle({home:options.homePosition,
+      position:math.homePointerPosition(publicState,require('../data/airport-catalog').getAirportCoordinates),
+      heading:math.flightForInstruments(publicState)?.heading}));
+    for(const secret of ['35.123456789','-82.987654321']) {
+      assert.ok(!JSON.stringify(master.read()).includes(secret),'API envelope excludes private origin');
+      assert.ok(!JSON.stringify(master.readCalendar()).includes(secret),'Calendar excludes private origin');
+      assert.ok(!fs.readFileSync(options.file,'utf8').includes(secret),'Master persistence excludes private origin');
+    }
     assert.equal(master.read().resolved.state.sequenceHistory.scheduledLegCount,2,
       'The authoritative server envelope includes the whole scheduled trip');
     assert.equal(master.read().resolved.state.sequenceHistory.legCount,1,

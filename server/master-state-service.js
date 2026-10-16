@@ -5,6 +5,8 @@ const path = require("node:path");
 const vm = require("node:vm");
 const {createFlightLegGuard} = require("./flight-leg-guard");
 const {createSequenceHistoryService} = require("./sequence-history-service");
+const {publicHomePointerState} = require('./private-home-position');
+const {getAirportCoordinates} = require('../data/airport-catalog');
 
 function createMasterStateService(options) {
   const root = path.join(__dirname, "..");
@@ -44,7 +46,8 @@ function createMasterStateService(options) {
     sequenceHistory.backfill(schedule?.events, schedule?.queryWindow);
     const history = sequenceHistory.update(resolved);
     const publishedResolved = resolved
-      ? {...resolved, state: {...(resolved.state || {}), sequenceHistory: history}}
+      ? {...resolved, state: publicHomePointerState(
+        {...(resolved.state || {}), sequenceHistory: history}, options.homePosition, getAirportCoordinates)}
       : resolved;
     if (publishedResolved?.state?.livePhase === "ARRIVED" &&
       !publishedResolved.state.flight?.arrivalEstimated && publishedResolved.event) {

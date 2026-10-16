@@ -105,15 +105,27 @@
     toState,
     progress
   ) {
+    const flight=interpolateFlight(fromState.flight,toState.flight,progress);
+    const pointer={};
+    if(Object.prototype.hasOwnProperty.call(toState,'homePointerAngle')) {
+      const to=typeof toState.homePointerAngle==='number'?finiteNumber(toState.homePointerAngle):null;
+      const from=typeof fromState.homePointerAngle==='number'?finiteNumber(fromState.homePointerAngle):null;
+      if(to===null)pointer.homePointerAngle=null;
+      else if(toState.homePointerResting===true)pointer.homePointerAngle=0;
+      else {
+        const targetBearing=to+(finiteNumber(toState.flight?.heading)??0);
+        const startBearing=from===null?targetBearing:from+(finiteNumber(fromState.flight?.heading)??0);
+        const normalize=value=>((value%360)+360)%360;
+        const bearing=headingValue(normalize(startBearing),normalize(targetBearing),progress);
+        pointer.homePointerAngle=((bearing-(finiteNumber(flight.heading)??0)+540)%360)-180;
+      }
+    }
     return {
       ...toState,
+      ...pointer,
       visualInterpolation:
         progress < 1,
-      flight: interpolateFlight(
-        fromState.flight,
-        toState.flight,
-        progress
-      )
+      flight
     };
   }
 
@@ -248,8 +260,15 @@
       }
     });
 
+    const pointer={};
+    if(Object.prototype.hasOwnProperty.call(nextState,'homePointerAngle')&&
+      Object.prototype.hasOwnProperty.call(visualState??{},'homePointerAngle')) {
+      pointer.homePointerAngle=visualState.homePointerAngle;
+      pointer.homePointerResting=visualState.homePointerResting;
+    }
     return {
       ...nextState,
+      ...pointer,
       visualInterpolation:
         animationFrameId !== null,
       flight: heldFlight
@@ -359,6 +378,10 @@
         flight: {...visualState.flight}
       };
       MOTION_FIELDS.forEach(field => {frameState.flight[field] = sample.flight[field];});
+      if(Object.prototype.hasOwnProperty.call(sample,'homePointerAngle')) {
+        frameState.homePointerAngle=sample.homePointerAngle;
+        frameState.homePointerResting=sample.homePointerResting;
+      }
       publishVisualState(frameState, visualMode ?? mode, true);
 
       if (progress < 1) {

@@ -216,6 +216,15 @@ function testHomePointerPosition() {
 }
 testHomePointerPosition();
 
+assert.equal(typeof require('./instrument-math').displayHomePointerAngle,'function',
+  'Display needs an authoritative server angle without receiving home coordinates');
+const displayAngle=require('./instrument-math').displayHomePointerAngle;
+for(const value of [0,-90,179,null]) {
+  assert.equal(displayAngle({homePointerAngle:value},'AVL',()=>{throw new Error('Private-origin display must not look up the airport');}),value);
+}
+assert.equal(displayAngle({homePointerAngle:'0'},'AVL',airports.getAirportCoordinates),null,'Malformed server angle must not activate the airport fallback');
+assert.equal(displayAngle({status:'AIRBORNE',flight:{latitude:40,longitude:-80,heading:25}},'AVL',airports.getAirportCoordinates),homePointerAngle({home:airports.getAirportCoordinates('AVL'),position:{latitude:40,longitude:-80},heading:25}));
+
 console.log(
   "Instrument math tests passed."
 );

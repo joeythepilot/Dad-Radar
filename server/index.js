@@ -29,7 +29,10 @@ const {
 
 const {createAirportSurfaceService} = require("./airport-surface-service");
 const airportSurface = createAirportSurfaceService({report: addDiagnostic});
+const privateHomePosition = require('./private-home-position')
+  .readPrivateHomePosition(process.env.DADRADAR_HOME_POSITION_FILE || undefined);
 const masterState = require("./master-state-service").createMasterStateService({
+  homePosition: privateHomePosition,
   getCalendar: getUpcomingEvents,
   getFlight: getLiveFlightSnapshot,
   getOperational: getOperationalStatus,

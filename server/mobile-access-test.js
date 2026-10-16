@@ -46,6 +46,8 @@ function token(changes={},secret=privateKey) {
     const allowed=await fetch(base+'/mobile',{headers});assert.equal(allowed.status,200);assert.match(allowed.headers.get('cache-control'),/no-store/);
     assert.equal((await fetch(base+'/api/airports/AVL/surface',{headers})).status,200);
     assert.equal((await fetch(base+'/api/diagnostics/recent',{headers})).status,404);
+    assert.equal((await fetch(base+'/runtime/private-home-position.json',{headers})).status,404);
+    assert.equal((await fetch(base+'/server/private-home-position.js',{headers})).status,404);
     assert.equal((await fetch(base+'/api/flights/lookup',{method:'POST',headers:{...headers,Origin:'https://evil.test'}})).status,403);
     assert.equal((await fetch(base+'/api/flights/lookup',{method:'POST',headers:{...headers,Origin:config.origin}})).status,200);
     const artwork=await fetch(base+'/assets/ui/cache-fixture.png',{headers});

@@ -414,6 +414,7 @@ function testBrandMetadataSurvivesPendingMotionFrames() {
 }
 
 function runTests() {
+  testPrivatePointerStaysRegisteredToHeadingCard();
   testOperatingLabelDoesNotRestartActiveMotion();
   testBrandMetadataSurvivesPendingMotionFrames();
   testSameScheduledLegPreservesMotionAcrossOperatingLabelChange();
@@ -429,6 +430,39 @@ function runTests() {
   console.log(
     "Visual state controller tests passed."
   );
+}
+
+function testPrivatePointerStaysRegisteredToHeadingCard() {
+  const from=liveState({homePointerAngle:40,homePointerResting:false,
+    flight:{...liveState().flight,heading:0}});
+  const to={...from,homePointerAngle:-50,
+    flight:{...from.flight,heading:90,lastPositionAt:'2026-08-04T18:01:00.000Z'}};
+  const harness=createHarness(from);
+  harness.dispatchState(to);
+  assert.equal(harness.visualEvents.at(-1).detail.state.homePointerAngle,40,
+    'The private pointer must start on the displayed card, not jump to target heading');
+  harness.runNextFrame(0);harness.runNextFrame(500);
+  let frame=harness.visualEvents.at(-1).detail.state;
+  assert.equal(frame.flight.heading,45);
+  assert.equal(frame.homePointerAngle,-5,'Pointer and interpolated card preserve the same geographic bearing');
+  harness.dispatchState({...to,flight:{...to.flight,marketingCarrierCode:'UA'}});
+  assert.equal(harness.visualEvents.at(-1).detail.state.homePointerAngle,-5,'Metadata refresh holds the current pointer pose');
+  harness.runNextFrame(1000);
+  assert.equal(harness.visualEvents.at(-1).detail.state.homePointerAngle,-50);
+
+  const rest=createHarness(from);
+  rest.dispatchState({...to,homePointerAngle:0,homePointerResting:true});
+  assert.equal(rest.visualEvents.at(-1).detail.state.homePointerAngle,0,'Near-home rest is upright, not a false north bearing');
+  const unknown=createHarness(from);
+  unknown.dispatchState({...to,homePointerAngle:null});
+  unknown.runNextFrame(0);unknown.runNextFrame(500);
+  assert.equal(unknown.visualEvents.at(-1).detail.state.homePointerAngle,null,'Unknown origin-derived direction stays hidden during animation');
+  const wrappedFrom={...from,homePointerAngle:175,flight:{...from.flight,heading:355}};
+  const wrappedTo={...to,homePointerAngle:-175,flight:{...to.flight,heading:5}};
+  const wrapped=createHarness(wrappedFrom);wrapped.dispatchState(wrappedTo);
+  wrapped.runNextFrame(0);wrapped.runNextFrame(500);
+  assert.equal(Math.abs(wrapped.visualEvents.at(-1).detail.state.homePointerAngle),180,
+    'Reconstructed geographic bearings crossing north use the short arc, not a 340-degree sweep');
 }
 
 runTests();

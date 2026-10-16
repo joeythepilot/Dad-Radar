@@ -60,6 +60,8 @@ async function runTests() {
       "/package.json",
       "/server/index.js",
       "/runtime/airport-maps/AVL.json",
+      "/runtime/private-home-position.json",
+      "/server/private-home-position.js",
       "/Docs/Project-decisions.md"
     ]) {
       const response = await fetch(
