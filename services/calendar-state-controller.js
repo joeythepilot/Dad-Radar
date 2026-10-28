@@ -1108,6 +1108,7 @@
       currentSchedule =
         await global.dadRadarCalendarApi
           .getUpcomingEvents({
+            baseAirport: controllerSettings().baseAirport,
             days:
               controllerSettings()
                 .lookAheadDays

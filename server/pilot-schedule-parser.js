@@ -41,9 +41,9 @@ const DUTY_FREE_PATTERN =
   /^Duty free period$/i;
 const VACATION_PATTERN = /^(?:Vacation|VAC)$/i;
 
-const RESERVE_BLOCK_PATTERN = /^Reserve\s+([A-Z]{3})$/i;
+const RESERVE_BLOCK_PATTERN = /^(?:Reserve|RSV)(?:\s+([A-Z]{3}))?$/i;
 const RAP_PATTERN = /^RAP$/i;
-const STANDBY_PATTERN = /^(?:Airport[\s-]*)?(?:Stand[\s-]*by|SBY|STBY)(?:\s*(?:shift\s*|#\s*)?\d{1,2})?(?:\s+([A-Z]{3}))?(?:\s*(?:shift\s*|#\s*)?\d{1,2})?$/i;
+const STANDBY_PATTERN = /^(?:Airport[\s-]*)?(?:Stand[\s-]*by|SBY|STBY|STDBY)(?:\s*(?:shift\s*|#\s*)?\d{1,2})?(?:\s+([A-Z]{3}))?(?:\s*(?:shift\s*|#\s*)?\d{1,2})?$/i;
 
 function cleanText(value) {
   return typeof value === "string"
@@ -597,7 +597,8 @@ function parsePilotEvent(
       id: event.id ?? null,
       kind: "reserve",
       reserveType: reserveBlock ? "BLOCK" : standby ? "STANDBY" : "RAP",
-      airport: normalizeAirport(reserveBlock?.[1] ?? standby?.[1]) ?? "ORD",
+      airport: normalizeAirport(reserveBlock?.[1] ?? standby?.[1]) ??
+        normalizeAirport(options.baseAirport) ?? "ORD",
       allDay: Boolean(event.start?.date && event.end?.date),
       summary,
       description,

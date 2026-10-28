@@ -256,7 +256,7 @@ async function getUpcomingEvents(options = {}) {
   };
 
   return enrichScheduledAirlines({
-    ...parsePilotSchedule(rawCalendarData),
+    ...parsePilotSchedule(rawCalendarData, {baseAirport: options.baseAirport}),
     queryWindow: {startUtc: startTime.toISOString(), endUtc: endTime.toISOString()}
   });
 }

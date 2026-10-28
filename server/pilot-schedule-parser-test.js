@@ -571,7 +571,8 @@ function runTests() {
   assert.equal(dutyFree.times.startUtc,'2026-10-02T04:00:00.000Z');
   assert.equal(dutyFree.times.endUtc,'2026-10-04T04:00:00.000Z');
   assert.equal(parsePilotEvent(createEvent({summary:'RAP review'})).kind,'other');
-  assert.equal(parsePilotEvent(createEvent({summary:'Reserve'})).kind,'other');
+  assert.equal(parsePilotEvent(createEvent({summary:'Reserve'})).kind,'reserve');
+  require('./reserve-base-alias-test');
   testEditedCciCalendarTimesOverrideStaleDescription();
   const cci = createEvent({summary: 'FLT 3632', start:{dateTime:'2026-09-27T22:37:00-04:00'}, end:{dateTime:'2026-09-27T23:58:00-04:00'}, description: 'SEQ#: 18073 Flight#: 3632 Stations: ORD→EVV Local Time: Sun, Sep 27, 2026\n22:37 - Sun, Sep 27, 2026 23:58 UTC Time: Mon, Sep 28, 2026 03:37 UTC - Mon,\nSep 28, 2026 04:58 UTC'});
   const flight = parsePilotEvent(cci);
